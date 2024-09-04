@@ -1,0 +1,20 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      - MYSQL_DATABASE=newscrab
+      - MYSQL_ROOT_PASSWORD=1234
+    ports:
+      - "3306:3306"
+
+  redis:
+    image: redis:latest
+    command: redis-server /usr/local/etc/redis/redis.conf --requirepass newscrab207
+    container_name: redis
+    volumes:
+      - ./redis_data:/data
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+    ports:
+      - "6379:6379"
+
