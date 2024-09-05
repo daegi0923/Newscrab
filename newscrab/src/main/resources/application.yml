@@ -1,6 +1,12 @@
+server:
+    port: ${SERVER_PORT}  # 환경 변수로 대체
+
 spring:
     application:
         name: newscrab
+
+    config:
+        import: optional:file:.env[.properties]
 
     web:
         encoding:
@@ -9,9 +15,9 @@ spring:
             force: true
 
     datasource:
-        url: jdbc:mysql://localhost:3306/newscrab?useUnicode=true&characterEncoding=utf8&characterSetResults=utf8&serverTimezone=UTC
-        username: root
-        password: 1234
+        url: jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/${MYSQL_DATABASE}?useUnicode=true&characterEncoding=utf8&characterSetResults=utf8&serverTimezone=UTC
+        username: ${MYSQL_ROOT_USER}  # 환경 변수로 대체
+        password: ${MYSQL_ROOT_PASSWORD}  # 환경 변수로 대체
         driver-class-name: com.mysql.cj.jdbc.Driver
 
     jpa:
@@ -20,17 +26,15 @@ spring:
                 show_sql: true
                 format_sql: true
         hibernate:
-            ddl-auto: create
+            ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO}
             database-platform: org.hibernate.dialect.MySQLDialect
 
     data:
         redis:
-            host: localhost
-            port: 6379
-            password: newscrab207
+            host: ${REDIS_HOST}  # 환경 변수로 대체
+            port: ${REDIS_PORT}  # 환경 변수로 대체
+            password: ${REDIS_PASSWORD}  # 환경 변수로 대체
 
-server:
-    port: 8080
 
 # Swagger Configuration
 springdoc:
