@@ -10,7 +10,7 @@ public class NewsKeyword {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "keyword_id")
+    @Column(name = "keyword_id", nullable = false)
     private Integer keywordId;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -21,6 +21,6 @@ public class NewsKeyword {
     @JoinColumn(name = "industry_id", nullable = false)
     private Industry industry;
 
-    @Column(name = "news_keyword_name", length = 255)
+    @Column(name = "news_keyword_name", length = 255, nullable = false)
     private String newsKeywordName;
 }

@@ -12,7 +12,7 @@ public class Industry {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "industry_id")
+    @Column(name = "industry_id", nullable = false)
     private Integer industryId;
 
     @Column(name = "industry_name", nullable = false)

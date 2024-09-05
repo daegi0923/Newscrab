@@ -10,7 +10,7 @@ public class Keyword {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "keyword_id")
+    @Column(name = "keyword_id", nullable = false)
     private Integer keywordId;
 
     @ManyToOne(fetch = FetchType.LAZY)
