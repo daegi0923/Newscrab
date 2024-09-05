@@ -2,45 +2,40 @@ spring:
     application:
         name: newscrab
 
+    web:
+        encoding:
+            charset: UTF-8
+            enabled: true
+            force: true
+
     datasource:
-        url: jdbc:mysql://localhost:3306/newscrab?useUnicode=true&characterEncoding=utf8&characterSetResults=utf8&serverTimezone=UTC # MySQL ?????? URL
-        username: root # MySQL ?????? ??? ??
-        password: 1234 # MySQL ?????? ????
-        driver-class-name: com.mysql.cj.jdbc.Driver # MySQL JDBC ???? ??? ??
+        url: jdbc:mysql://localhost:3306/newscrab?useUnicode=true&characterEncoding=utf8&characterSetResults=utf8&serverTimezone=UTC
+        username: root
+        password: 1234
+        driver-class-name: com.mysql.cj.jdbc.Driver
 
     jpa:
         properties:
             hibernate:
-                show_sql: true # SQL ??? ??? ??
-                format_sql: true # SQL ??? ?? ?? ???
+                show_sql: true
+                format_sql: true
         hibernate:
-            ddl-auto: create # ?????? ?? ? ?????? ??? ?? ??
-            database-platform: org.hibernate.dialect.MySQLDialect # MySQL Dialect ??
+            ddl-auto: create
+            database-platform: org.hibernate.dialect.MySQLDialect
 
-    #jwt:
-    #secret: ${JWT_SECRET} # JWT ?? ??? ?? ?? ?
-    #expiration: ${JWT_EXPIRATION} # JWT ?? ?? ?? (??? ??)
+    data:
+        redis:
+            host: localhost
+            port: 6379
+            password: newscrab207
 
-    spring.data.redis:
-        host: localhost # Redis ?? ???
-        port: 6379 # Redis ?? ??
-        password: newscrab207 # Redis ?? ????
-
-    server:
-        port: 8080 # ?????? ?? ??
-
-#logging:
-#    level:
-#        root: INFO # ?? ?? ?? ??
-#        org.springframework.security: INFO # Spring Security ?? ?? ??
-#        org.springframework.web: INFO # Spring Web ?? ?? ??
-#        org.hibernate: INFO # Hibernate ?? ?? ??
+server:
+    port: 8080
 
 # Swagger Configuration
-#springdoc:
-#    api-docs:
-#    enabled: true # API ?? ?? ???
-#    swagger-ui:
-#    enabled: true # Swagger UI ???
-#    path: /swagger-ui.html # Swagger UI ?? ?? ??
-
+springdoc:
+    api-docs:
+        enabled: true
+    swagger-ui:
+        enabled: true
+        path: /swagger-ui.html
