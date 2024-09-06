@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 @Table(name = "user") // 테이블명 지정
@@ -13,9 +14,10 @@ public class User extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long userId; // 회원번호
+    @Column(name = "user_id", nullable = false)
+    private Integer userId; // 회원번호
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "login_id", nullable = false, unique = true)
     private String loginId; // 아이디
 
     @Column(nullable = false)
@@ -33,5 +35,11 @@ public class User extends BaseTimeEntity {
     @Enumerated(EnumType.STRING) // Enum을 VARCHAR로 저장
     @Column(nullable = false)
     private Gender gender; // 성별 (ENUM)
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private Set<Grass> grasses;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private Set<UserIndustry> userIndustries;
 
 }

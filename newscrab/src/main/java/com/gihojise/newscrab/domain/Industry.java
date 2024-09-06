@@ -20,4 +20,7 @@ public class Industry {
 
     @OneToMany(mappedBy = "industry", cascade = CascadeType.ALL)
     private Set<Keyword> keywords;
+
+    @OneToMany(mappedBy = "industry", cascade = CascadeType.ALL)
+    private Set<UserIndustry> userIndustries;
 }
