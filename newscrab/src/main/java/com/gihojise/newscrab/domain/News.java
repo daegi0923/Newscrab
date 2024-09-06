@@ -9,7 +9,7 @@ import java.util.Set;
 @Entity
 @Table(name = "news")
 @Getter
-public class News {
+public class News extends BaseTimeEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,9 +34,6 @@ public class News {
 
     @Column(name = "news_published_at", nullable = false)
     private LocalDateTime newsPublishedAt;
-
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
 
     @Column(name = "view", nullable = false)
     private Integer view = 0;
