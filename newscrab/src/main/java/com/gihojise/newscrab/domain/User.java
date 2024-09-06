@@ -1,4 +1,4 @@
-package com.gihojise.newscrab.entity;
+package com.gihojise.newscrab.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "user") // 테이블명 지정
 @Getter
-public class User {
+public class User extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,20 +34,4 @@ public class User {
     @Column(nullable = false)
     private Gender gender; // 성별 (ENUM)
 
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt; // 가입일자
-
-    @Column(nullable = false)
-    private LocalDateTime updatedAt; // 수정일자
-
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
-    }
 }
