@@ -1,4 +1,4 @@
-package com.gihojise.newscrab.entity;
+package com.gihojise.newscrab.domain;
 
 public enum Gender {
     MALE,
