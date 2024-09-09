@@ -1,0 +1,45 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: newscrab-ingress
+  namespace: default
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod" # Let's Encrypt를 사용하여 SSL 인증서 발급
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"   # HTTP를 HTTPS로 리다이렉트
+spec:
+  tls:
+    - hosts:
+        - newscrab.duckdns.org
+      secretName: newscrab-tls  # SSL 인증서가 저장된 Secret의 이름
+  rules:
+    - host: newscrab.duckdns.org
+      http:
+        paths:
+          - path: /jenkins/
+            pathType: Prefix
+            backend:
+              service:
+                name: jenkins-service
+                port:
+                  number: 8080
+          - path: /api/v1/
+            pathType: Prefix
+            backend:
+              service:
+                name: spring-service
+                port:
+                  number: 8080
+          - path: /api/v1/reco/
+            pathType: Prefix
+            backend:
+              service:
+                name: fastapi-service
+                port:
+                  number: 8000
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: react-service
+                port:
+                  number: 3000
