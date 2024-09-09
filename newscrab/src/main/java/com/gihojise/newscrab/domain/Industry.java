@@ -1,7 +1,7 @@
 package com.gihojise.newscrab.domain;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
 
 import java.util.Set;
 
