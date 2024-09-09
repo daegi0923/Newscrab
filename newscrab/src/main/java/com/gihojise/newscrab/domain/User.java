@@ -13,7 +13,7 @@ public class User extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long userId; // 회원번호
+    private Integer userId; // 회원번호
 
     @Column(nullable = false, unique = true)
     private String loginId; // 아이디
