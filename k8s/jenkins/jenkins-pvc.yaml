@@ -7,4 +7,5 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 10Gi  # Jenkins 데이터 저장소 크기
+      storage: 10Gi  # 요청하는 저장소 크기
+  storageClassName: manual
