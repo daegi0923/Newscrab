@@ -3,8 +3,6 @@ package com.gihojise.newscrab.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
-
 @Entity
 @Table(name = "grass") // 테이블명 지정
 @Getter
