@@ -4,34 +4,33 @@ metadata:
   name: nginx-configmap
 data:
   default.conf: |
-		server {
-		    listen 80;
-		
-		    # /apiv1/* 요청은 Spring으로 전달
-		    location /apiv1/ {
-		        proxy_pass http://localhost:8080;  # Spring 서버가 동작하는 포트
-		        proxy_set_header Host $host;
-		        proxy_set_header X-Real-IP $remote_addr;
-		        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-		        proxy_set_header X-Forwarded-Proto $scheme;
-		    }
-		
-		    # /apiv1/reco/* 요청은 Django로 전달
-		    location /apiv1/reco/ {
-		        proxy_pass http://localhost:8000;  # Django 서버가 동작하는 포트
-		        proxy_set_header Host $host;
-		        proxy_set_header X-Real-IP $remote_addr;
-		        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-		        proxy_set_header X-Forwarded-Proto $scheme;
-		    }
-		
-		    # 나머지 모든 요청은 React로 전달
-		    location / {
-		        proxy_pass http://localhost:3000;  # React 애플리케이션이 동작하는 포트
-		        proxy_set_header Host $host;
-		        proxy_set_header X-Real-IP $remote_addr;
-		        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-		        proxy_set_header X-Forwarded-Proto $scheme;
-		    }
-		}
-		
+    server {
+        listen 80;
+
+        # /apiv1/* 요청은 Spring으로 전달
+        location /apiv1/ {
+            proxy_pass http://localhost:8080;  # Spring 서버가 동작하는 포트
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        # /apiv1/reco/* 요청은 Django로 전달
+        location /apiv1/reco/ {
+            proxy_pass http://localhost:8000;  # Django 서버가 동작하는 포트
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        # 나머지 모든 요청은 React로 전달
+        location / {
+            proxy_pass http://localhost:3000;  # React 애플리케이션이 동작하는 포트
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+    }
