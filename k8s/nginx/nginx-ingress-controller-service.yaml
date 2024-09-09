@@ -3,13 +3,16 @@ kind: Service
 metadata:
   name: nginx-ingress-controller
   namespace: ingress-nginx
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-type: nlb
+    service.beta.kubernetes.io/aws-load-balancer-proxy-protocol: "*"
 spec:
-  type: LoadBalancer  # 외부 트래픽을 수신하기 위해 LoadBalancer 타입을 사용합니다
+  type: LoadBalancer
   ports:
-    - name: http      # 포트 이름 추가
+    - name: http
       port: 80
       targetPort: 80
-    - name: https     # 포트 이름 추가
+    - name: https
       port: 443
       targetPort: 443
   selector:
