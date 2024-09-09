@@ -25,6 +25,6 @@ public class UserNewsLike {
     private News news;
 
     @CreatedDate
-    private LocalDateTime readtime;
+    private LocalDateTime createdAt;
 
 }

@@ -3,8 +3,6 @@ package com.gihojise.newscrab.domain;
 import jakarta.persistence.*;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
-
 @Entity
 @Table(name = "scrap")
 @Getter
