@@ -4,7 +4,7 @@ metadata:
   name: nginx-ingress
 spec:
   rules:
-  - host: your-domain.com
+  - host: newscrab.duckdns.org
     http:
       paths:
       - path: /
