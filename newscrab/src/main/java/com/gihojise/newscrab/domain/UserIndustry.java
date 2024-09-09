@@ -21,7 +21,7 @@ public class UserIndustry {
     @JoinColumn(name = "industry_id", nullable = false) // FK로 industry_id를 참조
     private Industry industry; // 산업 (Foreign Key)
 
-    @Column(name = "pre_rank")
+    @Column(name = "pre_rank", nullable = false)
     private Integer preRank; // 선호순위
 
 }
