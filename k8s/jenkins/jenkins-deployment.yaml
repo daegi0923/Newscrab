@@ -38,4 +38,4 @@ spec:
     - protocol: TCP
       port: 8080
       targetPort: 8080
-  type: LoadBalancer  # 외부 접근을 위해 LoadBalancer 타입 사용
+  type: NodePort  # 외부 접근을 위해 LoadBalancer 타입 사용
