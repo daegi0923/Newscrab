@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -47,5 +49,20 @@ public class News extends BaseTimeEntity {
     // Voca와의 양방향 관계 추가
     @OneToMany(mappedBy = "news", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Voca> vocas;
+
+    // 관련 뉴스1
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "related_news_id1")
+    private News relatedNews1;
+
+    // 관련 뉴스2
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "related_news_id2")
+    private News relatedNews2;
+
+    // 관련 뉴스3
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "related_news_id3")
+    private News relatedNews3;
 
 }
