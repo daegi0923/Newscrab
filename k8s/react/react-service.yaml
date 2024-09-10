@@ -9,4 +9,5 @@ spec:
     - protocol: TCP
       port: 5173  # React 애플리케이션이 동작할 포트
       targetPort: 5173
-  type: ClusterIP
+      nodePort: 30010
+  type: NodePort

@@ -38,4 +38,5 @@ spec:
     - protocol: TCP
       port: 7777
       targetPort: 7777
+      nodePort: 30000
   type: NodePort  # 외부 접근을 위해 LoadBalancer 타입 사용
