@@ -18,7 +18,7 @@ spec:
       - name: jenkins
         image: jenkins/jenkins:lts
         ports:
-        - containerPort: 8080   # Jenkins 기본 포트
+        - containerPort: 7777   # Jenkins 기본 포트
         volumeMounts:
         - name: jenkins-data
           mountPath: /var/jenkins_home
