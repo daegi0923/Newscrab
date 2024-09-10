@@ -1,7 +1,9 @@
 package com.gihojise.newscrab.domain;
 
+import com.gihojise.newscrab.enums.HighlightColor;
 import jakarta.persistence.*;
 import lombok.Getter;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Table(name = "highlight")
@@ -25,6 +27,7 @@ public class Highlight {
 
     @Column(name = "color", nullable = false)
     @Enumerated(EnumType.STRING)
+    @ColumnDefault("'Y'")
     private HighlightColor color;
 
 }
