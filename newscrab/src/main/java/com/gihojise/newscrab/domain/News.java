@@ -58,17 +58,17 @@ public class News extends BaseTimeEntity {
 
     // 관련 뉴스1
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "related_news_id1")
+    @JoinColumn(name = "related_news_id_1")
     private News relatedNews1;
 
     // 관련 뉴스2
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "related_news_id2")
+    @JoinColumn(name = "related_news_id_2")
     private News relatedNews2;
 
     // 관련 뉴스3
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "related_news_id3")
+    @JoinColumn(name = "related_news_id_3")
     private News relatedNews3;
 
 }
