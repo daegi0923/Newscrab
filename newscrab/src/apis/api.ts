@@ -1,4 +1,4 @@
-아래는 ts로 통신하는 예시임!
+// 아래는 ts로 통신하는 예시임!
 // // api.ts
 // import axios from 'axios';
 
