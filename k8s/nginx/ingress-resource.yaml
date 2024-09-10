@@ -1,47 +1,45 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: multi-service-ingress
-  namespace: default  # 네임스페이스 (필요에 따라 변경)
+  name: newscrab-ingress
+  namespace: default
   annotations:
-    nginx.ingress.kubernetes.io/rewrite-target: /
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
 spec:
+  tls:
+  - hosts:
+    - newscrab.duckdns.org
+    secretName: newscrab-tls
   rules:
-  - host: newscrab.duckdns.org  # 호스트 이름
+  - host: newscrab.duckdns.org
     http:
       paths:
-      # /jenkins/ 경로는 Jenkins로 전달
       - path: /jenkins/
         pathType: Prefix
         backend:
           service:
-            name: jenkins  # Jenkins 서비스 이름
+            name: jenkins-service
             port:
-              number: 8080  # Jenkins가 사용하는 포트
-
-      # /api/v1/ 경로는 Spring으로 전달
+              number: 8080
       - path: /api/v1/
         pathType: Prefix
         backend:
           service:
-            name: spring  # Spring 서비스 이름
+            name: spring-service
             port:
-              number: 8080  # Spring이 사용하는 포트
-
-      # /api/v1/reco/ 경로는 FastAPI로 전달
+              number: 8080
       - path: /api/v1/reco/
         pathType: Prefix
         backend:
           service:
-            name: fastapi  # FastAPI 서비스 이름
+            name: fastapi-service
             port:
-              number: 8000  # FastAPI가 사용하는 포트
-
-      # 그 외 모든 경로는 React로 전달
+              number: 8000
       - path: /
         pathType: Prefix
         backend:
           service:
-            name: react  # React 서비스 이름
+            name: react-service
             port:
-              number: 3000  # React가 사용하는 포트
+              number: 3000
