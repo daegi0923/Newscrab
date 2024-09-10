@@ -2,6 +2,7 @@ package com.gihojise.newscrab.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -38,7 +39,12 @@ public class News extends BaseTimeEntity {
     private LocalDateTime newsPublishedAt;
 
     @Column(name = "view", nullable = false)
-    private Integer view = 0;
+    @ColumnDefault("0")
+    private Integer view;
+
+    @Column(name = "scrapCnt", nullable = false)
+    @ColumnDefault("0")
+    private Integer scrapCnt;
 
     @OneToMany(mappedBy = "news", cascade = CascadeType.ALL)
     private Set<NewsPhoto> newsPhotos;
