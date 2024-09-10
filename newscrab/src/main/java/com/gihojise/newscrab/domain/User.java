@@ -37,8 +37,8 @@ public class User extends BaseTimeEntity {
     @Column(nullable = false)
     private Gender gender; // 성별 (ENUM)
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "profile_img", nullable = false)
+    @Enumerated(EnumType.STRING)
     @ColumnDefault("'A'")
     private ProfileImage profileImg;  // 기본값 설정
 
