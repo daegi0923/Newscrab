@@ -1,0 +1,13 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: newscrab-tls
+  namespace: default  # 필요한 네임스페이스로 변경
+spec:
+  secretName: newscrab-tls  # 인증서가 저장될 Secret의 이름
+  issuerRef:
+    name: letsencrypt-prod  # ClusterIssuer 이름
+    kind: ClusterIssuer
+  commonName: newscrab.duckdns.org  # 도메인 이름
+  dnsNames:
+    - newscrab.duckdns.org  # 도메인 이름
