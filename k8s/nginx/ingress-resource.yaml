@@ -5,6 +5,7 @@ metadata:
   namespace: default
   annotations:
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    cert-manager.io/acme-challenge-type: http01
     nginx.ingress.kubernetes.io/ssl-redirect: "true"
 spec:
   tls:
