@@ -9,7 +9,7 @@ import java.util.Set;
 @Entity
 @Table(name = "news")
 @Getter
-public class News extends BaseTimeEntity{
+public class News extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,4 +43,9 @@ public class News extends BaseTimeEntity{
 
     @OneToMany(mappedBy = "news", cascade = CascadeType.ALL)
     private Set<NewsKeyword> newsKeywords;
+
+    // Voca와의 양방향 관계 추가
+    @OneToMany(mappedBy = "news", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Voca> vocas;
+
 }

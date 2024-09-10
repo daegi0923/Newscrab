@@ -6,7 +6,7 @@ import lombok.Getter;
 @Entity
 @Table(name = "voca")
 @Getter
-public class Voca extends BaseTimeEntity{
+public class Voca extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,4 +30,18 @@ public class Voca extends BaseTimeEntity{
     @Column(name = "sentence", columnDefinition = "TEXT")
     private String sentence;
 
+    // 연관 뉴스 1
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "related_news_id_1", nullable = false)
+    private News relatedNews1;
+
+    // 연관 뉴스 2
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "related_news_id_2", nullable = false)
+    private News relatedNews2;
+
+    // 연관 뉴스 3
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "related_news_id_3", nullable = false)
+    private News relatedNews3;
 }
