@@ -1,19 +1,16 @@
 package com.gihojise.newscrab.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum ProfileImage {
-    IMAGE_1("image1.png"),
-    IMAGE_2("image2.png"),
-    IMAGE_3("image3.png"),
-    IMAGE_4("image4.png"),
-    IMAGE_5("image5.png");
+    A("A"),
+    B("B"),
+    C("C");
 
-    private final String imageName;
+    private final String value;
 
-    ProfileImage(String imageName) {
-        this.imageName = imageName;
-    }
-
-    public String getImageName() {
-        return imageName;
+    ProfileImage(String value) {
+        this.value = value;
     }
 }

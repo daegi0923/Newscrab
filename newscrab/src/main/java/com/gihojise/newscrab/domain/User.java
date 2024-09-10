@@ -1,7 +1,9 @@
 package com.gihojise.newscrab.domain;
 
+import com.gihojise.newscrab.enums.ProfileImage;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -34,6 +36,11 @@ public class User extends BaseTimeEntity {
     @Enumerated(EnumType.STRING) // Enum을 VARCHAR로 저장
     @Column(nullable = false)
     private Gender gender; // 성별 (ENUM)
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "profile_img", nullable = false)
+    @ColumnDefault("'A'")
+    private ProfileImage profileImg;  // 기본값 설정
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Set<Grass> grasses;
