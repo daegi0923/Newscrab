@@ -1,7 +1,9 @@
+import AppRouter from "./router/AppRouter.tsx";
+
 function App() {
   return (
     <>
-      <h1>newscrab</h1>
+      <AppRouter />
     </>
   );
 }
