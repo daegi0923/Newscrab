@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import styled, { createGlobalStyle } from 'styled-components';
 import NewsImage from '../../assets/auth/newsImage.png';
 import BackgroundImage from '../../assets/auth/bg.png';
@@ -72,6 +73,12 @@ const DuplicateButton = styled.button`
 `;
 
 const SignUpPage1: React.FC = () => {
+  const navigate = useNavigate();
+
+  const handleNext = () => {
+    navigate("/signup2");
+  };
+
   return (
     <>
       <GlobalStyle />
@@ -100,7 +107,7 @@ const SignUpPage1: React.FC = () => {
           />
           
           <ButtonWrapper>
-            <Button>다음</Button>
+          <Button onClick={handleNext}>다음</Button>
           </ButtonWrapper>
         </FormContainer>
         <SignUpImage src={NewsImage} alt="SignUpImage" />
