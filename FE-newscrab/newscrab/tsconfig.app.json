@@ -21,11 +21,17 @@
     "noFallthroughCasesInSwitch": true,
 
     /* Absolute imports */
-    "baseUrl": "src",  // src 폴더를 기준으로 절대 경로 설정
+    "baseUrl": "src", // src 폴더를 기준으로 절대 경로 설정
     "paths": {
-      "@components/*": ["components/*"],
+      "@apis/*": ["apis/*"],
       "@assets/*": ["assets/*"],
-      "@common/*": ["components/common/*"]  // @common 별칭으로 common 폴더 참조
+      "@components/*": ["components/*"],
+      "@common/*": ["components/common/*"], // @common 별칭으로 common 폴더 참조
+      "@pages/*": ["pages/*"],
+      "@router/*": ["router/*"],
+      "@store/*": ["store/*"],
+      "@types/*": ["types/*"],
+      "@utils/*": ["utils/*"]
     }
   },
   "include": ["src"]
