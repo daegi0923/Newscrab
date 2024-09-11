@@ -1,5 +1,6 @@
 package com.gihojise.newscrab.domain;
 
+import com.gihojise.newscrab.enums.Gender;
 import com.gihojise.newscrab.enums.ProfileImage;
 import jakarta.persistence.*;
 import lombok.*;
