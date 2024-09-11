@@ -19,7 +19,7 @@ spec:
             - containerPort: 8080
           volumeMounts:
             - name: env-volume
-              mountPath: /path/to/.env  # 컨테이너 내에서 마운트할 경로
+              mountPath: /app/.env  # 컨테이너 내에서 마운트할 경로
               subPath: .env
           envFrom:
             - configMapRef:
