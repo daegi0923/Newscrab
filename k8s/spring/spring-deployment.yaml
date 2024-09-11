@@ -17,3 +17,6 @@ spec:
           image: daegi0923/newscrab-back:latest  # Spring 애플리케이션의 Docker 이미지
           ports:
             - containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: spring-env-config  # ConfigMap을 envFrom으로 설정
