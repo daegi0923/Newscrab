@@ -18,7 +18,7 @@ spec:
       - name: jenkins
         image: jenkins/jenkins:lts
         ports:
-        - containerPort: 7777   # Jenkins 기본 포트
+        - containerPort: 8080   # Jenkins 기본 포트
         volumeMounts:
         - name: jenkins-data
           mountPath: /var/jenkins_home
@@ -36,6 +36,7 @@ spec:
     app: jenkins
   ports:
     - protocol: TCP
-      port: 7777
-      targetPort: 7777
+      port: 8080
+      targetPort: 8080
+      nodePort: 30000
   type: NodePort  # 외부 접근을 위해 LoadBalancer 타입 사용
