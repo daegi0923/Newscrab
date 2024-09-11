@@ -7,6 +7,6 @@ spec:
     app: react
   ports:
     - protocol: TCP
-      port: 3000  # React 애플리케이션이 동작할 포트
-      targetPort: 3000
+      port: 4173  # React 애플리케이션이 동작할 포트
+      targetPort: 4173
   type: NodePort

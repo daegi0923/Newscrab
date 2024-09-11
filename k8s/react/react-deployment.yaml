@@ -16,5 +16,5 @@ spec:
         - name: react
           image: daegi0923/newscrab-front:latest  # React 애플리케이션의 Docker 이미지
           ports:
-            - containerPort: 3000
+            - containerPort: 4173
           command: ["npm", "run", "preview"]
