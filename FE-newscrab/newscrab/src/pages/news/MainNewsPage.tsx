@@ -1,8 +1,10 @@
+import GlobalStyle from "@components/GlobalStyle";
 import { Link } from "react-router-dom";
 
 const MainNewsPage: React.FC = () => {
   return (
     <div>
+      <GlobalStyle />
       <h1>뉴스 메인페이지!!</h1>
       <ul>
         <li>
