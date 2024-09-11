@@ -3,6 +3,8 @@ package com.gihojise.newscrab.dto.response;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Builder
 public class VocaResponseDto {
@@ -11,8 +13,8 @@ public class VocaResponseDto {
     private String vocaDesc;
     private int originNewsId;
     private String sentence;
-    private String createdAt;
-    private String updatedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
     private int relatedNewsId1;
     private int relatedNewsId2;
     private int relatedNewsId3;
