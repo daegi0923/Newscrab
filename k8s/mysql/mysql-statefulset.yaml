@@ -18,7 +18,7 @@ spec:
           image: mysql:5.7
           env:
             - name: MYSQL_ROOT_PASSWORD
-              value: "yourpassword"  # MySQL root 비밀번호 설정
+              value: "1234"  # MySQL root 비밀번호 설정
           ports:
             - containerPort: 3306
           volumeMounts:
