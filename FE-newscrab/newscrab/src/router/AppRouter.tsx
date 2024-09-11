@@ -7,9 +7,9 @@ import LoginPage from "../pages/auth/LoginPage";
 import MainNewsPage from "../pages/news/MainNewsPage";
 import RcmdNewsPage from "../pages/news/RcmdNewsPage";
 import AllNewsPage from "../pages/news/AllNewsPage";
-// 조회순 뉴스는 AllNewsPage에서 참고
-// 스크랩순 뉴스는 AllNewsPage에서 참고
 import FilterNewsPage from "../pages/news/FilterNewsPage";
+import ViewCountNewsPage from "../pages/news/ViewCountNewsPage";
+import ScrapCountNewsPage from "../pages/news/ScrapCountNewsPage";
 
 const AppRouter: React.FC = () => {
   return (
@@ -23,6 +23,8 @@ const AppRouter: React.FC = () => {
         <Route path="/rcmdNews" element={<RcmdNewsPage />} />
         <Route path="/allNews" element={<AllNewsPage />} />
         <Route path="/filterNews" element={<FilterNewsPage />} />
+        <Route path="/viewCountNews" element={<ViewCountNewsPage />} />
+        <Route path="/scrapCountNews" element={<ScrapCountNewsPage />} />
       </Routes>
     </Router>
   );

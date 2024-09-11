@@ -1,5 +1,6 @@
 import React from "react";
-import Tab, { tabOptions } from "../../components/news/Tab";
+import Tab from "../../components/common/Tab";
+import { tabOptions } from "../../components/common/TabOptions";
 
 const AllNewsPage: React.FC = () => {
   return (
