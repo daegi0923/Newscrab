@@ -1,5 +1,6 @@
 import GlobalStyle from "@components/GlobalStyle";
 import NewsCommon from "@pages/news/common/NewsCommon";
+// 뉴스 10개만 보여줌, pagenation없음
 
 const RcmdNewsPage: React.FC = () => {
   return (

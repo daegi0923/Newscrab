@@ -1,3 +1,6 @@
+// NewsCommon 컴포넌트를 All, Filter, Rcmd, Scrap, View 페이지에 뿌릴거임
+// Nav, Header, Tab, Pagenation은 @components/common에서 가져옴
+
 // common
 import Header from "@components/common/Header";
 import Tab from "@components/common/Tab";
