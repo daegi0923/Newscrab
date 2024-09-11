@@ -23,7 +23,7 @@ public class NewsDetailResponseDto {
     private int view;
     private int scrap;
     private List<String> newsPhoto;
-    private News relatedNews1;
-    private News relatedNews2;
-    private News relatedNews3;
+    private NewsResponseDto relatedNews1;
+    private NewsResponseDto relatedNews2;
+    private NewsResponseDto relatedNews3;
 }
