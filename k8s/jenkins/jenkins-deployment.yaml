@@ -24,11 +24,8 @@ spec:
           mountPath: /var/jenkins_home
         - name: ubuntu-home              # 호스트의 /home/ubuntu 디렉토리 마운트
           mountPath: /home/ubuntu
-      - name: dind
-        image: docker:19.03.12-dind   # Docker in Docker(DinD) 컨테이너
-        securityContext:
-          privileged: true
-
+        - name: docker-socket            # Docker 소켓을 마운트하여 Jenkins에서 Docker 사용 가능하게 설정
+          mountPath: /var/run/docker.sock
       volumes:
       - name: jenkins-data
         persistentVolumeClaim:
@@ -37,7 +34,10 @@ spec:
         hostPath:
           path: /home/ubuntu              # 호스트 디렉토리 경로
           type: Directory
-
+      - name: docker-socket
+        hostPath:
+          path: /var/run/docker.sock      # 호스트의 Docker 소켓 경로
+          type: Socket
 
 ---
 apiVersion: v1
@@ -52,4 +52,4 @@ spec:
       port: 30000
       targetPort: 8080
       nodePort: 30000
-  type: NodePort  # 외부 접근을 위해 LoadBalancer 타입 사용
+  type: NodePort  # 외부 접근을 위해 NodePort 사용
