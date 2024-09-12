@@ -10,6 +10,12 @@ const LandingPage: React.FC = () => {
             <Link to="/login">Login 페이지</Link>
           </li>
           <li>
+            <Link to="/signup1">회원가입 페이지</Link>
+          </li>
+          <li>
+            <Link to="/mainVoca">단어장 페이지</Link>
+          </li>
+          <li>
             <Link to="/mainNews">MainNews 페이지</Link>
           </li>
           {/* 다른 링크들은 필요에 따라 추가할 수 있습니다 */}
