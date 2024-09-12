@@ -1,0 +1,69 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_IMAGE = 'daegi0923/newscrab-fe:latest'  // Docker 이미지 이름
+        LOCAL_REPO_PATH = '/home/ubuntu/S11P22E207/FE-newscrab/newscrab'  // 로컬 레포지토리 경로
+        GIT_CREDENTIALS = '01dd4892-9308-432e-8982-7c45e3a9b4c6'  // GitLab 크리덴셜 ID (Jenkins에 저장된 GitLab 크리덴셜 ID)
+        DOCKER_HUB_CREDENTIALS = '5693c15f-905e-4e14-b80c-f48c4b0fbb9b'  // Docker Hub 크리덴셜 ID (Jenkins에 저장된 Docker Hub 크리덴셜 ID)
+        GIT_BRANCH = 'fe-develop'  // 체크아웃할 Git 브랜치
+        GIT_REMOTE = 'origin'  // 원격 저장소 이름
+    }
+
+    stages {
+        stage('Checkout fe-develop branch') {
+            steps {
+                script {
+                    echo '********** Checkout fe-develop Branch **********'
+
+                    dir("$LOCAL_REPO_PATH") {
+                        // GitLab 크리덴셜을 사용하여 fe-develop 브랜치로 체크아웃 및 최신 코드 가져오기
+                        checkout([$class: 'GitSCM',
+                                  branches: [[name: GIT_BRANCH]],
+                                  userRemoteConfigs: [[url: 'https://gitlab.com/daegi0923/S11P22E207.git', credentialsId: GIT_CREDENTIALS]]])
+                    }
+                }
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    echo '********** Frontend Build Start **********'
+
+                    dir("$LOCAL_REPO_PATH") {
+                        // Docker 이미지 빌드
+                        sh "docker build -t ${DOCKER_IMAGE} ."
+                    }
+
+                    echo '********** Frontend Build End **********'
+                }
+            }
+        }
+
+        stage('Push Docker Image to Docker Hub') {
+            steps {
+                script {
+                    echo '********** Pushing Docker Image to Docker Hub **********'
+
+                    // Docker Hub 로그인 (크리덴셜 사용)
+                    withCredentials([usernamePassword(credentialsId: DOCKER_HUB_CREDENTIALS, passwordVariable: 'DOCKER_HUB_PASSWORD', usernameVariable: 'DOCKER_HUB_USERNAME')]) {
+                        sh "echo ${DOCKER_HUB_PASSWORD} | docker login -u ${DOCKER_HUB_USERNAME} --password-stdin"
+                    }
+
+                    // Docker 이미지를 Docker Hub로 푸시
+                    sh "docker push ${DOCKER_IMAGE}"
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Pipeline completed successfully!'
+        }
+        failure {
+            echo 'Pipeline failed.'
+        }
+    }
+}
