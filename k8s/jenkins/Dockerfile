@@ -1,6 +1,7 @@
 FROM jenkins/jenkins:lts
 
-USER root  # 루트 사용자로 변경하여 패키지 설치
+USER root  
+# 루트 사용자로 변경하여 패키지 설치
 
 # Docker CLI 설치
 RUN apt-get update && \
