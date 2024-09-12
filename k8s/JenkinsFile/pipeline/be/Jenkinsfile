@@ -2,11 +2,11 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = 'daegi0923/newscrab-front:latest'  // Docker 이미지 이름
-        LOCAL_REPO_PATH = 'FE-newscrab/newscrab'  // 로컬 레포지토리 경로
+        DOCKER_IMAGE = 'daegi0923/newscrab-back:latest'  // Docker 이미지 이름
+        LOCAL_REPO_PATH = 'newscrab'  // 로컬 레포지토리 경로
         GIT_CREDENTIALS = 'gitlab-login'  // GitLab 자격증명 ID (Jenkins에 설정된 크리덴셜 ID)
         DOCKER_HUB_CREDENTIALS = 'docker-hub-login'  // Docker Hub 자격증명 ID (Jenkins에 저장된 Docker Hub 크리덴셜 ID)
-        GIT_BRANCH = 'fe-develop'  // 체크아웃할 Git 브랜치
+        GIT_BRANCH = 'be-develop'  // 체크아웃할 Git 브랜치
         GIT_REMOTE = 'origin'  // 원격 저장소 이름
     }
     
