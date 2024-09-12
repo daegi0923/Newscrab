@@ -28,9 +28,6 @@ spec:
         image: docker:19.03.12-dind   # Docker in Docker(DinD) 컨테이너
         securityContext:
           privileged: true
-        volumeMounts:
-        - name: docker-socket
-          mountPath: /var/run/docker.sock
 
       volumes:
       - name: jenkins-data
