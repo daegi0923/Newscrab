@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: jenkins
-        image: jenkins/jenkins:lts
+        image: jenkins-with-docker
         ports:
         - containerPort: 8080   # Jenkins 기본 포트
         volumeMounts:
