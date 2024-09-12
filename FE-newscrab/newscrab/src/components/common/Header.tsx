@@ -9,6 +9,7 @@ const HeaderContainer = styled.div`
 `;
 
 const HeaderImage = styled.img`
+  margin-top: 1%;
   max-width: 100%;
   height: auto;
 `;
