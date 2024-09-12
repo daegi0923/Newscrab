@@ -22,6 +22,9 @@ spec:
         volumeMounts:
         - name: jenkins-data
           mountPath: /var/jenkins_home
+        - name: ubuntu-home              # 호스트의 /home/ubuntu 디렉토리 마운트
+          mountPath: /home/ubuntu
+
       volumes:
       - name: jenkins-data
         persistentVolumeClaim:
