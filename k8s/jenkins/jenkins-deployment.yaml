@@ -29,6 +29,11 @@ spec:
       - name: jenkins-data
         persistentVolumeClaim:
           claimName: jenkins-pvc
+      - name: ubuntu-home
+        hostPath:
+          path: /home/ubuntu              # 호스트 디렉토리 경로
+          type: Directory
+
 ---
 apiVersion: v1
 kind: Service
