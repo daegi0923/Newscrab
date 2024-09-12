@@ -5,19 +5,19 @@ metadata:
 data:
   .env: |
     # MySQL 설정
-    MYSQL_HOST: "mysql-service"
-    MYSQL_PORT: "3306"
-    MYSQL_DATABASE: "newscrab"
-    MYSQL_ROOT_USER: "root"
-    MYSQL_ROOT_PASSWORD: "1234"
+    MYSQL_HOST: mysql-service
+    MYSQL_PORT: 3306
+    MYSQL_DATABASE: newscrab
+    MYSQL_ROOT_USER: root
+    MYSQL_ROOT_PASSWORD: 1234
 
     # JPA 설정
-    SPRING_JPA_HIBERNATE_DDL_AUTO: "create"
+    SPRING_JPA_HIBERNATE_DDL_AUTO: create
 
     # Redis 설정
-    REDIS_HOST: "redis-service"
-    REDIS_PORT: "6379"
-    REDIS_PASSWORD: "newscrab207"
+    REDIS_HOST: redis-service
+    REDIS_PORT: 6379
+    REDIS_PASSWORD: newscrab207
 
     # 서버 설정
-    SERVER_PORT: "8080"
+    SERVER_PORT: 8080
