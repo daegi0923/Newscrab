@@ -24,6 +24,13 @@ spec:
           mountPath: /var/jenkins_home
         - name: ubuntu-home              # 호스트의 /home/ubuntu 디렉토리 마운트
           mountPath: /home/ubuntu
+      - name: dind
+        image: docker:19.03.12-dind   # Docker in Docker(DinD) 컨테이너
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: docker-socket
+          mountPath: /var/run/docker.sock
 
       volumes:
       - name: jenkins-data
@@ -33,6 +40,10 @@ spec:
         hostPath:
           path: /home/ubuntu              # 호스트 디렉토리 경로
           type: Directory
+      - name: docker-socket
+        hostPath:
+          path: /var/run/docker.sock
+
 
 ---
 apiVersion: v1
