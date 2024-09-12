@@ -1,7 +1,6 @@
 package com.gihojise.newscrab.controller;
 
 import com.gihojise.newscrab.dto.common.ApiResponse;
-import com.gihojise.newscrab.dto.request.NewsLikeRequestDto;
 import com.gihojise.newscrab.dto.response.NewsDetailResponseDto;
 import com.gihojise.newscrab.dto.response.NewsPageResponseDto;
 import com.gihojise.newscrab.service.NewsService;
@@ -20,56 +19,42 @@ public class NewsController {
     // 1. 전체 뉴스 조회 (페이지네이션 포함)
     @GetMapping
     public ResponseEntity<ApiResponse<NewsPageResponseDto>> getAllNews(
-            @RequestParam int page,
-            @RequestParam int size) {
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size) {
         NewsPageResponseDto response = newsService.getAllNews(page, size);
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "전체 뉴스 조회 성공", response));
+        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "전체 뉴스 조회 성공", response));
     }
 
     // 2. 필터링된 뉴스 조회
     @GetMapping("/filter")
     public ResponseEntity<ApiResponse<NewsPageResponseDto>> getFilteredNews(
             @RequestParam int industryId,
-            @RequestParam int page,
-            @RequestParam int size,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
             @RequestParam String startDate,
             @RequestParam String endDate) {
         NewsPageResponseDto response = newsService.getFilteredNews(industryId, page, size, startDate, endDate);
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "필터링된 뉴스 조회 성공", response));
+        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "필터링된 뉴스 조회 성공", response));
     }
 
     // 3. 뉴스 상세 조회
     @GetMapping("/{newsId}")
     public ResponseEntity<ApiResponse<NewsDetailResponseDto>> getNewsDetail(@PathVariable int newsId) {
         NewsDetailResponseDto response = newsService.getNewsDetail(newsId);
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "뉴스 상세 조회 성공", response));
-    }
-
-    // 4. 인기 뉴스 조회
-    @GetMapping("/hot")
-    public ResponseEntity<ApiResponse<NewsPageResponseDto>> getHotNews(@RequestParam int page) {
-        NewsPageResponseDto response = newsService.getHotNews(page);
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "인기 뉴스 조회 성공", response));
-    }
-
-    // 5. 인기 스크랩 뉴스 조회
-    @GetMapping("/hot_scrap")
-    public ResponseEntity<ApiResponse<NewsPageResponseDto>> getHotScrapNews(@RequestParam int page) {
-        NewsPageResponseDto response = newsService.getHotScrapNews(page);
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "인기 스크랩 뉴스 조회 성공", response));
+        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "뉴스 상세 조회 성공", response));
     }
 
     // 6. 뉴스 좋아요 (찜) 기능
     @PostMapping("/like/{newsId}")
     public ResponseEntity<ApiResponse<Void>> likeNews(@PathVariable int newsId) {
         newsService.likeNews(newsId);
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), "뉴스 좋아요 성공", null));
+        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "뉴스 좋아요 성공", null));
     }
 
     // 7. 뉴스 찜 목록 삭제
     @DeleteMapping("/like/{newsId}")
-    public ResponseEntity<ApiResponse<Void>> unlikeNews(@PathVariable int newsId, @RequestBody NewsLikeRequestDto requestDto) {
-        newsService.unlikeNews(newsId, requestDto);
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.NO_CONTENT.value(), "뉴스 찜 목록 삭제 성공", null));
+    public ResponseEntity<ApiResponse<Void>> unlikeNews(@PathVariable int newsId) {
+        newsService.unlikeNews(newsId);
+        return ResponseEntity.ok(ApiResponse.of(HttpStatus.NO_CONTENT.value(), HttpStatus.NO_CONTENT.getReasonPhrase(), "뉴스 찜 목록 삭제 성공", null));
     }
 }

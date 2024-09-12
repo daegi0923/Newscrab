@@ -1,10 +1,11 @@
 package com.gihojise.newscrab.service;
 
 import com.gihojise.newscrab.domain.News;
-import com.gihojise.newscrab.dto.request.NewsLikeRequestDto;
 import com.gihojise.newscrab.dto.response.NewsDetailResponseDto;
 import com.gihojise.newscrab.dto.response.NewsPageResponseDto;
 import com.gihojise.newscrab.dto.response.NewsResponseDto;
+import com.gihojise.newscrab.exception.ErrorCode;
+import com.gihojise.newscrab.exception.NewscrabException;
 import com.gihojise.newscrab.repository.NewsRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -67,6 +68,10 @@ public class NewsService {
     @Transactional(readOnly = true)
     public NewsDetailResponseDto getNewsDetail(int newsId) {
         News news = newsRepository.findByNewsId(newsId);
+        if (news == null) {
+            // Use ErrorCode to throw the custom exception with a standardized message
+            throw new NewscrabException(ErrorCode.MEMBER_NOT_FOUND);
+        }
         return NewsDetailResponseDto.builder()
                 .newsId(news.getNewsId())
                 .newsTitle(news.getNewsTitle())
@@ -104,7 +109,7 @@ public class NewsService {
 
     // 7. 뉴스 찜 목록 삭제
     @Transactional
-    public void unlikeNews(int newsId, NewsLikeRequestDto requestDto) {
+    public void unlikeNews(int newsId) {
         // 뉴스 좋아요 취소 처리 로직 추가
     }
 }
