@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 @Builder
 public class VocaResponseDto {
     private int vocaId;
+    private int industryId;
     private String vocaName;
     private String vocaDesc;
     private int originNewsId;
