@@ -80,6 +80,13 @@ pipeline {
                 }
             }
         }
+        stage('Deploy to Kubernetes') {
+            steps {
+                // Kubernetes에 롤링 업데이트 적용
+                sh 'kubectl rollout restart deployment/my-app'
+            }
+        }
+
     }
 
     post {
