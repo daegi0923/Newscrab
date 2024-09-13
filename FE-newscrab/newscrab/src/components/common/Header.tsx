@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import headerImage from "@assets/header.png";
+import headerImage from "@assets/headerImage.png";
 
 const HeaderContainer = styled.div`
   display: flex;
