@@ -27,7 +27,7 @@ public class JoinService {
 
         joinDTO.setPassword(bCryptPasswordEncoder.encode(joinDTO.getPassword()));
 
-        User user =dtoToEntity(joinDTO);
-        userRepository.save(joinDTO);
+//        User user =dtoToEntity(joinDTO);
+//        userRepository.save(joinDTO);
     }
 }
