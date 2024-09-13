@@ -83,7 +83,11 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 // Kubernetes에 롤링 업데이트 적용
-                sh 'kubectl rollout restart deployment/my-app'
+                withCredentials([file(credentialsId: 'kube-config', variable: 'KUBECONFIG')]) {
+                sh 'kubectl get pods'
+                sh 'kubectl rollout restart deployment/spring-deployment'
+              }
+
             }
         }
 

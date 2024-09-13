@@ -81,6 +81,16 @@ pipeline {
             }
         }
     }
+        stage('Deploy to Kubernetes') {
+            steps {
+                // Kubernetes에 롤링 업데이트 적용
+                withCredentials([file(credentialsId: 'kube-config', variable: 'KUBECONFIG')]) {
+                sh 'kubectl get pods'
+                sh 'kubectl rollout restart deployment/spring-deployment'
+              }
+
+            }
+        }
 
     post {
         success {
