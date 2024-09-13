@@ -69,11 +69,13 @@ const Pagination: React.FC = () => {
 
   return (
     <PaginationContainer>
-      <ArrowButton direction="left" disabled={currentPage === 1}>
+      {/* <ArrowButton direction="left" disabled={currentPage === 1}> */}
+      <ArrowButton direction="left">
         <Arrow direction="left" />
       </ArrowButton>
       {renderPageNumbers()}
-      <ArrowButton direction="right" disabled={currentPage === totalPages}>
+      {/* <ArrowButton direction="right" disabled={currentPage === totalPages}> */}
+      <ArrowButton direction="right">
         <Arrow direction="right" />
       </ArrowButton>
     </PaginationContainer>
