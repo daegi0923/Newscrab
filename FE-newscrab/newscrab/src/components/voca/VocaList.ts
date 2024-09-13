@@ -16,7 +16,7 @@ import imgChemicals from "@assets/voca/화학.png";
 import imgEtc from "@assets/voca/기타.png";
 
 export const words = [
-  { industryId: 0, industryName: "기타", img: imgEtc },
+  { industryId: 16, industryName: "기타", img: imgEtc },
   { industryId: 1, industryName: "가전", img: imgAppliances },
   { industryId: 2, industryName: "금융", img: imgFinance },
   { industryId: 3, industryName: "기계로봇", img: imgRobotics },

@@ -1,29 +1,16 @@
 import React from "react";
-// import { Link } from "react-router-dom";
 import { TabOption } from "./TabOptions";
 import styled from "styled-components";
 
 interface TabProps {
   options: TabOption[];
-  onFilterChange: (id: string) => void; // 필터 변경을 처리하는 함수 추가
+  onFilterChange: (id: string) => void;
+  activeFilter: string;
 }
 
-const TabContainer = styled.div`
-  // display: flex;
-  // justify-content: center;
-  // align-items: center;
-`;
+const TabContainer = styled.div``;
 
-// // 탭 요소
-// const TabLink = styled(Link)`
-//   padding: 8px 0px;
-//   text-decoration: none;
-//   color: black;
-//   font-weight: bold;
-// `;
-
-// 탭 요소
-const TabButton = styled.button`
+const TabButton = styled.button<{ active: boolean }>`
   padding: 8px 8px;
   cursor: pointer;
   text-decoration: none;
@@ -31,20 +18,24 @@ const TabButton = styled.button`
   font-weight: bold;
   background: none;
   border: none;
-`;
+  border-bottom: ${(props) => (props.active ? "2px solid black" : "none")}; // 활성화된 필터에 스타일 추가
+  position: relative;
+  `;
 
-// 구분선
 const Separator = styled.span`
-  margin : 0 5px;
+  margin: 0 5px;
   color: #ccc;
 `;
 
-const Tab: React.FC<TabProps> = ({ options, onFilterChange }) => {
+const Tab: React.FC<TabProps> = ({ options, onFilterChange, activeFilter }) => {
   return (
     <TabContainer>
       {options.map((option, index) => (
         <React.Fragment key={option.id}>
-          <TabButton onClick={() => onFilterChange(option.id)}>
+          <TabButton
+            active={activeFilter === option.id}
+            onClick={() => onFilterChange(option.id)}
+          >
             {option.label}
           </TabButton>
           {index < options.length - 1 && <Separator>|</Separator>}
