@@ -80,7 +80,6 @@ pipeline {
                 }
             }
         }
-    }
         stage('Deploy to Kubernetes') {
             steps {
                 // Kubernetes에 롤링 업데이트 적용
@@ -91,6 +90,7 @@ pipeline {
 
             }
         }
+    }
 
     post {
         success {
