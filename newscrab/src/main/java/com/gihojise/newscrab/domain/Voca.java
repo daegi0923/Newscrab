@@ -21,6 +21,9 @@ public class Voca extends BaseTimeEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @Column(name = "industry_id")
+    private Integer industryId;
+
     @Column(name = "voca_name", length = 255)
     private String vocaName;
 
