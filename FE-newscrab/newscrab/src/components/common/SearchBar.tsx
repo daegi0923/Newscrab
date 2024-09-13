@@ -1,15 +1,23 @@
 import { useState } from 'react';
 import styled from 'styled-components';
 
+const Container = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`
+
 const SearchBarContainer = styled.div`
   display: flex;
   align-items: center;
+  justify-content: center;
   width: 400px;
   padding: 10px;
   background-color: #ffffff;
   border-radius: 20px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   position: relative;
+  margin-top: 2%;
 `;
 
 const SearchInput = styled.input`
@@ -51,6 +59,7 @@ const SearchBar: React.FC = () => {
   };
 
   return (
+    <Container>
     <SearchBarContainer>
       <SearchIcon>🔍</SearchIcon>
       <SearchInput
@@ -63,7 +72,9 @@ const SearchBar: React.FC = () => {
         ✕
       </ClearButton>
     </SearchBarContainer>
+    </Container>
   );
 };
+
 
 export default SearchBar;

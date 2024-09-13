@@ -1,4 +1,3 @@
-// 이미지 import
 import imgAppliances from "@assets/voca/가전.png";
 import imgFinance from "@assets/voca/금융.png";
 import imgRobotics from "@assets/voca/기계로봇.png";
@@ -14,8 +13,10 @@ import imgSteel from "@assets/voca/철강.png";
 import imgComputer from "@assets/voca/컴퓨터.png";
 import imgTelecom from "@assets/voca/통신장비.png";
 import imgChemicals from "@assets/voca/화학.png";
+import imgEtc from "@assets/voca/기타.png";
 
 export const words = [
+  { industryId: 0, industryName: "기타", img: imgEtc },
   { industryId: 1, industryName: "가전", img: imgAppliances },
   { industryId: 2, industryName: "금융", img: imgFinance },
   { industryId: 3, industryName: "기계로봇", img: imgRobotics },

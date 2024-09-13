@@ -1,11 +1,13 @@
 import GlobalStyle from "@components/GlobalStyle";
-import Header from "@components/common/Header";
-import SearchBar from "@components/common/SearchBar";
+import VocaCommon from "@pages/voca/VocaCommon";
+import Tab from "@components/voca/Tab";
+import { tabOptions } from "@components/voca/TabOptions";
 import styled from "styled-components";
 import { words } from "@components/voca/VocaList";
+import AdImage from "@components/common/Advertise";
 // import { useState } from 'react'
 
-// 타입 정의
+
 interface MockWord {
   vocaId: number;
   vocaName: string;
@@ -40,13 +42,16 @@ const SearchContainer = styled.div`
   // 전체 가로 중앙정렬
 `
 const VocaContainer = styled.div`
-  // 필터링이랑 카드 왼쪽에 맞추기
+  width: 70%; /* 카드 컨테이너의 너비 설정 */
+  margin-right: 5%; /* 광고 이미지와의 간격 */
+  margin-top: 3%;
+  // border: 1px solid black;
 `
 const CardContainer = styled.div`
   display: grid;
-  width: 70%;
-  height: 100%;
   grid-template-columns: repeat(5, 1fr);
+  margin-top: 2%;
+  // border: 1px solid black;
 `
 
 const Card = styled.div`
@@ -75,10 +80,10 @@ const Industry = styled.div`
 
 const CardContent = styled.div`
   position: absolute;
-  top: 12%;
+  top: 14%;
   left: 10%;
   z-index: 10;
-  color: #333;
+  color: #555;
   font-size: 14px;
   font-weight: bold;
 `;
@@ -93,7 +98,14 @@ const CardDate = styled.div`
   font-weight: bold;
 `;
 
-// 날짜를 포맷하는 함수
+const AdContainer = styled.div`
+  display: flex;
+  justify-content: center; /* 왼쪽 정렬 */
+  align-items: flex-start; /* 상단에 맞추어 정렬 */
+  // border: 1px solid red;
+  width: 100%; /* 부모 컨테이너 전체 너비 사용 */
+`;
+
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
   return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')}`;
@@ -117,23 +129,27 @@ const VocaPage: React.FC = () => {
   return (
     <div>
       <GlobalStyle />
-      <Header />
+      <VocaCommon />
       <SearchContainer>
-        <SearchBar />
-        <VocaContainer>
+        {/* <SearchBar /> */}
 
-          {/* 필터링 */}
-          <CardContainer>
-            {mappedWords.map((word) => (
-              <Card key={word.vocaId}>
-              {word.img && <CardImage src={word.img} alt={word.vocaName} />}
-              <Industry>{word.industryName}</Industry>
-              <CardContent>{word.vocaName}</CardContent>
-              <CardDate>{formatDate(word.updatedAt)}</CardDate>
-            </Card>
-              ))}
-          </CardContainer>
-        </VocaContainer>
+          
+          <AdContainer>
+            <VocaContainer>
+              <Tab options={tabOptions} />
+              <CardContainer>
+                {mappedWords.map((word) => (
+                  <Card key={word.vocaId}>
+                  {word.img && <CardImage src={word.img} alt={word.vocaName} />}
+                  <Industry>{word.industryName}</Industry>
+                  <CardContent>{word.vocaName}</CardContent>
+                  <CardDate>{formatDate(word.updatedAt)}</CardDate>
+                </Card>
+                  ))}
+              </CardContainer>
+            </VocaContainer>
+            <AdImage />
+          </AdContainer>
       </SearchContainer>
     </div>
   );
