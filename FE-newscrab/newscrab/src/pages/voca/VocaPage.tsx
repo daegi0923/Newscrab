@@ -5,6 +5,7 @@ import { tabOptions } from "@components/voca/TabOptions";
 import styled from "styled-components";
 import { words } from "@components/voca/VocaList";
 import AdImage from "@components/common/Advertise";
+import Card from "@components/voca/VocaCard";
 // import { useState } from 'react'
 
 
@@ -44,7 +45,7 @@ const SearchContainer = styled.div`
 const VocaContainer = styled.div`
   width: 70%; /* 카드 컨테이너의 너비 설정 */
   margin-right: 5%; /* 광고 이미지와의 간격 */
-  margin-top: 3%;
+  margin-top: 2%;
   // border: 1px solid black;
 `
 const CardContainer = styled.div`
@@ -54,50 +55,6 @@ const CardContainer = styled.div`
   // border: 1px solid black;
 `
 
-const Card = styled.div`
-  position: relative;
-  width: 150px;
-  border-radius: 10px;
-  overflow: hidden;
-  margin-bottom: 20%;
-`;
-
-const CardImage = styled.img`
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-`;
-
-const Industry = styled.div`
-  position: absolute;
-  top: 4%;
-  left: 10%;
-  z-index: 10;
-  color: #333;
-  font-size: 16px;
-  font-weight: bold;
-`;
-
-const CardContent = styled.div`
-  position: absolute;
-  top: 14%;
-  left: 10%;
-  z-index: 10;
-  color: #555;
-  font-size: 14px;
-  font-weight: bold;
-`;
-
-const CardDate = styled.div`
-  position: absolute;
-  bottom: 6%;
-  left: 10%;
-  z-index: 10;
-  color: #555;
-  font-size: 12px;
-  font-weight: bold;
-`;
-
 const AdContainer = styled.div`
   display: flex;
   justify-content: center; /* 왼쪽 정렬 */
@@ -105,11 +62,6 @@ const AdContainer = styled.div`
   // border: 1px solid red;
   width: 100%; /* 부모 컨테이너 전체 너비 사용 */
 `;
-
-const formatDate = (dateString: string) => {
-  const date = new Date(dateString);
-  return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')}`;
-};
 
 // 데이터 매핑 함수: mockWords의 industryId와 words 배열의 industryId를 매칭
 const mapWordsWithImages = (mockWords: MockWord[], words: Word[]): (MockWord & { img: string | null, industryName: string | null })[] => {
@@ -138,15 +90,16 @@ const VocaPage: React.FC = () => {
             <VocaContainer>
               <Tab options={tabOptions} />
               <CardContainer>
-                {mappedWords.map((word) => (
-                  <Card key={word.vocaId}>
-                  {word.img && <CardImage src={word.img} alt={word.vocaName} />}
-                  <Industry>{word.industryName}</Industry>
-                  <CardContent>{word.vocaName}</CardContent>
-                  <CardDate>{formatDate(word.updatedAt)}</CardDate>
-                </Card>
-                  ))}
-              </CardContainer>
+              {mappedWords.map((word) => (
+                <Card
+                  key={word.vocaId}
+                  img={word.img}
+                  industryName={word.industryName}
+                  vocaName={word.vocaName}
+                  updatedAt={word.updatedAt}
+                />
+              ))}
+            </CardContainer>
             </VocaContainer>
             <AdImage />
           </AdContainer>
