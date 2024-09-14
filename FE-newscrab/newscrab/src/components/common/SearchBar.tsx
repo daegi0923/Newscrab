@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 
 const Container = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-`
+`;
 
 const SearchBarContainer = styled.div`
   display: flex;
@@ -48,33 +48,35 @@ const ClearButton = styled.span<ClearButtonProps>`
   font-size: 16px;
   color: #888;
   cursor: pointer;
-  display: ${({ isVisible }: { isVisible: boolean }) => (isVisible ? 'block' : 'none')};
+  display: ${({ isVisible }) => (isVisible ? 'block' : 'none')};
 `;
 
-const SearchBar: React.FC = () => {
-  const [searchText, setSearchText] = useState('');
+interface SearchBarProps {
+  searchText: string;
+  onSearchChange: (searchValue: string) => void;
+}
 
+const SearchBar: React.FC<SearchBarProps> = ({ searchText, onSearchChange }) => {
   const handleClear = () => {
-    setSearchText(''); // 입력값을 초기화
+    onSearchChange(''); // Clear the input when the clear button is clicked
   };
 
   return (
     <Container>
-    <SearchBarContainer>
-      <SearchIcon>🔍</SearchIcon>
-      <SearchInput
-        type="text"
-        placeholder="Search..."
-        value={searchText}
-        onChange={(e) => setSearchText(e.target.value)}
-      />
-      <ClearButton isVisible={searchText.length > 0} onClick={handleClear}>
-        ✕
-      </ClearButton>
-    </SearchBarContainer>
+      <SearchBarContainer>
+        <SearchIcon>🔍</SearchIcon>
+        <SearchInput
+          type="text"
+          placeholder="Search..."
+          value={searchText}
+          onChange={(e) => onSearchChange(e.target.value)} // Trigger search on change
+        />
+        <ClearButton isVisible={searchText.length > 0} onClick={handleClear}>
+          ✕
+        </ClearButton>
+      </SearchBarContainer>
     </Container>
   );
 };
-
 
 export default SearchBar;

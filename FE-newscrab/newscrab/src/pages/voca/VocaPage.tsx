@@ -9,6 +9,7 @@ import AdImage from "@components/common/Advertise";
 import Card from "@components/voca/VocaCard";
 import DropDown from "@components/common/DropDown"
 import Pagination from "@components/voca/Pagination"
+import SearchBar from "@components/common/SearchBar";
 
 interface MockWord {
   vocaId: number;
@@ -55,7 +56,9 @@ const mockWords = [
 
 ]; 
 
-const SearchContainer = styled.div``;
+const SearchContainer = styled.div`
+  margin-top: -1%
+`;
 const VocaContainer = styled.div`
   width: 70%;
   margin-right: 5%;
@@ -92,10 +95,11 @@ const VocaPage: React.FC = () => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [selectedIndustryId, setSelectedIndustryId] = useState<number | null>(null);
   const [sortedWords, setSortedWords] = useState<MockWordWithImages[]>(mappedWords);
+  const [searchText, setSearchText] = useState<string>('');
   
   // 페이지네이션
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const itemPerPage = 10; // 한 페이지에 열 개
+  const itemPerPage = 10;
   const totalPages = Math.ceil(sortedWords.length / itemPerPage);
 
   const sortWords = (filterType: string, wordsToSort: MockWordWithImages[]): MockWordWithImages[] => {
@@ -114,11 +118,23 @@ const VocaPage: React.FC = () => {
     return industryId ? mappedWords.filter(word => word.industryId === industryId) : mappedWords;
   };
 
+  const filterSearchResults = () => {
+    if (searchText) {
+      // 검색어가 있으면 모든 데이터 대상
+      return mappedWords.filter((word) =>
+        word.vocaName.toLowerCase().includes(searchText.toLowerCase())
+      );
+    }
+    // 검색어가 없으면 기존 적용
+    return sortedWords;
+  };
+
   // 현재 페이지에 맞는 데이터 추출
   const getCurrentPageData = () => {
+    const searchFilteredWords = filterSearchResults();
     const startIndex = (currentPage - 1) * itemPerPage;
     const endIndex = startIndex + itemPerPage;
-    return sortedWords.slice(startIndex, endIndex);
+    return searchFilteredWords.slice(startIndex, endIndex);
   };
 
   useEffect(() => {
@@ -157,6 +173,7 @@ const VocaPage: React.FC = () => {
       <GlobalStyle />
       <VocaCommon />
       <SearchContainer>
+        <SearchBar searchText={searchText} onSearchChange={setSearchText} />
         <AdContainer>
           <VocaContainer>
             <Tab options={tabOptions} onFilterChange={handleFilterChange} activeFilter={filter} />
