@@ -11,6 +11,7 @@ import AllNewsPage from "../pages/news/AllNewsPage";
 import FilterNewsPage from "../pages/news/FilterNewsPage";
 import ViewCountNewsPage from "../pages/news/ViewCountNewsPage";
 import ScrapCountNewsPage from "../pages/news/ScrapCountNewsPage";
+import VocaDetailPage from "@pages/voca/VocaDetailPage";
 
 const AppRouter: React.FC = () => {
   return (
@@ -20,7 +21,8 @@ const AppRouter: React.FC = () => {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup1" element={<SignUpPage1 />} />
         <Route path="/signup2" element={<SignUpPage2 />} />
-        <Route path="/mainVoca" element={<MainVoca />} />
+        <Route path="/voca" element={<MainVoca />} />
+        <Route path="/voca/:vocaId" element={<VocaDetailPage />} />
         <Route path="/mainNews" element={<MainNewsPage />} />
         <Route path="/rcmdNews" element={<RcmdNewsPage />} />
         <Route path="/allNews" element={<AllNewsPage />} />

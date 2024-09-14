@@ -5,6 +5,7 @@ interface CardProps {
   industryName: string | null;
   vocaName: string;
   updatedAt: string;
+  onClick: () => void;
 }
 
 const CardContainer = styled.div`
@@ -57,9 +58,9 @@ const formatDate = (dateString: string) => {
   return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, "0")}.${String(date.getDate()).padStart(2, "0")}`;
 };
 
-const Card: React.FC<CardProps> = ({ img, industryName, vocaName, updatedAt }) => {
+const Card: React.FC<CardProps> = ({ img, industryName, vocaName, updatedAt, onClick }) => {
   return (
-    <CardContainer>
+    <CardContainer onClick={onClick} style={{ cursor: 'pointer' }}>
       {img && <CardImage src={img} alt={vocaName} />}
       <Industry>{industryName}</Industry>
       <CardContent>{vocaName}</CardContent>
