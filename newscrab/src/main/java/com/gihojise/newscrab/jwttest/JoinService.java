@@ -25,9 +25,8 @@ public class JoinService {
             return;
         }
 
-        joinDTO.setPassword(bCryptPasswordEncoder.encode(joinDTO.getPassword()));
+        User user = new User(joinDTO.getLoginId(), bCryptPasswordEncoder.encode(joinDTO.getPassword()), joinDTO.getName(), joinDTO.getEmail(), joinDTO.getBirthday(), joinDTO.getGender());
 
-//        User user =dtoToEntity(joinDTO);
-//        userRepository.save(joinDTO);
+        userRepository.save(user);
     }
 }

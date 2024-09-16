@@ -7,11 +7,13 @@ import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "user") // 테이블명 지정
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseTimeEntity {
 
     @Id
@@ -44,9 +46,19 @@ public class User extends BaseTimeEntity {
     private ProfileImage profileImg;  // 기본값 설정
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private Set<Grass> grasses;
+    private Set<Grass> grasses = new HashSet<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private Set<UserIndustry> userIndustries;
+    private Set<UserIndustry> userIndustries = new HashSet<>();
 
+    // 필수 필드만 받는 생성자
+    public User(String loginId, String password, String name, String email, LocalDate birthday, Gender gender) {
+        this.loginId = loginId;
+        this.password = password;
+        this.name = name;
+        this.email = email;
+        this.birthday = birthday;
+        this.gender = gender;
+        this.profileImg = ProfileImage.A;
+    }
 }

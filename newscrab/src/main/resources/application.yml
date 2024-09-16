@@ -35,6 +35,8 @@ spring:
             port: ${REDIS_PORT}  # 환경 변수로 대체
             password: ${REDIS_PASSWORD}  # 환경 변수로 대체
 
+    jwt:
+        secret: ${JWT_SECRET}  # 환경 변수로 대체
 
 # Swagger Configuration
 springdoc:
