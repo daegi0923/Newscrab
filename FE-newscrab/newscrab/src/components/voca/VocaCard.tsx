@@ -5,7 +5,7 @@ interface CardProps {
   industryName: string | null;
   vocaName: string;
   updatedAt: string;
-  onClick: () => void;
+  onClick?: () => void;
 }
 
 const CardContainer = styled.div`
