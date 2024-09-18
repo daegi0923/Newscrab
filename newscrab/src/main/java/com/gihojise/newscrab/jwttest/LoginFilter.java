@@ -42,14 +42,12 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) {
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+        String loginId = customUserDetails.getUsername();
+        System.out.println("--------debug---------------");
+        System.out.println(loginId);
+        System.out.println("--------debug---------------");
 
-        String username = customUserDetails.getUsername();
-
-        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-        Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
-        GrantedAuthority auth = iterator.next();
-
-        String token = jwtUtil.createJwt(username,60*60*10L);
+        String token = jwtUtil.createJwt(loginId,60*60*10L);
 
         response.addHeader("Authorization", "Bearer " + token);
     }
