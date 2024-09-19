@@ -4,4 +4,4 @@ app = FastAPI()
 
 @app.get("/reco/test")
 def hello():
-    return {"Hello": "World testtest"}
+    return {"Hello": "World testtest."}
