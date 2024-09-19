@@ -16,7 +16,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -70,25 +75,48 @@ public class NewsService {
 
     // 2. 필터링된 뉴스 조회
     @Transactional(readOnly = true)
-    public NewsPageResponseDto getFilteredNews(int industryId, int page, int size, String startDate, String endDate) {
-        // 산업별, 날짜별 필터링 로직 추가 필요
-        // 데이터를 조회하고 DTO로 변환 후 반환
-        List<NewsResponseDto> filteredNewsList = newsRepository.findAll() // 간단한 예시
+    public NewsPageResponseDto getFilteredNews(int industryId, int page, int size, LocalDate ds, LocalDate de) {
+        Pageable pageable = PageRequest.of(page - 1, size); // Spring Data JPA에서 페이지는 0부터 시작합니다.
+        Page<News> newsPage = newsRepository.findAll(pageable);
+
+        List<NewsResponseDto> filteredNewsList = newsPage.getContent()
                 .stream()
                 .filter(news -> news.getIndustry().getIndustryId() == industryId)
-                .map(news -> NewsResponseDto.builder()
-                        .newsId(news.getNewsId())
-                        .newsTitle(news.getNewsTitle())
-                        .build())
+                .filter(news -> ds == null || !news.getNewsPublishedAt().isBefore(ds.atStartOfDay()))
+                .filter(news -> de == null || !news.getNewsPublishedAt().isAfter(de.atTime(23, 59, 59)))
+                .map(news -> {
+                    // 뉴스에 해당하는 사진 목록 조회
+                    List<NewsPhoto> photos = newsPhotoRepository.findByNews_NewsId(news.getNewsId());
+                    List<String> photoUrls = photos.stream()
+                            .map(NewsPhoto::getPhotoUrl)
+                            .toList();
+
+                    // NewsResponseDto 빌드
+                    return NewsResponseDto.builder()
+                            .newsId(news.getNewsId())
+                            .newsTitle(news.getNewsTitle())
+                            .newsContent(news.getNewsContent())
+                            .newsCompany(news.getNewsCompany())
+                            .newsUrl(news.getNewsUrl())
+                            .view(news.getView())
+                            .scrapCnt(news.getScrapCnt())
+                            .industryId(news.getIndustry().getIndustryId())
+                            .newsPublishedAt(news.getNewsPublishedAt())
+                            .createdAt(news.getCreatedAt())
+                            .updatedAt(news.getUpdatedAt())
+                            .photoUrlList(photoUrls) // 사진 URL 리스트 추가
+                            .build();
+                })
                 .toList();
 
         return NewsPageResponseDto.builder()
                 .news(filteredNewsList)
                 .currentPage(page)
-                .totalPages(1)
+                .totalPages(filteredNewsList.size() / size + 1)
                 .totalItems(filteredNewsList.size())
                 .build();
     }
+
 
     // 3. 뉴스 상세 조회
     @Transactional(readOnly = true)
