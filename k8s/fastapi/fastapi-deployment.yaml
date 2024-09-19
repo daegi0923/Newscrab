@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fastapi-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fastapi
+  template:
+    metadata:
+      labels:
+        app: fastapi
+    spec:
+      containers:
+        - name: fastapi
+          image: your-dockerhub-username/fastapi-app:latest  # FastAPI 애플리케이션 Docker 이미지
+          ports:
+            - containerPort: 8000  # FastAPI 기본 포트
+          volumeMounts:
+            - name: env-volume
+              mountPath: /app/.env  # 컨테이너 내에 .env 파일 마운트 경로
+              subPath: .env
+          envFrom:
+            - configMapRef:
+                name: fastapi-env-config  # 환경 변수를 포함하는 ConfigMap 참조
+      volumes:
+        - name: env-volume
+          configMap:
+            name: fastapi-env-config  # .env 파일이 포함된 ConfigMap 참조
