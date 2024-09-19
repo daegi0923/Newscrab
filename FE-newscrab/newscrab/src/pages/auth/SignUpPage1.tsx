@@ -76,10 +76,6 @@ const DuplicateButton = styled.button`
 
 const SignUpPage1: React.FC = () => {
   const navigate = useNavigate();
-  // const [gender, setGender] = useState<string>('male');
-  // const handleGenderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   setGender(e.target.value); // 성별 선택 시 상태 업데이트
-  // };
 
   // Form 상태 관리
   const [signupForm, setSignupForm] = useState({
@@ -90,7 +86,7 @@ const SignUpPage1: React.FC = () => {
     email: "",
     birthday: "",
     gender: "male", // 기본값: 남성
-    interest: []  // 관심 분야는 이후 처리
+    userIndustry: []  // 관심 분야는 이후 처리
   });
   
   const [successMessage, setSuccessMessage] = useState<string>(""); // 성공 메시지 상태
@@ -146,11 +142,16 @@ const SignUpPage1: React.FC = () => {
 
   // 생년월일 유효성 검사
   useEffect(() => {
-    const birthRegex = /^(19|20)\d{2}(0[1-9]|1[0-2])(0[1-9]|[12]\d|3[01])$/;
-    if (signupForm.birthday && !birthRegex.test(signupForm.birthday)) {
-      setErrors((prevErrors) => ({ ...prevErrors, birthday: "YYYYMMDD 형식으로 입력하세요." }));
+    if (signupForm.birthday === "") {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        birthday: "생년월일을 선택하세요.",
+      }));
     } else {
-      setErrors((prevErrors) => ({ ...prevErrors, birthday: "" }));
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        birthday: "",
+      }));
     }
   }, [signupForm.birthday]);
 
@@ -169,17 +170,22 @@ const SignUpPage1: React.FC = () => {
     }
   };
 
-  // 모든 입력이 유효한지 확인
   const isFormValid = Object.values(errors).every((error) => error === "") &&
-    Object.values(signupForm).every((value) => value !== "");
+  (Object.keys(signupForm) as (keyof typeof signupForm)[]).every((key) => {
+    // interest 필드는 비어 있어도 통과하도록
+    if (key === "userIndustry") return true;
+    return signupForm[key] !== "";
+  });
 
   const handleNext = () => {
-    if (isFormValid) {
-    navigate("/signup2");
-  } else {
-    setErrors((prevErrors) => ({ ...prevErrors, check: "모든 정보를 필수로 입력해야 합니다." }));
-  }};
+    console.log("Signup Form Values: ", signupForm);
+    console.log("Errors: ", errors);
 
+    if (isFormValid) {
+      navigate("/signup2", { state: { signupForm } });
+  } else {
+    window.alert("모든 정보를 필수로 입력해야 합니다.");
+  }};
 
   return (
     <>
@@ -195,7 +201,8 @@ const SignUpPage1: React.FC = () => {
           <Input name="password" type="password" label="비밀번호" placeholder="비밀번호를 입력하세요" value={signupForm.password} onChange={handleChange} error={errors.password}/>
           <Input name="email" type="email" label="이메일" placeholder="이메일을 입력하세요" value={signupForm.email} onChange={handleChange} error={errors.email}/>
           <Input name="passwordConfirm" type="password" label="비밀번호 확인" placeholder="비밀번호를 입력하세요" value={signupForm.passwordConfirm} onChange={handleChange} error={errors.passwordConfirm}/>
-          <Input name="birthday" type="date" label="생년월일" placeholder="생년월일을 입력하세요" value={signupForm.birthday} onChange={handleChange}/>
+          <Input name="birthday" type="date" label="생년월일" placeholder="생년월일을 입력하세요" 
+            value={signupForm.birthday} onChange={handleChange}/>
           
           {/* 성별 라벨 추가 */}
           <Label>성별</Label>
