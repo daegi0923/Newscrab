@@ -6,7 +6,14 @@ from sqlalchemy.orm import sessionmaker
 
 load_dotenv()  # .env 파일을 로드
 
-SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL")  # .env 파일에서 DATABASE_URL 불러오기
+# MySQL 데이터베이스 URL 설정
+MYSQL_HOST = os.getenv("MYSQL_HOST")
+MYSQL_PORT = os.getenv("MYSQL_PORT")
+MYSQL_DATABASE = os.getenv("MYSQL_DATABASE")
+MYSQL_ROOT_USER = os.getenv("MYSQL_ROOT_USER")
+MYSQL_ROOT_PASSWORD = os.getenv("MYSQL_ROOT_PASSWORD")
+
+SQLALCHEMY_DATABASE_URL = f"mysql+pymysql://{MYSQL_ROOT_USER}:{MYSQL_ROOT_PASSWORD}@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DATABASE}"
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 
