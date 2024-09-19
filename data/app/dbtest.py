@@ -76,8 +76,8 @@ def create_industry(industry: schemas.IndustryCreate, db: Session = Depends(get_
 
 # 산업군 목록 조회 API
 @app.get("/industries/", response_model=List[schemas.Industry])
-def read_industries(skip: int = 0, limit: int = 10, db: Session = Depends(get_db)):
-    industries = db.query(models.Industry).offset(skip).limit(limit).all()
+def read_industries(db: Session = Depends(get_db)):
+    industries = db.query(models.Industry).all()  # 모든 산업군 조회
     
     # 각 산업군의 키워드 리스트를 str 형태로 변환하여 반환
     result = []
