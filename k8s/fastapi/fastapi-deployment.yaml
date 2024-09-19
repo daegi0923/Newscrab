@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: fastapi
-          image: your-dockerhub-username/fastapi-app:latest  # FastAPI 애플리케이션 Docker 이미지
+          image: daegi0923/newscrab-data:latest  # FastAPI 애플리케이션 Docker 이미지
           ports:
             - containerPort: 8000  # FastAPI 기본 포트
           volumeMounts:
