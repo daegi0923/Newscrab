@@ -48,8 +48,22 @@ public class NewsController {
     }
 
     // 4. 인기 기사 (최근 1주일간 조회수 높은 기사 조회)
+    @GetMapping("/hot")
+    public ResponseEntity<ApiResponse<NewsPageResponseDto>> getHotNews(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        NewsPageResponseDto response = newsService.getHotNews(page, size);
+        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "인기 기사 조회 성공", response));
+    }
 
     // 5. 인기 스크랩 기사 (최근 1주일간 스크랩한 기사 조회)
+    @GetMapping("/hot_scrap")
+    public ResponseEntity<ApiResponse<NewsPageResponseDto>> getHotScrapNews(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        NewsPageResponseDto response = newsService.getHotScrapNews(page, size);
+        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "인기 스크랩 기사 조회 성공", response));
+    }
     
 
     // 6. 찜 하기

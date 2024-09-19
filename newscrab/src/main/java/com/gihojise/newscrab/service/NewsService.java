@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -154,20 +155,46 @@ public class NewsService {
                 .build();
     }
 
-
-    // 4. 인기 뉴스 조회
+    // 4. 인기 뉴스 조회 (조회수 높은 순, 최근 1주일 이내)
     @Transactional(readOnly = true)
-    public NewsPageResponseDto getHotNews(int page) {
-        // 조회 수가 높은 뉴스를 반환하는 로직 추가
-        return null;
+    public NewsPageResponseDto getHotNews(int page, int size) {
+        LocalDateTime oneWeekAgo = LocalDateTime.now().minusWeeks(1); // 현재 날짜로부터 1주일 전
+
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<News> newsPage = newsRepository.findHotNews(oneWeekAgo, pageable);
+
+        List<NewsResponseDto> newsList = newsPage.getContent().stream()
+                .map(this::convertToDto) // convertToDto 메서드를 사용하여 변환
+                .toList();
+
+        return NewsPageResponseDto.builder()
+                .news(newsList)
+                .currentPage(page)
+                .totalPages(newsPage.getTotalPages())
+                .totalItems((int) newsPage.getTotalElements())
+                .build();
     }
 
-    // 5. 인기 스크랩 뉴스 조회
+    // 5. 인기 스크랩 뉴스 조회 (스크랩 카운트 높은 순, 최근 1주일 이내)
     @Transactional(readOnly = true)
-    public NewsPageResponseDto getHotScrapNews(int page) {
-        // 스크랩 수가 많은 뉴스를 반환하는 로직 추가
-        return null;
+    public NewsPageResponseDto getHotScrapNews(int page, int size) {
+        LocalDateTime oneWeekAgo = LocalDateTime.now().minusWeeks(1); // 현재 날짜로부터 1주일 전
+
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<News> newsPage = newsRepository.findHotScrapNews(oneWeekAgo, pageable);
+
+        List<NewsResponseDto> newsList = newsPage.getContent().stream()
+                .map(this::convertToDto) // convertToDto 메서드를 사용하여 변환
+                .toList();
+
+        return NewsPageResponseDto.builder()
+                .news(newsList)
+                .currentPage(page)
+                .totalPages(newsPage.getTotalPages())
+                .totalItems((int) newsPage.getTotalElements())
+                .build();
     }
+
 
     // 6. 뉴스 좋아요 (찜) 기능
     @Transactional
