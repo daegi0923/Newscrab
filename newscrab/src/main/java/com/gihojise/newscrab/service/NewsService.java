@@ -30,39 +30,52 @@ public class NewsService {
     private final NewsRepository newsRepository;
     private final NewsPhotoRepository newsPhotoRepository;
 
+    // 변환 메서드: News 객체를 NewsResponseDto로 변환
+    private NewsResponseDto convertToDto(News news) {
+        if (news == null) {
+            return null;
+        }
+
+        // 기본값 설정을 위해 Optional을 사용하거나 null 체크 후 설정
+        String newsTitle = Optional.ofNullable(news.getNewsTitle()).orElse("제목 없음");
+        String newsContent = Optional.ofNullable(news.getNewsContent()).orElse("내용 없음");
+        String newsCompany = Optional.ofNullable(news.getNewsCompany()).orElse("출처 없음");
+        String newsUrl = Optional.ofNullable(news.getNewsUrl()).orElse("URL 없음");
+        LocalDateTime createdAt = Optional.ofNullable(news.getCreatedAt()).orElse(LocalDateTime.now());
+        LocalDateTime updatedAt = Optional.ofNullable(news.getUpdatedAt()).orElse(LocalDateTime.now());
+        int view = Optional.ofNullable(news.getView()).orElse(0);
+        int scrapCnt = Optional.ofNullable(news.getScrapCnt()).orElse(0);
+
+        // 사진 URL 리스트 조회
+        List<NewsPhoto> photos = newsPhotoRepository.findByNews_NewsId(news.getNewsId());
+        List<String> photoUrls = photos.stream()
+                .map(NewsPhoto::getPhotoUrl)
+                .toList();
+
+        return NewsResponseDto.builder()
+                .newsId(news.getNewsId())
+                .newsTitle(newsTitle)
+                .newsContent(newsContent)
+                .newsPublishedAt(news.getNewsPublishedAt())
+                .newsCompany(newsCompany)
+                .newsUrl(newsUrl)
+                .view(view)
+                .scrapCnt(scrapCnt)
+                .createdAt(createdAt)
+                .updatedAt(updatedAt)
+                .photoUrlList(photoUrls) // 사진 URL 리스트 추가
+                .build();
+    }
+
+    // 1. 전체 뉴스 조회 (10개씩 최신순)
     @Transactional(readOnly = true)
     public NewsPageResponseDto getAllNews(int page, int size) {
-
         Pageable pageable = PageRequest.of(page - 1, size); // Spring Data JPA에서 페이지는 0부터 시작
         Page<News> newsPage = newsRepository.findAll(pageable);
 
         // 각 뉴스에 대한 NewsResponseDto 리스트 생성
         List<NewsResponseDto> newsList = newsPage.getContent().stream()
-                .map(news -> {
-                    // 각 뉴스에 해당하는 사진 목록 조회
-                    List<NewsPhoto> photos = newsPhotoRepository.findByNews_NewsId(news.getNewsId());
-
-                    // 사진 URL 리스트 생성
-                    List<String> photoUrls = photos.stream()
-                            .map(NewsPhoto::getPhotoUrl)
-                            .toList();
-
-                    // NewsResponseDto 빌드
-                    return NewsResponseDto.builder()
-                            .newsId(news.getNewsId())
-                            .newsTitle(news.getNewsTitle())
-                            .newsContent(news.getNewsContent())
-                            .newsCompany(news.getNewsCompany())
-                            .newsUrl(news.getNewsUrl())
-                            .view(news.getView())
-                            .scrapCnt(news.getScrapCnt())
-                            .industryId(news.getIndustry().getIndustryId())
-                            .newsPublishedAt(news.getNewsPublishedAt())
-                            .createdAt(news.getCreatedAt())
-                            .updatedAt(news.getUpdatedAt())
-                            .photoUrlList(photoUrls) // 사진 URL 리스트 추가
-                            .build();
-                })
+                .map(this::convertToDto) // convertToDto 메서드를 사용하여 변환
                 .toList();
 
         return NewsPageResponseDto.builder()
@@ -73,7 +86,7 @@ public class NewsService {
                 .build();
     }
 
-    // 2. 필터링된 뉴스 조회
+    // 2. 사용자 필터 뉴스 조회
     @Transactional(readOnly = true)
     public NewsPageResponseDto getFilteredNews(int industryId, int page, int size, LocalDate ds, LocalDate de) {
         Pageable pageable = PageRequest.of(page - 1, size); // Spring Data JPA에서 페이지는 0부터 시작합니다.
@@ -84,29 +97,7 @@ public class NewsService {
                 .filter(news -> news.getIndustry().getIndustryId() == industryId)
                 .filter(news -> ds == null || !news.getNewsPublishedAt().isBefore(ds.atStartOfDay()))
                 .filter(news -> de == null || !news.getNewsPublishedAt().isAfter(de.atTime(23, 59, 59)))
-                .map(news -> {
-                    // 뉴스에 해당하는 사진 목록 조회
-                    List<NewsPhoto> photos = newsPhotoRepository.findByNews_NewsId(news.getNewsId());
-                    List<String> photoUrls = photos.stream()
-                            .map(NewsPhoto::getPhotoUrl)
-                            .toList();
-
-                    // NewsResponseDto 빌드
-                    return NewsResponseDto.builder()
-                            .newsId(news.getNewsId())
-                            .newsTitle(news.getNewsTitle())
-                            .newsContent(news.getNewsContent())
-                            .newsCompany(news.getNewsCompany())
-                            .newsUrl(news.getNewsUrl())
-                            .view(news.getView())
-                            .scrapCnt(news.getScrapCnt())
-                            .industryId(news.getIndustry().getIndustryId())
-                            .newsPublishedAt(news.getNewsPublishedAt())
-                            .createdAt(news.getCreatedAt())
-                            .updatedAt(news.getUpdatedAt())
-                            .photoUrlList(photoUrls) // 사진 URL 리스트 추가
-                            .build();
-                })
+                .map(this::convertToDto) // convertToDto 메서드를 사용하여 변환
                 .toList();
 
         return NewsPageResponseDto.builder()
@@ -123,22 +114,46 @@ public class NewsService {
     public NewsDetailResponseDto getNewsDetail(int newsId) {
         News news = newsRepository.findByNewsId(newsId);
         if (news == null) {
-            // Use ErrorCode to throw the custom exception with a standardized message
+            // ErrorCode를 사용하여 표준화된 메시지로 커스텀 예외를 발생시킵니다.
             throw new NewscrabException(ErrorCode.MEMBER_NOT_FOUND);
         }
+
+        // 뉴스의 사진 정보를 조회합니다.
+        List<NewsPhoto> photos = newsPhotoRepository.findByNews_NewsId(news.getNewsId());
+        List<String> photoUrls = photos.stream()
+                .map(NewsPhoto::getPhotoUrl)
+                .toList();
+
+        // 관련 뉴스 객체 가져오기
+        News relatedNews1 = news.getRelatedNews1();
+        News relatedNews2 = news.getRelatedNews2();
+        News relatedNews3 = news.getRelatedNews3();
+
+        // 변환 메서드를 사용하여 News 객체를 NewsResponseDto로 변환
+        NewsResponseDto relatedNewsDto1 = convertToDto(relatedNews1);
+        NewsResponseDto relatedNewsDto2 = convertToDto(relatedNews2);
+        NewsResponseDto relatedNewsDto3 = convertToDto(relatedNews3);
+
+        // NewsDetailResponseDto 빌드하여 반환
         return NewsDetailResponseDto.builder()
                 .newsId(news.getNewsId())
                 .newsTitle(news.getNewsTitle())
                 .industryId(news.getIndustry().getIndustryId())
                 .newsContent(news.getNewsContent())
+                .newsCompany(news.getNewsCompany())
                 .newsPublishedAt(news.getNewsPublishedAt())
                 .createdAt(news.getCreatedAt())
                 .updatedAt(news.getUpdatedAt())
                 .newsUrl(news.getNewsUrl())
                 .view(news.getView())
                 .scrap(news.getScrapCnt())
+                .newsPhoto(photoUrls) // 사진 URL 리스트 추가
+                .relatedNews1(relatedNewsDto1) // 관련 뉴스 1 객체
+                .relatedNews2(relatedNewsDto2) // 관련 뉴스 2 객체
+                .relatedNews3(relatedNewsDto3) // 관련 뉴스 3 객체
                 .build();
     }
+
 
     // 4. 인기 뉴스 조회
     @Transactional(readOnly = true)
