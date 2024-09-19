@@ -7,12 +7,13 @@ const PaginationContainer = styled.div`
   margin: 20px 0;
 `;
 
-const PageButton = styled.button<{ isActive?: boolean }>`
+// isActive를 transient prop으로 처리
+const PageButton = styled.button<{ $isActive?: boolean }>`
   background: none;
   border: none;
-  color: ${(props) => (props.isActive ? "#000" : "#888")};
+  color: ${(props) => (props.$isActive ? "#000" : "#888")};
   font-size: 16px;
-  font-weight: ${(props) => (props.isActive ? "bold" : "normal")};
+  font-weight: ${(props) => (props.$isActive ? "bold" : "normal")};
   margin: 0 5px;
   cursor: pointer;
   &:hover {
@@ -97,7 +98,6 @@ const Pagination: React.FC<PaginationProps> = ({
     const nextGroupPage = (pageGroup + 1) * pagesPerGroup + 1;
     onPageChange(nextGroupPage); // 다음 그룹의 첫 번째 페이지로 이동
   };
-
   const renderPageNumbers = () => {
     const startPage = pageGroup * pagesPerGroup + 1; // 현재 그룹의 첫 번째 페이지 번호
     const endPage = Math.min(startPage + pagesPerGroup - 1, totalPages); // 현재 그룹의 마지막 페이지 번호
@@ -106,7 +106,7 @@ const Pagination: React.FC<PaginationProps> = ({
       pageNumbers.push(
         <PageButton
           key={i}
-          isActive={i === currentPage}
+          $isActive={i === currentPage} // $isActive로 변경하여 DOM에 전달되지 않도록 처리
           onClick={() => handlePageClick(i)}
         >
           {i}
@@ -115,7 +115,6 @@ const Pagination: React.FC<PaginationProps> = ({
     }
     return pageNumbers;
   };
-
   return (
     <PaginationContainer>
       <ArrowButton

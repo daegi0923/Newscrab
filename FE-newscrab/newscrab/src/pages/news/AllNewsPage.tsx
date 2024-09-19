@@ -35,7 +35,6 @@ const AllNewsPage: React.FC = () => {
     <div>
       <GlobalStyle /> {/* 글로벌 스타일 적용 */}
       <NewsCommon /> {/* 헤더와 탭 컴포넌트 */}
-      <h1>전체 뉴스 페이지</h1>
       <NewsList newsList={newsList} />{" "}
       {/* 뉴스 리스트 컴포넌트에 뉴스 데이터 전달 */}
       <Pagination
