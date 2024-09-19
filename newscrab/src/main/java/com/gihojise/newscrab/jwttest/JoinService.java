@@ -1,7 +1,6 @@
 package com.gihojise.newscrab.jwttest;
 
 import com.gihojise.newscrab.domain.User;
-import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;

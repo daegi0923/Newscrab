@@ -2,7 +2,6 @@ package com.gihojise.newscrab.jwttest;
 
 import com.gihojise.newscrab.enums.Gender;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 

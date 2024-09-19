@@ -1,15 +1,13 @@
 package com.gihojise.newscrab.jwttest;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 
-@RedisHash(value = "refreshtoken", timeToLive = 10)
+@RedisHash(value = "refreshtoken", timeToLive = 60)
 @AllArgsConstructor
 @Getter
 @ToString
@@ -17,10 +15,8 @@ import org.springframework.data.redis.core.RedisHash;
 public class RefreshEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String refresh;
 
     private String loginId;
-    private String refresh;
     private String expiration;
 }

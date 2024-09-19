@@ -82,7 +82,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated());
 
         http
-                .addFilterBefore(new JWTFilter(jwtUtil,userRepository), LoginFilter.class);
+                .addFilterBefore(new JWTFilter(jwtUtil,userRepository,refreshRepository), LoginFilter.class);
 
         http
                 .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, refreshRepository), UsernamePasswordAuthenticationFilter.class);
