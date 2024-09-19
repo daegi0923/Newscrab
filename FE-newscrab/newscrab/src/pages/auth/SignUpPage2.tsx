@@ -1,9 +1,8 @@
 import styled from 'styled-components';
 import { useState } from 'react';
-import { useLocation } from 'react-router-dom';
-// import { useLocation, useNavigate } from 'react-router-dom';
-// import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { words } from "@components/voca/VocaList";
+import axios from 'axios';
 
 const SignUpContainer = styled.div`
   flex-direction: column;
@@ -143,18 +142,39 @@ const SignUpPage2: React.FC = () => {
   };
 
   // Save 버튼 클릭 시 선택된 산업군을 콘솔에 출력
-  const handleSave = () => {
+  const handleSave = async () => {
     console.log("선택된 산업군:", selectedIndustries.filter(Boolean));
     const filteredIndustries = selectedIndustries.filter(Boolean) as { img: string, industryId: number, industryName: string }[];
     const updatedSignupForm = {
       ...signupForm,
       userIndustry: filteredIndustries.map((industry, index) => ({
-      industryId: industry.industryId,
-      industryName: industry.industryName,
-      preRank: index + 1, // Store the order as preRank (1 for first, 2 for second, etc.)
+        industryId: industry.industryId,
+        industryName: industry.industryName,
+        preRank: index + 1, // Store the order as preRank (1 for first, 2 for second, etc.)
     })),
     };
     console.log("회원가입 데이터:", updatedSignupForm);
+
+    // try {
+    //   const response = await axios.post('https://newscrab.duckdns.org/users/register', {
+    //     loginId: updatedSignupForm.loginId,
+    //     password: updatedSignupForm.password,
+    //     name: updatedSignupForm.nickname,
+    //     email: updatedSignupForm.email,
+    //     birthday: updatedSignupForm.birthday,
+    //     gender: updatedSignupForm.gender,
+    //     userIndustry: updatedSignupForm.userIndustry
+    //   });
+
+    //   // 회원가입 성공 시, 다른 페이지로 이동
+    //   if (response.status === 200) {
+    //     alert('회원가입 성공!');
+    //     navigate('/mainNews'); // 예시로 로그인 페이지로 이동
+    //   }
+    // } catch (error) {
+    //   console.error('회원가입 실패:', error);
+    //   alert('회원가입 중 오류가 발생했습니다.');
+    // }
   };
 
   return (

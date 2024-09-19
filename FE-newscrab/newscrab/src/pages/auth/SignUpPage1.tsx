@@ -158,7 +158,7 @@ const SignUpPage1: React.FC = () => {
   // ID 중복 확인
   const handleIdCheck = async () => {
     try {
-      const response = await axios.post("http://localhost:5173/user/nickname" , { loginId : signupForm.loginId });
+      const response = await axios.post("https://newscrab.duckdns.org/user/nickname" , { loginId : signupForm.loginId });
       if (response.data.exists) {
         setErrors((prevErrors) => ({ ...prevErrors, loginId : "이미 사용 중인 ID입니다." }));
       } else {
