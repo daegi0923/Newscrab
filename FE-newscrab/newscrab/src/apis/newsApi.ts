@@ -51,9 +51,7 @@ export const getMockNews = async (page: number): Promise<MockData> => {
     totalItems,
   };
 
-  return new Promise<MockData>((resolve) => {
-    setTimeout(() => resolve(mockData), 100); // 백엔드 응답 대기 시간을 시뮬레이션
-  });
+  return mockData;
 };
 
 // export const getMockNews = async (page: number) => {
