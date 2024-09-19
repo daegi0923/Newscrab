@@ -4,7 +4,7 @@ import { TabOption } from "./TabOptions";
 import styled from "styled-components";
 import crabIcon from "@assets/crab.png";
 import DropDown from "@common/DropDown"; // DropDown 컴포넌트 import
-import { industry } from "@common/Industry "; // 카테고리 데이터 import
+import { industry } from "@common/Industry"; // 카테고리 데이터 import
 
 interface TabProps {
   options: TabOption[];
@@ -80,7 +80,7 @@ const Tab: React.FC<TabProps> = ({ options }) => {
               </StyledNavLink>
               {isDropdownOpen && ( // 드롭다운이 열려 있는 상태일 때만 표시
                 <DropDown
-                  words={industry} // 카테고리 목록을 드롭다운에 전달
+                  dropdownIndustries={industry} // 카테고리 목록을 드롭다운에 전달
                   handleIndustrySelect={handleCategorySelect} // 선택 시 카테고리 이름 변경
                 />
               )}

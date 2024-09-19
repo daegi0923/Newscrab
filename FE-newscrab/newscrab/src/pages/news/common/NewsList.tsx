@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { NewsItem } from "../../../types/newsTypes"; // 타입을 가져옴
 import viewIcon from "@assets/view.png";
 import scrapCntIcon from "@assets/scrapCnt.png";
-import { industry } from "@common/Industry "; // category 가져옴
+import { industry } from "@common/Industry"; // category 가져옴
 
 // "T"를 공백으로 치환하는 간단한 날짜 포맷팅 함수
 const formatDate = (dateString: string) => {

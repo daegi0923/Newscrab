@@ -1,6 +1,3 @@
-// 목업 api 하나로만 뉴스 관련 페이지에 다 뿌리고 있어서
-// 전체 뉴스 페이지를 일단 그대로 가져옴 -> api 요청 보내고 나서 가공 좀 해야할듯?
-
 import React, { useEffect, useState } from "react";
 
 import GlobalStyle from "@components/GlobalStyle"; // 배경색
@@ -11,7 +8,7 @@ import NewsList from "./common/NewsList"; // 분리한 뉴스 리스트
 import { getMockNews } from "@apis/newsApi"; // getMockNews 함수 import
 import { NewsItem, MockData } from "../../types/newsTypes"; // newsTypes.ts에서 타입 import
 
-const FilterNewsPage: React.FC = () => {
+const AllNewsPage: React.FC = () => {
   const [newsList, setNewsList] = useState<NewsItem[]>([]); // newsList: 뉴스 데이터를 저장하는 상태
   const [currentPage, setCurrentPage] = useState(1); // currentPage: 현재 페이지 번호를 저장하는 상태 (초기값 1)
   const [totalPages, setTotalPages] = useState(1); // totalPages: 총 페이지 수를 저장하는 상태 (초기값 1, API 응답 후 업데이트)
@@ -49,4 +46,4 @@ const FilterNewsPage: React.FC = () => {
   );
 };
 
-export default FilterNewsPage;
+export default AllNewsPage;
