@@ -4,7 +4,7 @@ from app.keywords.routes import router as keyword_router
 
 app = FastAPI()
 
-@app.get("/reco")
+@app.get("/reco/test")
 def hello():
     return {"Hello": "World"}
 
