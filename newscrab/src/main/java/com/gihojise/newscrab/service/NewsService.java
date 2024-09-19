@@ -2,6 +2,7 @@ package com.gihojise.newscrab.service;
 
 import com.gihojise.newscrab.domain.News;
 import com.gihojise.newscrab.domain.NewsPhoto;
+import com.gihojise.newscrab.domain.User;
 import com.gihojise.newscrab.dto.response.NewsDetailResponseDto;
 import com.gihojise.newscrab.dto.response.NewsPageResponseDto;
 import com.gihojise.newscrab.dto.response.NewsResponseDto;
@@ -9,20 +10,19 @@ import com.gihojise.newscrab.exception.ErrorCode;
 import com.gihojise.newscrab.exception.NewscrabException;
 import com.gihojise.newscrab.repository.NewsPhotoRepository;
 import com.gihojise.newscrab.repository.NewsRepository;
+import com.gihojise.newscrab.repository.UserRepository;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -30,6 +30,7 @@ public class NewsService {
 
     private final NewsRepository newsRepository;
     private final NewsPhotoRepository newsPhotoRepository;
+    private final UserRepository userRepository;
 
     // 변환 메서드: News 객체를 NewsResponseDto로 변환
     private NewsResponseDto convertToDto(News news) {
@@ -116,7 +117,7 @@ public class NewsService {
         News news = newsRepository.findByNewsId(newsId);
         if (news == null) {
             // ErrorCode를 사용하여 표준화된 메시지로 커스텀 예외를 발생시킵니다.
-            throw new NewscrabException(ErrorCode.MEMBER_NOT_FOUND);
+            throw new NewscrabException(ErrorCode.USER_NOT_FOUND);
         }
 
         // 뉴스의 사진 정보를 조회합니다.
@@ -198,14 +199,29 @@ public class NewsService {
 
     // 6. 뉴스 좋아요 (찜) 기능
     @Transactional
-    public void likeNews(int newsId) {
-        // 뉴스 좋아요 처리 로직 추가
-        System.out.println("뉴스 좋아요 완료");
+    public void likeNews(int newsId, int userId) {
+        // 뉴스와 사용자 정보 조회
+        News news = newsRepository.findById(newsId)
+                .orElseThrow(() -> new NewscrabException(ErrorCode.NEWS_NOT_FOUND));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NewscrabException(ErrorCode.USER_NOT_FOUND));
+
+        // User 엔티티의 addLike 메서드에서 중복 추가 방지 로직을 처리
+        user.addLike(news);
+
+        // save 호출 없이 JPA가 관리하는 연관관계만으로 저장 관리
     }
+
 
     // 7. 뉴스 찜 목록 삭제
     @Transactional
-    public void unlikeNews(int newsId) {
-        // 뉴스 좋아요 취소 처리 로직 추가
+    public void unlikeNews(int newsId, int userId) {
+        News news = newsRepository.findById(newsId)
+                .orElseThrow(() -> new NewscrabException(ErrorCode.NEWS_NOT_FOUND));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NewscrabException(ErrorCode.USER_NOT_FOUND));
+
+        user.removeLike(news);
+        userRepository.save(user);
     }
 }

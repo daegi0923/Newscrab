@@ -64,19 +64,23 @@ public class NewsController {
         NewsPageResponseDto response = newsService.getHotScrapNews(page, size);
         return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "인기 스크랩 기사 조회 성공", response));
     }
-    
+
 
     // 6. 찜 하기
     @PostMapping("/like/{newsId}")
-    public ResponseEntity<ApiResponse<Void>> likeNews(@PathVariable int newsId) {
-        newsService.likeNews(newsId);
+    public ResponseEntity<ApiResponse<Void>> likeNews(
+            @PathVariable int newsId,
+            @RequestParam int userId) { // 임시로 userId를 RequestParam으로 받아옴
+        newsService.likeNews(newsId, userId);
         return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "뉴스 좋아요 성공", null));
     }
 
     // 7. 찜 목록 삭제
     @DeleteMapping("/like/{newsId}")
-    public ResponseEntity<ApiResponse<Void>> unlikeNews(@PathVariable int newsId) {
-        newsService.unlikeNews(newsId);
+    public ResponseEntity<ApiResponse<Void>> unlikeNews(
+            @PathVariable int newsId,
+            @RequestParam int userId) { // 임시로 userId를 RequestParam으로 받아옴
+        newsService.unlikeNews(newsId, userId);
         return ResponseEntity.ok(ApiResponse.of(HttpStatus.NO_CONTENT.value(), HttpStatus.NO_CONTENT.getReasonPhrase(), "뉴스 찜 목록 삭제 성공", null));
     }
 }
