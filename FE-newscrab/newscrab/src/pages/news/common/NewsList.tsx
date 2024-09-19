@@ -2,6 +2,7 @@ import styled from "styled-components";
 import { NewsItem } from "../../../types/newsTypes"; // 타입을 가져옴
 import viewIcon from "@assets/view.png";
 import scrapCntIcon from "@assets/scrapCnt.png";
+import { industry } from "@common/Industry "; // category 가져옴
 
 // "T"를 공백으로 치환하는 간단한 날짜 포맷팅 함수
 const formatDate = (dateString: string) => {
@@ -86,6 +87,14 @@ const ScrapCntIcon = styled.img`
 
 // 뉴스 리스트를 렌더링하는 컴포넌트
 const NewsList: React.FC<{ newsList: NewsItem[] }> = ({ newsList }) => {
+  // 산업 이름을 industryId를 통해 찾는 함수
+  const getIndustryName = (industryId: number): string => {
+    const matchedCategory = industry.find(
+      (ind) => ind.industryId === industryId
+    );
+    return matchedCategory ? matchedCategory.industryName : "알 수 없음";
+  };
+
   return (
     <GridContainer>
       {newsList.map((news) => (
@@ -95,7 +104,8 @@ const NewsList: React.FC<{ newsList: NewsItem[] }> = ({ newsList }) => {
               <Image src={news.photoUrlList[0]} alt="이미지가 없습니다." />
             )}
             <TextContainer>
-              <IndustryId>산업 {news.industryId}</IndustryId>
+              {/* IndustryId를 기반으로 IndustryName을 표시 */}
+              <IndustryId>{getIndustryName(news.industryId)}</IndustryId>
               <NewsTitle>{news.newsTitle}</NewsTitle>
               <InfoRow>
                 <span>{news.newsCompany}</span>
