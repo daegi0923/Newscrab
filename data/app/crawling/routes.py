@@ -19,7 +19,7 @@ def get_db():
     finally:
         db.close()
 
-# CSV 파일을 불러와 DB에 저장하는 API
+# CSV 파일을 불러와 DB에 저장하고 연관 뉴스 업데이트하는 API
 @router.post("/upload_csv/")
 def upload_csv(db: Session = Depends(get_db)):
     try:
@@ -58,15 +58,7 @@ def upload_csv(db: Session = Depends(get_db)):
             db.add(news)
         
         db.commit()
-        return {"message": "CSV data uploaded successfully"}
-    except Exception as e:
-        db.rollback()
-        raise HTTPException(status_code=400, detail=str(e))
 
-# 관련 뉴스 찾기 및 업데이트 API
-@router.post("/update_related_news/")
-def update_related_news(db: Session = Depends(get_db)):
-    try:
         # DB에서 뉴스 데이터 가져오기
         news_data = db.query(News).all()
         final_df = pd.DataFrame([{
@@ -97,7 +89,7 @@ def update_related_news(db: Session = Depends(get_db)):
                 db.add(news_to_update)
         
         db.commit()
-        return {"message": "Related news updated successfully"}
+        return {"message": "CSV data uploaded and related news updated successfully"}
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=400, detail=str(e))
