@@ -1,13 +1,18 @@
 package com.gihojise.newscrab.service;
 
 import com.gihojise.newscrab.domain.News;
+import com.gihojise.newscrab.domain.NewsPhoto;
 import com.gihojise.newscrab.dto.response.NewsDetailResponseDto;
 import com.gihojise.newscrab.dto.response.NewsPageResponseDto;
 import com.gihojise.newscrab.dto.response.NewsResponseDto;
 import com.gihojise.newscrab.exception.ErrorCode;
 import com.gihojise.newscrab.exception.NewscrabException;
+import com.gihojise.newscrab.repository.NewsPhotoRepository;
 import com.gihojise.newscrab.repository.NewsRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,27 +23,48 @@ import java.util.List;
 public class NewsService {
 
     private final NewsRepository newsRepository;
+    private final NewsPhotoRepository newsPhotoRepository;
 
-    // 1. 전체 뉴스 조회 (페이지네이션)
     @Transactional(readOnly = true)
     public NewsPageResponseDto getAllNews(int page, int size) {
-        // Pageable, Page 사용하여 데이터 처리
-        // 데이터를 조회하고 DTO로 변환 후 반환
-        List<NewsResponseDto> newsList = newsRepository.findAll() // 간단한 예시
-                .stream()
-                .map(news -> NewsResponseDto.builder()
-                        .newsId(news.getNewsId())
-                        .newsTitle(news.getNewsTitle())
-                        .industryId(news.getIndustry().getIndustryId())
-                        .newsPublishedAt(news.getNewsPublishedAt())
-                        .build())
+
+        Pageable pageable = PageRequest.of(page - 1, size); // Spring Data JPA에서 페이지는 0부터 시작
+        Page<News> newsPage = newsRepository.findAll(pageable);
+
+        // 각 뉴스에 대한 NewsResponseDto 리스트 생성
+        List<NewsResponseDto> newsList = newsPage.getContent().stream()
+                .map(news -> {
+                    // 각 뉴스에 해당하는 사진 목록 조회
+                    List<NewsPhoto> photos = newsPhotoRepository.findByNews_NewsId(news.getNewsId());
+
+                    // 사진 URL 리스트 생성
+                    List<String> photoUrls = photos.stream()
+                            .map(NewsPhoto::getPhotoUrl)
+                            .toList();
+
+                    // NewsResponseDto 빌드
+                    return NewsResponseDto.builder()
+                            .newsId(news.getNewsId())
+                            .newsTitle(news.getNewsTitle())
+                            .newsContent(news.getNewsContent())
+                            .newsCompany(news.getNewsCompany())
+                            .newsUrl(news.getNewsUrl())
+                            .view(news.getView())
+                            .scrapCnt(news.getScrapCnt())
+                            .industryId(news.getIndustry().getIndustryId())
+                            .newsPublishedAt(news.getNewsPublishedAt())
+                            .createdAt(news.getCreatedAt())
+                            .updatedAt(news.getUpdatedAt())
+                            .photoUrlList(photoUrls) // 사진 URL 리스트 추가
+                            .build();
+                })
                 .toList();
 
         return NewsPageResponseDto.builder()
                 .news(newsList)
                 .currentPage(page)
-                .totalPages(1) // 실제 로직에서는 페이지네이션 처리를 합니다.
-                .totalItems(newsList.size())
+                .totalPages(newsPage.getTotalPages())
+                .totalItems((int) newsPage.getTotalElements())
                 .build();
     }
 

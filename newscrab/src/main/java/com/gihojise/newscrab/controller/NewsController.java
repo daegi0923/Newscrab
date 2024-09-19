@@ -16,7 +16,7 @@ public class NewsController {
 
     private final NewsService newsService;
 
-    // 1. 전체 뉴스 조회 (페이지네이션 포함)
+    // 1. 전체 뉴스 조회 (10개씩 최신순)
     @GetMapping
     public ResponseEntity<ApiResponse<NewsPageResponseDto>> getAllNews(
             @RequestParam(defaultValue = "1") int page,
@@ -25,7 +25,7 @@ public class NewsController {
         return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "전체 뉴스 조회 성공", response));
     }
 
-    // 2. 필터링된 뉴스 조회
+    // 2. 사용자 필터 뉴스 조회
     @GetMapping("/filter")
     public ResponseEntity<ApiResponse<NewsPageResponseDto>> getFilteredNews(
             @RequestParam int industryId,
@@ -44,14 +44,19 @@ public class NewsController {
         return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "뉴스 상세 조회 성공", response));
     }
 
-    // 6. 뉴스 좋아요 (찜) 기능
+    // 4. 인기 기사 (최근 1주일간 조회수 높은 기사 조회)
+
+    // 5. 인기 스크랩 기사 (최근 1주일간 스크랩한 기사 조회)
+    
+
+    // 6. 찜 하기
     @PostMapping("/like/{newsId}")
     public ResponseEntity<ApiResponse<Void>> likeNews(@PathVariable int newsId) {
         newsService.likeNews(newsId);
         return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "뉴스 좋아요 성공", null));
     }
 
-    // 7. 뉴스 찜 목록 삭제
+    // 7. 찜 목록 삭제
     @DeleteMapping("/like/{newsId}")
     public ResponseEntity<ApiResponse<Void>> unlikeNews(@PathVariable int newsId) {
         newsService.unlikeNews(newsId);

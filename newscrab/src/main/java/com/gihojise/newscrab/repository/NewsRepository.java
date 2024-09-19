@@ -9,6 +9,4 @@ public interface NewsRepository extends JpaRepository<News, Integer> {
 
     // 뉴스의 상세 정보 조회를 위한 메서드
     News findByNewsId(int newsId);
-
-    // 필요한 커스텀 메서드를 추가할 수 있습니다
 }
