@@ -6,6 +6,8 @@ from app.database import SessionLocal
 from app.crawling.models import News
 from app.industries.models import Industry  
 from datetime import datetime
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
 router = APIRouter()
 
@@ -57,6 +59,45 @@ def upload_csv(db: Session = Depends(get_db)):
         
         db.commit()
         return {"message": "CSV data uploaded successfully"}
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=400, detail=str(e))
+
+# 관련 뉴스 찾기 및 업데이트 API
+@router.post("/update_related_news/")
+def update_related_news(db: Session = Depends(get_db)):
+    try:
+        # DB에서 뉴스 데이터 가져오기
+        news_data = db.query(News).all()
+        final_df = pd.DataFrame([{
+            'news_id': news.news_id,
+            'news_title': news.news_title
+        } for news in news_data])
+
+        # TF-IDF 벡터라이저를 사용해 뉴스 제목 간의 유사도 계산
+        tfidf_vectorizer = TfidfVectorizer()
+        tfidf_matrix = tfidf_vectorizer.fit_transform(final_df['news_title'])  # 뉴스 제목을 벡터화
+        cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)  # 코사인 유사도 계산
+
+        # 연관 뉴스 데이터 업데이트
+        for idx, row in final_df.iterrows():
+            sim_scores = list(enumerate(cosine_sim[idx]))
+            sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)  # 유사도 순으로 정렬
+            sim_scores = sim_scores[1:4]  # 자기 자신 제외, 상위 3개 뉴스 선택
+
+            # 연관 뉴스의 ID를 저장
+            related_ids = [final_df.iloc[i[0]]['news_id'] for i in sim_scores]
+
+            # DB에서 뉴스 업데이트
+            news_to_update = db.query(News).filter(News.news_id == row['news_id']).first()
+            if news_to_update:
+                news_to_update.related_news_id_1 = related_ids[0] if len(related_ids) > 0 else None
+                news_to_update.related_news_id_2 = related_ids[1] if len(related_ids) > 1 else None
+                news_to_update.related_news_id_3 = related_ids[2] if len(related_ids) > 2 else None
+                db.add(news_to_update)
+        
+        db.commit()
+        return {"message": "Related news updated successfully"}
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=400, detail=str(e))
