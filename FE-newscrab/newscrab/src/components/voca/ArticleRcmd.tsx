@@ -1,7 +1,7 @@
 import styled from "styled-components";
 
 const ArticleContainer = styled.div`
-  border: 3px solid red;
+  // border: 3px solid red;
   padding: 10px;
   margin-bottom: 10px;
 `;

@@ -7,9 +7,10 @@ interface VocaDetailCardProps {
 }
 
 const DetailContainer = styled.div`
+  z-index:5;
   display: flex;
   align-items: flex-start;
-  border: 1px solid black;
+  // border: 1px solid black;
   border-radius: 10px;
   width: 50%;
   // height: 350px; // 원하는 DetailContainer 높이
