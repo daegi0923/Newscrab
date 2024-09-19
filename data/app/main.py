@@ -2,6 +2,6 @@ from fastapi import FastAPI
 
 app = FastAPI()
 
-@app.get("/reco")
+@app.get("/reco/test")
 def hello():
     return {"Hello": "World"}
