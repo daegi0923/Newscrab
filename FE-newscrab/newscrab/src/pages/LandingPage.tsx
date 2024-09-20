@@ -18,6 +18,9 @@ const LandingPage: React.FC = () => {
           <li>
             <Link to="/mainNews">MainNews 페이지</Link>
           </li>
+          <li>
+            <Link to="/updatedAtScrap">스크랩 페이지</Link>
+          </li>
           {/* 다른 링크들은 필요에 따라 추가할 수 있습니다 */}
         </ul>
       </nav>
