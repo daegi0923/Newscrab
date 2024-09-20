@@ -1,6 +1,11 @@
-package com.gihojise.newscrab.jwttest;
+package com.gihojise.newscrab.filter;
 
+import com.gihojise.newscrab.domain.CustomUserDetails;
+import com.gihojise.newscrab.domain.RefreshEntity;
 import com.gihojise.newscrab.domain.User;
+import com.gihojise.newscrab.repository.RefreshRepository;
+import com.gihojise.newscrab.repository.UserRepository;
+import com.gihojise.newscrab.service.JWTUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -8,8 +13,6 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -124,7 +127,7 @@ public class JWTFilter extends OncePerRequestFilter {
     private Cookie createCookie(String key, String value) {
 
         Cookie cookie = new Cookie(key, value);
-        cookie.setMaxAge(24*60*60);
+        cookie.setMaxAge(60);
         cookie.setSecure(true);
         //cookie.setPath("/");
         cookie.setHttpOnly(true);

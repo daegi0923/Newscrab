@@ -1,7 +1,5 @@
-package com.gihojise.newscrab.jwttest;
+package com.gihojise.newscrab.domain;
 
-import com.gihojise.newscrab.domain.User;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 

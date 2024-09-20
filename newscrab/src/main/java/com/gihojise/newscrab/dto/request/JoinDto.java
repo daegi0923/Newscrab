@@ -1,4 +1,4 @@
-package com.gihojise.newscrab.jwttest;
+package com.gihojise.newscrab.dto.request;
 
 import com.gihojise.newscrab.enums.Gender;
 import lombok.Builder;
@@ -18,6 +18,5 @@ public class JoinDto {
     private String email;
     private LocalDate birthday;
     private Gender gender;
-
 
 }

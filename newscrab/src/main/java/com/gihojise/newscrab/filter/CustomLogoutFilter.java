@@ -1,5 +1,8 @@
-package com.gihojise.newscrab.jwttest;
+package com.gihojise.newscrab.filter;
 
+import com.gihojise.newscrab.domain.RefreshEntity;
+import com.gihojise.newscrab.service.JWTUtil;
+import com.gihojise.newscrab.repository.RefreshRepository;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -29,7 +32,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
 
         //path and method verify
         String requestUri = request.getRequestURI();
-        if (!requestUri.matches("^\\/logout$")) {
+        if (!requestUri.matches("^\\/api\\/v1\\/user\\/logout$")) {
 
             filterChain.doFilter(request, response);
             return;
@@ -54,7 +57,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
 
         //refresh null check
         if (refresh == null) {
-
+            System.out.println("1");
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
@@ -63,7 +66,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
         try {
             jwtUtil.isExpired(refresh);
         } catch (ExpiredJwtException e) {
-
+            System.out.println("2");
             //response status code
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
@@ -72,7 +75,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
         // 토큰이 refresh인지 확인 (발급시 페이로드에 명시)
         String category = jwtUtil.getCategory(refresh);
         if (!category.equals("refresh")) {
-
+            System.out.println("3");
             //response status code
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
@@ -81,11 +84,16 @@ public class CustomLogoutFilter extends GenericFilterBean {
         //DB에 저장되어 있는지 확인
         RefreshEntity targetRefresh = refreshRepository.findByRefresh(refresh);
         if (targetRefresh == null) {
-
+            System.out.println("4");
+            System.out.println(targetRefresh);
             //response status code
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
+
+        System.out.println("-------------------");
+        System.out.println(refresh);
+        System.out.println("-------------------");
 
         //로그아웃 진행
         //Refresh 토큰 DB에서 제거

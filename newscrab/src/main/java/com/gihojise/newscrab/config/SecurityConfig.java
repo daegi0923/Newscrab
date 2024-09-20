@@ -1,5 +1,11 @@
-package com.gihojise.newscrab.jwttest;
+package com.gihojise.newscrab.config;
 
+import com.gihojise.newscrab.filter.CustomLogoutFilter;
+import com.gihojise.newscrab.filter.JWTFilter;
+import com.gihojise.newscrab.filter.LoginFilter;
+import com.gihojise.newscrab.repository.RefreshRepository;
+import com.gihojise.newscrab.repository.UserRepository;
+import com.gihojise.newscrab.service.JWTUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -47,6 +53,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
+        LoginFilter loginFilter = new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, refreshRepository);
+        loginFilter.setFilterProcessesUrl("/api/v1/user/login");
+
         http
                 .cors((corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
 
@@ -78,7 +87,7 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/login", "/", "/join", "/reissue").permitAll()
+                        .requestMatchers("/api/v1/user/login", "api/v1/user/join").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated());
 
@@ -86,7 +95,7 @@ public class SecurityConfig {
                 .addFilterBefore(new JWTFilter(jwtUtil,userRepository,refreshRepository), LoginFilter.class);
 
         http
-                .addFilterAt(new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, refreshRepository), UsernamePasswordAuthenticationFilter.class);
+                .addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class);
 
         http
                 .addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshRepository), LogoutFilter.class);

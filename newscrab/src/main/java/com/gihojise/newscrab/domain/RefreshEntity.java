@@ -1,4 +1,4 @@
-package com.gihojise.newscrab.jwttest;
+package com.gihojise.newscrab.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,7 +13,6 @@ import org.springframework.data.redis.core.RedisHash;
 @ToString
 @Builder
 public class RefreshEntity {
-
     @Id
     private String refresh;
 

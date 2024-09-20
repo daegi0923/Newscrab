@@ -1,5 +1,9 @@
-package com.gihojise.newscrab.jwttest;
+package com.gihojise.newscrab.filter;
 
+import com.gihojise.newscrab.domain.CustomUserDetails;
+import com.gihojise.newscrab.domain.RefreshEntity;
+import com.gihojise.newscrab.service.JWTUtil;
+import com.gihojise.newscrab.repository.RefreshRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -61,7 +65,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     private Cookie createCookie(String key, String value) {
 
         Cookie cookie = new Cookie(key, value);
-        cookie.setMaxAge(24*60*60);
+        cookie.setMaxAge(60);
         cookie.setSecure(true);
         //cookie.setPath("/");
         cookie.setHttpOnly(true);

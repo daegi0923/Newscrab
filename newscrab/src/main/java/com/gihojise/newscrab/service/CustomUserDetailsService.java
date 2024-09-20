@@ -1,6 +1,8 @@
-package com.gihojise.newscrab.jwttest;
+package com.gihojise.newscrab.service;
 
+import com.gihojise.newscrab.domain.CustomUserDetails;
 import com.gihojise.newscrab.domain.User;
+import com.gihojise.newscrab.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

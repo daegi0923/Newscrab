@@ -1,4 +1,4 @@
-package com.gihojise.newscrab.jwttest;
+package com.gihojise.newscrab.repository;
 
 import com.gihojise.newscrab.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
