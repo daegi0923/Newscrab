@@ -10,5 +10,5 @@ spec:
     - protocol: TCP
       port: 3306  # MySQL 기본 포트
       targetPort: 3306
-      nodePort: 33333
+      nodePort: 30303
   clusterIP: None  # StatefulSet과 함께 사용할 경우, ClusterIP를 None으로 설정
