@@ -19,7 +19,7 @@ spec:
             - containerPort: 8000  # FastAPI 기본 포트
           volumeMounts:
             - name: env-volume
-              mountPath: /app/.env  # 컨테이너 내에 .env 파일 마운트 경로
+              mountPath: /.env  # 컨테이너 내에 .env 파일 마운트 경로
               subPath: .env
           envFrom:
             - configMapRef:
