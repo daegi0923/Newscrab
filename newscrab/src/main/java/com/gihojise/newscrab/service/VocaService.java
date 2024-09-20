@@ -34,13 +34,13 @@ public class VocaService {
                 .build();
     }
 
-//    // 단어 상세 조회
-//    @Transactional(readOnly = true)
-//    public VocaResponseDto getVocaDetail(int termId) {
-//        Voca voca = vocaRepository.findById(termId)
-//                .orElseThrow(() -> new NewscrabException(ErrorCode.VOCA_NOT_FOUND));
-//        return convertToDto(voca);
-//    }
+    // 단어 상세 조회
+    @Transactional(readOnly = true)
+    public VocaResponseDto getVocaDetail(int termId) {
+        Voca voca = vocaRepository.findById(termId)
+                .orElseThrow(() -> new NewscrabException(ErrorCode.VOCA_NOT_FOUND));
+        return convertToDto(voca);
+    }
 //
 //    // 단어 추가
 //    @Transactional

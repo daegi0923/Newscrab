@@ -24,12 +24,12 @@ public class VocaController {
         return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "단어 목록 조회 성공", response));
     }
 
-//    // 2. 단어 상세 조회
-//    @GetMapping("/{termId}")
-//    public ResponseEntity<ApiResponse<VocaResponseDto>> getVocaDetail(@PathVariable int termId) {
-//        VocaResponseDto response = vocaService.getVocaDetail(termId);
-//        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "단어 상세 조회 성공", response));
-//    }
+    // 2. 단어 상세 조회
+    @GetMapping("/{termId}")
+    public ResponseEntity<ApiResponse<VocaResponseDto>> getVocaDetail(@PathVariable int termId) {
+        VocaResponseDto response = vocaService.getVocaDetail(termId);
+        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "단어 상세 조회 성공", response));
+    }
 //
 //    // 3. 단어 추가
 //    @PostMapping
