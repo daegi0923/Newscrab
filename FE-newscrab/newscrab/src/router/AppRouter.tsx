@@ -12,6 +12,7 @@ import AllNewsPage from "@pages/news/AllNewsPage";
 import FilterNewsPage from "@pages/news/FilterNewsPage";
 import ViewCountNewsPage from "@pages/news/ViewCountNewsPage";
 import ScrapCountNewsPage from "@pages/news/ScrapCountNewsPage";
+import NewsDetailPage from "@pages/news/detail/NewsDetailPage";
 // 스크랩
 import UpdatedAtScrapPage from "@pages/scrap/UpdatedAtScrapPage";
 import FilterScrapPage from "@pages/scrap/FilterScrapPage";
@@ -37,6 +38,7 @@ const AppRouter: React.FC = () => {
         <Route path="/filterNews" element={<FilterNewsPage />} />
         <Route path="/viewCountNews" element={<ViewCountNewsPage />} />
         <Route path="/scrapCountNews" element={<ScrapCountNewsPage />} />
+        <Route path="/newsDetail/1" element={<NewsDetailPage />} />
 
         {/* 스크랩 */}
         <Route path="/updatedAtScrap" element={<UpdatedAtScrapPage />} />
