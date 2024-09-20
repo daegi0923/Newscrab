@@ -9,7 +9,7 @@ import { words, mockWords } from "@components/voca/VocaList";
 import { MockWord, Word, MockWordWithImages } from "@components/voca/VocaTypes";
 import AdImage from "@components/common/Advertise";
 import Card from "@components/voca/VocaCard";
-import DropDown from "@components/common/DropDown"
+import DropDown from "@components/voca/DropDown"
 import Pagination from "@components/voca/Pagination"
 import SearchBar from "@components/common/SearchBar";
 
@@ -140,7 +140,7 @@ const VocaPage: React.FC = () => {
           <VocaContainer>
             <Tab options={tabOptions} onFilterChange={handleFilterChange} activeFilter={filter} />
             {isDropdownOpen && (
-              <DropDown dropdownIndustries={words} handleIndustrySelect={handleIndustrySelect} />
+              <DropDown words={words} handleIndustrySelect={handleIndustrySelect} />
             )}
             <CardContainer>
               {getCurrentPageData().map((word) => (

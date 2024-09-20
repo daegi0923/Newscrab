@@ -10,11 +10,12 @@ interface TabProps {
 
 const TabContainer = styled.div``;
 
-const TabButton = styled.button<{ active: boolean }>`
+const TabButton = styled.button<{ active: boolean; isFilterVoca: boolean }>`
   padding: 8px 8px;
   cursor: pointer;
   text-decoration: none;
   color: black;
+  color: ${(props) => (props.isFilterVoca ? "blue" : "black")}; // 필터링일 때 색상 변경
   font-weight: bold;
   background: none;
   border: none;
@@ -34,6 +35,7 @@ const Tab: React.FC<TabProps> = ({ options, onFilterChange, activeFilter }) => {
         <React.Fragment key={option.id}>
           <TabButton
             active={activeFilter === option.id}
+            isFilterVoca={option.id === "filterVoca"}
             onClick={() => onFilterChange(option.id)}
           >
             {option.label}
