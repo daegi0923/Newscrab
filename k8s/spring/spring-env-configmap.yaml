@@ -12,7 +12,7 @@ data:
     MYSQL_ROOT_PASSWORD: 1234
 
     # JPA 설정
-    SPRING_JPA_HIBERNATE_DDL_AUTO: none
+    SPRING_JPA_HIBERNATE_DDL_AUTO: create
 
     # Redis 설정
     REDIS_HOST: redis-service
