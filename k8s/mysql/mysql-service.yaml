@@ -3,11 +3,10 @@ kind: Service
 metadata:
   name: mysql-service
 spec:
-  type: NodePort  # NodePort로 Service를 expose
+  clusterIP: None  # Headless Service 설정
   selector:
     app: mysql
   ports:
     - protocol: TCP
-      port: 3306  # MySQL 기본 포트
+      port: 3306
       targetPort: 3306
-      nodePort: 30303
