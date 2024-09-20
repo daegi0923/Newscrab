@@ -40,7 +40,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
         String loginId = customUserDetails.getUsername();
 
-        String access = jwtUtil.createJwt("access", loginId, 10000L);
+        String access = jwtUtil.createJwt("access", loginId, 30000L);
         String refresh = jwtUtil.createJwt("refresh", loginId, 60000L);
 
         //Refresh 토큰 저장

@@ -29,115 +29,96 @@ public class JWTFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
-        //request에서 Authorization 헤더를 찾음
-        String authorization= request.getHeader("Authorization");
+        // request에서 Authorization 헤더를 찾음
+        String authorization = request.getHeader("Authorization");
 
-        //Authorization 헤더 검증
+        // Authorization 헤더 검증
         if (authorization == null || !authorization.startsWith("Bearer ")) {
-
             filterChain.doFilter(request, response);
-
-            //조건이 해당되면 메소드 종료 (필수)
             return;
         }
 
-        //Bearer 부분 제거 후 순수 토큰만 획득
+        // Bearer 부분 제거 후 순수 토큰만 획득
         String token = authorization.split(" ")[1];
 
-        // jwtUtil.isExpired(token) --->> 이거 자체가 에러를 유발함
         // 토큰 만료 여부 확인
-        if (jwtUtil.isExpired(token)) {
-            //get refresh token
-            String refresh = null;
-            Cookie[] cookies = request.getCookies();
-            for (Cookie cookie : cookies) {
-
-                if (cookie.getName().equals("refresh")) {
-
-                    refresh = cookie.getValue();
-                }
-            }
+        try {
+            jwtUtil.isExpired(token);  // Access Token 만료 확인
+        } catch (ExpiredJwtException e1) {
+            // Access Token이 만료되었을 경우 Refresh Token 확인
+            String refresh = getRefreshTokenFromCookies(request);
 
             if (refresh == null) {
-                //response body
-                PrintWriter writer = response.getWriter();
-                writer.print("refreshtoken is null");
-
-                //response status code
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                sendErrorResponse(response, "refreshtoken is null", HttpServletResponse.SC_UNAUTHORIZED);
                 return;
             }
 
-            //expired check
+            // Refresh Token 만료 여부 확인
             try {
                 jwtUtil.isExpired(refresh);
-            } catch (ExpiredJwtException e) {
-                System.out.println("-----------1----------");
-                //response body
-                PrintWriter writer = response.getWriter();
-                writer.print("refreshtoken is expired : 로그인 해주세요");
-
-                //response status code
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            } catch (ExpiredJwtException e2) {
+                sendErrorResponse(response, "refreshtoken is expired : 로그인 해주세요", HttpServletResponse.SC_UNAUTHORIZED);
                 return;
             }
 
-            // 토큰이 refresh인지 확인 (발급시 페이로드에 명시)
+            // Refresh Token이 유효한지 검증
             String category = jwtUtil.getCategory(refresh);
-
             if (!category.equals("refresh")) {
-                //response body
-                PrintWriter writer = response.getWriter();
-                writer.print("invalid refresh token");
-
-                //response status code
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                sendErrorResponse(response, "invalid refresh token", HttpServletResponse.SC_UNAUTHORIZED);
                 return;
             }
 
-            //DB에 저장되어 있는지 확인
+            // Refresh Token이 DB에 존재하는지 확인
             RefreshEntity targetRefresh = refreshRepository.findByRefresh(refresh);
             if (targetRefresh == null) {
-                //response body
-                PrintWriter writer = response.getWriter();
-                writer.print("refreshtoken is not in DB");
-
-                //response status code
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                sendErrorResponse(response, "refreshtoken is not in DB", HttpServletResponse.SC_UNAUTHORIZED);
                 return;
             }
 
+            // DB에 있는 사용자의 loginId 추출
             String loginId = jwtUtil.getUsername(refresh);
 
-            //make new JWT
-            String newAccess = jwtUtil.createJwt("access", loginId, 600000L);
-            String newRefresh = jwtUtil.createJwt("refresh", loginId, 86400000L);
+            // 새로운 Access Token과 Refresh Token 발급
+            token = jwtUtil.createJwt("access", loginId, 30000L);
+            String newRefresh = jwtUtil.createJwt("refresh", loginId, 60000L);
 
-            //Refresh 토큰 저장 DB에 기존의 Refresh 토큰 삭제 후 새 Refresh 토큰 저장
+            // 기존 Refresh Token을 DB에서 삭제하고 새로운 Refresh Token 저장
             refreshRepository.deleteByRefresh(refresh);
-            addRefreshEntity(loginId, newRefresh, 86400000L);
+            addRefreshEntity(loginId, newRefresh, 60000L);
 
-            //response
-            response.setHeader("access", newAccess);
+            // 갱신된 Access Token을 응답 헤더에 설정, Refresh Token은 쿠키에 저장
+            response.setHeader("Authorization", "Bearer "+token);
             response.addCookie(createCookie("refresh", newRefresh));
         }
 
-        //토큰에서 username 획득
+        // Access Token이 유효할 경우, 사용자 인증 정보 세팅
         String username = jwtUtil.getUsername(token);
+        User user = userRepository.findByLoginId(username);
 
-        //userEntity를 생성하여 값 set
-        User user=userRepository.findByLoginId(username);
-
-        //UserDetails에 회원 정보 객체 담기
         CustomUserDetails customUserDetails = new CustomUserDetails(user);
-
-        //스프링 시큐리티 인증 토큰 생성
         Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
-
-        //세션에 사용자 등록
         SecurityContextHolder.getContext().setAuthentication(authToken);
 
         filterChain.doFilter(request, response);
+    }
+
+
+    private String getRefreshTokenFromCookies(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("refresh".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
+    }
+
+    private void sendErrorResponse(HttpServletResponse response, String message, int statusCode) throws IOException {
+        response.setStatus(statusCode);
+        PrintWriter writer = response.getWriter();
+        writer.print(message);
     }
 
     private Cookie createCookie(String key, String value) {
