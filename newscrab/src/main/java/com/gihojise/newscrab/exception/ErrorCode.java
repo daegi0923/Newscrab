@@ -17,6 +17,9 @@ public enum ErrorCode {
 
     ALREADY_LIKED(HttpStatus.CONFLICT, "이미 좋아요를 누른 뉴스입니다."),
 
+    // VOCA
+    VOCA_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 단어를 찾을 수 없습니다."),
+
     // 필요한 에러 코드들 계속 추가
     ;
 
