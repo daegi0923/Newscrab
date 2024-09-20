@@ -13,7 +13,7 @@ const LandingPage: React.FC = () => {
             <Link to="/signup1">회원가입 페이지</Link>
           </li>
           <li>
-            <Link to="/mainVoca">단어장 페이지</Link>
+            <Link to="/voca">단어장 페이지</Link>
           </li>
           <li>
             <Link to="/mainNews">MainNews 페이지</Link>
