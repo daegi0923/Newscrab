@@ -46,6 +46,9 @@ public class News extends BaseTimeEntity {
     @ColumnDefault("0")
     private Integer scrapCnt;
 
+    @OneToMany(mappedBy = "news", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<UserNewsLike> likes; // 뉴스에 대한 찜 목록
+
     @OneToMany(mappedBy = "news", cascade = CascadeType.ALL)
     private Set<NewsPhoto> newsPhotos;
 
