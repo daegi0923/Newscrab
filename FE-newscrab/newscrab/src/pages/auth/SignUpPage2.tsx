@@ -103,14 +103,14 @@ const SaveButton = styled.button`
 
 const SignUpPage2: React.FC = () => {
   const location = useLocation();
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
   const { signupForm } = location.state; // 앞에서 전달 받은 form
   const [selectedIndustries, setSelectedIndustries] = useState<Array<{ img: string, industryId: number, industryName: string } | null>>([null, null, null]);
   const [availableIndustries, setAvailableIndustries] = useState(words.filter((industry) => industry.industryId !== 16));
 
   const handleDragStart = (event: React.DragEvent<HTMLDivElement>, industry: { img: string, industryId: number, industryName: string }) => {
     event.dataTransfer.setData('industry', JSON.stringify(industry)); // 객체를 JSON으로 직렬화하여 전달
-
+ 
     const dragImg = new Image();
     dragImg.src = industry.img;
     dragImg.onload = () => {
@@ -155,26 +155,26 @@ const SignUpPage2: React.FC = () => {
     };
     console.log("회원가입 데이터:", updatedSignupForm);
 
-    // try {
-    //   const response = await axios.post('https://newscrab.duckdns.org/users/register', {
-    //     loginId: updatedSignupForm.loginId,
-    //     password: updatedSignupForm.password,
-    //     name: updatedSignupForm.nickname,
-    //     email: updatedSignupForm.email,
-    //     birthday: updatedSignupForm.birthday,
-    //     gender: updatedSignupForm.gender,
-    //     userIndustry: updatedSignupForm.userIndustry
-    //   });
+    try {
+      const response = await axios.post('https://newscrab.duckdns.org/users/register', {
+        loginId: updatedSignupForm.loginId,
+        password: updatedSignupForm.password,
+        name: updatedSignupForm.nickname,
+        email: updatedSignupForm.email,
+        birthday: updatedSignupForm.birthday,
+        gender: updatedSignupForm.gender,
+        userIndustry: updatedSignupForm.userIndustry
+      });
 
-    //   // 회원가입 성공 시, 다른 페이지로 이동
-    //   if (response.status === 200) {
-    //     alert('회원가입 성공!');
-    //     navigate('/mainNews'); // 예시로 로그인 페이지로 이동
-    //   }
-    // } catch (error) {
-    //   console.error('회원가입 실패:', error);
-    //   alert('회원가입 중 오류가 발생했습니다.');
-    // }
+      // 회원가입 성공 시, 다른 페이지로 이동
+      if (response.status === 200) {
+        alert('회원가입 성공!');
+        navigate('/mainNews'); // 예시로 로그인 페이지로 이동
+      }
+    } catch (error) {
+      console.error('회원가입 실패:', error);
+      alert('회원가입 중 오류가 발생했습니다.');
+    }
   };
 
   return (

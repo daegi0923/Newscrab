@@ -2,6 +2,10 @@ import styled, { createGlobalStyle } from 'styled-components';
 import Login from '../../assets/auth/login.png';
 import BackgroundImage from '../../assets/auth/bg.png';
 import Input from '@common/InputBox';
+// import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { loginLoading } from '../../store/user/login'
 
 const GlobalStyle = createGlobalStyle`
   body, html {
@@ -53,14 +57,41 @@ const LoginButton = styled.button`
 `;
 
 const LoginPage: React.FC = () => {
+  // const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [loginForm, setLoginForm] = useState({
+    loginId: "",
+    password: "",
+  });
+  const [errorMessage, setErrorMessage] = useState("");
+  const isFormValid = loginForm.loginId !== "" && loginForm.password !== "";
+  
+  const handleLogin = () => {
+    if (isFormValid) {
+      dispatch(
+        loginLoading({
+          loginId: loginForm.loginId,
+          password: loginForm.password,
+        })
+      );
+    } else {
+      setErrorMessage("아이디와 비밀번호를 모두 입력하세요.");
+    }
+  };
+  
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setLoginForm({...loginForm, [e.target.name]: e.target.value });
+  };
+
   return (
     <>
       <GlobalStyle />  {/* 글로벌 스타일 적용 */}
       <LoginContainer>
         <FormContainer>
-          <Input type="text" label="아이디" placeholder='아이디를 입력하세요' />
-          <Input type="password" label="비밀번호" placeholder='비밀번호를 입력하세요' />
-          <LoginButton>로그인</LoginButton>
+          <Input name="loginId" type="text" label="아이디" placeholder='아이디를 입력하세요' value={loginForm.loginId} onChange={handleChange}/>
+          <Input name="password" type="password" label="비밀번호" placeholder='비밀번호를 입력하세요' value={loginForm.password} onChange={handleChange} />
+          <LoginButton onClick={handleLogin} disabled={!isFormValid}>로그인</LoginButton>
+          {errorMessage && <p>{errorMessage}</p>}
         </FormContainer>
         <LoginImage src={Login} alt="loginImage" />
       </LoginContainer>
