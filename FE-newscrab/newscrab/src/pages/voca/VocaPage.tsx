@@ -140,7 +140,7 @@ const VocaPage: React.FC = () => {
           <VocaContainer>
             <Tab options={tabOptions} onFilterChange={handleFilterChange} activeFilter={filter} />
             {isDropdownOpen && (
-              <DropDown words={words} handleIndustrySelect={handleIndustrySelect} />
+              <DropDown dropdownIndustries={words} handleIndustrySelect={handleIndustrySelect} />
             )}
             <CardContainer>
               {getCurrentPageData().map((word) => (
