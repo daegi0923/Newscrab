@@ -13,7 +13,7 @@ export const getMockNews = async (page: number): Promise<MockData> => {
   // 목업 데이터 생성 함수
   const generateMockNews = async (id: number) => {
     const randomImageId = Math.floor(Math.random() * 1000); // 1~1000 사이의 랜덤 이미지 ID 생성
-    const photoUrl = `https://picsum.photos/id/${randomImageId}/100/80`; // Lorem Picsum에서 랜덤 이미지
+    const photoUrl = `https://picsum.photos/id/${randomImageId}/600/600`; // Lorem Picsum에서 랜덤 이미지
     const defaultImageUrl = "https://picsum.photos/100/80"; // 고정된 크기의 랜덤 이미지
 
     return {

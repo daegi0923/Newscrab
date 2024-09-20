@@ -9,13 +9,13 @@ const HeaderContainer = styled.div`
 `;
 
 const HeaderImage = styled.img`
-  margin-top: 1%;
+  margin-top: 3%;
   max-width: 100%;
   height: auto;
 `;
 
 const Divider = styled.hr`
-  width: 90%;
+  width: 100%;
   border: none;
   height: 1px;
   background-color: #ccc;
