@@ -1,11 +1,15 @@
 package com.gihojise.newscrab.service;
 
+import com.gihojise.newscrab.domain.News;
+import com.gihojise.newscrab.domain.User;
 import com.gihojise.newscrab.domain.Voca;
 import com.gihojise.newscrab.dto.request.VocaAddRequestDto;
 import com.gihojise.newscrab.dto.response.VocaListResponseDto;
 import com.gihojise.newscrab.dto.response.VocaResponseDto;
 import com.gihojise.newscrab.exception.ErrorCode;
 import com.gihojise.newscrab.exception.NewscrabException;
+import com.gihojise.newscrab.repository.NewsRepository;
+import com.gihojise.newscrab.repository.UserRepository;
 import com.gihojise.newscrab.repository.VocaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,6 +23,8 @@ import java.util.stream.Collectors;
 public class VocaService {
 
     private final VocaRepository vocaRepository;
+    private final NewsRepository newsRepository;
+    private final UserRepository userRepository;
 
     // 단어 목록 조회
     @Transactional(readOnly = true)
@@ -41,16 +47,31 @@ public class VocaService {
                 .orElseThrow(() -> new NewscrabException(ErrorCode.VOCA_NOT_FOUND));
         return convertToDto(voca);
     }
-//
-//    // 단어 추가
-//    @Transactional
-//    public void addVoca(VocaAddRequestDto vocaAddRequestDto) {
-//        Voca voca = Voca.builder()
-//                .vocaName(vocaAddRequestDto.getVocaName())
-//                .vocaDesc(vocaAddRequestDto.getVocaDesc())
-//                .build();
-//        vocaRepository.save(voca);
-//    }
+
+    // 단어 추가
+    @Transactional
+    public void addVoca(VocaAddRequestDto vocaAddRequestDto, int userId) {
+        // User 객체를 userId로 조회
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NewscrabException(ErrorCode.USER_NOT_FOUND));
+
+        // News 객체를 newsId로 조회
+        News news = newsRepository.findById(vocaAddRequestDto.getNewsId())
+                .orElseThrow(() -> new NewscrabException(ErrorCode.NEWS_NOT_FOUND));
+
+        // Voca 엔티티 생성 및 저장
+        Voca voca = Voca.builder()
+                .news(news)
+                .user(user) // 조회된 User 객체 설정
+                .vocaName(vocaAddRequestDto.getVocaName())
+                .vocaDesc(vocaAddRequestDto.getVocaDesc())
+                .sentence(vocaAddRequestDto.getSentence())
+                .industryId(vocaAddRequestDto.getIndustryId())
+                .build();
+
+        vocaRepository.save(voca);
+    }
+
 //
 //    // 단어 수정
 //    @Transactional

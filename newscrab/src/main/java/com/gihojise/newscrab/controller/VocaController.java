@@ -30,13 +30,13 @@ public class VocaController {
         VocaResponseDto response = vocaService.getVocaDetail(termId);
         return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "단어 상세 조회 성공", response));
     }
-//
-//    // 3. 단어 추가
-//    @PostMapping
-//    public ResponseEntity<ApiResponse<Void>> addVoca(@RequestBody VocaAddRequestDto vocaAddRequestDto) {
-//        vocaService.addVoca(vocaAddRequestDto);
-//        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.of(HttpStatus.CREATED.value(), HttpStatus.CREATED.getReasonPhrase(), "단어 추가 성공", null));
-//    }
+
+    // 3. 단어 추가
+    @PostMapping
+    public ResponseEntity<ApiResponse<Void>> addVoca(@RequestBody VocaAddRequestDto vocaAddRequestDto, @RequestParam int userId) {
+        vocaService.addVoca(vocaAddRequestDto, userId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.of(HttpStatus.CREATED.value(), HttpStatus.CREATED.getReasonPhrase(), "단어 추가 성공", null));
+    }
 //
 //    // 4. 단어 수정
 //    @PutMapping("/{termId}")
