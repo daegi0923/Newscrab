@@ -18,6 +18,7 @@ import UpdatedAtScrapPage from "@pages/scrap/UpdatedAtScrapPage";
 import FilterScrapPage from "@pages/scrap/FilterScrapPage";
 // 단어장
 import MainVoca from "@pages/voca/VocaPage";
+import VocaDetail from "@pages/voca/VocaDetailPage";
 
 const AppRouter: React.FC = () => {
   return (
@@ -45,7 +46,8 @@ const AppRouter: React.FC = () => {
         <Route path="/filterScrap" element={<FilterScrapPage />} />
 
         {/* 단어장 */}
-        <Route path="/mainVoca" element={<MainVoca />} />
+        <Route path="/voca" element={<MainVoca />} />
+        <Route path="/voca/:vocaId" element={<VocaDetail />} />
       </Routes>
     </Router>
   );
