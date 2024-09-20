@@ -3,6 +3,7 @@ kind: Service
 metadata:
   name: mysql-service
 spec:
+  type: NodePort  # NodePort로 Service를 expose
   selector:
     app: mysql
   ports:
