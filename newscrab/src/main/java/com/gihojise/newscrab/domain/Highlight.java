@@ -4,6 +4,8 @@ import com.gihojise.newscrab.enums.HighlightColor;
 import jakarta.persistence.*;
 import lombok.Getter;
 import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "highlight")
@@ -16,6 +18,7 @@ public class Highlight {
     private Integer highlightNo;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "scrap_id", nullable = false)
     private Scrap scrap;
 

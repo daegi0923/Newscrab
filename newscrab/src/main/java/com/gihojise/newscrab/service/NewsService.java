@@ -126,7 +126,7 @@ public class NewsService {
                 .map(NewsPhoto::getPhotoUrl)
                 .toList();
 
-        // 관련 뉴스 객체 가져오기
+        // 관련 뉴스 객체 가져오기760
         News relatedNews1 = news.getRelatedNews1();
         News relatedNews2 = news.getRelatedNews2();
         News relatedNews3 = news.getRelatedNews3();

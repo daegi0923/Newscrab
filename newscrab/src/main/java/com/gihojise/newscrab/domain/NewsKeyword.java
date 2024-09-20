@@ -2,6 +2,8 @@ package com.gihojise.newscrab.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "news_keyword")
@@ -14,10 +16,12 @@ public class NewsKeyword {
     private Integer keywordId;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "news_id", nullable = false)
     private News news;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "industry_id", nullable = false)
     private Industry industry;
 
