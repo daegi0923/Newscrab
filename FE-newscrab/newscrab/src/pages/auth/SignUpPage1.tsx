@@ -5,6 +5,8 @@ import BackgroundImage from '../../assets/auth/bg.png';
 import Input from '@common/InputBox';
 import RadioButton from '@common/RadioButton';
 import Button from '@common/Button';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const GlobalStyle = createGlobalStyle`
   body, html {
@@ -75,9 +77,115 @@ const DuplicateButton = styled.button`
 const SignUpPage1: React.FC = () => {
   const navigate = useNavigate();
 
-  const handleNext = () => {
-    navigate("/signup2");
+  // Form 상태 관리
+  const [signupForm, setSignupForm] = useState({
+    loginId: "",
+    password: "",
+    passwordConfirm: "",
+    nickname: "", 
+    email: "",
+    birthday: "",
+    gender: "male", // 기본값: 남성
+    userIndustry: []  // 관심 분야는 이후 처리
+  });
+  
+  const [successMessage, setSuccessMessage] = useState<string>(""); // 성공 메시지 상태
+  // 유효성 검사 에러 메시지
+  const [errors, setErrors] = useState({
+    loginId: "",
+    password: "",
+    passwordConfirm: "",
+    email: "",
+    birthday: "",
+    check: ""
+  });
+  
+  // 입력 필드 변경 핸들러
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setSignupForm({ ...signupForm, [name]: value });
   };
+
+  // ID 유효성 검사
+  useEffect(() => {
+    if (signupForm.loginId && (signupForm.loginId.length < 5 || signupForm.loginId.length > 20)) {
+      setErrors((prevErrors) => ({ ...prevErrors, loginId: "ID는 5~20자 사이여야 합니다." }));
+    } else {
+      setErrors((prevErrors) => ({ ...prevErrors, loginId: "" }));
+    }
+  }, [signupForm.loginId]);
+
+  // 비밀번호 유효성 검사
+  useEffect(() => {
+    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,16}$/;
+    if (signupForm.password && !passwordRegex.test(signupForm.password)) {
+      setErrors((prevErrors) => ({ ...prevErrors, password: "8~16자, 영어, 숫자, 특수문자 조합이어야 합니다." }));
+    } else {
+      setErrors((prevErrors) => ({ ...prevErrors, password: "" }));
+    }
+    if (signupForm.passwordConfirm && signupForm.password !== signupForm.passwordConfirm) {
+      setErrors((prevErrors) => ({ ...prevErrors, passwordConfirm: "비밀번호가 일치하지 않습니다." }));
+    } else {
+      setErrors((prevErrors) => ({ ...prevErrors, passwordConfirm: "" }));
+    }
+  }, [signupForm.password, signupForm.passwordConfirm]);
+
+  // 이메일 유효성 검사
+  useEffect(() => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (signupForm.email && !emailRegex.test(signupForm.email)) {
+      setErrors((prevErrors) => ({ ...prevErrors, email: "올바른 이메일 형식을 입력하세요." }));
+    } else {
+      setErrors((prevErrors) => ({ ...prevErrors, email: "" }));
+    }
+  }, [signupForm.email]);
+
+  // 생년월일 유효성 검사
+  useEffect(() => {
+    if (signupForm.birthday === "") {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        birthday: "생년월일을 선택하세요.",
+      }));
+    } else {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        birthday: "",
+      }));
+    }
+  }, [signupForm.birthday]);
+
+  // ID 중복 확인
+  const handleIdCheck = async () => {
+    try {
+      const response = await axios.post("https://newscrab.duckdns.org/user/nickname" , { loginId : signupForm.loginId });
+      if (response.data.exists) {
+        setErrors((prevErrors) => ({ ...prevErrors, loginId : "이미 사용 중인 ID입니다." }));
+      } else {
+        setErrors((prevErrors) => ({ ...prevErrors, loginId : "" }));
+        setSuccessMessage("사용 가능한 아이디입니다.");
+      }
+    } catch (error) {
+      console.error("ID 중복 확인 실패:", error);
+    }
+  };
+
+  const isFormValid = Object.values(errors).every((error) => error === "") &&
+  (Object.keys(signupForm) as (keyof typeof signupForm)[]).every((key) => {
+    // interest 필드는 비어 있어도 통과하도록
+    if (key === "userIndustry") return true;
+    return signupForm[key] !== "";
+  });
+
+  const handleNext = () => {
+    console.log("Signup Form Values: ", signupForm);
+    console.log("Errors: ", errors);
+
+    if (isFormValid) {
+      navigate("/signup2", { state: { signupForm } });
+  } else {
+    window.alert("모든 정보를 필수로 입력해야 합니다.");
+  }};
 
   return (
     <>
@@ -85,14 +193,16 @@ const SignUpPage1: React.FC = () => {
       <SignUpContainer>
         <FormContainer>
           <div style={{ position: 'relative' }}>
-            <Input type="text" label="아이디" placeholder="아이디를 입력하세요" />
-            <DuplicateButton>중복 확인</DuplicateButton>
+            <Input name="loginId" type="text" label="아이디" placeholder="아이디를 입력하세요" value={signupForm.loginId} onChange={handleChange} error={errors.loginId}/>
+            {successMessage && <p style={{ color: "green", fontSize: "12px" }}>{successMessage}</p>}
+            <DuplicateButton onClick={handleIdCheck}>중복 확인</DuplicateButton>
           </div>
-          <Input type="text" label="닉네임" placeholder="닉네임을 입력하세요" />
-          <Input type="password" label="비밀번호" placeholder="비밀번호를 입력하세요" />
-          <Input type="email" label="이메일" placeholder="이메일을 입력하세요" />
-          <Input type="password" label="비밀번호 확인" placeholder="비밀번호를 입력하세요" />
-          <Input type="date" label="생년월일" placeholder="생년월일을 입력하세요" />
+          <Input name="nickname" type="text" label="닉네임" placeholder="닉네임을 입력하세요" value={signupForm.nickname} onChange={handleChange}/>
+          <Input name="password" type="password" label="비밀번호" placeholder="비밀번호를 입력하세요" value={signupForm.password} onChange={handleChange} error={errors.password}/>
+          <Input name="email" type="email" label="이메일" placeholder="이메일을 입력하세요" value={signupForm.email} onChange={handleChange} error={errors.email}/>
+          <Input name="passwordConfirm" type="password" label="비밀번호 확인" placeholder="비밀번호를 입력하세요" value={signupForm.passwordConfirm} onChange={handleChange} error={errors.passwordConfirm}/>
+          <Input name="birthday" type="date" label="생년월일" placeholder="생년월일을 입력하세요" 
+            value={signupForm.birthday} onChange={handleChange}/>
           
           {/* 성별 라벨 추가 */}
           <Label>성별</Label>
@@ -104,8 +214,10 @@ const SignUpPage1: React.FC = () => {
               { value: 'female', label: '여성' },
               { value: 'other', label: '그 외' },
             ]}
+            value={signupForm.gender} // 선택된 값을 상태에 맞게 설정
+            onChange={handleChange} // 값이 변경될 때 상태 업데이트
           />
-          
+          {errors.check && <p style={{ color: "red" }}>{errors.check}</p>}
           <ButtonWrapper>
           <Button onClick={handleNext}>다음</Button>
           </ButtonWrapper>

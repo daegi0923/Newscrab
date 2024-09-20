@@ -1,96 +1,163 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import GlobalStyle from "@components/GlobalStyle";
-import Header from "@components/common/Header";
-import SearchBar from "@components/common/SearchBar";
+import VocaCommon from "@pages/voca/VocaCommon";
+import Tab from "@components/voca/Tab";
+import { tabOptions } from "@components/voca/TabOptions";
 import styled from "styled-components";
-// import { useState } from 'react'
-
-// 이미지 import
-// import imgAppliances from "@assets/voca/가전.png";
-// import imgFinance from "@assets/voca/금융.png";
-// import imgRobotics from "@assets/voca/기계로봇.png";
-// import imgDisplay from "@assets/voca/디스플레이.png";
-// import imgBioHealth from "@assets/voca/바이오헬스.png";
-// import imgSemiconductor from "@assets/voca/반도체.png";
-// import imgTextile from "@assets/voca/섬유.png";
-// import imgBatteries from "@assets/voca/이차전지.png";
-// import imgAutomobile from "@assets/voca/자동차.png";
-// import imgOil from "@assets/voca/정유.png";
-// import imgShipbuilding from "@assets/voca/조선.png";
-// import imgSteel from "@assets/voca/철강.png";
-// import imgComputer from "@assets/voca/컴퓨터.png";
-// import imgTelecom from "@assets/voca/통신장비.png";
-// import imgChemicals from "@assets/voca/화학.png";
-
-// 프론트엔드에서 사용되는 이미지 데이터
-// const words = [
-//   { id: 1, word: "가전", img: imgAppliances },
-//   { id: 2, word: "금융", img: imgFinance },
-//   { id: 3, word: "기계로봇", img: imgRobotics },
-//   { id: 4, word: "디스플레이", img: imgDisplay },
-//   { id: 5, word: "바이오헬스", img: imgBioHealth },
-//   { id: 6, word: "반도체", img: imgSemiconductor },
-//   { id: 7, word: "섬유", img: imgTextile },
-//   { id: 8, word: "이차전지", img: imgBatteries },
-//   { id: 9, word: "자동차", img: imgAutomobile },
-//   { id: 10, word: "정유", img: imgOil },
-//   { id: 11, word: "조선", img: imgShipbuilding },
-//   { id: 12, word: "철강", img: imgSteel },
-//   { id: 13, word: "컴퓨터", img: imgComputer },
-//   { id: 14, word: "통신장비", img: imgTelecom },
-//   { id: 15, word: "화학", img: imgChemicals },
-// ];
-
-// const mockWords = [
-//   { id: 1, term: "조선", definition: "LNG선", dateAdded: "2024.05.07" },
-//   {
-//     id: 2,
-//     term: "바이오헬스",
-//     definition: "치코리타",
-//     dateAdded: "2024.06.07",
-//   },
-//   { id: 3, term: "금융", definition: "오트밀", dateAdded: "2024.07.07" },
-//   { id: 4, term: "정유", definition: "하리보", dateAdded: "2024.08.07" },
-//   { id: 5, term: "철강", definition: "꼬숨이", dateAdded: "2024.09.07" },
-// ];
+import { words, mockWords } from "@components/voca/VocaList";
+import { MockWord, Word, MockWordWithImages } from "@components/voca/VocaTypes";
+import AdImage from "@components/common/Advertise";
+import Card from "@components/voca/VocaCard";
+import DropDown from "@components/voca/DropDown"
+import Pagination from "@components/voca/Pagination"
+import SearchBar from "@components/common/SearchBar";
 
 const SearchContainer = styled.div`
-  // 전체 가로 중앙정렬
+  margin-top: -1%
 `;
 const VocaContainer = styled.div`
-  // 필터링이랑 카드 왼쪽에 맞추기
+  width: 70%;
+  margin-right: 5%;
+  margin-top: 2%;
 `;
+
 const CardContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 20px;
-`;
-const Card = styled.div`
-  width: 150px;
-  height: 220px;
-  background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 10px;
+  margin-top: 1%;
 `;
 
+const AdContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+`;
+
+// 데이터 매핑 함수: mockWords의 industryId와 words 배열의 industryId를 매칭
+const mapWordsWithImages = (mockWords: MockWord[], words: Word[]): MockWordWithImages[] => {
+  return mockWords.map((mockWord) => {
+    const matchedWord = words.find((word) => word.industryId === mockWord.industryId);
+    return { 
+      ...mockWord, 
+      img: matchedWord ? matchedWord.img : null, 
+      industryName: matchedWord ? matchedWord.industryName : null }; // 있으면 추가, 없으면 null
+  });
+};
+
 const VocaPage: React.FC = () => {
+  const navigate = useNavigate();
+  const mappedWords: MockWordWithImages[] = mapWordsWithImages(mockWords, words);
+  const [filter, setFilter] = useState<string>('mainVoca');
+  const [isDropdownOpen, setDropdownOpen] = useState(false);
+  const [selectedIndustryId, setSelectedIndustryId] = useState<number | null>(null);
+  const [sortedWords, setSortedWords] = useState<MockWordWithImages[]>(mappedWords);
+  const [searchText, setSearchText] = useState<string>('');
+  
+  // 페이지네이션
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const itemPerPage = 10;
+  const totalPages = Math.ceil(sortedWords.length / itemPerPage);
+
+  const sortWords = (filterType: string, wordsToSort: MockWordWithImages[]): MockWordWithImages[] => {
+    let sorted;
+    if (filterType === 'mainVoca') {
+      sorted = [...wordsToSort].sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+    } else if (filterType === 'orderVoca') {
+      sorted = [...wordsToSort].sort((a, b) => a.vocaName.localeCompare(b.vocaName, 'ko-KR'));
+    } else {
+      sorted = wordsToSort;
+    }
+    return sorted;
+  };
+
+  const filterIndustry = (industryId: number | null) => {
+    return industryId ? mappedWords.filter(word => word.industryId === industryId) : mappedWords;
+  };
+
+  const filterSearchResults = () => {
+    if (searchText) {
+      // 검색어가 있으면 모든 데이터 대상
+      return mappedWords.filter((word) =>
+        word.vocaName.toLowerCase().includes(searchText.toLowerCase())
+      );
+    }
+    // 검색어가 없으면 기존 적용
+    return sortedWords;
+  };
+
+  // 현재 페이지에 맞는 데이터 추출
+  const getCurrentPageData = () => {
+    const searchFilteredWords = filterSearchResults();
+    const startIndex = (currentPage - 1) * itemPerPage;
+    const endIndex = startIndex + itemPerPage;
+    return searchFilteredWords.slice(startIndex, endIndex);
+  };
+
+  useEffect(() => {
+    const filterWords = filterIndustry(selectedIndustryId);
+    setSortedWords(sortWords(filter, filterWords));
+  }, [filter, selectedIndustryId, mappedWords]);
+
+  const handleFilterChange = (newFilter: string) => {
+    setFilter(newFilter);
+    if (newFilter === 'filterVoca') {
+      setDropdownOpen(!isDropdownOpen);
+    } else {
+      setDropdownOpen(false);
+    }
+  };
+
+  const handleIndustrySelect = (industryId: number | null) => {
+    setSelectedIndustryId(industryId);
+    setDropdownOpen(false);
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+  
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const handleCardClick = (word: MockWordWithImages) => {
+    navigate(`/voca/${word.vocaId}`, { state: { word } }); // 클릭 시 해당 vocaId로 이동
+  };
+
   return (
     <div>
       <GlobalStyle />
-      <Header />
+      <VocaCommon />
       <SearchContainer>
-        <SearchBar />
-        <VocaContainer>
-          {/* 필터링 */}
-          <CardContainer>
-            <Card></Card>
-          </CardContainer>
-        </VocaContainer>
+        <SearchBar searchText={searchText} onSearchChange={setSearchText} />
+        <AdContainer>
+          <VocaContainer>
+            <Tab options={tabOptions} onFilterChange={handleFilterChange} activeFilter={filter} />
+            {isDropdownOpen && (
+              <DropDown words={words} handleIndustrySelect={handleIndustrySelect} />
+            )}
+            <CardContainer>
+              {getCurrentPageData().map((word) => (
+                <Card 
+                  key={word.vocaId}
+                  img={word.img}
+                  industryName={word.industryName}
+                  vocaName={word.vocaName}
+                  updatedAt={word.updatedAt}
+                  onClick={() => handleCardClick(word)}
+                />
+              ))}
+            </CardContainer>
+          </VocaContainer>
+          <AdImage />
+        </AdContainer>
+        {totalPages > 1 &&(<Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} onPrevPage={handlePrevPage} onNextPage={handleNextPage}/>)}
       </SearchContainer>
     </div>
   );

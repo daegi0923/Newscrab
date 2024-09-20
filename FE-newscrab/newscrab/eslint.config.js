@@ -23,6 +23,9 @@ export default tseslint.config(
         'warn',
         { allowConstantExport: true },
       ],
+    "@typescript-eslint/no-explicit-any": "off", // any 타입 경고 비활성화
+    "@typescript-eslint/explicit-module-boundary-types": "off", // 반환 타입 경고 비활성화
+    '@typescript-eslint/no-unused-vars': ['warn', { 'argsIgnorePattern': '^_' }],
     },
   },
 )
