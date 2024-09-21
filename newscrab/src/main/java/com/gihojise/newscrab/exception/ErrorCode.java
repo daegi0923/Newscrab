@@ -22,6 +22,11 @@ public enum ErrorCode {
 
     VOCA_NOT_MATCH_USER(HttpStatus.FORBIDDEN, "해당 단어는 사용자의 단어가 아닙니다."),
 
+
+    // Scrap
+    SCRAP_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 스크랩을 찾을 수 없습니다."),
+    USER_NOT_MATCH(HttpStatus.FORBIDDEN, "해당 스크랩은 사용자의 스크랩이 아닙니다."),
+
     // 필요한 에러 코드들 계속 추가
     ;
 

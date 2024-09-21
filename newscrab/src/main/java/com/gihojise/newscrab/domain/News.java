@@ -50,7 +50,7 @@ public class News extends BaseTimeEntity {
     private Set<UserNewsLike> likes; // 뉴스에 대한 찜 목록
 
     @OneToMany(mappedBy = "news", cascade = CascadeType.ALL)
-    private Set<NewsPhoto> newsPhotos;
+    private List<NewsPhoto> newsPhotos;
 
     @OneToMany(mappedBy = "news", cascade = CascadeType.ALL)
     private Set<NewsKeyword> newsKeywords;

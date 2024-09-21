@@ -1,0 +1,75 @@
+package com.gihojise.newscrab.controller;
+
+import com.gihojise.newscrab.dto.common.ApiResponse;
+import com.gihojise.newscrab.dto.request.ScrapAddRequestDto;
+import com.gihojise.newscrab.dto.response.NewsDetailResponseDto;
+import com.gihojise.newscrab.dto.response.NewsPageResponseDto;
+import com.gihojise.newscrab.dto.response.ScrapListResponseDto;
+import com.gihojise.newscrab.dto.response.ScrapResponseDto;
+import com.gihojise.newscrab.service.NewsService;
+import com.gihojise.newscrab.service.ScrapService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
+
+@RestController
+@RequestMapping("/api/v1/scrap")
+@RequiredArgsConstructor
+@Tag(name = "Scrap Controller", description = "스크랩 관리 API")
+public class ScrapController {
+
+    private final ScrapService scrapService;
+
+    // 1. 스크랩 목록 조회
+    @Operation(summary = "스크랩 목록 조회", description = "사용자가 스크랩한 모든 뉴스 목록을 조회합니다.")
+    @GetMapping
+    public ResponseEntity<ApiResponse<ScrapListResponseDto>> getAllScraps(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        ScrapListResponseDto response = scrapService.getAllScraps(page, size);
+        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "스크랩 목록 조회 성공", response));
+    }
+
+    // 2. 스크랩 상세 조회
+    @Operation(summary = "스크랩 상세 조회", description = "스크랩 ID로 스크랩 상세 정보를 조회합니다.")
+    @GetMapping("/{scrapId}")
+    public ResponseEntity<ApiResponse<ScrapResponseDto>> getScrapDetail(@RequestParam int userId, @PathVariable int scrapId) {
+        ScrapResponseDto response = scrapService.getScrapDetail(userId, scrapId);
+        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "스크랩 상세 조회 성공", response));
+    }
+
+    // 3. 스크랩 추가
+    @Operation(summary = "스크랩 추가", description = "스크랩을 추가합니다.")
+    @PostMapping
+    public ResponseEntity<ApiResponse<Void>> addScrap(@RequestParam int userId, @RequestBody ScrapAddRequestDto scrapAddRequestDto) {
+        scrapService.addScrap(userId, scrapAddRequestDto);
+
+        // TO DO
+        // 형광펜 추가 로직
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.of(HttpStatus.CREATED.value(), HttpStatus.CREATED.getReasonPhrase(), "스크랩 추가 성공", null));
+    }
+
+    // 4. 스크랩 수정
+    @Operation(summary = "스크랩 수정", description = "스크랩을 수정합니다.")
+    @PutMapping("/{scrapId}")
+    public ResponseEntity<ApiResponse<Void>> updateScrap(@RequestParam int userId, @PathVariable int scrapId, @RequestBody ScrapAddRequestDto scrapAddRequestDto) {
+        scrapService.updateScrap(userId, scrapId, scrapAddRequestDto);
+        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "스크랩 수정 성공", null));
+    }
+
+    // 5. 스크랩 삭제
+    @Operation(summary = "스크랩 삭제", description = "스크랩을 삭제합니다.")
+    @DeleteMapping("/{scrapId}")
+    public ResponseEntity<ApiResponse<Void>> deleteScrap(@RequestParam int userId, @PathVariable int scrapId) {
+        scrapService.deleteScrap(userId, scrapId);
+        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "스크랩 삭제 성공", null));
+    }
+
+}
