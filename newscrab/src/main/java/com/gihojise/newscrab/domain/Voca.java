@@ -1,13 +1,19 @@
 package com.gihojise.newscrab.domain;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Table(name = "voca")
 @Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Voca extends BaseTimeEntity {
 
     @Id
@@ -38,16 +44,32 @@ public class Voca extends BaseTimeEntity {
 
     // 연관 뉴스 1
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "related_news_id_1", nullable = false)
+    @JoinColumn(name = "related_news_id_1")
     private News relatedNews1;
 
     // 연관 뉴스 2
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "related_news_id_2", nullable = false)
+    @JoinColumn(name = "related_news_id_2")
     private News relatedNews2;
 
     // 연관 뉴스 3
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "related_news_id_3", nullable = false)
+    @JoinColumn(name = "related_news_id_3")
     private News relatedNews3;
+
+    public void update(String vocaName, String vocaDesc, String sentence, Integer industryId) {
+        if (vocaName != null) {
+            this.vocaName = vocaName;
+        }
+        if (vocaDesc != null) {
+            this.vocaDesc = vocaDesc;
+        }
+        if (sentence != null) {
+            this.sentence = sentence;
+        }
+        if (industryId != null) {
+            this.industryId = industryId;
+        }
+    }
+
 }

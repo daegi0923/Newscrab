@@ -20,6 +20,8 @@ public enum ErrorCode {
     // VOCA
     VOCA_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 단어를 찾을 수 없습니다."),
 
+    VOCA_NOT_MATCH_USER(HttpStatus.FORBIDDEN, "해당 단어는 사용자의 단어가 아닙니다."),
+
     // 필요한 에러 코드들 계속 추가
     ;
 
