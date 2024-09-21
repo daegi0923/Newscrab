@@ -33,22 +33,22 @@ public class VocaController {
 
     // 3. 단어 추가
     @PostMapping
-    public ResponseEntity<ApiResponse<Void>> addVoca(@RequestBody VocaAddRequestDto vocaAddRequestDto, @RequestParam int userId) {
+    public ResponseEntity<ApiResponse<Void>> addVoca(@RequestParam int userId, @RequestBody VocaAddRequestDto vocaAddRequestDto) {
         vocaService.addVoca(vocaAddRequestDto, userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.of(HttpStatus.CREATED.value(), HttpStatus.CREATED.getReasonPhrase(), "단어 추가 성공", null));
     }
-//
-//    // 4. 단어 수정
-//    @PutMapping("/{termId}")
-//    public ResponseEntity<ApiResponse<Void>> updateVoca(@PathVariable int termId, @RequestBody VocaAddRequestDto vocaAddRequestDto) {
-//        vocaService.updateVoca(termId, vocaAddRequestDto);
-//        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "단어 수정 성공", null));
-//    }
-//
-//    // 5. 단어 삭제
-//    @DeleteMapping("/{termId}")
-//    public ResponseEntity<ApiResponse<Void>> deleteVoca(@PathVariable int termId) {
-//        vocaService.deleteVoca(termId);
-//        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ApiResponse.of(HttpStatus.NO_CONTENT.value(), HttpStatus.NO_CONTENT.getReasonPhrase(), "단어 삭제 성공", null));
-//    }
+
+    // 4. 단어 수정
+    @PutMapping("/{termId}")
+    public ResponseEntity<ApiResponse<Void>> updateVoca(@RequestParam int userId, @PathVariable int termId, @RequestBody VocaAddRequestDto vocaAddRequestDto) {
+        vocaService.updateVoca(userId, termId, vocaAddRequestDto);
+        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "단어 수정 성공", null));
+    }
+
+    // 5. 단어 삭제
+    @DeleteMapping("/{termId}")
+    public ResponseEntity<ApiResponse<Void>> deleteVoca(@RequestParam int userId, @PathVariable int termId) {
+        vocaService.deleteVoca(userId, termId);
+        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "단어 삭제 성공", null));
+    }
 }

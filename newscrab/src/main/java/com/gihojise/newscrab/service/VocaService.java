@@ -72,23 +72,38 @@ public class VocaService {
         vocaRepository.save(voca);
     }
 
-//
-//    // 단어 수정
-//    @Transactional
-//    public void updateVoca(int termId, VocaAddRequestDto vocaAddRequestDto) {
-//        Voca voca = vocaRepository.findById(termId)
-//                .orElseThrow(() -> new NewscrabException(ErrorCode.VOCA_NOT_FOUND));
-//        voca.update(vocaAddRequestDto.getVocaName(), vocaAddRequestDto.getVocaDesc());
-//    }
-//
-//    // 단어 삭제
-//    @Transactional
-//    public void deleteVoca(int termId) {
-//        Voca voca = vocaRepository.findById(termId)
-//                .orElseThrow(() -> new NewscrabException(ErrorCode.VOCA_NOT_FOUND));
-//        vocaRepository.delete(voca);
-//    }
-//
+
+    // 단어 수정
+    @Transactional
+    public void updateVoca(int userId, int termId, VocaAddRequestDto vocaAddRequestDto) {
+        Voca voca = vocaRepository.findById(termId)
+                .orElseThrow(() -> new NewscrabException(ErrorCode.VOCA_NOT_FOUND));
+
+        // voca 의 userId와 다르면 예외
+        if (voca.getUser().getUserId() != userId) {
+            throw new NewscrabException(ErrorCode.VOCA_NOT_MATCH_USER);
+        }
+
+        // update
+        voca.update(vocaAddRequestDto.getVocaName(),
+                vocaAddRequestDto.getVocaDesc(),
+                vocaAddRequestDto.getSentence(),
+                vocaAddRequestDto.getIndustryId());
+    }
+
+    // 단어 삭제
+    @Transactional
+    public void deleteVoca(int userId, int termId) {
+        Voca voca = vocaRepository.findById(termId)
+                .orElseThrow(() -> new NewscrabException(ErrorCode.VOCA_NOT_FOUND));
+
+        if (voca.getUser().getUserId() != userId) {
+            throw new NewscrabException(ErrorCode.VOCA_NOT_MATCH_USER);
+        }
+
+        vocaRepository.delete(voca);
+    }
+
     // Voca를 VocaResponseDto로 변환하는 메서드
     private VocaResponseDto convertToDto(Voca voca) {
         return VocaResponseDto.builder()

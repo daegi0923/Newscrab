@@ -56,4 +56,20 @@ public class Voca extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "related_news_id_3")
     private News relatedNews3;
+
+    public void update(String vocaName, String vocaDesc, String sentence, Integer industryId) {
+        if (vocaName != null) {
+            this.vocaName = vocaName;
+        }
+        if (vocaDesc != null) {
+            this.vocaDesc = vocaDesc;
+        }
+        if (sentence != null) {
+            this.sentence = sentence;
+        }
+        if (industryId != null) {
+            this.industryId = industryId;
+        }
+    }
+
 }
