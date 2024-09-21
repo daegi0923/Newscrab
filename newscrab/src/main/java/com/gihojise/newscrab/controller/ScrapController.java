@@ -5,6 +5,7 @@ import com.gihojise.newscrab.dto.request.ScrapAddRequestDto;
 import com.gihojise.newscrab.dto.response.NewsDetailResponseDto;
 import com.gihojise.newscrab.dto.response.NewsPageResponseDto;
 import com.gihojise.newscrab.dto.response.ScrapListResponseDto;
+import com.gihojise.newscrab.dto.response.ScrapResponseDto;
 import com.gihojise.newscrab.service.NewsService;
 import com.gihojise.newscrab.service.ScrapService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,8 +39,8 @@ public class ScrapController {
     // 2. 스크랩 상세 조회
     @Operation(summary = "스크랩 상세 조회", description = "스크랩 ID로 스크랩 상세 정보를 조회합니다.")
     @GetMapping("/{scrapId}")
-    public ResponseEntity<ApiResponse<NewsPageResponseDto>> getScrapDetail(@RequestParam int userId, @PathVariable int scrapId) {
-        NewsPageResponseDto response = scrapService.getScrapDetail(userId, scrapId);
+    public ResponseEntity<ApiResponse<ScrapResponseDto>> getScrapDetail(@RequestParam int userId, @PathVariable int scrapId) {
+        ScrapResponseDto response = scrapService.getScrapDetail(userId, scrapId);
         return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "스크랩 상세 조회 성공", response));
     }
 
@@ -48,6 +49,10 @@ public class ScrapController {
     @PostMapping
     public ResponseEntity<ApiResponse<Void>> addScrap(@RequestParam int userId, @RequestBody ScrapAddRequestDto scrapAddRequestDto) {
         scrapService.addScrap(userId, scrapAddRequestDto);
+
+        // TO DO
+        // 형광펜 추가 로직
+
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.of(HttpStatus.CREATED.value(), HttpStatus.CREATED.getReasonPhrase(), "스크랩 추가 성공", null));
     }
 

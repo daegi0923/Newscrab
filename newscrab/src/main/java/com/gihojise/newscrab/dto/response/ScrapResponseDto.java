@@ -13,6 +13,7 @@ import java.util.List;
 public class ScrapResponseDto {
 
     private int scrapId;
+    private int newsId;
     private String newsTitle;
     private List<String> photolist;
     private String scrapSummary;

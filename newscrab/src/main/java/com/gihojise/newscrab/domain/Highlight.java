@@ -14,8 +14,8 @@ public class Highlight {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "highlight_no", nullable = false)
-    private Integer highlightNo;
+    @Column(name = "highlight_id", nullable = false)
+    private Integer highlightId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
