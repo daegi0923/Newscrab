@@ -1,4 +1,4 @@
-package com.gihojise.newscrab.service;
+package com.gihojise.newscrab.util;
 
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,8 +25,12 @@ public class JWTUtil {
 
 
     public Boolean isExpired(String token) {
-
-        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
+        try{
+            Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());;
+            return false;
+        } catch (Exception e) {
+            return true;
+        }
     }
 
     public String getCategory(String token) {

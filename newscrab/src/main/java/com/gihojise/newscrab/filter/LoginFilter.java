@@ -2,7 +2,8 @@ package com.gihojise.newscrab.filter;
 
 import com.gihojise.newscrab.domain.CustomUserDetails;
 import com.gihojise.newscrab.domain.RefreshEntity;
-import com.gihojise.newscrab.service.JWTUtil;
+import com.gihojise.newscrab.service.RefreshService;
+import com.gihojise.newscrab.util.JWTUtil;
 import com.gihojise.newscrab.repository.RefreshRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.Cookie;
@@ -22,17 +23,17 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
-    private final RefreshRepository refreshRepository;
+    private final RefreshService refreshService;
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
 
         //클라이언트 요청에서 username, password 추출
-        String username = request.getParameter("loginId");
+        String loginId = request.getParameter("loginId");
         String password = obtainPassword(request);
 
         //스프링 시큐리티에서 username과 password를 검증하기 위해서는 token에 담아야 함
-        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(username, password, null);
+        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(loginId, password, null);
 
         //token에 담은 검증을 위한 AuthenticationManager로 전달
         return authenticationManager.authenticate(authToken);
@@ -48,7 +49,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String refresh = jwtUtil.createJwt("refresh", loginId, 60000L);
 
         //Refresh 토큰 저장
-        addRefreshEntity(loginId, refresh, 60000L);
+        refreshService.saveRefreshToken(refresh);
 
         //응답 설정
         response.addHeader("Authorization", "Bearer " + access);
@@ -67,23 +68,9 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         Cookie cookie = new Cookie(key, value);
         cookie.setMaxAge(60);
         cookie.setSecure(true);
-        //cookie.setPath("/");
+        cookie.setPath("/");
         cookie.setHttpOnly(true);
 
         return cookie;
     }
-
-    private void addRefreshEntity(String username, String refresh, Long expiredMs) {
-
-        Date date = new Date(System.currentTimeMillis() + expiredMs);
-
-        RefreshEntity refreshEntity = RefreshEntity.builder()
-                .loginId(username)
-                .refresh(refresh)
-                .expiration(date.toString())
-                .build();
-
-        refreshRepository.save(refreshEntity);
-    }
-
 }

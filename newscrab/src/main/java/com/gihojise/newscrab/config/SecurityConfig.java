@@ -1,11 +1,12 @@
 package com.gihojise.newscrab.config;
 
-import com.gihojise.newscrab.filter.CustomLogoutFilter;
+import com.gihojise.newscrab.filter.LogoutFilter;
 import com.gihojise.newscrab.filter.JWTFilter;
 import com.gihojise.newscrab.filter.LoginFilter;
 import com.gihojise.newscrab.repository.RefreshRepository;
 import com.gihojise.newscrab.repository.UserRepository;
-import com.gihojise.newscrab.service.JWTUtil;
+import com.gihojise.newscrab.util.JWTUtil;
+import com.gihojise.newscrab.service.RefreshService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -19,7 +20,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
@@ -36,6 +36,7 @@ public class SecurityConfig {
     private final JWTUtil jwtUtil;
     private final UserRepository userRepository;
     private final RefreshRepository refreshRepository;
+    private final RefreshService refreshService;
 
     //AuthenticationManager Bean 등록
     @Bean
@@ -53,7 +54,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        LoginFilter loginFilter = new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, refreshRepository);
+        LoginFilter loginFilter = new LoginFilter(authenticationManager(authenticationConfiguration), jwtUtil, refreshService);
         loginFilter.setFilterProcessesUrl("/api/v1/user/login");
 
         http
@@ -92,13 +93,13 @@ public class SecurityConfig {
                         .anyRequest().authenticated());
 
         http
-                .addFilterBefore(new JWTFilter(jwtUtil,userRepository,refreshRepository), LoginFilter.class);
+                .addFilterBefore(new JWTFilter(jwtUtil,userRepository,refreshService), LoginFilter.class);
 
         http
                 .addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class);
 
         http
-                .addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshRepository), LogoutFilter.class);
+                .addFilterBefore(new LogoutFilter(refreshService), org.springframework.security.web.authentication.logout.LogoutFilter.class);
 
         http
                 .sessionManagement((session) -> session

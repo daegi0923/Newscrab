@@ -1,9 +1,6 @@
 package com.gihojise.newscrab.filter;
 
-import com.gihojise.newscrab.domain.RefreshEntity;
-import com.gihojise.newscrab.service.JWTUtil;
-import com.gihojise.newscrab.repository.RefreshRepository;
-import io.jsonwebtoken.ExpiredJwtException;
+import com.gihojise.newscrab.service.RefreshService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
@@ -17,10 +14,9 @@ import org.springframework.web.filter.GenericFilterBean;
 import java.io.IOException;
 
 @RequiredArgsConstructor
-public class CustomLogoutFilter extends GenericFilterBean {
+public class LogoutFilter extends GenericFilterBean {
 
-    private final JWTUtil jwtUtil;
-    private final RefreshRepository refreshRepository;
+    private final RefreshService refreshService;
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -47,6 +43,13 @@ public class CustomLogoutFilter extends GenericFilterBean {
         //get refresh token
         String refresh = null;
         Cookie[] cookies = request.getCookies();
+
+        //refresh null check
+        if (cookies == null) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
+
         for (Cookie cookie : cookies) {
 
             if (cookie.getName().equals("refresh")) {
@@ -57,54 +60,39 @@ public class CustomLogoutFilter extends GenericFilterBean {
 
         //refresh null check
         if (refresh == null) {
-            System.out.println("1");
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
 
-        //expired check
-        try {
-            jwtUtil.isExpired(refresh);
-        } catch (ExpiredJwtException e) {
-            System.out.println("2");
+        //refresh token expired check
+        if(refreshService.isRefreshTokenExpired(refresh)) {
             //response status code
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
 
         // 토큰이 refresh인지 확인 (발급시 페이로드에 명시)
-        String category = jwtUtil.getCategory(refresh);
-        if (!category.equals("refresh")) {
-            System.out.println("3");
+        if (!refreshService.confirmRefreshToken(refresh)) {
             //response status code
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
 
         //DB에 저장되어 있는지 확인
-        RefreshEntity targetRefresh = refreshRepository.findByRefresh(refresh);
-        if (targetRefresh == null) {
-            System.out.println("4");
-            System.out.println(targetRefresh);
+        if (!refreshService.existsByRefresh(refresh)) {
             //response status code
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
 
-        System.out.println("-------------------");
-        System.out.println(refresh);
-        System.out.println("-------------------");
-
         //로그아웃 진행
         //Refresh 토큰 DB에서 제거
-        refreshRepository.deleteById(refresh);
+        refreshService.deleteRefreshTokenByRefresh(refresh);
 
-        System.out.println("123");
-
-        //Refresh 토큰 Cookie 값 0
+        //Refresh 토큰 Cookie 초기화
         Cookie cookie = new Cookie("refresh", null);
         cookie.setMaxAge(0);
-        cookie.setPath("/api/v1/user");
+        cookie.setPath("/");
         cookie.setHttpOnly(true);
         cookie.setSecure(true);
 

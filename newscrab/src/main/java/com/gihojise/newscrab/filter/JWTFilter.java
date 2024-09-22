@@ -5,7 +5,8 @@ import com.gihojise.newscrab.domain.RefreshEntity;
 import com.gihojise.newscrab.domain.User;
 import com.gihojise.newscrab.repository.RefreshRepository;
 import com.gihojise.newscrab.repository.UserRepository;
-import com.gihojise.newscrab.service.JWTUtil;
+import com.gihojise.newscrab.service.RefreshService;
+import com.gihojise.newscrab.util.JWTUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -20,14 +21,13 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Date;
 
 @RequiredArgsConstructor
 public class JWTFilter extends OncePerRequestFilter {
 
     private final JWTUtil jwtUtil;
     private final UserRepository userRepository;
-    private final RefreshRepository refreshRepository;
+    private final RefreshService refreshService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -45,9 +45,7 @@ public class JWTFilter extends OncePerRequestFilter {
         String token = authorization.split(" ")[1];
 
         // 토큰 만료 여부 확인
-        try {
-            jwtUtil.isExpired(token);  // Access Token 만료 확인
-        } catch (ExpiredJwtException e1) {
+        if (jwtUtil.isExpired(token)) {
             // Access Token이 만료되었을 경우 Refresh Token 확인
             String refresh = getRefreshTokenFromCookies(request);
 
@@ -56,11 +54,10 @@ public class JWTFilter extends OncePerRequestFilter {
                 return;
             }
 
-            // Refresh Token 만료 여부 확인
-            try {
-                jwtUtil.isExpired(refresh);
-            } catch (ExpiredJwtException e2) {
-                sendErrorResponse(response, "refreshtoken is expired : 로그인 해주세요", HttpServletResponse.SC_UNAUTHORIZED);
+            //refresh token expired check
+            if(refreshService.isRefreshTokenExpired(refresh)) {
+                //response status code
+                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
                 return;
             }
 
@@ -72,8 +69,7 @@ public class JWTFilter extends OncePerRequestFilter {
             }
 
             // Refresh Token이 DB에 존재하는지 확인
-            RefreshEntity targetRefresh = refreshRepository.findByRefresh(refresh);
-            if (targetRefresh == null) {
+            if (!refreshService.existsByRefresh(refresh)) {
                 sendErrorResponse(response, "refreshtoken is not in DB", HttpServletResponse.SC_UNAUTHORIZED);
                 return;
             }
@@ -86,8 +82,8 @@ public class JWTFilter extends OncePerRequestFilter {
             String newRefresh = jwtUtil.createJwt("refresh", loginId, 60000L);
 
             // 기존 Refresh Token을 DB에서 삭제하고 새로운 Refresh Token 저장
-            refreshRepository.deleteByRefresh(refresh);
-            addRefreshEntity(loginId, newRefresh, 60000L);
+            refreshService.deleteRefreshTokenByRefresh(refresh);
+            refreshService.saveRefreshToken(newRefresh);
 
             // 갱신된 Access Token을 응답 헤더에 설정, Refresh Token은 쿠키에 저장
             response.setHeader("Authorization", "Bearer "+token);
@@ -129,22 +125,9 @@ public class JWTFilter extends OncePerRequestFilter {
         Cookie cookie = new Cookie(key, value);
         cookie.setMaxAge(60);
         cookie.setSecure(true);
-        //cookie.setPath("/");
+        cookie.setPath("/");
         cookie.setHttpOnly(true);
 
         return cookie;
-    }
-
-    private void addRefreshEntity(String username, String refresh, Long expiredMs) {
-
-        Date date = new Date(System.currentTimeMillis() + expiredMs);
-
-        RefreshEntity refreshEntity = RefreshEntity.builder()
-                .loginId(username)
-                .refresh(refresh)
-                .expiration(date.toString())
-                .build();
-
-        refreshRepository.save(refreshEntity);
     }
 }

@@ -14,10 +14,6 @@ import org.springframework.data.redis.core.index.Indexed;
 @ToString
 @Builder
 public class RefreshEntity {
-
     @Id
     private String refresh;
-
-    private String loginId;
-    private String expiration;
 }
