@@ -3,6 +3,7 @@ from sqlalchemy.orm import relationship
 from app.database import Base
 from datetime import datetime
 
+# News 모델 정의 (news 테이블)
 class News(Base):
     __tablename__ = "news"
 
@@ -23,4 +24,18 @@ class News(Base):
 
     # Industry와의 관계 설정
     industry = relationship("Industry", back_populates="news_list")
+    keywords = relationship("NewsKeyword", back_populates="news")
 
+
+# NewsKeyword 모델 정의 (news_keyword 테이블)
+class NewsKeyword(Base):
+    __tablename__ = "news_keyword"
+
+    keyword_id = Column(Integer, primary_key=True, autoincrement=True)
+    industry_id = Column(Integer, ForeignKey("industry.industry_id"), nullable=False)
+    news_id = Column(Integer, ForeignKey("news.news_id"), nullable=False)
+    news_keyword_name = Column(String(255, collation='utf8mb4_unicode_ci'), nullable=False)
+
+    # Industry와의 관계 설정
+    industry = relationship("Industry", back_populates="news_keywords")
+    news = relationship("News", back_populates="keywords")
