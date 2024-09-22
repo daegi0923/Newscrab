@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.ToString;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.core.index.Indexed;
 
 @RedisHash(value = "refreshtoken", timeToLive = 60)
 @AllArgsConstructor
@@ -13,6 +14,7 @@ import org.springframework.data.redis.core.RedisHash;
 @ToString
 @Builder
 public class RefreshEntity {
+
     @Id
     private String refresh;
 
