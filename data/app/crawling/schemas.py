@@ -33,3 +33,21 @@ class News(NewsBase):
 
     class Config:
         orm_mode = True
+
+
+class NewsKeywordBase(BaseModel):
+    news_keyword_name: str
+
+
+class NewsKeywordCreate(NewsKeywordBase):
+    industry_id: int  
+    news_id: int  
+
+
+class NewsKeyword(NewsKeywordBase):
+    keyword_id: int
+    industry_id: int
+    news_id: int
+
+    class Config:
+        orm_mode = True  

@@ -2,7 +2,7 @@ import os
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.database import SessionLocal
-from app.crawling.models import News
+from app.crawling.models import News, NewsKeyword 
 from app.industries.models import Industry  
 from datetime import datetime
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -38,6 +38,7 @@ def get_db():
         db.close()
 
 def update_related_news(db: Session):
+    start_time = time.time()
     news_data = db.query(News).all()
     final_df = pd.DataFrame([{
         'news_id': news.news_id,
@@ -62,6 +63,8 @@ def update_related_news(db: Session):
             db.add(news_to_update)
     
     db.commit()
+    end_time = time.time()  # 시간 측정 종료
+    print(f"연관 뉴스 업데이트 소요 시간: {end_time - start_time}초")
 
 
 # TF-IDF 키워드 추출 함수
@@ -175,6 +178,7 @@ def crawl_news_data():
 def crawl_and_store(db: Session = Depends(get_db)):
     data = crawl_news_data()
 
+    start_time = time.time()
     # DB에 저장
     for row in data:
         industry = db.query(Industry).filter(Industry.industry_name == row['predicted_industry']).first()
@@ -190,8 +194,26 @@ def crawl_and_store(db: Session = Depends(get_db)):
                 updated_at=datetime.now(),
             )
             db.add(news)
-    
-    db.commit()
+            db.commit()
+
+            # 키워드를 news_keyword 테이블에 저장
+            keywords = row['extracted_keywords'].split()  # 키워드들을 공백으로 분리
+            for keyword in keywords:
+                existing_keyword = db.query(NewsKeyword).filter(
+                    NewsKeyword.news_id == news.news_id,
+                    NewsKeyword.news_keyword_name == keyword
+                ).first()
+
+                if not existing_keyword:
+                    news_keyword = NewsKeyword(
+                        industry_id=industry.industry_id,
+                        news_id=news.news_id,
+                        news_keyword_name=keyword
+                    )
+                    db.add(news_keyword)
+            db.commit()
+    end_time = time.time()  # 시간 측정 종료
+    print(f"키워드 추출 소요 시간: {end_time - start_time}초")
     
     # 관련 뉴스 업데이트
     update_related_news(db)
@@ -221,6 +243,7 @@ def upload_csv(db: Session = Depends(get_db)):
         df = pd.read_csv(file_path)
 
         # 각 row를 DB에 저장
+        start_time = time.time()
         for _, row in df.iterrows():
             # industry_name으로 industry_id 찾기
             industry = db.query(Industry).filter(Industry.industry_name == row['industry']).first()
@@ -243,8 +266,29 @@ def upload_csv(db: Session = Depends(get_db)):
                 updated_at=datetime.now(),  # 현재 날짜로 설정
             )
             db.add(news)
-        
-        db.commit()
+            db.commit()
+
+            # 뉴스 본문에서 키워드 추출
+            keywords = extract_keywords_tfidf(news.news_content)  # 키워드 추출
+            keyword_list = keywords.split()  # 공백 기준으로 키워드 리스트화
+
+            # 추출된 키워드를 news_keyword 테이블에 저장
+            for keyword in keyword_list:
+                existing_keyword = db.query(NewsKeyword).filter(
+                    NewsKeyword.news_id == news.news_id,
+                    NewsKeyword.news_keyword_name == keyword
+                ).first()
+
+                if not existing_keyword:
+                    news_keyword = NewsKeyword(
+                        industry_id=industry.industry_id,
+                        news_id=news.news_id,
+                        news_keyword_name=keyword
+                    )
+                    db.add(news_keyword)
+            db.commit()
+        end_time = time.time()  # 시간 측정 종료
+        print(f"키워드 추출 소요 시간: {end_time - start_time}초")
 
         # DB에서 뉴스 데이터 가져오기
         update_related_news(db)
