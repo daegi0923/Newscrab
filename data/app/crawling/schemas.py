@@ -30,6 +30,7 @@ class News(NewsBase):
     related_news_id_1: Optional[int]
     related_news_id_2: Optional[int]
     related_news_id_3: Optional[int]
+    photos: List[NewsPhoto] = []
 
     class Config:
         orm_mode = True
@@ -51,3 +52,16 @@ class NewsKeyword(NewsKeywordBase):
 
     class Config:
         orm_mode = True  
+
+
+class NewsPhotoBase(BaseModel):
+    photo_url: str
+
+class NewsPhotoCreate(NewsPhotoBase):
+    pass
+
+class NewsPhoto(NewsPhotoBase):
+    photo_id: int
+
+    class Config:
+        orm_mode = True
