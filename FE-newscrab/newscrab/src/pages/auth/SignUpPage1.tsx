@@ -82,7 +82,7 @@ const SignUpPage1: React.FC = () => {
     loginId: "",
     password: "",
     passwordConfirm: "",
-    nickname: "", 
+    name: "", 
     email: "",
     birthday: "",
     gender: "male",
@@ -201,7 +201,7 @@ const SignUpPage1: React.FC = () => {
             {successMessage && <p style={{ color: "green", fontSize: "12px" }}>{successMessage}</p>}
             <DuplicateButton onClick={handleIdCheck}>중복 확인</DuplicateButton>
           </div>
-          <Input name="nickname" type="text" label="닉네임" placeholder="닉네임을 입력하세요" value={signupForm.nickname} onChange={handleChange}/>
+          <Input name="name" type="text" label="닉네임" placeholder="닉네임을 입력하세요" value={signupForm.name} onChange={handleChange}/>
           <Input name="password" type="password" label="비밀번호" placeholder="비밀번호를 입력하세요" value={signupForm.password} onChange={handleChange} error={errors.password}/>
           <Input name="email" type="email" label="이메일" placeholder="이메일을 입력하세요" value={signupForm.email} onChange={handleChange} error={errors.email}/>
           <Input name="passwordConfirm" type="password" label="비밀번호 확인" placeholder="비밀번호를 입력하세요" value={signupForm.passwordConfirm} onChange={handleChange} error={errors.passwordConfirm}/>
