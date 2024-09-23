@@ -8,7 +8,8 @@ import { getMockNews } from "@apis/newsApi"; // getMockNews 함수 import
 import { NewsItem } from "../../../types/newsTypes"; // newsTypes.ts에서 타입 import
 
 import NewsDetailArticle from "./NewsDetailArticle";
-import NewsDetailSummary from "./NewsDetailSummary";
+import NewsDetailSummary from "./NewsDetailScrap";
+import NewsDetailRcmd from "./NewsDetailRcmd";
 
 // Styled Components 정의
 const NewsDetailContainer = styled.div`
@@ -68,6 +69,7 @@ const NewsDetailPage: React.FC = () => {
             )
           )}
         </NewsWrapper>
+        <NewsDetailRcmd />
       </NewsDetailContainer>
     </div>
   );
