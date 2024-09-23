@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from app.industries.routes import router as industries_router
 from app.crawling.routes import router as crawling_router 
 from app.voca.routes import router as voca_router 
+from app.scrap.routes import router as scrap_router 
 
 
 app = FastAPI()
@@ -17,3 +18,5 @@ app.include_router(industries_router, prefix="/api/v1/reco/industries")
 app.include_router(crawling_router, prefix="/api/v1/reco/crawling")
 
 app.include_router(voca_router, prefix="/api/v1/reco/voca")
+
+app.include_router(scrap_router, prefix="/api/v1/reco/scrap")
