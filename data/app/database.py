@@ -7,6 +7,7 @@ from sqlalchemy.orm import sessionmaker
 load_dotenv()  # .env 파일을 로드
 
 # MySQL 데이터베이스 URL 설정
+# print(os.listdir(os.getcwd()))
 MYSQL_HOST = os.getenv("MYSQL_HOST")
 MYSQL_PORT = os.getenv("MYSQL_PORT")
 MYSQL_DATABASE = os.getenv("MYSQL_DATABASE")
