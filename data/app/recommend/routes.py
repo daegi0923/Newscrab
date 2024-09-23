@@ -1,4 +1,4 @@
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, Body
 from sqlalchemy.orm import Session
 from . import models
 from app.database import SessionLocal, engine
@@ -20,26 +20,6 @@ def get_db():
         db.close()
 
 # 데이터베이스에서 데이터 가져오기
-@router.get("/test")
-def read_item(db: Session = Depends(get_db)):
-    users = db.query(models.User).all()
-    scrabs = db.query(models.Scrap).all()
-    user_news_like = db.query(models.UserNewsLike).all()
-    user_industry = db.query(models.UserIndustry).all()
-    
-    news_list = db.query(models.News).all()
-    recommend_news = collaborative_filtering(2, db)
-
-    if users is None:
-        raise HTTPException(status_code=404, detail="User not found")
-    return {
-            "recommend" : recommend_news,
-            "users" : users, 
-            "scrabs" : scrabs, 
-            "user_news_like" : user_news_like,
-            "user_industry" : user_industry,
-            "news_list" : news_list,
-            }
 
 
 
@@ -71,15 +51,15 @@ def get_scrap_like_dataframe(db: Session):
 
 
 # 새로운 사용자에 대해 UserIndustry 기반으로 유사도를 계산하는 함수
-def calculate_industry_similarity(new_user_id, db: Session):
+def calculate_industry_similarity(user_id:int, db: Session):
     # 새로운 사용자의 선호 산업을 가져옴
-    new_user_industries = db.query(UserIndustry).filter(UserIndustry.user_id == new_user_id).all()
+    new_user_industries = db.query(UserIndustry).filter(UserIndustry.user_id == user_id).all()
     industry_ids = {industry.industry_id for industry in new_user_industries}
 
     # 기존 사용자를 모두 가져와서 산업 선호도를 비교
     user_sim = {}
     for user in db.query(User).all():
-        if user.user_id == new_user_id:
+        if user.user_id == user_id:
             continue
         user_industries = db.query(UserIndustry).filter(UserIndustry.user_id == user.user_id).all()
         user_industry_ids = {industry.industry_id for industry in user_industries}
@@ -98,39 +78,67 @@ def calculate_industry_similarity(new_user_id, db: Session):
 
 
 def collaborative_filtering(user_id: int, db: Session):
+    # scrap_like_df에서 user_id를 가져옴
     scrap_like_df = get_scrap_like_dataframe(db)
-    print(scrap_like_df)
-
-    # 벡터화 하기
-    # 스크랩 또는 좋아요가 있으면 1, 없으면 0으로 변환
-    scrap_like_df['interaction'] = (scrap_like_df['scrap'] > 0) | (scrap_like_df['like'] > 0)
-    scrap_like_df['interaction'] = scrap_like_df['interaction'].astype(int)
-
-    # pivot_table을 사용하여 user_id를 행, news_id를 열로 변환
+    
+    # user_id 리스트를 추출 (user_news_matrix의 인덱스와 매칭될 user_id 목록)
+    user_ids = scrap_like_df['user_id'].unique()
+    
+    # user_id에 해당하는 뉴스 데이터를 matrix로 변환 (user_news_matrix는 user_id 순서대로 정렬된 행렬)
     user_news_matrix = scrap_like_df.pivot_table(index='user_id', columns='news_id', values='interaction', fill_value=0)
-    print("user_news_matrix")
-    print("shape user_news_matrix : ", user_news_matrix.shape )
-    print(user_news_matrix)
-
-
+    
     # 코사인 유사도 계산
     user_similarity = cosine_similarity(user_news_matrix)
-    print(user_similarity)
-    # 유사한 유저가 3명 이하면 그냥 빈거 리턴
+
+    # 유사한 유저가 3명 이하면 빈 리스트 리턴
     if len(user_similarity) < 4:
         return []
-    # 현재 유저와 다른 유저들의 유사도를 정렬하는데, 유사한 유저의 수를 동적으로 결정
-    num_users = len(user_similarity)  # 전체 유저 수
-    top_n = min(4, num_users)  # 상위 N명의 유사 사용자를 찾기 (최대 3명 또는 전체 유저 수 중 더 작은 값)
     
-    # 현재 사용자의 유사한 사용자 찾기 (유사도가 가장 높은 사용자를 기준으로 정렬)
-    similar_users_idx = np.argsort(-user_similarity[user_id - 1])[1:top_n]
-    
+    # 현재 유저의 인덱스 찾기
+    user_idx = np.where(user_ids == user_id)[0][0]
+
+    # 유사한 사용자 찾기 (유사도가 가장 높은 사용자들을 정렬, 자기 자신 제외)
+    similar_users_idx = np.argsort(-user_similarity[user_idx])[1:top_n]
+
+    # 유사한 사용자의 인덱스를 user_id로 변환
+    similar_user_ids = [user_ids[idx] for idx in similar_users_idx]
+
     # 유사한 사용자가 찜하거나 스크랩한 뉴스를 추천
     recommended_news = set()
-    for idx in similar_users_idx:
-        for i, news in enumerate(user_news_matrix[idx]):
-            if news > 0 and user_news_matrix[user_id - 1][i] == 0:  # 현재 사용자가 보지 않은 뉴스
-                recommended_news.add(i)
+    for similar_user_id in similar_user_ids:
+        similar_user_idx = np.where(user_ids == similar_user_id)[0][0]  # similar_user_id에 해당하는 행을 찾음
+        for i, news in enumerate(user_news_matrix.iloc[similar_user_idx]):
+            if news > 0 and user_news_matrix.iloc[user_idx, i] == 0:  # 현재 사용자가 보지 않은 뉴스
+                recommended_news.add(user_news_matrix.columns[i])
     
     return list(recommended_news)
+
+
+
+@router.get("/list")
+def read_item(user_id: int = Body(...), db: Session = Depends(get_db)):
+    # Scrap 테이블에서 user_id가 스크랩한 뉴스의 news_id 조회
+    scrap_query = db.query(models.Scrap.news_id).filter(models.Scrap.user_id == user_id)
+    
+    # UserNewsLike 테이블에서 user_id가 좋아요를 누른 뉴스의 news_id 조회
+    like_query = db.query(models.UserNewsLike.news_id).filter(models.UserNewsLike.user_id == user_id)
+
+    # scrap_query와 like_query를 합친 후 distinct한 news_id의 개수를 count
+    total_news_count = db.query(func.count(func.distinct(scrap_query.union(like_query).subquery().c.news_id))).scalar()
+
+    if total_news_count < 5:
+        recommend_news = calculate_industry_similarity(user_id, db)
+    else:
+        recommend_news = collaborative_filtering(user_id, db)
+        
+
+    if users is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    return {
+            "recommend" : recommend_news,
+            "users" : users, 
+            "scrabs" : scrabs, 
+            "user_news_like" : user_news_like,
+            "user_industry" : user_industry,
+            "news_list" : news_list,
+            }
