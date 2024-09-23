@@ -52,7 +52,7 @@ class UserNewsRead(Base):
     user_news_read_id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey('user.user_id'), nullable=False)
     news_id = Column(Integer, ForeignKey('news.news_id'), nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    readtime = Column(DateTime, default=datetime.utcnow)
 
     user = relationship('User', back_populates='user_news_reads')
     news = relationship('News')
@@ -66,7 +66,8 @@ class Scrap(Base):
     news_id = Column(Integer, ForeignKey('news.news_id'), nullable=False)
     scrap_summary = Column(Text)
     comment = Column(Text)
-
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     user = relationship('User', back_populates='scraps')
     news = relationship('News')
 
