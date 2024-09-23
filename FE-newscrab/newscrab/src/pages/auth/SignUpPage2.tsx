@@ -159,7 +159,7 @@ const SignUpPage2: React.FC = () => {
       const response = await axios.post('https://newscrab.duckdns.org/api/v1/users/join', {
         loginId: updatedSignupForm.loginId,
         password: updatedSignupForm.password,
-        name: updatedSignupForm.nickname,
+        name: updatedSignupForm.name,
         email: updatedSignupForm.email,
         birthday: updatedSignupForm.birthday,
         gender: updatedSignupForm.gender,

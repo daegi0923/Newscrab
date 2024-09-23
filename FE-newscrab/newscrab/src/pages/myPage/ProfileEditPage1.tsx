@@ -60,7 +60,7 @@ const ProfileEdit1: React.FC = () => {
 
   // 사용자 정보 상태 관리
   const [editForm, setEditForm] = useState({
-    nickname: "", 
+    name: "", 
     email: "",
     birthday: "",
     gender: "male", // 기본값: 남성
@@ -68,7 +68,7 @@ const ProfileEdit1: React.FC = () => {
   
   // 유효성 검사 에러 메시지
   const [errors, setErrors] = useState({
-    nickname: "",
+    name: "",
     email: "",
     birthday: "",
   });
@@ -124,7 +124,7 @@ const ProfileEdit1: React.FC = () => {
       <SignUpContainer>
         <FormContainer>
         
-          <Input name="nickname" type="text" label="닉네임" placeholder="닉네임을 입력하세요" value={editForm.nickname} onChange={handleChange}/>
+          <Input name="name" type="text" label="닉네임" placeholder="닉네임을 입력하세요" value={editForm.name} onChange={handleChange}/>
           <Input name="email" type="email" label="이메일" placeholder="이메일을 입력하세요" value={editForm.email} onChange={handleChange} error={errors.email}/>
           <Input name="birthday" type="date" label="생년월일" placeholder="생년월일을 입력하세요" 
             value={editForm.birthday} onChange={handleChange}/>
@@ -142,7 +142,7 @@ const ProfileEdit1: React.FC = () => {
             value={editForm.gender} // 선택된 값을 상태에 맞게 설정
             onChange={handleChange} // 값이 변경될 때 상태 업데이트
           />
-          {errors.nickname && <p style={{ color: "red" }}>{errors.nickname}</p>}
+          {errors.name && <p style={{ color: "red" }}>{errors.name}</p>}
           <ButtonWrapper>
           <Button onClick={handleNext}>다음</Button>
           </ButtonWrapper>
