@@ -56,7 +56,7 @@ export default loginSlice.reducer;
 // 로그인 사가
 function* loginSaga(action: PayloadAction<{ loginId: string; password: string }>): Generator<any, void, any> {
   try {
-    const response = yield call(axios.post, "https://newscrab.duckdns.org/users/login", {
+    const response = yield call(axios.post, "https://newscrab.duckdns.org/api/v1/users/login", {
       loginId: action.payload.loginId,
       password: action.payload.password,
     });
@@ -83,7 +83,7 @@ function* loginSaga(action: PayloadAction<{ loginId: string; password: string }>
 function* logoutSaga(): Generator<any, void, any> {
   try {
     // 로그아웃 API 호출
-    yield call(axios.post, "https://newscrab.duckdns.org/users/logout");
+    yield call(axios.post, "https://newscrab.duckdns.org/api/v1/users/logout");
 
     // 쿠키에서 토큰 삭제
     removeCookie("accessToken");

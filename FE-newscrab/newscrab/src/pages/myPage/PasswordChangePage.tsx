@@ -101,7 +101,7 @@ const PasswordChange: React.FC = () => {
 
     if (isFormValid) {
       try {
-        const response = await axios.put('/user/pw', {
+        const response = await axios.put('https://newscrab.duckdns.org/api/v1/user/pw', {
           currentPassword: editForm.currentPassword,
           newPassword: editForm.newPassword,
         });
