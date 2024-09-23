@@ -117,7 +117,7 @@ public class NewsService {
         News news = newsRepository.findByNewsId(newsId);
         if (news == null) {
             // ErrorCode를 사용하여 표준화된 메시지로 커스텀 예외를 발생시킵니다.
-            throw new NewscrabException(ErrorCode.USER_NOT_FOUND);
+            throw new NewscrabException(ErrorCode.NEWS_NOT_FOUND);
         }
 
         // 뉴스의 사진 정보를 조회합니다.
