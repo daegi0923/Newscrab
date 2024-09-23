@@ -1,6 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import createSagaMiddleware from "redux-saga";
-import loginReducer, { watchLoginSaga } from "./user/login"
+import loginReducer, { watchLoginSaga } from "./user/loginLogout"
 
 // 리듀서 import
 // 예시 => import uiSlice from "./ui-slice"

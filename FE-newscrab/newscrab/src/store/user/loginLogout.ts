@@ -1,6 +1,7 @@
 import { call, put, takeLatest } from "redux-saga/effects"; // 이 부분은 항상 불러올 수 있습니다.
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
+import { removeCookie } from "./cookies";
 
 // 초기 상태 정의
 interface AuthState {
@@ -78,7 +79,28 @@ function* loginSaga(action: PayloadAction<{ loginId: string; password: string }>
   }
 }
 
+// 로그아웃 사가 추가
+function* logoutSaga(): Generator<any, void, any> {
+  try {
+    // 로그아웃 API 호출
+    yield call(axios.post, "https://newscrab.duckdns.org/users/logout");
+
+    // 쿠키에서 토큰 삭제
+    removeCookie("accessToken");
+    removeCookie("refreshToken");
+
+    // Redux 상태 초기화
+    yield put(logout());
+
+    // 로그아웃 후 로그인 페이지로 리다이렉션
+    window.location.href = "/login";
+  } catch (error: any) {
+    console.error("로그아웃에 실패했습니다.", error);
+  }
+}
+
 // 사가 Watcher
 export function* watchLoginSaga() {
   yield takeLatest(loginLoading.type, loginSaga);
+  yield takeLatest(logout.type, logoutSaga); // 로그아웃 액션 발생 시 실행
 }
