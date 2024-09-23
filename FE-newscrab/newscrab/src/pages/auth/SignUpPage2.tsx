@@ -156,7 +156,7 @@ const SignUpPage2: React.FC = () => {
     console.log("회원가입 데이터:", updatedSignupForm);
 
     try {
-      const response = await axios.post('https://newscrab.duckdns.org/users/join', {
+      const response = await axios.post('https://newscrab.duckdns.org/api/v1/users/join', {
         loginId: updatedSignupForm.loginId,
         password: updatedSignupForm.password,
         name: updatedSignupForm.nickname,

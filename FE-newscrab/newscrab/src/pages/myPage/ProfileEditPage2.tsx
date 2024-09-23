@@ -156,7 +156,7 @@ const ProfileEdit2: React.FC = () => {
     const userId = updatedEditForm.userId;
 
     try {
-      const response = await axios.put(`https://newscrab.duckdns.org/users/${userId}`, {
+      const response = await axios.put(`https://newscrab.duckdns.org/api/v1/users/${userId}`, {
         nickname: updatedEditForm.nickname,
         email: updatedEditForm.email,
         birthday: updatedEditForm.birthday,
