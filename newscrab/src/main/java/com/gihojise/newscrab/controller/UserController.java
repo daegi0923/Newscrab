@@ -18,7 +18,6 @@ public class UserController {
     @PostMapping("/join")
     public String joinProcess(@RequestBody JoinDto joinDTO) {
 
-        System.out.println(joinDTO.getLoginId());
         userService.joinProcess(joinDTO);
 
         return "ok";

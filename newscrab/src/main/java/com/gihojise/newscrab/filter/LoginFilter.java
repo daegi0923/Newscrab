@@ -45,8 +45,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
         String loginId = customUserDetails.getUsername();
 
-        String access = jwtUtil.createJwt("access", loginId, 30000L);
-        String refresh = jwtUtil.createJwt("refresh", loginId, 60000L);
+        String access = jwtUtil.createJwt("access", loginId, 600000L);
+        String refresh = jwtUtil.createJwt("refresh", loginId, 86400000L);
 
         //Refresh 토큰 저장
         refreshService.saveRefreshToken(refresh);
@@ -66,7 +66,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     private Cookie createCookie(String key, String value) {
 
         Cookie cookie = new Cookie(key, value);
-        cookie.setMaxAge(60);
+        cookie.setMaxAge(86400);
         cookie.setSecure(true);
         cookie.setPath("/");
         cookie.setHttpOnly(true);
