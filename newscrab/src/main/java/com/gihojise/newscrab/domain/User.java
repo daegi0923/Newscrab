@@ -7,10 +7,12 @@ import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "user") // 테이블명 지정
 public class User extends BaseTimeEntity {
 
@@ -47,10 +49,21 @@ public class User extends BaseTimeEntity {
     private Set<UserNewsLike> likedNews; // 찜한 뉴스 목록
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private Set<Grass> grasses;
+    private Set<Grass> grasses = new HashSet<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private Set<UserIndustry> userIndustries;
+    private Set<UserIndustry> userIndustries = new HashSet<>();
+
+    // 필수 필드만 받는 생성자
+    public User(String loginId, String password, String name, String email, LocalDate birthday, Gender gender) {
+        this.loginId = loginId;
+        this.password = password;
+        this.name = name;
+        this.email = email;
+        this.birthday = birthday;
+        this.gender = gender;
+        this.profileImg = ProfileImage.A;
+    }
 
     // 뉴스 찜 추가 메서드
     public void addLike(News news) {
