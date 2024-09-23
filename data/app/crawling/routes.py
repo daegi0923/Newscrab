@@ -2,7 +2,7 @@ import os
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.database import SessionLocal
-from app.crawling.models import News
+from app.crawling.models import News, NewsKeyword 
 from app.industries.models import Industry  
 from datetime import datetime
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -22,6 +22,13 @@ from konlpy.tag import Okt
 
 router = APIRouter()
 
+# 전역적으로 okt와 tfidf vectorizer 선언
+okt = Okt()
+classifier_path = os.path.join(os.path.dirname(__file__), 'random_forest_model.pkl')
+vectorizer_path = os.path.join(os.path.dirname(__file__), 'tfidf_vectorizer.pkl')
+classifier = joblib.load(classifier_path)
+vectorizer = joblib.load(vectorizer_path)
+
 # 데이터베이스 세션 생성 함수
 def get_db():
     db = SessionLocal()
@@ -31,6 +38,7 @@ def get_db():
         db.close()
 
 def update_related_news(db: Session):
+    start_time = time.time()
     news_data = db.query(News).all()
     final_df = pd.DataFrame([{
         'news_id': news.news_id,
@@ -55,69 +63,51 @@ def update_related_news(db: Session):
             db.add(news_to_update)
     
     db.commit()
+    end_time = time.time()  # 시간 측정 종료
+    print(f"연관 뉴스 업데이트 소요 시간: {end_time - start_time}초")
 
 
-@router.post("/crawl_and_store/")
-def crawl_and_store(db: Session = Depends(get_db)):
+# TF-IDF 키워드 추출 함수
+def extract_keywords_tfidf(text):
+    # 명사만 추출
+    nouns = okt.nouns(text)
+    
+    # 불용어 제거
+    korean_stopwords = [
+        "의", "가", "이", "은", "들", "는", "좀", "잘", "걍", "과", "도", "를", "으로", "자", "에", "와", "한", "하다", "있다", 
+        "수", "그", "다", "같이", "더", "그리고", "중", "또한", "그러나", "등", "고", "것", "위",
+        "지난", "이번", "이후", "지난해", "개월", "오전", "랍니", "그룹", "모든", "어디", "최근", "오늘",
+    ]
+    nouns = [noun for noun in nouns if noun not in korean_stopwords]
+
+    # TF-IDF로 변환
+    if nouns:
+        text_for_tfidf = ' '.join(nouns)
+        tfidf_matrix = vectorizer.transform([text_for_tfidf])
+        feature_names = vectorizer.get_feature_names_out()
+        scores = tfidf_matrix.toarray().flatten()
+
+        # 상위 10개의 키워드 반환
+        top_keywords = [feature_names[i] for i in np.argsort(scores)[-10:]]
+        return ' '.join(top_keywords)
+    else:
+        return ""
+
+# 크롤링 및 데이터 처리 함수
+def crawl_news_data():
     start_time = time.time()
-
-    # ChromeDriver 경로 설정
+    
+    # 크롬 드라이버 설정
     chrome_driver_path = os.path.join(os.path.dirname(__file__), 'chromedriver.exe')
     service = Service(chrome_driver_path)
     options = Options()
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
     driver = webdriver.Chrome(service=service, options=options)
 
-    # 모델 및 벡터라이저 로드
-    classifier_path = os.path.join(os.path.dirname(__file__), 'random_forest_model.pkl')
-    vectorizer_path = os.path.join(os.path.dirname(__file__), 'tfidf_vectorizer.pkl')
-    classifier = joblib.load(classifier_path)
-    vectorizer = joblib.load(vectorizer_path)
-
-    # Okt 형태소 분석기 초기화
-    okt = Okt()
-
-    # 불용어 리스트 정의
-    korean_stopwords = [
-        "의", "가", "이", "은", "들", "는", "좀", "잘", "걍", "과", "도", "를", "으로", "자", "에", "와", "한", "하다", "있다", 
-        "수", "그", "다", "같이", "더", "그리고", "중", "또한", "그러나", "등", "고", "것", "위",
-        "지난", "이번", "이후", "지난해", "개월", "오전", "랍니", "그룹", "모든", "어디", "최근", "오늘",
-    ]
-
-    # 명사만 추출하는 함수 정의
-    def okt_nouns(text):
-        return ' '.join(okt.nouns(text))
-
-    # TF-IDF 키워드 추출 함수
-    def extract_keywords_tfidf(text):
-        nouns = okt_nouns(text)
-        for stopword in korean_stopwords:
-            nouns = nouns.replace(f" {stopword} ", " ")
-        if not nouns.strip():
-            return ""
-        tfidf_vectorizer = TfidfVectorizer()
-        try:
-            tfidf_matrix = tfidf_vectorizer.fit_transform([nouns])
-        except ValueError:
-            return ""
-        scores = tfidf_matrix.toarray().flatten()
-        feature_names = tfidf_vectorizer.get_feature_names_out()
-        tfidf_scores = pd.Series(scores, index=feature_names).sort_values(ascending=False)
-        top_keywords = tfidf_scores.head(10).index.tolist()
-        return ' '.join(top_keywords)
-
     # 데이터를 저장할 리스트 초기화
-    data = {
-        'news_url': [],
-        'news_title': [],
-        'news_content': [],
-        'news_company': [],
-        'news_published_at': [],
-        'extracted_keywords': [],
-        'predicted_industry': [],
-    }
+    data = []
 
-    today = datetime.datetime.today().strftime('%Y%m%d')
+    today = datetime.today().strftime('%Y%m%d')
     page = 1
 
     while True:
@@ -136,12 +126,6 @@ def crawl_and_store(db: Session = Depends(get_db)):
                 news_link = item.get('href')
                 news_title = item.text.strip()
 
-                # 중복 체크
-                existing_news = db.query(News).filter(News.news_url == news_link).first()
-                if existing_news:
-                    print(f"중복된 뉴스 URL 발견: {news_link}. 저장을 건너뜁니다.")
-                    continue
-
                 driver.get(news_link)
                 WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, 'newsct_article')))
                 news_html = driver.page_source
@@ -158,7 +142,6 @@ def crawl_and_store(db: Session = Depends(get_db)):
                 news_published_at = news_soup.find('span', class_='media_end_head_info_datestamp_time _ARTICLE_DATE_TIME')
                 news_published_at_text = news_published_at['data-date-time'] if news_published_at else None
                 keywords = extract_keywords_tfidf(news_body_text if news_body_text else "")
-                data['extracted_keywords'].append(keywords)
 
                 keywords_str = [keywords]
                 X_new_tfidf = vectorizer.transform(keywords_str)
@@ -168,12 +151,16 @@ def crawl_and_store(db: Session = Depends(get_db)):
 
                 predicted_industry = class_labels[np.argmax(y_pred_proba)]
 
-                data['news_url'].append(news_link)
-                data['news_title'].append(news_title)
-                data['news_content'].append(news_body)
-                data['news_company'].append(news_company_text)
-                data['news_published_at'].append(news_published_at_text)
-                data['predicted_industry'].append(predicted_industry)
+                # 데이터를 딕셔너리 형태로 저장
+                data.append({
+                    'news_url': news_link,
+                    'news_title': news_title,
+                    'news_content': news_body,  
+                    'news_company': news_company_text,
+                    'news_published_at': news_published_at_text,
+                    'extracted_keywords': keywords,
+                    'predicted_industry': predicted_industry
+                })
 
             except Exception as e:
                 print(f"Error processing {news_link}: {e}")
@@ -181,12 +168,19 @@ def crawl_and_store(db: Session = Depends(get_db)):
         page += 1
 
     driver.quit()
+    end_time = time.time()
+    print(f"크롤링 소요 시간: {end_time - start_time}초")
 
-    # 데이터를 Pandas DataFrame으로 변환
-    df = pd.DataFrame(data)
+    # 리스트 형태의 데이터를 반환
+    return data
 
+@router.post("/crawl_and_store/")
+def crawl_and_store(db: Session = Depends(get_db)):
+    data = crawl_news_data()
+
+    start_time = time.time()
     # DB에 저장
-    for _, row in df.iterrows():
+    for row in data:
         industry = db.query(Industry).filter(Industry.industry_name == row['predicted_industry']).first()
         if industry:
             news = News(
@@ -195,20 +189,44 @@ def crawl_and_store(db: Session = Depends(get_db)):
                 news_title=row['news_title'],
                 news_content=row['news_content'],
                 news_company=row['news_company'],
-                news_published_at=datetime.datetime.strptime(row['news_published_at'], '%Y-%m-%d %H:%M:%S') if row['news_published_at'] else None,
-                created_at=datetime.datetime.now(),
-                updated_at=datetime.datetime.now(),
+                news_published_at=datetime.strptime(row['news_published_at'], '%Y-%m-%d %H:%M:%S') if row['news_published_at'] else None,
+                created_at=datetime.now(),
+                updated_at=datetime.now(),
             )
             db.add(news)
-    
-    db.commit()
+            db.commit()
+
+            # 키워드를 news_keyword 테이블에 저장
+            keywords = row['extracted_keywords'].split()  # 키워드들을 공백으로 분리
+            for keyword in keywords:
+                existing_keyword = db.query(NewsKeyword).filter(
+                    NewsKeyword.news_id == news.news_id,
+                    NewsKeyword.news_keyword_name == keyword
+                ).first()
+
+                if not existing_keyword:
+                    news_keyword = NewsKeyword(
+                        industry_id=industry.industry_id,
+                        news_id=news.news_id,
+                        news_keyword_name=keyword
+                    )
+                    db.add(news_keyword)
+            db.commit()
+    end_time = time.time()  # 시간 측정 종료
+    print(f"키워드 추출 소요 시간: {end_time - start_time}초")
     
     # 관련 뉴스 업데이트
     update_related_news(db)
-
-    end_time = time.time()
-    print(f"크롤링 소요 시간: {end_time - start_time}초")
     return {"message": "Crawling and data storage completed successfully"}
+
+
+# 새로운 GET 엔드포인트 추가
+@router.get("/crawl_and_check/")
+def crawl_and_check():
+    data = crawl_news_data()
+    # 데이터를 바로 반환
+    return {"data": data}
+
 
 # CSV 파일을 불러와 DB에 저장하고 연관 뉴스 업데이트하는 API
 @router.post("/upload_csv/")
@@ -225,6 +243,7 @@ def upload_csv(db: Session = Depends(get_db)):
         df = pd.read_csv(file_path)
 
         # 각 row를 DB에 저장
+        start_time = time.time()
         for _, row in df.iterrows():
             # industry_name으로 industry_id 찾기
             industry = db.query(Industry).filter(Industry.industry_name == row['industry']).first()
@@ -247,8 +266,29 @@ def upload_csv(db: Session = Depends(get_db)):
                 updated_at=datetime.now(),  # 현재 날짜로 설정
             )
             db.add(news)
-        
-        db.commit()
+            db.commit()
+
+            # 뉴스 본문에서 키워드 추출
+            keywords = extract_keywords_tfidf(news.news_content)  # 키워드 추출
+            keyword_list = keywords.split()  # 공백 기준으로 키워드 리스트화
+
+            # 추출된 키워드를 news_keyword 테이블에 저장
+            for keyword in keyword_list:
+                existing_keyword = db.query(NewsKeyword).filter(
+                    NewsKeyword.news_id == news.news_id,
+                    NewsKeyword.news_keyword_name == keyword
+                ).first()
+
+                if not existing_keyword:
+                    news_keyword = NewsKeyword(
+                        industry_id=industry.industry_id,
+                        news_id=news.news_id,
+                        news_keyword_name=keyword
+                    )
+                    db.add(news_keyword)
+            db.commit()
+        end_time = time.time()  # 시간 측정 종료
+        print(f"키워드 추출 소요 시간: {end_time - start_time}초")
 
         # DB에서 뉴스 데이터 가져오기
         update_related_news(db)
