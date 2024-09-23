@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from "axios";
+import axios, { AxiosResponse, InternalAxiosRequestConfig } from "axios";
 import { getCookie, setCookie } from "./cookies"; // 쿠키 관리 유틸리티
 import { store } from "../index"; // store에서 redux 액션을 불러오기 위해 필요
 import { loginSuccess, logout } from "./loginLogout"; // Redux 액션

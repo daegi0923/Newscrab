@@ -9,6 +9,7 @@ interface InputBoxProps {
   value: string; // 추가된 value prop
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void; // onChange 핸들러 추가
   error?: string;
+  disabled?: boolean;
 }
 
 const InputBoxContainer = styled.div`

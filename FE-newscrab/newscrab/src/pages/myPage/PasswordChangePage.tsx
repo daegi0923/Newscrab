@@ -91,33 +91,33 @@ const PasswordChange: React.FC = () => {
     }
   }, [editForm.newPassword, editForm.passwordConfirm]);
 
-  // const isFormValid = Object.values(errors).every((error) => error === "") &&
-  //   editForm.currentPassword !== "" &&
-  //   editForm.newPassword !== "" &&
-  //   editForm.passwordConfirm !== "";
+  const isFormValid = Object.values(errors).every((error) => error === "") &&
+    editForm.currentPassword !== "" &&
+    editForm.newPassword !== "" &&
+    editForm.passwordConfirm !== "";
 
   const handlePasswordChange = async () => {
     console.log("변경할 비밀번호 정보:", editForm); // 콘솔에 비밀번호 정보 출력
 
-    // if (isFormValid) {
-    //   try {
-    //     const response = await axios.put('/user/pw', {
-    //       currentPassword: editForm.currentPassword,
-    //       newPassword: editForm.newPassword,
-    //     });
+    if (isFormValid) {
+      try {
+        const response = await axios.put('/user/pw', {
+          currentPassword: editForm.currentPassword,
+          newPassword: editForm.newPassword,
+        });
 
-    //     if (response.status === 200) {
-    //       console.log("비밀번호 변경 성공:", response.data);
-    //       alert("비밀번호가 성공적으로 변경되었습니다.");
-    //       navigate("/mypage"); // 예시: 프로필 페이지로 이동
-    //     }
-    //   } catch (error) {
-    //     console.error("비밀번호 변경 실패:", error);
-    //     alert("비밀번호 변경 중 오류가 발생했습니다.");
-    //   }
-    // } else {
-    //   window.alert("모든 필드를 올바르게 입력해 주세요.");
-    // }
+        if (response.status === 200) {
+          console.log("비밀번호 변경 성공:", response.data);
+          alert("비밀번호가 성공적으로 변경되었습니다.");
+          navigate("/mypage"); // 예시: 프로필 페이지로 이동
+        }
+      } catch (error) {
+        console.error("비밀번호 변경 실패:", error);
+        alert("비밀번호 변경 중 오류가 발생했습니다.");
+      }
+    } else {
+      window.alert("모든 필드를 올바르게 입력해 주세요.");
+    }
   };
   return (
     <>

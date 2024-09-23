@@ -6,7 +6,6 @@ import Input from '@common/InputBox';
 import RadioButton from '@common/RadioButton';
 import Button from '@common/Button';
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 
 const GlobalStyle = createGlobalStyle`
   body, html {
@@ -67,7 +66,6 @@ const ProfileEdit1: React.FC = () => {
     gender: "male", // 기본값: 남성
   });
   
-  const [successMessage, setSuccessMessage] = useState<string>(""); // 성공 메시지 상태
   // 유효성 검사 에러 메시지
   const [errors, setErrors] = useState({
     nickname: "",
