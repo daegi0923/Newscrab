@@ -2,7 +2,7 @@ import os
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.database import SessionLocal
-from app.crawling.models import News, NewsKeyword 
+from app.crawling.models import News, NewsKeyword, NewsPhoto  
 from app.industries.models import Industry  
 from datetime import datetime
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -11,6 +11,7 @@ import numpy as np
 import pandas as pd
 import joblib
 import time
+import re
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
@@ -42,7 +43,7 @@ def update_related_news(db: Session):
     news_data = db.query(News).all()
     final_df = pd.DataFrame([{
         'news_id': news.news_id,
-        'news_title': news.news_title
+        'news_title': news.news_title if news.news_title else "" 
     } for news in news_data])
 
     tfidf_vectorizer = TfidfVectorizer()
@@ -141,6 +142,15 @@ def crawl_news_data():
                 news_company_text = news_company['title'] if news_company else None
                 news_published_at = news_soup.find('span', class_='media_end_head_info_datestamp_time _ARTICLE_DATE_TIME')
                 news_published_at_text = news_published_at['data-date-time'] if news_published_at else None
+                # 뉴스 이미지 추출 (id가 'img_a'로 시작하는 모든 div 태그 안의 img 태그 선택)
+                img_divs = news_soup.find_all('div', id=re.compile(r'^img_a'))  # id가 'img_a'로 시작하는 모든 div 태그 선택
+                photo_urls = []
+
+                # 각 div 안에서 img 태그 추출
+                for div in img_divs:
+                    img_tags = div.find_all('img')  # div 안에 있는 모든 img 태그 선택
+                    photo_urls.extend([img['src'] for img in img_tags if img.get('src')])  # src 속성이 있는 경우 URL 저장
+
                 keywords = extract_keywords_tfidf(news_body_text if news_body_text else "")
 
                 keywords_str = [keywords]
@@ -159,7 +169,8 @@ def crawl_news_data():
                     'news_company': news_company_text,
                     'news_published_at': news_published_at_text,
                     'extracted_keywords': keywords,
-                    'predicted_industry': predicted_industry
+                    'predicted_industry': predicted_industry,
+                    'photo_urls': photo_urls,
                 })
 
             except Exception as e:
@@ -195,6 +206,16 @@ def crawl_and_store(db: Session = Depends(get_db)):
             )
             db.add(news)
             db.commit()
+
+            # 뉴스와 연결된 사진 URL들을 news_photo 테이블에 저장
+            for photo_url in row['photo_urls']:
+                news_photo = NewsPhoto(
+                    news_id=news.news_id,
+                    photo_url=photo_url
+                )
+                db.add(news_photo)
+            db.commit()
+            
 
             # 키워드를 news_keyword 테이블에 저장
             keywords = row['extracted_keywords'].split()  # 키워드들을 공백으로 분리
