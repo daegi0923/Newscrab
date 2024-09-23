@@ -153,26 +153,26 @@ const ProfileEdit2: React.FC = () => {
     console.log("수정할 사용자 데이터:", updatedEditForm);
 
     // 사용자 ID는 editForm에 포함되어 있다고 가정
-    // const userId = updatedEditForm.userId;
+    const userId = updatedEditForm.userId;
 
-    // try {
-    //   const response = await axios.put(`https://newscrab.duckdns.org/users/${userId}`, {
-    //     nickname: updatedEditForm.nickname,
-    //     email: updatedEditForm.email,
-    //     birthday: updatedEditForm.birthday,
-    //     gender: updatedEditForm.gender,
-    //     userIndustry: updatedEditForm.userIndustry,
-    //   });
+    try {
+      const response = await axios.put(`https://newscrab.duckdns.org/users/${userId}`, {
+        nickname: updatedEditForm.nickname,
+        email: updatedEditForm.email,
+        birthday: updatedEditForm.birthday,
+        gender: updatedEditForm.gender,
+        userIndustry: updatedEditForm.userIndustry,
+      });
 
-    //   // 성공적으로 정보가 업데이트되었을 때 처리
-    //   if (response.status === 200) {
-    //     alert('사용자 정보가 성공적으로 업데이트되었습니다.');
-    //     navigate('/mainNews'); // 업데이트 후 메인 페이지로 이동
-    //   }
-    // } catch (error) {
-    //   console.error('사용자 정보 수정 실패:', error);
-    //   alert('사용자 정보 수정 중 오류가 발생했습니다.');
-    // }
+      // 성공적으로 정보가 업데이트되었을 때 처리
+      if (response.status === 200) {
+        alert('사용자 정보가 성공적으로 업데이트되었습니다.');
+        navigate('/mainNews'); // 업데이트 후 메인 페이지로 이동
+      }
+    } catch (error) {
+      console.error('사용자 정보 수정 실패:', error);
+      alert('사용자 정보 수정 중 오류가 발생했습니다.');
+    }
   };
 
   return (

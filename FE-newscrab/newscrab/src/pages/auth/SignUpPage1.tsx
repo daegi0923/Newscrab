@@ -85,12 +85,12 @@ const SignUpPage1: React.FC = () => {
     nickname: "", 
     email: "",
     birthday: "",
-    gender: "male", // 기본값: 남성
+    gender: "male",
     userIndustry: []  // 관심 분야는 이후 처리
   });
   
-  const [successMessage, setSuccessMessage] = useState<string>(""); // 성공 메시지 상태
-  // 유효성 검사 에러 메시지
+  const [successMessage, setSuccessMessage] = useState<string>("");
+  // const [isIdDuplicate, setIsIdDuplicate] = useState<boolean>(false); // ID 중복 여부
   const [errors, setErrors] = useState({
     loginId: "",
     password: "",
@@ -161,9 +161,11 @@ const SignUpPage1: React.FC = () => {
       const response = await axios.post("https://newscrab.duckdns.org/user/nickname" , { loginId : signupForm.loginId });
       if (response.data.exists) {
         setErrors((prevErrors) => ({ ...prevErrors, loginId : "이미 사용 중인 ID입니다." }));
+        // setIsIdDuplicate(true);  // ID 중복이면 입력 필드 비활성화
       } else {
         setErrors((prevErrors) => ({ ...prevErrors, loginId : "" }));
         setSuccessMessage("사용 가능한 아이디입니다.");
+        // setIsIdDuplicate(false); // 중복이 아니면 입력 필드 활성화
       }
     } catch (error) {
       console.error("ID 중복 확인 실패:", error);
@@ -193,7 +195,9 @@ const SignUpPage1: React.FC = () => {
       <SignUpContainer>
         <FormContainer>
           <div style={{ position: 'relative' }}>
-            <Input name="loginId" type="text" label="아이디" placeholder="아이디를 입력하세요" value={signupForm.loginId} onChange={handleChange} error={errors.loginId}/>
+            <Input name="loginId" type="text" label="아이디" placeholder="아이디를 입력하세요" value={signupForm.loginId} onChange={handleChange} error={errors.loginId} 
+            // disabled={isIdDuplicate}
+            />
             {successMessage && <p style={{ color: "green", fontSize: "12px" }}>{successMessage}</p>}
             <DuplicateButton onClick={handleIdCheck}>중복 확인</DuplicateButton>
           </div>
