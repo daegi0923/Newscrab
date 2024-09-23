@@ -8,4 +8,5 @@ import java.util.List;
 @Builder
 public class ScrapListResponseDto {
     private List<ScrapResponseDto> data;
+    private int totalItems;
 }

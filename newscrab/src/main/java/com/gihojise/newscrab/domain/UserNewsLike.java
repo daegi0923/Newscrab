@@ -2,13 +2,18 @@ package com.gihojise.newscrab.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
-@Table(name = "user_news_like")
 @Getter
+@NoArgsConstructor
+@Table(name = "user_news_like")
 public class UserNewsLike {
 
     @Id
@@ -17,6 +22,7 @@ public class UserNewsLike {
     private Integer userNewsLikeId;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
@@ -26,5 +32,24 @@ public class UserNewsLike {
 
     @CreatedDate
     private LocalDateTime createdAt;
+
+    public UserNewsLike(User user, News news) {
+        this.user = user;
+        this.news = news;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        UserNewsLike that = (UserNewsLike) o;
+        return Objects.equals(user.getUserId(), that.user.getUserId()) &&
+                Objects.equals(news.getNewsId(), that.news.getNewsId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(user.getUserId(), news.getNewsId());
+    }
 
 }
