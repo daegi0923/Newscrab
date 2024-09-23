@@ -15,6 +15,7 @@ const FilterNewsPage: React.FC = () => {
   const [totalPages, setTotalPages] = useState(1); // 전체 페이지 수
   const [selectedIndustry, setSelectedIndustry] = useState<string>("전체"); // 선택된 산업
   const [isDropdownOpen, setIsDropdownOpen] = useState(false); // 드롭다운 열림 여부
+  const [hasPageLoaded, setHasPageLoaded] = useState(false); // 페이지 로드 여부 확인
 
   // 뉴스 데이터를 API에서 가져오는 비동기 함수
   const fetchNewsData = async (page: number) => {
@@ -49,6 +50,14 @@ const FilterNewsPage: React.FC = () => {
     updateFilteredNews();
   }, [selectedIndustry, newsList, updateFilteredNews]);
 
+  // 페이지가 처음 로드되었을 때 드롭다운을 자동으로 열기 위해 useEffect 사용
+  useEffect(() => {
+    if (!hasPageLoaded) {
+      setIsDropdownOpen(true); // 페이지가 로드될 때 드롭다운 열기
+      setHasPageLoaded(true); // 한번만 로드하도록 상태 업데이트
+    }
+  }, [hasPageLoaded]);
+
   // 페이지 변경 핸들러
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -56,8 +65,13 @@ const FilterNewsPage: React.FC = () => {
 
   // 필터 탭 클릭 핸들러
   const handleFilterTabClick = useCallback(() => {
-    setIsDropdownOpen((prev) => !prev); // 드롭다운 토글
-  }, []);
+    // 페이지가 로드되지 않았으면 드롭다운을 열고 로드되었다고 표시
+    if (!hasPageLoaded) {
+      setHasPageLoaded(true);
+    } else {
+      setIsDropdownOpen((prev) => !prev); // 드롭다운 토글
+    }
+  }, [hasPageLoaded]);
 
   // 산업 선택 핸들러
   const handleIndustrySelect = useCallback((industryId: number) => {
@@ -67,6 +81,25 @@ const FilterNewsPage: React.FC = () => {
     setSelectedIndustry(selected);
     setIsDropdownOpen(false); // 선택 후 드롭다운 닫기
   }, []);
+
+  // 페이지 아무 곳이나 클릭 시 드롭다운 닫기 처리
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest(".dropdown")) {
+        // 드롭다운 외부 클릭 시
+        setIsDropdownOpen(false); // 드롭다운 닫기
+      }
+    };
+
+    if (isDropdownOpen) {
+      document.addEventListener("click", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, [isDropdownOpen]);
 
   return (
     <div>
