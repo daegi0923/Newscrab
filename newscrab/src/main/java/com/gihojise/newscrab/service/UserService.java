@@ -1,7 +1,7 @@
 package com.gihojise.newscrab.service;
 
 import com.gihojise.newscrab.domain.User;
-import com.gihojise.newscrab.dto.request.JoinDto;
+import com.gihojise.newscrab.dto.request.SignupRequestDto;
 import com.gihojise.newscrab.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -17,17 +17,21 @@ public class UserService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Transactional
-    public void joinProcess(JoinDto joinDTO) {
+    public void join(SignupRequestDto signupRequestDTO) {
 
-        Boolean isExist = userRepository.existsByLoginId(joinDTO.getLoginId());
+        Boolean isExist = userRepository.existsByLoginId(signupRequestDTO.getLoginId());
 
         if (isExist) {
 
             return;
         }
 
-        User user = new User(joinDTO.getLoginId(), bCryptPasswordEncoder.encode(joinDTO.getPassword()), joinDTO.getName(), joinDTO.getEmail(), joinDTO.getBirthday(), joinDTO.getGender());
+        User user = new User(signupRequestDTO.getLoginId(), bCryptPasswordEncoder.encode(signupRequestDTO.getPassword()), signupRequestDTO.getName(), signupRequestDTO.getEmail(), signupRequestDTO.getBirthday(), signupRequestDTO.getGender());
 
         userRepository.save(user);
+    }
+
+    public Boolean checkLoginId(String loginId) {
+        return userRepository.existsByLoginId(loginId);
     }
 }
