@@ -24,3 +24,6 @@ data:
 
     # jwt
     JWT_SECRET : asdfhsljkdafhjjhsdauiwefbcxnlkzcblkjhsakjhdkjashdkjlabcksabkbasckb
+
+    # 도메인 주소
+  DOMAIN : https://newscrab.duckdns.org/
