@@ -18,3 +18,10 @@ spec:
           ports:
             - containerPort: 4173
           command: ["npm", "run", "preview", "--", "--host"]
+          volumeMounts:
+                - name: tz-seoul
+                  mountPath: /etc/localtime
+      volumes:
+        - name: tz-seoul
+          hostPath:
+            path: /usr/share/zoneinfo/Asia/Seoul
