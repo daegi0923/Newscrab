@@ -1,10 +1,10 @@
 import styled from "styled-components";
-import { NewsItem } from "../../../types/newsTypes"; // 타입을 가져옴
+import { NewsItem } from "../../../types/newsTypes";
 import viewIcon from "@assets/view.png";
 import scrapCntIcon from "@assets/scrapCnt.png";
-import { industry } from "@common/Industry"; // category 가져옴
+import { industry } from "@common/Industry";
+import { useNavigate } from "react-router-dom"; // useNavigate 추가
 
-// "T"를 공백으로 치환하는 간단한 날짜 포맷팅 함수
 const formatDate = (dateString: string) => {
   return dateString.replace("T", " ");
 };
@@ -22,6 +22,7 @@ const NewsItemContainer = styled.div`
   overflow: hidden;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   padding: 16px;
+  cursor: pointer; /* 클릭 가능한 커서 추가 */
 `;
 
 const FlexContainer = styled.div`
@@ -46,7 +47,7 @@ const IndustryId = styled.div`
   padding: 2px 8px;
   border: 1px solid #555;
   border-radius: 20px;
-  display: inline-block; /* 텍스트 길이에 맞게 크기를 설정 */
+  display: inline-block;
   text-align: center;
   font-weight: bold;
 `;
@@ -74,20 +75,20 @@ const StatsRow = styled.div`
 `;
 
 const ViewIcon = styled.img`
-  width: 16px; /* 아이콘 크기 */
+  width: 16px;
   height: 16px;
-  margin-right: 5px; /* 아이콘과 텍스트 사이의 간격 */
+  margin-right: 5px;
 `;
 
 const ScrapCntIcon = styled.img`
-  width: 13px; /* 아이콘 크기 */
+  width: 13px;
   height: 16px;
-  margin-right: 5px; /* 아이콘과 텍스트 사이의 간격 */
+  margin-right: 5px;
 `;
 
-// 뉴스 리스트를 렌더링하는 컴포넌트
 const NewsList: React.FC<{ newsList: NewsItem[] }> = ({ newsList }) => {
-  // 산업 이름을 industryId를 통해 찾는 함수
+  const navigate = useNavigate(); // useNavigate 훅 사용
+
   const getIndustryName = (industryId: number): string => {
     const matchedCategory = industry.find(
       (ind) => ind.industryId === industryId
@@ -98,13 +99,15 @@ const NewsList: React.FC<{ newsList: NewsItem[] }> = ({ newsList }) => {
   return (
     <GridContainer>
       {newsList.map((news) => (
-        <NewsItemContainer key={news.newsId}>
+        <NewsItemContainer
+          key={news.newsId}
+          onClick={() => navigate(`/newsDetail/${news.newsId}`)} // 클릭 시 해당 경로로 이동
+        >
           <FlexContainer>
             {news.photoUrlList && (
               <Image src={news.photoUrlList[0]} alt="이미지가 없습니다." />
             )}
             <TextContainer>
-              {/* IndustryId를 기반으로 IndustryName을 표시 */}
               <IndustryId>{getIndustryName(news.industryId)}</IndustryId>
               <NewsTitle>{news.newsTitle}</NewsTitle>
               <InfoRow>

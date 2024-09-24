@@ -1,18 +1,34 @@
-// NewsCommon 컴포넌트를 All, Filter, Rcmd, Scrap, View 페이지에 뿌릴거임
-// Nav, Header, Tab, Pagination은 @components/common에서 가져옴
-// Rcmd 페이지에는 Pagination안함
-
-// common
+import React from "react";
 import Header from "@components/common/Header";
 import Tab from "@components/common/Tab";
 import { tabOptions } from "@components/common/TabOptions";
 
-const NewsCommon: React.FC = () => {
+interface NewsCommonProps {
+  showFilter: boolean;
+  selectedIndustry: string;
+  isDropdownOpen: boolean;
+  onFilterTabClick?: () => void;
+  onIndustrySelect?: (industryId: number) => void;
+}
+
+const NewsCommon: React.FC<NewsCommonProps> = ({
+  showFilter,
+  selectedIndustry,
+  isDropdownOpen,
+  onFilterTabClick = () => {}, // 기본값 제공
+  onIndustrySelect = () => {}, // 기본값 제공
+}) => {
   return (
-    <div>
+    <>
       <Header />
-      <Tab options={tabOptions} />
-    </div>
+      <Tab
+        options={tabOptions}
+        selectedIndustry={selectedIndustry}
+        isDropdownOpen={isDropdownOpen}
+        onFilterTabClick={showFilter ? onFilterTabClick : () => {}}
+        onIndustrySelect={showFilter ? onIndustrySelect : () => {}}
+      />
+    </>
   );
 };
 

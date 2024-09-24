@@ -36,12 +36,12 @@ const AppRouter: React.FC = () => {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup1" element={<SignUpPage1 />} />
         <Route path="/signup2" element={<SignUpPage2 />} />
-        
+
         {/* 마이페이지 */}
-        <Route path="/mypage" element={<MyPage />} />        
-        <Route path="/password" element={<PasswordChange />} />        
-        <Route path="/edit1" element={<ProfileEdit1 />} />        
-        <Route path="/edit2" element={<ProfileEdit2 />} />        
+        <Route path="/mypage" element={<MyPage />} />
+        <Route path="/password" element={<PasswordChange />} />
+        <Route path="/edit1" element={<ProfileEdit1 />} />
+        <Route path="/edit2" element={<ProfileEdit2 />} />
 
         {/* 뉴스 */}
         <Route path="/mainNews" element={<MainNewsPage />} />
@@ -50,7 +50,7 @@ const AppRouter: React.FC = () => {
         <Route path="/filterNews" element={<FilterNewsPage />} />
         <Route path="/viewCountNews" element={<ViewCountNewsPage />} />
         <Route path="/scrapCountNews" element={<ScrapCountNewsPage />} />
-        <Route path="/newsDetail/1" element={<NewsDetailPage />} />
+        <Route path="/newsDetail/:newsId" element={<NewsDetailPage />} />
 
         {/* 스크랩 */}
         <Route path="/updatedAtScrap" element={<UpdatedAtScrapPage />} />
