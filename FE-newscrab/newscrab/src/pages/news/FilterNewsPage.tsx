@@ -3,7 +3,7 @@ import GlobalStyle from "@components/GlobalStyle";
 import NewsCommon from "@pages/news/common/NewsCommon";
 import Pagination from "@components/common/Pagination";
 import { NewsItem } from "../../types/newsTypes";
-import { getMockNews } from "@apis/newsApi";
+import { getNewsData } from "@apis/news/newsApi";
 import { industry } from "@common/Industry";
 import NewsList from "./common/NewsList";
 
@@ -19,7 +19,7 @@ const FilterNewsPage: React.FC = () => {
 
   // 뉴스 데이터를 API에서 가져오는 비동기 함수
   const fetchNewsData = async (page: number) => {
-    const mockData = await getMockNews(page);
+    const mockData = await getNewsData(page);
     setNewsList(mockData.news);
     setTotalPages(mockData.totalPages);
   };

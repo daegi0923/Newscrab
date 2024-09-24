@@ -4,7 +4,7 @@ import viewIcon from "@assets/view.png";
 import scrapCntIcon from "@assets/scrapCnt.png";
 import likeIcon from "@assets/like.png"; // 찜 완료 시 표시할 이미지
 import unlikeIcon from "@assets/unlike.png"; // 찜하기 시 표시할 이미지
-import { NewsItem } from "../../../types/newsTypes"; // newsTypes.ts에서 타입 import
+import { NewsDetailItem } from "../../../types/newsTypes"; // newsTypes.ts에서 타입 import
 
 const formatDate = (dateString: string) => {
   return dateString.replace("T", " ");
@@ -117,10 +117,12 @@ const HeartButton = styled.button`
 `;
 
 type ScrapDetailArticleProps = {
-  newsItem: NewsItem;
+  newsDetailItem: NewsDetailItem;
 };
 
-const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({ newsItem }) => {
+const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({
+  newsDetailItem,
+}) => {
   const [isScrapped, setIsScrapped] = useState(false);
 
   const toggleScrap = () => {
@@ -136,18 +138,18 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({ newsItem }) => {
         />
       </HeartButton>
 
-      <NewsTitle>{newsItem.newsTitle}</NewsTitle>
+      <NewsTitle>{newsDetailItem.newsTitle}</NewsTitle>
 
       <MetaInfoContainer>
-        <DateInfo>{formatDate(newsItem.newsPublishedAt)}</DateInfo>
+        <DateInfo>{formatDate(newsDetailItem.newsPublishedAt)}</DateInfo>
         <Stats>
           <IconContainer>
             <ViewIcon src={viewIcon} alt="조회수 아이콘" />
-            {newsItem.view}
+            {newsDetailItem.view}
           </IconContainer>
           <IconContainer>
             <ScrapCntIcon src={scrapCntIcon} alt="스크랩수 아이콘" />
-            {newsItem.scrapCnt}
+            {newsDetailItem.scrap}
           </IconContainer>
         </Stats>
       </MetaInfoContainer>
@@ -156,26 +158,15 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({ newsItem }) => {
 
       <NewsText>
         <div>뉴스 소제목 자리</div>
-        <div>뉴스 소제목 자리</div>
-        <div>뉴스 소제목 자리</div>
       </NewsText>
 
-      {newsItem.photoUrlList && newsItem.photoUrlList.length > 0 ? (
-        <NewsImage src={newsItem.photoUrlList[0]} alt="News" />
+      {newsDetailItem.newsPhoto && newsDetailItem.newsPhoto.length > 0 ? (
+        <NewsImage src={newsDetailItem.newsPhoto[0]} alt="News" />
       ) : (
         <div>이미지가 없습니다.</div>
       )}
 
-      <NewsText>
-        {newsItem.newsContent}
-        <div>뉴스 내용 자리</div>
-        <div>뉴스 내용 자리</div>
-        <div>뉴스 내용 자리</div>
-        <div>뉴스 내용 자리</div>
-        <div>뉴스 내용 자리</div>
-        <div>뉴스 내용 자리</div>
-        <div>뉴스 내용 자리</div>
-      </NewsText>
+      <NewsText>{newsDetailItem.newsContent}</NewsText>
     </NewsContent>
   );
 };

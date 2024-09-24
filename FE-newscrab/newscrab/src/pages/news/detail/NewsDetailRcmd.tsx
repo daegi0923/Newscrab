@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import { getMockNews } from "@apis/newsApi"; // API 함수 가져오기
+import { getNewsData } from "@apis/news/newsApi"; // API 함수 가져오기
 
 const formatDate = (dateString: string) => {
   return dateString.replace("T", " ");
@@ -98,7 +98,7 @@ const PopupImages: React.FC = () => {
   useEffect(() => {
     // 뉴스 API에서 이미지를 3개 가져오는 로직
     const fetchImages = async () => {
-      const mockData = await getMockNews(1); // 뉴스 API 호출
+      const mockData = await getNewsData(1); // 뉴스 API 호출
       const newsItems = mockData.news.slice(0, 3).map((newsItem) => ({
         imageUrl: newsItem.photoUrlList[0],
         title: newsItem.newsTitle,

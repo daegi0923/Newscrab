@@ -3,7 +3,7 @@ import GlobalStyle from "@components/GlobalStyle";
 import NewsCommon from "@pages/news/common/NewsCommon";
 import Pagination from "@components/common/Pagination";
 import { NewsItem } from "../../types/newsTypes";
-import { getMockNews } from "@apis/newsApi";
+import { getNewsData } from "@apis/news/viewCountNewsApi";
 import NewsList from "./common/NewsList";
 
 const ViewCountNewsPage: React.FC = () => {
@@ -12,7 +12,7 @@ const ViewCountNewsPage: React.FC = () => {
   const [totalPages, setTotalPages] = useState(1);
 
   const fetchNewsData = async (page: number) => {
-    const mockData = await getMockNews(page);
+    const mockData = await getNewsData(page);
     setNewsList(mockData.news);
     setTotalPages(mockData.totalPages);
   };
