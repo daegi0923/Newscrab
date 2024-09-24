@@ -1,24 +1,25 @@
 # import os
 from fastapi import APIRouter, Depends, HTTPException
-# from sqlalchemy.orm import Session
-# from app.database import SessionLocal
-# from app.crawling.models import News, NewsKeyword 
-# from app.industries.models import Industry  
-# from datetime import datetime
-# from sklearn.feature_extraction.text import TfidfVectorizer
-# from sklearn.metrics.pairwise import cosine_similarity
-# import numpy as np
-# import pandas as pd
-# import joblib
-# import time
-# from selenium import webdriver
-# from selenium.webdriver.chrome.service import Service
-# from selenium.webdriver.chrome.options import Options
-# from bs4 import BeautifulSoup
-# from selenium.webdriver.support.ui import WebDriverWait
-# from selenium.webdriver.support import expected_conditions as EC
-# from selenium.webdriver.common.by import By
-# # from konlpy.tag import Okt
+from sqlalchemy.orm import Session
+from app.database import SessionLocal
+from app.crawling.models import News, NewsKeyword, NewsPhoto  
+from app.industries.models import Industry  
+from datetime import datetime
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+import numpy as np
+import pandas as pd
+import joblib
+import time
+import re
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from bs4 import BeautifulSoup
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
+from konlpy.tag import Okt
 
 router = APIRouter()
 
@@ -37,13 +38,13 @@ router = APIRouter()
 #     finally:
 #         db.close()
 
-# def update_related_news(db: Session):
-#     start_time = time.time()
-#     news_data = db.query(News).all()
-#     final_df = pd.DataFrame([{
-#         'news_id': news.news_id,
-#         'news_title': news.news_title
-#     } for news in news_data])
+def update_related_news(db: Session):
+    start_time = time.time()
+    news_data = db.query(News).all()
+    final_df = pd.DataFrame([{
+        'news_id': news.news_id,
+        'news_title': news.news_title if news.news_title else "" 
+    } for news in news_data])
 
 #     tfidf_vectorizer = TfidfVectorizer()
 #     tfidf_matrix = tfidf_vectorizer.fit_transform(final_df['news_title'])
@@ -137,11 +138,20 @@ router = APIRouter()
 #                     print(f"뉴스 본문이 300자 미만입니다. 뉴스 링크: {news_link}")
 #                     continue
 
-#                 news_company = news_soup.find('img', class_='media_end_head_top_logo_img light_type _LAZY_LOADING _LAZY_LOADING_INIT_HIDE')
-#                 news_company_text = news_company['title'] if news_company else None
-#                 news_published_at = news_soup.find('span', class_='media_end_head_info_datestamp_time _ARTICLE_DATE_TIME')
-#                 news_published_at_text = news_published_at['data-date-time'] if news_published_at else None
-#                 keywords = extract_keywords_tfidf(news_body_text if news_body_text else "")
+                news_company = news_soup.find('img', class_='media_end_head_top_logo_img light_type _LAZY_LOADING _LAZY_LOADING_INIT_HIDE')
+                news_company_text = news_company['title'] if news_company else None
+                news_published_at = news_soup.find('span', class_='media_end_head_info_datestamp_time _ARTICLE_DATE_TIME')
+                news_published_at_text = news_published_at['data-date-time'] if news_published_at else None
+                # 뉴스 이미지 추출 (id가 'img_a'로 시작하는 모든 div 태그 안의 img 태그 선택)
+                img_divs = news_soup.find_all('div', id=re.compile(r'^img_a'))  # id가 'img_a'로 시작하는 모든 div 태그 선택
+                photo_urls = []
+
+                # 각 div 안에서 img 태그 추출
+                for div in img_divs:
+                    img_tags = div.find_all('img')  # div 안에 있는 모든 img 태그 선택
+                    photo_urls.extend([img['src'] for img in img_tags if img.get('src')])  # src 속성이 있는 경우 URL 저장
+
+                keywords = extract_keywords_tfidf(news_body_text if news_body_text else "")
 
 #                 keywords_str = [keywords]
 #                 X_new_tfidf = vectorizer.transform(keywords_str)
@@ -151,16 +161,17 @@ router = APIRouter()
 
 #                 predicted_industry = class_labels[np.argmax(y_pred_proba)]
 
-#                 # 데이터를 딕셔너리 형태로 저장
-#                 data.append({
-#                     'news_url': news_link,
-#                     'news_title': news_title,
-#                     'news_content': news_body,  
-#                     'news_company': news_company_text,
-#                     'news_published_at': news_published_at_text,
-#                     'extracted_keywords': keywords,
-#                     'predicted_industry': predicted_industry
-#                 })
+                # 데이터를 딕셔너리 형태로 저장
+                data.append({
+                    'news_url': news_link,
+                    'news_title': news_title,
+                    'news_content': news_body,  
+                    'news_company': news_company_text,
+                    'news_published_at': news_published_at_text,
+                    'extracted_keywords': keywords,
+                    'predicted_industry': predicted_industry,
+                    'photo_urls': photo_urls,
+                })
 
 #             except Exception as e:
 #                 print(f"Error processing {news_link}: {e}")
@@ -196,13 +207,23 @@ router = APIRouter()
 #             db.add(news)
 #             db.commit()
 
-#             # 키워드를 news_keyword 테이블에 저장
-#             keywords = row['extracted_keywords'].split()  # 키워드들을 공백으로 분리
-#             for keyword in keywords:
-#                 existing_keyword = db.query(NewsKeyword).filter(
-#                     NewsKeyword.news_id == news.news_id,
-#                     NewsKeyword.news_keyword_name == keyword
-#                 ).first()
+            # 뉴스와 연결된 사진 URL들을 news_photo 테이블에 저장
+            for photo_url in row['photo_urls']:
+                news_photo = NewsPhoto(
+                    news_id=news.news_id,
+                    photo_url=photo_url
+                )
+                db.add(news_photo)
+            db.commit()
+            
+
+            # 키워드를 news_keyword 테이블에 저장
+            keywords = row['extracted_keywords'].split()  # 키워드들을 공백으로 분리
+            for keyword in keywords:
+                existing_keyword = db.query(NewsKeyword).filter(
+                    NewsKeyword.news_id == news.news_id,
+                    NewsKeyword.news_keyword_name == keyword
+                ).first()
 
 #                 if not existing_keyword:
 #                     news_keyword = NewsKeyword(
