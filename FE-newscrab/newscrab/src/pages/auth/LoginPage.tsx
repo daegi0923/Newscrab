@@ -68,6 +68,7 @@ const LoginPage: React.FC = () => {
   
   const handleLogin = () => {
     if (isFormValid) {
+      console.log(loginForm);
       dispatch(
         loginLoading({
           loginId: loginForm.loginId,

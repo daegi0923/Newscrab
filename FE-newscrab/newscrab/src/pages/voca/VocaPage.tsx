@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import GlobalStyle from "@components/GlobalStyle";
 import VocaCommon from "@pages/voca/VocaCommon";
 import Tab from "@components/voca/Tab";
@@ -12,6 +13,7 @@ import Card from "@components/voca/VocaCard";
 import DropDown from "@components/voca/DropDown"
 import Pagination from "@components/voca/Pagination"
 import SearchBar from "@components/common/SearchBar";
+import { fetchVocaList } from '@store/voca/vocaSlice';
 
 const SearchContainer = styled.div`
   margin-top: -1%
@@ -48,12 +50,14 @@ const mapWordsWithImages = (mockWords: MockWord[], words: Word[]): MockWordWithI
 
 const VocaPage: React.FC = () => {
   const navigate = useNavigate();
-  const mappedWords: MockWordWithImages[] = mapWordsWithImages(mockWords, words);
+  // const mappedWords: MockWordWithImages[] = mapWordsWithImages(mockWords, words);
+  const mappedWords: MockWordWithImages[] = useMemo(() => mapWordsWithImages(mockWords, words), []);
   const [filter, setFilter] = useState<string>('mainVoca');
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [selectedIndustryId, setSelectedIndustryId] = useState<number | null>(null);
   const [sortedWords, setSortedWords] = useState<MockWordWithImages[]>(mappedWords);
   const [searchText, setSearchText] = useState<string>('');
+  const dispatch = useDispatch();
   
   // 페이지네이션
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -96,9 +100,14 @@ const VocaPage: React.FC = () => {
   };
 
   useEffect(() => {
+    // dispatch(fetchVocaList());
+  }, [dispatch])
+
+  useEffect(() => {
     const filterWords = filterIndustry(selectedIndustryId);
     setSortedWords(sortWords(filter, filterWords));
-  }, [filter, selectedIndustryId, mappedWords]);
+  // }, [filter, selectedIndustryId, mappedWords]);
+}, [filter, selectedIndustryId]);
 
   const handleFilterChange = (newFilter: string) => {
     setFilter(newFilter);

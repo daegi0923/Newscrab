@@ -1,6 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import createSagaMiddleware from "redux-saga";
 import loginReducer, { watchLoginSaga } from "./user/loginLogout"
+import vocaReducer from "./voca/vocaSlice";
 
 // 리듀서 import
 // 예시 => import uiSlice from "./ui-slice"
@@ -11,6 +12,7 @@ export const store = configureStore({
     // 리듀서 추가
     // 예시 => ui: uiSlice.reducer,
     login: loginReducer,
+    voca: vocaReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(sagaMiddleware), // 기본 미들웨어에 sagaMiddleware 추가

@@ -86,7 +86,7 @@ const SignUpPage1: React.FC = () => {
     email: "",
     birthday: "",
     gender: "male",
-    userIndustry: []  // 관심 분야는 이후 처리
+    // userIndustry: []  // 관심 분야는 이후 처리
   });
   
   const [successMessage, setSuccessMessage] = useState<string>("");
@@ -175,7 +175,7 @@ const SignUpPage1: React.FC = () => {
   const isFormValid = Object.values(errors).every((error) => error === "") &&
   (Object.keys(signupForm) as (keyof typeof signupForm)[]).every((key) => {
     // interest 필드는 비어 있어도 통과하도록
-    if (key === "userIndustry") return true;
+    // if (key === "userIndustry") return true;
     return signupForm[key] !== "";
   });
 
@@ -214,9 +214,9 @@ const SignUpPage1: React.FC = () => {
           <RadioButton
             name="gender"
             options={[
-              { value: 'male', label: '남성' },
-              { value: 'female', label: '여성' },
-              { value: 'other', label: '그 외' },
+              { value: 'MALE', label: '남성' },
+              { value: 'FEMALE', label: '여성' },
+              { value: 'OTHER', label: '그 외' },
             ]}
             value={signupForm.gender} // 선택된 값을 상태에 맞게 설정
             onChange={handleChange} // 값이 변경될 때 상태 업데이트
