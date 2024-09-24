@@ -1,5 +1,6 @@
 package com.gihojise.newscrab.controller;
 
+import com.gihojise.newscrab.domain.CustomUserDetails;
 import com.gihojise.newscrab.dto.common.ApiResponse;
 import com.gihojise.newscrab.dto.response.NewsDetailResponseDto;
 import com.gihojise.newscrab.dto.response.NewsPageResponseDto;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -49,8 +51,8 @@ public class NewsController {
     // 3. 뉴스 상세 조회
     @Operation(summary = "뉴스 상세 조회", description = "뉴스 ID로 뉴스 상세 정보를 조회합니다.")
     @GetMapping("/{newsId}")
-    public ResponseEntity<ApiResponse<NewsDetailResponseDto>> getNewsDetail(@PathVariable int newsId) {
-        NewsDetailResponseDto response = newsService.getNewsDetail(newsId);
+    public ResponseEntity<ApiResponse<NewsDetailResponseDto>> getNewsDetail(@AuthenticationPrincipal CustomUserDetails userDetails, @PathVariable int newsId) {
+        NewsDetailResponseDto response = newsService.getNewsDetail(userDetails.getUserId(), newsId);
         return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "뉴스 상세 조회 성공", response));
     }
 
