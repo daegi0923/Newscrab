@@ -34,4 +34,8 @@ public class UserService {
     public Boolean checkLoginId(String loginId) {
         return userRepository.existsByLoginId(loginId);
     }
+
+    public Boolean checkEmail(String email) {
+        return userRepository.existsByEmail(email);
+    }
 }
