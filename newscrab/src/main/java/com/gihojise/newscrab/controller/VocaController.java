@@ -3,6 +3,7 @@ package com.gihojise.newscrab.controller;
 import com.gihojise.newscrab.dto.common.ApiResponse;
 import com.gihojise.newscrab.dto.request.VocaAddRequestDto;
 import com.gihojise.newscrab.dto.response.VocaListResponseDto;
+import com.gihojise.newscrab.dto.response.VocaNewsResponseDto;
 import com.gihojise.newscrab.dto.response.VocaResponseDto;
 import com.gihojise.newscrab.service.VocaService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -59,4 +60,15 @@ public class VocaController {
         vocaService.deleteVoca(userId, termId);
         return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "단어 삭제 성공", null));
     }
+
+
+    // 내부 호출 API
+    // 단어 연관 뉴스 추천
+    @Operation(summary = "단어 연관 뉴스 추천", description = "단어와 연관된 뉴스를 추천합니다.")
+    @GetMapping("/{keyword}/news")
+    public ResponseEntity<ApiResponse<VocaNewsResponseDto>> recommendNews(@PathVariable String keyword) {
+        VocaNewsResponseDto response = vocaService.fetchRelatedNews(keyword);
+        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "단어 연관 뉴스 추천 성공", response));
+    }
+
 }
