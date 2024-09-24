@@ -36,7 +36,9 @@ export interface NewsDetailItem {
   view: number; // 조회수
   scrap: number; // 스크랩 수 (상세에서는 scrapCnt 대신 scrap 사용)
   newsPhoto: string[]; // 뉴스 사진 URL 리스트
-  relatedNews: RelatedNewsItem[]; // 연관 뉴스 리스트
+  relatedNews1: RelatedNewsItem;
+  relatedNews2: RelatedNewsItem;
+  relatedNews3: RelatedNewsItem;
 }
 
 // 연관 뉴스 항목의 구조를 정의한 인터페이스
@@ -46,6 +48,8 @@ export interface RelatedNewsItem {
   industryId: number;
   newsPublishedAt: string;
   newsCompany: string;
+  createdAt: string;
+  updatedAt: string;
   newsUrl: string;
   view: number;
   scrapCnt: number;
