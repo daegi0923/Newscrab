@@ -78,7 +78,7 @@ def extract_important_sentence(news_content_text, keyword):
     return important_sentence
 
 # 뉴스 검색 엔드포인트
-@router.get("/search_related_news/")
+@router.get("/search_related_news")
 def search_related_news(keyword: str, db: Session = Depends(get_db)):
     # 데이터베이스에서 모든 뉴스를 가져옴
     news_data = db.query(News).all()
