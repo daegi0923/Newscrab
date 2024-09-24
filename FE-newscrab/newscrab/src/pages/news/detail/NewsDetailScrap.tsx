@@ -12,30 +12,6 @@ const Sidebar = styled.div`
   position: relative; /* SaveButton의 절대 위치를 위한 relative 설정 */
 `;
 
-const SaveButton = styled.button`
-  position: absolute; /* Sidebar 내에서 상대적인 위치 */
-  bottom: 15px;
-  right: 15px;
-  background-color: #f0c36d;
-  border: none;
-  border-radius: 20px;
-  padding: 10px 20px;
-  font-size: 14px;
-  font-weight: bold;
-  color: white;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-
-  &:hover {
-    background-color: #d9a654;
-  }
-
-  &:active {
-    background-color: #c89640;
-  }
-`;
-
 const TabMenu = styled.div`
   display: flex;
   justify-content: space-between;
@@ -72,7 +48,7 @@ const TabButton = styled.button<{ $active?: boolean }>`
   }
 `;
 
-const StyledTextarea = styled.textarea<{ isOverflowing: boolean }>`
+const StyledTextarea = styled.textarea<{ $isOverflowing: boolean }>`
   width: 100%;
   height: auto;
   max-height: 615px;
@@ -85,7 +61,7 @@ const StyledTextarea = styled.textarea<{ isOverflowing: boolean }>`
   background-color: #fff;
   margin-top: 10px;
   white-space: pre-wrap;
-  overflow-y: ${({ isOverflowing }) => (isOverflowing ? "auto" : "hidden")};
+  overflow-y: ${({ $isOverflowing }) => ($isOverflowing ? "auto" : "hidden")};
 
   &::-webkit-scrollbar {
     width: 8px;
@@ -164,7 +140,7 @@ const NewsDetailScrap: React.FC = () => {
           value={summaryText}
           onChange={(e) => setSummaryText(e.target.value)}
           placeholder={summaryPlaceholder}
-          isOverflowing={isOverflowing}
+          $isOverflowing={isOverflowing}
         />
       )}
 
@@ -174,7 +150,7 @@ const NewsDetailScrap: React.FC = () => {
           value={opinionText}
           onChange={(e) => setOpinionText(e.target.value)}
           placeholder="의견을 작성하세요."
-          isOverflowing={isOverflowing}
+          $isOverflowing={isOverflowing}
         />
       )}
 
@@ -184,12 +160,9 @@ const NewsDetailScrap: React.FC = () => {
           value={wordListText}
           onChange={(e) => setWordListText(e.target.value)}
           placeholder="단어장을 작성하세요."
-          isOverflowing={isOverflowing}
+          $isOverflowing={isOverflowing}
         />
       )}
-
-      {/* Sidebar 내부 우측 하단에 상대적으로 위치한 저장 버튼 */}
-      <SaveButton onClick={() => alert("저장되었습니다!")}>저장</SaveButton>
     </Sidebar>
   );
 };

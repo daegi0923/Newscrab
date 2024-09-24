@@ -8,12 +8,14 @@ import { getMockNews } from "@apis/newsApi"; // getMockNews 함수 import
 import { NewsItem } from "../../../types/newsTypes"; // newsTypes.ts에서 타입 import
 
 import NewsDetailArticle from "./NewsDetailArticle";
-import NewsDetailSummary from "./NewsDetailScrap";
+import NewsDetailScrap from "./NewsDetailScrap";
 import NewsDetailRcmd from "./NewsDetailRcmd";
+import SaveButtonComponent from "./SaveButtonComponent";
 
 // Styled Components 정의
 const NewsDetailContainer = styled.div`
   margin: 0px 100px;
+  position: relative; /* 절대 위치를 위한 부모 요소 설정 */
 `;
 
 const NewsWrapper = styled.div`
@@ -21,6 +23,12 @@ const NewsWrapper = styled.div`
   justify-content: center;
   margin-top: 20px;
   gap: 50px; /* 두 컴포넌트 사이에 50px 간격을 줌 */
+`;
+
+const SaveButtonWrapper = styled.div`
+  position: absolute;
+  right: 20px; /* 오른쪽에서 20px 떨어진 위치 */
+  bottom: 20px; /* 아래쪽에서 20px 떨어진 위치 */
 `;
 
 const NewsDetailPage: React.FC = () => {
@@ -64,11 +72,17 @@ const NewsDetailPage: React.FC = () => {
             newsItem && (
               <>
                 <NewsDetailArticle newsItem={newsItem} />
-                <NewsDetailSummary />
+                <NewsDetailScrap />
               </>
             )
           )}
         </NewsWrapper>
+
+        {/* 저장 버튼을 오른쪽 아래로 옮김 */}
+        <SaveButtonWrapper>
+          <SaveButtonComponent />
+        </SaveButtonWrapper>
+
         <NewsDetailRcmd />
       </NewsDetailContainer>
     </div>
