@@ -19,6 +19,11 @@ import FilterScrapPage from "@pages/scrap/FilterScrapPage";
 // 단어장
 import MainVoca from "@pages/voca/VocaPage";
 import VocaDetail from "@pages/voca/VocaDetailPage";
+// 마이페이지
+import MyPage from "@pages/myPage/MyPage";
+import PasswordChange from "@pages/myPage/PasswordChangePage";
+import ProfileEdit1 from "@pages/myPage/ProfileEditPage1";
+import ProfileEdit2 from "@pages/myPage/ProfileEditPage2";
 
 const AppRouter: React.FC = () => {
   return (
@@ -31,6 +36,12 @@ const AppRouter: React.FC = () => {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/signup1" element={<SignUpPage1 />} />
         <Route path="/signup2" element={<SignUpPage2 />} />
+        
+        {/* 마이페이지 */}
+        <Route path="/mypage" element={<MyPage />} />        
+        <Route path="/password" element={<PasswordChange />} />        
+        <Route path="/edit1" element={<ProfileEdit1 />} />        
+        <Route path="/edit2" element={<ProfileEdit2 />} />        
 
         {/* 뉴스 */}
         <Route path="/mainNews" element={<MainNewsPage />} />

@@ -5,7 +5,7 @@ import Input from '@common/InputBox';
 // import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { loginLoading } from '../../store/user/login'
+import { loginLoading } from '../../store/user/loginLogout'
 
 const GlobalStyle = createGlobalStyle`
   body, html {

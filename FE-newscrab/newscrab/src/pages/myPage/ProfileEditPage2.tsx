@@ -101,30 +101,27 @@ const SaveButton = styled.button`
   }
 `;
 
-const SignUpPage2: React.FC = () => {
+const ProfileEdit2: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { signupForm } = location.state; // 앞에서 전달 받은 form
+  const { editForm } = location.state; // 이전 페이지에서 전달받은 사용자 수정 폼 데이터
   const [selectedIndustries, setSelectedIndustries] = useState<Array<{ img: string, industryId: number, industryName: string } | null>>([null, null, null]);
   const [availableIndustries, setAvailableIndustries] = useState(words.filter((industry) => industry.industryId !== 16));
 
   const handleDragStart = (event: React.DragEvent<HTMLDivElement>, industry: { img: string, industryId: number, industryName: string }) => {
-    event.dataTransfer.setData('industry', JSON.stringify(industry)); // 객체를 JSON으로 직렬화하여 전달
- 
+    event.dataTransfer.setData('industry', JSON.stringify(industry));
     const dragImg = new Image();
     dragImg.src = industry.img;
     dragImg.onload = () => {
-      event.dataTransfer.setDragImage(dragImg, dragImg.width / 2, dragImg.height / 2); // 드래그 시 선명한 이미지 표시
+      event.dataTransfer.setDragImage(dragImg, dragImg.width / 2, dragImg.height / 2);
     };
   };
 
   const handleDrop = (event: React.DragEvent<HTMLDivElement>, index: number) => {
-    const industry = JSON.parse(event.dataTransfer.getData('industry')); // JSON으로 역직렬화하여 객체로 변환
+    const industry = JSON.parse(event.dataTransfer.getData('industry'));
     const newSelectedIndustries = [...selectedIndustries];
     newSelectedIndustries[index] = industry;
     setSelectedIndustries(newSelectedIndustries);
-
-    // 선택된 카드는 CardContainer에서 사라지도록
     setAvailableIndustries(availableIndustries.filter((item) => item.industryId !== industry.industryId));
   };
 
@@ -133,47 +130,48 @@ const SignUpPage2: React.FC = () => {
     const removedIndustry = newSelectedIndustries[index];
     newSelectedIndustries[index] = null;
     setSelectedIndustries(newSelectedIndustries);
-
-    // 선택 취소된 카드를 다시 availableIndustries에 추가
     const removedIndustryObj = words.find((item) => item.img === removedIndustry?.img);
     if (removedIndustryObj) {
       setAvailableIndustries([...availableIndustries, removedIndustryObj]);
     }
   };
 
-  // Save 버튼 클릭 시 선택된 산업군을 콘솔에 출력
+  // PUT 요청으로 사용자 정보 업데이트
   const handleSave = async () => {
     console.log("선택된 산업군:", selectedIndustries.filter(Boolean));
     const filteredIndustries = selectedIndustries.filter(Boolean) as { img: string, industryId: number, industryName: string }[];
-    const updatedSignupForm = {
-      ...signupForm,
+
+    const updatedEditForm = {
+      ...editForm,
       userIndustry: filteredIndustries.map((industry, index) => ({
         industryId: industry.industryId,
         industryName: industry.industryName,
-        preRank: index + 1, // Store the order as preRank (1 for first, 2 for second, etc.)
-    })),
+        preRank: index + 1, // 산업 순위를 저장
+      })),
     };
-    console.log("회원가입 데이터:", updatedSignupForm);
+
+    console.log("수정할 사용자 데이터:", updatedEditForm);
+
+    // 사용자 ID는 editForm에 포함되어 있다고 가정
+    const userId = updatedEditForm.userId;
 
     try {
-      const response = await axios.post('https://newscrab.duckdns.org/api/v1/users/join', {
-        loginId: updatedSignupForm.loginId,
-        password: updatedSignupForm.password,
-        name: updatedSignupForm.name,
-        email: updatedSignupForm.email,
-        birthday: updatedSignupForm.birthday,
-        gender: updatedSignupForm.gender,
-        userIndustry: updatedSignupForm.userIndustry
+      const response = await axios.put(`https://newscrab.duckdns.org/api/v1/users/${userId}`, {
+        nickname: updatedEditForm.nickname,
+        email: updatedEditForm.email,
+        birthday: updatedEditForm.birthday,
+        gender: updatedEditForm.gender,
+        userIndustry: updatedEditForm.userIndustry,
       });
 
-      // 회원가입 성공 시, 다른 페이지로 이동
+      // 성공적으로 정보가 업데이트되었을 때 처리
       if (response.status === 200) {
-        alert('회원가입 성공!');
-        navigate('/mainNews'); // 예시로 로그인 페이지로 이동
+        alert('사용자 정보가 성공적으로 업데이트되었습니다.');
+        navigate('/mainNews'); // 업데이트 후 메인 페이지로 이동
       }
     } catch (error) {
-      console.error('회원가입 실패:', error);
-      alert('회원가입 중 오류가 발생했습니다.');
+      console.error('사용자 정보 수정 실패:', error);
+      alert('사용자 정보 수정 중 오류가 발생했습니다.');
     }
   };
 
@@ -181,7 +179,7 @@ const SignUpPage2: React.FC = () => {
     <SignUpContainer>
       <h3>2단계 2/2</h3>
       <h2>✅ 좋아하는 산업군을 3개 선택하세요</h2>
-      
+
       <CardContainer>
         <IndustryGrid>
           {availableIndustries.map((industry) => (
@@ -189,7 +187,7 @@ const SignUpPage2: React.FC = () => {
               key={industry.industryId}
               draggable
               onDragStart={(event) => handleDragStart(event, industry)}
-              isHidden={selectedIndustries.some(selected => selected?.img === industry.img)} // 선택된 카드는 숨기기
+              isHidden={selectedIndustries.some(selected => selected?.img === industry.img)}
             >
               <h4>{industry.industryName}</h4>
               <img src={industry.img} alt={industry.industryName} />
@@ -199,14 +197,14 @@ const SignUpPage2: React.FC = () => {
 
         <DropContainer>
           {selectedIndustries.map((industry, index) => (
-            <DropArea key={index} 
-              onDrop={(event) => handleDrop(event, index)} 
+            <DropArea key={index}
+              onDrop={(event) => handleDrop(event, index)}
               onDragOver={(event) => event.preventDefault()}
               onClick={() => handleRemoveIndustry(index)}>
               {industry ? (
                 <>
                   <img src={industry.img} alt={`순위 ${index + 1}`} />
-                  <h4>{industry.industryName}</h4> {/* 산업 이름 표시 */}
+                  <h4>{industry.industryName}</h4>
                 </>
               ) : (
                 <p>{index + 1}순위</p>
@@ -220,4 +218,4 @@ const SignUpPage2: React.FC = () => {
   );
 };
 
-export default SignUpPage2;
+export default ProfileEdit2;
