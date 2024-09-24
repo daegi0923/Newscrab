@@ -1,5 +1,7 @@
 package com.gihojise.newscrab.controller;
 
+import com.gihojise.newscrab.dto.common.ApiResponse;
+import com.gihojise.newscrab.dto.request.CheckEmailRequestDto;
 import com.gihojise.newscrab.dto.request.CheckIdRequestDto;
 import com.gihojise.newscrab.dto.request.LoginRequestDto;
 import com.gihojise.newscrab.dto.request.SignupRequestDto;
@@ -8,6 +10,8 @@ import com.gihojise.newscrab.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,12 +37,24 @@ public class UserController {
 
     @Operation(summary = "아이디 중복 확인", description = "아이디 중복을 확인합니다")
     @PostMapping("/nickname")
-    public String checkNickname(@RequestBody CheckIdRequestDto checkIdRequestDTO) {
+    public ResponseEntity<ApiResponse<Void>> checkNickname(@RequestBody CheckIdRequestDto checkIdRequestDTO) {
         if (userService.checkLoginId(checkIdRequestDTO.getLoginId())) {
-            return "이미 존재하는 ID입니다.";
+            return ResponseEntity.ok(ApiResponse.of(HttpStatus.ALREADY_REPORTED.value(), HttpStatus.ALREADY_REPORTED.getReasonPhrase(), "이미 존재하는 아이디입니다.", null));
+        } else {
+            return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "사용 가능한 아이디입니다.", null));
         }
-        return "사용 가능한 ID입니다.";
     }
+
+    @Operation(summary = "이메일 중복 확인", description = "이메일 중복을 확인합니다")
+    @PostMapping("/email")
+    public ResponseEntity<ApiResponse<Void>> checkEmail(@RequestBody CheckEmailRequestDto checkEmailRequestDTO) {
+        if (userService.checkEmail(checkEmailRequestDTO.getEmail())) {
+            return ResponseEntity.ok(ApiResponse.of(HttpStatus.ALREADY_REPORTED.value(), HttpStatus.ALREADY_REPORTED.getReasonPhrase(), "이미 존재하는 이메일입니다.", null));
+        } else {
+            return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "사용 가능한 이메일입니다.", null));
+        }
+    }
+
 
     @Operation(summary = "로그인", description = "로그인을 진행합니다.")
     @PostMapping("/login")
