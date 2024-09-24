@@ -25,6 +25,7 @@ class News(Base):
     # Industry와의 관계 설정
     industry = relationship("Industry", back_populates="news_list")
     keywords = relationship("NewsKeyword", back_populates="news")
+    photos = relationship("NewsPhoto", back_populates="news", cascade="all, delete-orphan")
 
 
 # NewsKeyword 모델 정의 (news_keyword 테이블)
@@ -39,3 +40,14 @@ class NewsKeyword(Base):
     # Industry와의 관계 설정
     industry = relationship("Industry", back_populates="news_keywords")
     news = relationship("News", back_populates="keywords")
+
+# NewsPhoto 모델 정의
+class NewsPhoto(Base):
+    __tablename__ = "news_photo"
+
+    photo_id = Column(Integer, primary_key=True, autoincrement=True)  # 자동 증가되는 photo_id
+    news_id = Column(Integer, ForeignKey("news.news_id", ondelete="CASCADE"), nullable=False)  # news_id를 외래키로 설정
+    photo_url = Column(String(255), nullable=False)  # 사진 URL
+
+    # News 모델과의 관계 설정 (Many-to-One)
+    news = relationship("News", back_populates="photos")

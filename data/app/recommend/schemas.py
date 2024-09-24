@@ -7,3 +7,5 @@ class ItemResponse(BaseModel):
 
     class Config:
         orm_mode = True
+
+

@@ -1,4 +1,4 @@
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, HTTPException, Body
 from sqlalchemy.orm import Session
 from . import models
 from app.database import SessionLocal, engine
@@ -19,74 +19,153 @@ def get_db():
     finally:
         db.close()
 
-# 데이터베이스에서 데이터 가져오기
-@router.get("/test")
-def read_item(db: Session = Depends(get_db)):
-    users = db.query(models.User).all()
-    scrabs = db.query(models.Scrap).all()
-    user_news_like = db.query(models.UserNewsLike).all()
-    user_industry = db.query(models.UserIndustry).all()
-    
-    news_list = db.query(models.News).all()
-    recommend_news = collaborative_filtering(1, db)
 
-    if users is None:
-        raise HTTPException(status_code=404, detail="User not found")
+def get_scrap_like_dataframe(db: Session):
+    global scrap_like_df, user_news_matrix
+    # Scrap 테이블에서 user_id와 news_id를 가져옴
+    scrap_data = db.query(models.Scrap.user_id, models.Scrap.news_id).all()
+    
+    # UserNewsLike 테이블에서 user_id와 news_id를 가져옴
+    like_data = db.query(models.UserNewsLike.user_id, models.UserNewsLike.news_id).all()
+
+    # Scrap 데이터프레임 생성
+    scrap_df = pd.DataFrame(scrap_data, columns=['user_id', 'news_id'])
+    scrap_df['scrap'] = 1  # scrap한 경우는 1로 표시
+
+    # Like 데이터프레임 생성
+    like_df = pd.DataFrame(like_data, columns=['user_id', 'news_id'])
+    like_df['like'] = 1  # like한 경우는 1로 표시
+
+    # Scrap과 Like를 outer join하여 결합
+    merged_df = pd.merge(scrap_df, like_df, on=['user_id', 'news_id'], how='outer')
+
+    # 결측치 처리: scrap이나 like가 없는 경우 0으로 채움
+    merged_df['scrap'] = merged_df['scrap'].fillna(0)
+    merged_df['like'] = merged_df['like'].fillna(0)
+    scrap_like_df = merged_df
+    scrap_like_df['interaction'] = scrap_like_df.apply(lambda row: 2 if row['scrap'] > 0 else (1 if row['like'] > 0 else 0), axis=1)
+    print(scrap_like_df)
+    user_news_matrix = scrap_like_df.pivot_table(index='user_id', columns='news_id', values='interaction', fill_value=0)
+    print(user_news_matrix)
+
+
+
+# 새로운 사용자에 대해 UserIndustry 기반으로 유사도를 계산하는 함수
+def calculate_industry_similarity(user_id:int, db: Session):
+    # 새로운 사용자의 선호 산업을 가져옴
+    new_user_industries = db.query(models.UserIndustry).filter(models.UserIndustry.user_id == user_id).all()
+    industry_ids = {industry.industry_id for industry in new_user_industries}
+
+    # 기존 사용자를 모두 가져와서 산업 선호도를 비교
+    user_sim = {}
+    for user in db.query(models.User).all():
+        if user.user_id == user_id:
+            continue
+        user_industries = db.query(models.UserIndustry).filter(models.UserIndustry.user_id == user.user_id).all()
+        user_industry_ids = {industry.industry_id for industry in user_industries}
+
+        # 교집합을 이용하여 산업 선호도의 유사도를 계산
+        intersection = len(industry_ids & user_industry_ids)
+        union = len(industry_ids | user_industry_ids)
+
+        # Jaccard 유사도 계산 (교집합 / 합집합)
+        similarity = intersection / union if union > 0 else 0
+        user_sim[user.user_id] = similarity
+
+    # 유사도가 높은 사용자 반환
+    print("user_sim")
+    print(user_sim)
+    return user_sim
+
+def calculate_interaction_similarity(user_id:int, db:Session):
+    query_user = user_id
+    user_sim = dict() # {사용자 iD : 유사도 형태로 저장}
+    # 사용자 별 유사도(cosine similarity) 계산 (query_user 자신과는 계산 안함)
+    # print('user_news_matrix : ')
+    # print(user_news_matrix)
+    # print(user_news_matrix.index)
+    user_similarity = cosine_similarity(user_news_matrix)
+    # print(user_similarity)
+    query_user_idx = list(user_news_matrix.index).index(user_id)
+    # print(user_similarity[query_user_idx])
+    for idx, user in enumerate(user_news_matrix.index):
+        if idx == query_user_idx:
+            continue
+        user_sim[user] = float(user_similarity[query_user_idx][idx])
+    # print(user_sim)
+    return user_sim
+
+def collaborative_filtering(user_id: int, db: Session):
+    interaction_cnt = len(scrap_like_df[scrap_like_df['user_id'] == user_id])
+    # 현재 유저의 인덱스 찾기
+    user_ids = scrap_like_df['user_id'].unique()
+    user_idx = np.where(user_ids == user_id)[0][0]
+    if interaction_cnt < 10:
+        user_similarity = calculate_industry_similarity(user_id, db)
+    else:
+        user_similarity = calculate_interaction_similarity(user_id, db)
+        
+        
+
+    # 유사한 유저가 3명 이하면 빈 리스트 리턴
+    if len(user_similarity) < 1:
+        return None
+    
+    n_top = 3
+    # user_similarity 딕셔너리를 DataFrame으로 변환
+    similarity_df = pd.DataFrame(user_similarity, columns=['user_id', 'similarity'])
+
+    # 유사도 기준으로 내림차순 정렬 후 상위 N명 선택
+    top_users = similarity_df.sort_values(by='similarity', ascending=False).head(n_top)['user_id']
+    print(top_users)
+    similar_users_records = user_news_matrix.loc[top_users]
+
+
+    print(similar_users_records)
+    contents_score = similar_users_records.sum(axis = 0)
+    print(contents_score)
+    
+
+
+    # 유사한 사용자가 찜하거나 스크랩한 뉴스를 추천
+    recommended_news = set()
+    # 요청 사용자 기록
+    print(user_news_matrix, user_id)
+    user_record = user_news_matrix.loc[user_id]
+    print(user_record)
+    for news_id, score in contents_score.items():
+        print(news_id, score)
+        if user_news_matrix.loc[user_id, news_id] == 0:  # 현재 사용자가 보지 않은 뉴스
+            recommended_news.add(news_id)
+    
+    return list(recommended_news)
+
+
+
+@router.get("/list")
+#def read_item(user_id: int = Body(...), db: Session = Depends(get_db)):
+def read_item(user_id: int = 1, db: Session = Depends(get_db)):
+
+    # Scrap 테이블에서 user_id가 스크랩한 뉴스의 news_id 조회
+    # 아래 주석 풀면, 상호작용 데이터가 없을 때만 조회해서 갱신
+    # if not scrap_like_df or not user_news_matrix:
+    #     get_scrap_like_dataframe(db)
+    get_scrap_like_dataframe(db)
+
+    recommend_news = collaborative_filtering(user_id, db)
+    print(recommend_news)
     return {
             "recommend" : recommend_news,
-            "users" : users, 
-            "scrabs" : scrabs, 
-            "user_news_like" : user_news_like,
-            "user_industry" : user_industry,
-            "news_list" : news_list,
+            # "users" : users, 
+            # "scrabs" : scrabs, 
+            # "user_news_like" : user_news_like,
+            # "user_industry" : user_industry,
+            # "news_list" : news_list,
             }
 
 
 
-def collaborative_filtering(user_id: int, db: Session):
-    # 데이터 불러오기
-    users = db.query(models.User).all()
-    scrabs = db.query(models.Scrap).all()
-    user_news_like = db.query(models.UserNewsLike).all()
-    user_industry = db.query(models.UserIndustry).all()
-    user_news_read = db.query(models.UserNewsRead).all()
-    print(len(scrabs))
-    
-    # 사용자-뉴스 행렬에 한 칸을 더 추가해 산업 정보를 넣음 (len(scrabs) + 1)
-    user_news_matrix = np.zeros((len(users), len(scrabs) + 1))
-    print("userMat :", user_news_matrix)
-
-    # 선호 산업 정보를 벡터의 첫 번째 열에 추가
-    for industry in user_industry:
-        user_idx = industry.user_id - 1
-        industry_preference = industry.industry_id  # 선호하는 산업 정보
-        user_news_matrix[user_idx][0] = industry_preference  # 첫 번째 열에 추가
-    
-    # 뉴스 찜 및 스크랩 정보 추가
-    for like in user_news_like:
-        user_idx = like.user_id - 1
-        news_idx = like.news_id  # 뉴스 인덱스는 1부터 시작
-        user_news_matrix[user_idx][news_idx] = 1  # 찜한 뉴스는 1로 표시
-    
-    for scrap in scrabs:
-        user_idx = scrap.user_id - 1
-        news_idx = scrap.news_id  # 뉴스 인덱스는 1부터 시작
-        user_news_matrix[user_idx][news_idx] += 1  # 스크랩한 뉴스는 2로 표시 (가중치 부여 가능)
-    
-    # 코사인 유사도 계산
-    user_similarity = cosine_similarity(user_news_matrix)
-    print(user_similarity)
-    
-    # 현재 사용자의 유사한 사용자 찾기
-    similar_users_idx = np.argsort(-user_similarity[user_id - 1])[1:4]  # 상위 3명의 유사 사용자
-    
-    # 유사한 사용자가 찜하거나 스크랩한 뉴스를 추천
-    recommended_news = set()
-    for idx in similar_users_idx:
-        for i, news in enumerate(user_news_matrix[idx]):
-            if news > 0 and user_news_matrix[user_id - 1][i] == 0:  # 현재 사용자가 보지 않은 뉴스
-                recommended_news.add(i)
-    
-    print("userMat :", user_news_matrix)
-    return list(recommended_news)
-
+# 일정 시간이 되면 업데이트할 데이터들
+scrap_like_df = None
+user_news_matrix = None
+# ---------------------
