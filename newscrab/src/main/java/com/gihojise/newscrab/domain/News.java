@@ -74,4 +74,8 @@ public class News extends BaseTimeEntity {
     @JoinColumn(name = "related_news_id_3")
     private News relatedNews3;
 
+    // 조회수 증가 메서드
+    public void increaseView() {
+        this.view++;
+    }
 }

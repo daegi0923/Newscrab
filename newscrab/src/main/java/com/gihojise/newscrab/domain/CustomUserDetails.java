@@ -30,6 +30,11 @@ public class CustomUserDetails implements UserDetails {
         return user.getLoginId();
     }
 
+    // userId 뽑아오기
+    public int getUserId() {
+        return user.getUserId();
+    }
+
     @Override
     public boolean isAccountNonExpired() {
         return true;

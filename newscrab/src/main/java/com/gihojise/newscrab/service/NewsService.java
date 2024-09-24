@@ -3,6 +3,7 @@ package com.gihojise.newscrab.service;
 import com.gihojise.newscrab.domain.News;
 import com.gihojise.newscrab.domain.NewsPhoto;
 import com.gihojise.newscrab.domain.User;
+import com.gihojise.newscrab.domain.UserNewsRead;
 import com.gihojise.newscrab.dto.response.NewsDetailResponseDto;
 import com.gihojise.newscrab.dto.response.NewsPageResponseDto;
 import com.gihojise.newscrab.dto.response.NewsResponseDto;
@@ -10,6 +11,7 @@ import com.gihojise.newscrab.exception.ErrorCode;
 import com.gihojise.newscrab.exception.NewscrabException;
 import com.gihojise.newscrab.repository.NewsPhotoRepository;
 import com.gihojise.newscrab.repository.NewsRepository;
+import com.gihojise.newscrab.repository.UserNewsReadRepository;
 import com.gihojise.newscrab.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -31,6 +33,7 @@ public class NewsService {
     private final NewsRepository newsRepository;
     private final NewsPhotoRepository newsPhotoRepository;
     private final UserRepository userRepository;
+    private final UserNewsReadRepository userNewsReadRepository;
 
     // 변환 메서드: News 객체를 NewsResponseDto로 변환
     private NewsResponseDto convertToDto(News news) {
@@ -112,8 +115,8 @@ public class NewsService {
 
 
     // 3. 뉴스 상세 조회
-    @Transactional(readOnly = true)
-    public NewsDetailResponseDto getNewsDetail(int newsId) {
+    @Transactional
+    public NewsDetailResponseDto getNewsDetail(int userId, int newsId) {
         News news = newsRepository.findByNewsId(newsId);
         if (news == null) {
             // ErrorCode를 사용하여 표준화된 메시지로 커스텀 예외를 발생시킵니다.
@@ -126,7 +129,7 @@ public class NewsService {
                 .map(NewsPhoto::getPhotoUrl)
                 .toList();
 
-        // 관련 뉴스 객체 가져오기760
+        // 관련 뉴스 객체 가져오기
         News relatedNews1 = news.getRelatedNews1();
         News relatedNews2 = news.getRelatedNews2();
         News relatedNews3 = news.getRelatedNews3();
@@ -135,6 +138,12 @@ public class NewsService {
         NewsResponseDto relatedNewsDto1 = convertToDto(relatedNews1);
         NewsResponseDto relatedNewsDto2 = convertToDto(relatedNews2);
         NewsResponseDto relatedNewsDto3 = convertToDto(relatedNews3);
+
+        // 뉴스 조회수 증가
+        news.increaseView();
+
+        // UserNewsRead 엔티티 생성 및 저장
+        readNews(userId, newsId);
 
         // NewsDetailResponseDto 빌드하여 반환
         return NewsDetailResponseDto.builder()
@@ -223,5 +232,26 @@ public class NewsService {
 
         user.removeLike(news);
         userRepository.save(user);
+    }
+
+
+    // 내부 메서드
+
+
+    // 뉴스 조회 기록 저장
+    @Transactional
+    protected void readNews(int userId, int newsId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NewscrabException(ErrorCode.USER_NOT_FOUND));
+        News news = newsRepository.findById(newsId)
+                .orElseThrow(() -> new NewscrabException(ErrorCode.NEWS_NOT_FOUND));
+
+        UserNewsRead userNewsRead = UserNewsRead.builder()
+                .user(user)
+                .news(news)
+                .readtime(LocalDateTime.now())
+                .build();
+
+        userNewsReadRepository.save(userNewsRead);
     }
 }

@@ -1,7 +1,10 @@
 package com.gihojise.newscrab.domain;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.data.annotation.CreatedDate;
@@ -11,6 +14,9 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "user_news_read")
 @Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserNewsRead {
 
     @Id
