@@ -30,11 +30,10 @@ const loginSlice = createSlice({
       state.isLogin = false;
       state.error = null;
     },
-    loginSuccess: (state, action: PayloadAction<{ accessToken: string; refreshToken: string }>) => {
+    loginSuccess: (state, action: PayloadAction<{ accessToken: string;}>) => {
       state.loading = false;
       state.isLogin = true;
       state.accessToken = action.payload.accessToken;
-      state.refreshToken = action.payload.refreshToken;
       state.error = null;
     },
     loginFail: (state, action: PayloadAction<string>) => {
@@ -69,15 +68,14 @@ function* loginSaga(action: PayloadAction<{ loginId: string; password: string }>
     const accessToken = response.headers.authorization.substring(7);
     // console.log("Access Token:", response.headers.authorization);
     
-    // 응답 데이터 확인 후 처리
     // 쿠키에 토큰 저장
-      setCookie("accessToken", accessToken, { path: "/" });
+    setCookie("accessToken", accessToken, { path: "/" });
 
     // 콘솔에 로그인 성공 메시지 출력
-      console.log("로그인 완료: ", { accessToken });
+    console.log("로그인 완료: ", { accessToken });
 
     // 메인 페이지로 이동
-      window.location.href = "/mainNews";
+      // window.location.href = "/mainNews";
     } catch (error: any) {
     console.log(error);
     yield put(loginFail("로그인에 실패했습니다."));

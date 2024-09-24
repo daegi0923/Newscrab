@@ -8,10 +8,7 @@ const MainNewsPage: React.FC = () => {
 
   useEffect(() => {
     const accessToken = cookies.get('accessToken');
-    const refreshToken = cookies.get('refreshToken');
-
     console.log('Access Token:', accessToken);
-    console.log('Refresh Token:', refreshToken);
   }, []);
 
   return (

@@ -147,11 +147,11 @@ const SignUpPage2: React.FC = () => {
     const filteredIndustries = selectedIndustries.filter(Boolean) as { img: string, industryId: number, industryName: string }[];
     const updatedSignupForm = {
       ...signupForm,
-    //   userIndustry: filteredIndustries.map((industry, index) => ({
-    //     industryId: industry.industryId,
-    //     industryName: industry.industryName,
-    //     preRank: index + 1,
-    // })),
+      userIndustry: filteredIndustries.map((industry, index) => ({
+        industryId: industry.industryId,
+        industryName: industry.industryName,
+        preRank: index + 1,
+    })),
     };
     console.log("회원가입 데이터:", updatedSignupForm);
 
@@ -163,7 +163,7 @@ const SignUpPage2: React.FC = () => {
         email: updatedSignupForm.email,
         birthday: updatedSignupForm.birthday,
         gender: updatedSignupForm.gender,
-        // userIndustry: updatedSignupForm.userIndustry
+        userIndustry: updatedSignupForm.userIndustry
       }, {
         headers: {
           'Content-Type': 'application/json'

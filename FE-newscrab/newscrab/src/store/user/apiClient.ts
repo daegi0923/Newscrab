@@ -1,57 +1,42 @@
 import axios, { AxiosResponse, InternalAxiosRequestConfig } from "axios";
-import { getCookie, setCookie } from "./cookies"; // 쿠키 관리 유틸리티
-import { store } from "../index"; // store에서 redux 액션을 불러오기 위해 필요
-import { loginSuccess, logout } from "./loginLogout"; // Redux 액션
+import { getCookie, setCookie } from "./cookies";
+import { store } from "../index"; 
+import { loginSuccess, logout } from "./loginLogout"; 
 
 // Axios 인스턴스 생성
 const API = axios.create({
-  baseURL: process.env.REACT_APP_API_URL,
+  baseURL: 'https://newscrab.duckdns.org/api/v1/',
   withCredentials: true,
 });
 
-// 요청 시 액세스 토큰 추가 인터셉터
+// 요청 인터셉터: 모든 요청 전에 액세스 토큰을 헤더에 추가
 API.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    const accessToken = getCookie("accessToken");
+    const accessToken = getCookie("accessToken"); 
     if (accessToken) {
-      // headers를 명확하게 설정
       config.headers.Authorization = `Bearer ${accessToken}`;
     }
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
-// 응답에서 액세스 토큰 만료 처리 인터셉터
+// 새로운 액세스 토큰이 헤더에 있는지 확인하고 갱신
 API.interceptors.response.use(
-  (response: AxiosResponse) => response,
-  async (error) => {
-    const originalRequest = error.config;
-    const refreshToken = getCookie("refreshToken");
+  (response: AxiosResponse) => {
+    const newAccessToken = response.headers['authorization']?.substring(7); // 'Bearer ' 이후의 토큰 추출
+    if (newAccessToken) {
+      setCookie("accessToken", newAccessToken);
 
-    if (error.response?.status === 401 && error.response.data?.message === "Token is expired" && refreshToken) {
-      try {
-        const res = await axios.post(`${process.env.REACT_APP_API_URL}/token/refresh`, null, {
-          headers: { Authorization: `Bearer ${refreshToken}` },
-          withCredentials: true,
-        });
-
-        const newAccessToken = res.data.accessToken;
-        setCookie("accessToken", newAccessToken);
-
-        // Redux 상태 업데이트
-        store.dispatch(loginSuccess({ accessToken: newAccessToken, refreshToken }));
-
-        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-        return axios(originalRequest); // 원래의 요청을 다시 실행
-      } catch (refreshError) {
-        store.dispatch(logout()); // 리프레시 토큰도 만료되면 로그아웃
-        return Promise.reject(refreshError);
-      }
+      // Redux 상태 업데이트
+      store.dispatch(loginSuccess({ accessToken: newAccessToken }));
     }
-
+    return response;
+  },
+  (error) => {
+    if (error.response?.status === 401) {
+      store.dispatch(logout()); // 리프레시 토큰도 만료되면 로그아웃
+    }
     return Promise.reject(error);
   }
 );
