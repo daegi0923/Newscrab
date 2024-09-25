@@ -8,6 +8,7 @@ import pandas as pd
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 from .schemas import NewsResponse
+from datetime import datetime, timedelta
 
 router = APIRouter()
 
@@ -23,30 +24,65 @@ def get_db():
 def get_scrap_like_dataframe(db: Session):
     global scrap_like_df, user_news_matrix
     # Scrap 테이블에서 user_id와 news_id를 가져옴
-    scrap_data = db.query(models.Scrap.user_id, models.Scrap.news_id).all()
+    scrap_data = db.query(models.Scrap.user_id, models.Scrap.news_id, models.Scrap.created_at).all()
     
     # UserNewsLike 테이블에서 user_id와 news_id를 가져옴
-    like_data = db.query(models.UserNewsLike.user_id, models.UserNewsLike.news_id).all()
+    like_data = db.query(models.UserNewsLike.user_id, models.UserNewsLike.news_id, models.UserNewsLike.created_at).all()
 
     # Scrap 데이터프레임 생성
-    scrap_df = pd.DataFrame(scrap_data, columns=['user_id', 'news_id'])
+    scrap_df = pd.DataFrame(scrap_data, columns=['user_id', 'news_id', 'created_at'])
     scrap_df['scrap'] = 1  # scrap한 경우는 1로 표시
 
     # Like 데이터프레임 생성
-    like_df = pd.DataFrame(like_data, columns=['user_id', 'news_id'])
+    like_df = pd.DataFrame(like_data, columns=['user_id', 'news_id', 'created_at'])
     like_df['like'] = 1  # like한 경우는 1로 표시
 
     # Scrap과 Like를 outer join하여 결합
-    merged_df = pd.merge(scrap_df, like_df, on=['user_id', 'news_id'], how='outer')
-
+    merged_df = pd.merge(scrap_df, like_df, on=['user_id', 'news_id'], how='outer', suffixes=('_scrap', '_like'))
+    print(merged_df.columns)
     # 결측치 처리: scrap이나 like가 없는 경우 0으로 채움
     merged_df['scrap'] = merged_df['scrap'].fillna(0)
     merged_df['like'] = merged_df['like'].fillna(0)
+
+        # 현재 시간과 일주일 전 시간을 계산
+    now = datetime.now()
+    one_week_ago = now - timedelta(weeks=1)
+
+    # 인터랙션 계산 (일주일 이내이면 1.5배 가중치 적용)
+    def calculate_interaction(row):
+        # created_at_scrap과 created_at_like가 NaN이 아닌지 확인하고, datetime인지 확인한 후 비교
+        if pd.notna(row['created_at_scrap']) and isinstance(row['created_at_scrap'], datetime):
+            scrap_weight = 1.5 if row['created_at_scrap'] >= one_week_ago else 1
+        else:
+            scrap_weight = 1
+
+        if pd.notna(row['created_at_like']) and isinstance(row['created_at_like'], datetime):
+            like_weight = 1.5 if row['created_at_like'] >= one_week_ago else 1
+        else:
+            like_weight = 1
+        
+        # scrap이 있으면 2, like가 있으면 1, 일주일 이내일 경우 가중치 적용
+        if row['scrap'] > 0:
+            return 2 * scrap_weight
+        elif row['like'] > 0:
+            return 1 * like_weight
+        else:
+            return 0
+    
+    # apply를 사용해 각 row에 대해 계산
     scrap_like_df = merged_df
-    scrap_like_df['interaction'] = scrap_like_df.apply(lambda row: 2 if row['scrap'] > 0 else (1 if row['like'] > 0 else 0), axis=1)
-    print(scrap_like_df)
+    scrap_like_df['interaction'] = scrap_like_df.apply(calculate_interaction, axis=1)
+
+    # 유저-뉴스 상호작용 매트릭스 생성
     user_news_matrix = scrap_like_df.pivot_table(index='user_id', columns='news_id', values='interaction', fill_value=0)
+    
+    # 결과 확인
+    print(scrap_like_df)
     print(user_news_matrix)
+
+
+
+
 
 
 
@@ -142,16 +178,20 @@ def collaborative_filtering(user_id: int, db: Session):
 
 
 
+async def get_id_from_body(request:Request):
+    body = await request.json()  # 요청 Body를 JSON으로 파싱
+    print(body)
+    return body.get("user_id")  # 'name' 파라미터 추출
 
 @router.get("/list")
-def read_item(request: Request, db: Session = Depends(get_db)):
+def read_item(user_id: int = Depends(get_id_from_body), db: Session = Depends(get_db)):
 # def read_item(user_id: int = 1, db: Session = Depends(get_db)):
 
     # Scrap 테이블에서 user_id가 스크랩한 뉴스의 news_id 조회
     # 아래 주석 풀면, 상호작용 데이터가 없을 때만 조회해서 갱신
     # if not scrap_like_df or not user_news_matrix:
     #     get_scrap_like_dataframe(db)
-    user_id = request.json().get("user_id")
+
     get_scrap_like_dataframe(db)
 
     news_list = collaborative_filtering(user_id, db)
