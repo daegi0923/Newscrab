@@ -1,6 +1,7 @@
 package com.gihojise.newscrab.service;
 
 import com.gihojise.newscrab.domain.User;
+import com.gihojise.newscrab.dto.request.PasswordUpdateRequestDto;
 import com.gihojise.newscrab.dto.request.SignupRequestDto;
 import com.gihojise.newscrab.dto.request.UserUpdateRequestDto;
 import com.gihojise.newscrab.enums.Gender;
@@ -112,6 +113,33 @@ public class UserService {
         }
 
         user.get().update(userUpdateRequestDTO);
+        userRepository.save(user.get());
+    }
+
+    //비밀번호 변경
+    @Transactional
+    public void updatePassword(PasswordUpdateRequestDto passwordUpdateRequestDTO, int userId) {
+        String newPassword = passwordUpdateRequestDTO.getPassword();
+
+        Optional<User> user = userRepository.findById(userId);
+
+        String oldPassword = user.get().getPassword();
+
+        if(user.isEmpty()) {
+            throw new NewscrabException(ErrorCode.USER_NOT_FOUND);
+        }
+
+        if (newPassword.length() < 8 || newPassword.length() > 16) {
+            throw new NewscrabException(ErrorCode.INVALID_PASSWORD);
+        }
+
+        String encodedNewPassword = bCryptPasswordEncoder.encode(newPassword);
+
+        if (bCryptPasswordEncoder.matches(newPassword, oldPassword)) {
+            throw new NewscrabException(ErrorCode.SAME_PASSWORD);
+        }
+
+        user.get().updatePassword(encodedNewPassword);
         userRepository.save(user.get());
     }
 }

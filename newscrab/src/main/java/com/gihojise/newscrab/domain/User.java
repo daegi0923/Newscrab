@@ -1,5 +1,6 @@
 package com.gihojise.newscrab.domain;
 
+import com.gihojise.newscrab.dto.request.PasswordUpdateRequestDto;
 import com.gihojise.newscrab.dto.request.UserUpdateRequestDto;
 import com.gihojise.newscrab.enums.Gender;
 import com.gihojise.newscrab.enums.ProfileImage;
@@ -96,5 +97,10 @@ public class User extends BaseTimeEntity {
         this.birthday = userUpdateRequestDTO.getBirthday();
         this.gender = userUpdateRequestDTO.getGender();
         this.profileImg = userUpdateRequestDTO.getProfileImage();
+    }
+
+    // 비밀번호 변경 메서드
+    public void updatePassword(String password) {
+        this.password = password;
     }
 }

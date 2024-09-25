@@ -47,7 +47,6 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "사용 가능한 이메일입니다.", null));
     }
 
-    //회원정보 수정
     @Operation(summary = "회원정보 수정", description = "회원정보를 수정합니다.")
     @PutMapping("/update")
     public ResponseEntity<ApiResponse<Void>> update(@RequestBody UserUpdateRequestDto userUpdateRequestDTO, @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -55,6 +54,15 @@ public class UserController {
         int userId = userDetails.getUserId();
         userService.update(userUpdateRequestDTO, userId);
         return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "회원정보 수정이 완료되었습니다.", null));
+    }
+
+    @Operation(summary = "비밀번호 변경", description = "비밀번호를 변경합니다.")
+    @PutMapping("/password")
+    public ResponseEntity<ApiResponse<Void>> updatePassword(@RequestBody PasswordUpdateRequestDto passwordUpdateRequestDTO, @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        int userId = userDetails.getUserId();
+        userService.updatePassword(passwordUpdateRequestDTO, userId);
+        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "비밀번호 변경이 완료되었습니다.", null));
     }
 
     // 로그인, 로그아웃은 필터에서 구현하고 스웨거 문서에만 표시하기위해 작성---
