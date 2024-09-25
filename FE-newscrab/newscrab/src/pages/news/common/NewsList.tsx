@@ -3,7 +3,6 @@ import { NewsItem } from "../../../types/newsTypes";
 import viewIcon from "@assets/view.png";
 import scrapCntIcon from "@assets/scrapCnt.png";
 import { industry } from "@common/Industry";
-import { useNavigate } from "react-router-dom"; // useNavigate 추가
 
 const formatDate = (dateString: string) => {
   return dateString.replace("T", " ");
@@ -86,9 +85,10 @@ const ScrapCntIcon = styled.img`
   margin-right: 5px;
 `;
 
-const NewsList: React.FC<{ newsList: NewsItem[] }> = ({ newsList }) => {
-  const navigate = useNavigate(); // useNavigate 훅 사용
-
+const NewsList: React.FC<{
+  newsList: NewsItem[];
+  onNewsClick: (newsId: number) => void;
+}> = ({ newsList, onNewsClick }) => {
   const getIndustryName = (industryId: number): string => {
     const matchedCategory = industry.find(
       (ind) => ind.industryId === industryId
@@ -101,7 +101,7 @@ const NewsList: React.FC<{ newsList: NewsItem[] }> = ({ newsList }) => {
       {newsList.map((news) => (
         <NewsItemContainer
           key={news.newsId}
-          onClick={() => navigate(`/newsDetail/${news.newsId}`)} // 클릭 시 해당 경로로 이동
+          onClick={() => onNewsClick(news.newsId)} // 클릭 시 onNewsClick 호출
         >
           <FlexContainer>
             {news.photoUrlList && (

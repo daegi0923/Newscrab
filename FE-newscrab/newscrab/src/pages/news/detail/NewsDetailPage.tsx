@@ -1,18 +1,17 @@
 import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import styled from "styled-components";
-
-import GlobalStyle from "@components/GlobalStyle"; // 배경색
-import Header from "@common/Header"; // 헤더, 탭
-
-import { getNewsDetail } from "@apis/news/newsDetailApi"; // getNewsDetail 함수 import
-import { NewsDetailItem } from "../../../types/newsTypes"; // 새로 정의한 NewsDetailItem import
-
+// 재사용 components
+import GlobalStyle from "@components/GlobalStyle";
+import Header from "@common/Header";
 import NewsDetailArticle from "./NewsDetailArticle";
 import NewsDetailScrap from "./NewsDetailScrap";
 import NewsDetailRcmd from "./NewsDetailRcmd";
 import SaveButtonComponent from "./SaveButtonComponent";
+// api
+import { getNewsDetail } from "@apis/news/newsDetailApi";
+import { NewsDetailItem } from "../../../types/newsTypes";
 
-// Styled Components 정의
 const NewsDetailContainer = styled.div`
   margin: 0px 100px;
   position: relative;
@@ -32,9 +31,10 @@ const SaveButtonWrapper = styled.div`
 `;
 
 const NewsDetailPage: React.FC = () => {
+  const { newsId } = useParams<{ newsId: string }>(); // URL에서 newsId를 가져옴
   const [newsDetailItem, setNewsDetailItem] = useState<NewsDetailItem | null>(
     null
-  ); // 뉴스 상세 데이터를 저장하는 상태
+  );
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   // 뉴스 상세 데이터를 API에서 가져오는 비동기 함수
@@ -51,9 +51,10 @@ const NewsDetailPage: React.FC = () => {
   };
 
   useEffect(() => {
-    const newsId = 1; // 예시로 뉴스 ID를 1로 설정
-    fetchNewsDetail(newsId);
-  }, []);
+    if (newsId) {
+      fetchNewsDetail(parseInt(newsId, 10)); // URL에서 가져온 newsId로 뉴스 상세 정보 요청
+    }
+  }, [newsId]);
 
   return (
     <div>

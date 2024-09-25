@@ -1,12 +1,15 @@
 import React, { useEffect, useState, useCallback } from "react";
+import { useNavigate } from "react-router-dom"; // useNavigate 추가
+// 재사용 components
 import GlobalStyle from "@components/GlobalStyle";
-import NewsCommon from "@pages/news/common/NewsCommon";
-import Pagination from "@components/common/Pagination";
-import DropDown from "@components/common/DropDown";
-import { NewsItem } from "../../types/newsTypes";
-import { getNewsData } from "@apis/news/newsApi";
 import { industry } from "@common/Industry";
+import DropDown from "@common/DropDown";
+import Pagination from "@common/Pagination";
+import NewsCommon from "@pages/news/common/NewsCommon";
 import NewsList from "./common/NewsList";
+// api
+import { getNewsData } from "@apis/news/newsApi";
+import { NewsItem } from "../../types/newsTypes";
 
 const AllNewsPage: React.FC = () => {
   const [newsList, setNewsList] = useState<NewsItem[]>([]);
@@ -14,7 +17,9 @@ const AllNewsPage: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [selectedIndustry, setSelectedIndustry] = useState<string>("전체");
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // 드롭다운 상태 추가
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const navigate = useNavigate(); // useNavigate 훅 사용
 
   // 뉴스 데이터를 API에서 가져오는 비동기 함수
   const fetchNewsData = async (page: number) => {
@@ -64,6 +69,11 @@ const AllNewsPage: React.FC = () => {
     setIsDropdownOpen(false); // 선택 후 드롭다운 닫기
   }, []);
 
+  // 뉴스 리스트 클릭 핸들러
+  const handleNewsClick = (newsId: number) => {
+    navigate(`/newsDetail/${newsId}`); // 클릭한 뉴스의 ID로 상세 페이지로 이동
+  };
+
   return (
     <div>
       <GlobalStyle />
@@ -80,7 +90,7 @@ const AllNewsPage: React.FC = () => {
           handleIndustrySelect={handleIndustrySelect}
         />
       )}
-      <NewsList newsList={filteredNewsList} />
+      <NewsList newsList={filteredNewsList} onNewsClick={handleNewsClick} />
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
