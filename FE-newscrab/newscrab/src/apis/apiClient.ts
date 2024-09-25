@@ -1,30 +1,6 @@
-// import axios, { AxiosResponse, InternalAxiosRequestConfig } from "axios";
-// import { getCookie, setCookie } from "../store/user/cookies";
-// import { store } from "../store/index"; 
-// import { loginSuccess, logout } from "../store/user/loginLogout"; 
-
-// // Axios 인스턴스 생성
-// const API = axios.create({
-//   baseURL: 'https://newscrab.duckdns.org/api/v1/',
-//   withCredentials: true,
-// });
-
-// // 요청 인터셉터: 모든 요청 전에 액세스 토큰을 헤더에 추가
-// API.interceptors.request.use(
-//   (config: InternalAxiosRequestConfig) => {
-//     const accessToken = getCookie("accessToken"); 
-//     if (accessToken) {
-//       config.headers.Authorization = `Bearer ${accessToken}`;
-//     }
-//     return config;
-//   },
-//   (error) => Promise.reject(error)
-// );
-
 import axios, { AxiosResponse, InternalAxiosRequestConfig } from "axios";
 import { getCookie, setCookie } from "../store/user/cookies";
 import { store } from "../store/index";
-// import { loginSuccess, logout } from "../store/user/loginLogout";
 import { loginSuccess } from "../store/user/loginLogout";
 
 // JWT를 디코딩하여 만료 시간을 반환하는 함수
@@ -60,24 +36,16 @@ const API = axios.create({
 // 요청 인터셉터: 모든 요청 전에 액세스 토큰을 헤더에 추가
 API.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
+    // eslint-disable-next-line prefer-const
     let accessToken = getCookie("accessToken");
-
+    
     // 액세스 토큰이 만료되었는지 확인
     if (accessToken && isTokenExpired(accessToken)) {
       console.log("토큰이 만료되었습니다. 새로운 토큰을 대기 중입니다...");
-
-      // 새로운 액세스 토큰을 받았는지 확인
-      const newAccessToken = getCookie("accessToken");
-      if (newAccessToken && !isTokenExpired(newAccessToken)) {
-        accessToken = newAccessToken;
-      } else {
-        // 토큰이 만료되었으면 로그아웃 처리
-        // store.dispatch(logout());`
-        throw new Error("Access token has expired. Please log in again.");
-      }
+      // 백엔드에서 새로운 토큰을 받기 위해 요청을 그대로 진행
     }
 
-    // 액세스 토큰을 헤더에 추가
+    // 만료되지 않은 액세스 토큰을 헤더에 추가
     if (accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`;
     }
