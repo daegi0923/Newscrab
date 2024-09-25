@@ -26,6 +26,7 @@ public class NewsController {
     private final NewsService newsService;
 
     // 1. 전체 뉴스 조회 (10개씩 최신순)
+    @Deprecated
     @Operation(summary = "전체 뉴스 조회", description = "모든 뉴스를 최신순으로 조회합니다.")
     @GetMapping
     public ResponseEntity<ApiResponse<NewsPageResponseDto>> getAllNews(
@@ -39,14 +40,22 @@ public class NewsController {
     @Operation(summary = "필터링된 뉴스 조회", description = "사용자가 선택한 산업군에 따라 뉴스를 필터링하여 조회합니다.")
     @GetMapping("/filter")
     public ResponseEntity<ApiResponse<NewsPageResponseDto>> getFilteredNews(
-            @RequestParam int industryId,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate ds,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate de) {
-        NewsPageResponseDto response = newsService.getFilteredNews(industryId, page, size, ds, de);
+            @RequestParam(value = "industryId", required = false, defaultValue = "-1") Integer industryId,
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "10") int size,
+            @RequestParam(value = "ds", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate ds,
+            @RequestParam(value = "de", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate de,
+            @RequestParam(value = "option", required = false, defaultValue = "total") String option) {
+
+        // `industryId`가 -1일 경우, 전체 뉴스 조회로 처리
+        if (industryId == -1) {
+            industryId = null; // DB 쿼리에서 전체 조회로 처리
+        }
+
+        NewsPageResponseDto response = newsService.getFilteredNews(industryId, page, size, ds, de, option);
         return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "필터링된 뉴스 조회 성공", response));
     }
+
 
     // 3. 뉴스 상세 조회
     @Operation(summary = "뉴스 상세 조회", description = "뉴스 ID로 뉴스 상세 정보를 조회합니다.")
@@ -57,6 +66,7 @@ public class NewsController {
     }
 
     // 4. 인기 기사 (최근 1주일간 조회수 높은 기사 조회)
+    @Deprecated
     @Operation(summary = "인기 기사 조회", description = "최근 1주일간 조회수가 높은 기사를 조회합니다.")
     @GetMapping("/hot")
     public ResponseEntity<ApiResponse<NewsPageResponseDto>> getHotNews(
@@ -67,6 +77,7 @@ public class NewsController {
     }
 
     // 5. 인기 스크랩 기사 (최근 1주일간 스크랩한 기사 조회)
+    @Deprecated
     @Operation(summary = "인기 스크랩 기사 조회", description = "최근 1주일간 스크랩한 기사를 조회합니다.")
     @GetMapping("/hot_scrap")
     public ResponseEntity<ApiResponse<NewsPageResponseDto>> getHotScrapNews(

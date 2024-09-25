@@ -87,27 +87,40 @@ public class NewsService {
                 .build();
     }
 
-    // 2. 사용자 필터 뉴스 조회
     @Transactional(readOnly = true)
-    public NewsPageResponseDto getFilteredNews(int industryId, int page, int size, LocalDate ds, LocalDate de) {
+    public NewsPageResponseDto getFilteredNews(Integer industryId, int page, int size, LocalDate ds, LocalDate de, String option) {
         Pageable pageable = PageRequest.of(page - 1, size); // Spring Data JPA에서 페이지는 0부터 시작합니다.
-        Page<News> newsPage = newsRepository.findAll(pageable);
+        LocalDateTime startDate = (ds != null) ? ds.atStartOfDay() : null;
+        LocalDateTime endDate = (de != null) ? de.atTime(23, 59, 59) : null;
+
+        LocalDateTime defaultStartDate = LocalDate.now().minusDays(7).atStartOfDay();
+        LocalDateTime defaultEndDate = LocalDate.now().atTime(23, 59, 59);
+
+        Page<News> newsPage;
+
+        // 전체 조회 또는 특정 산업군 조회 로직
+        if (industryId != null || (option != null && ("hot".equals(option) || "scrap".equals(option)))) {
+            // hot이나 scrap 옵션이 있는 경우 동적으로 정렬하여 조회
+            newsPage = newsRepository.findFilteredNews(industryId, startDate, endDate, option, pageable);
+        } else {
+            // 기본 조회 로직 (total)
+            newsPage = newsRepository.findTotalFilteredNews(industryId, startDate, endDate, pageable);
+        }
 
         List<NewsResponseDto> filteredNewsList = newsPage.getContent()
                 .stream()
-                .filter(news -> news.getIndustry().getIndustryId() == industryId)
-                .filter(news -> ds == null || !news.getNewsPublishedAt().isBefore(ds.atStartOfDay()))
-                .filter(news -> de == null || !news.getNewsPublishedAt().isAfter(de.atTime(23, 59, 59)))
-                .map(this::convertToDto) // convertToDto 메서드를 사용하여 변환
+                .map(this::convertToDto)
                 .toList();
 
         return NewsPageResponseDto.builder()
                 .news(filteredNewsList)
                 .currentPage(page)
-                .totalPages(filteredNewsList.size() / size + 1)
-                .totalItems(filteredNewsList.size())
+                .totalPages(newsPage.getTotalPages())
+                .totalItems((int) newsPage.getTotalElements())
                 .build();
     }
+
+
 
 
     // 3. 뉴스 상세 조회
