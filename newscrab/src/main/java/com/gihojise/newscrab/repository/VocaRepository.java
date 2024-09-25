@@ -9,5 +9,5 @@ import java.util.List;
 @Repository
 public interface VocaRepository extends JpaRepository<Voca, Integer> {
 
-    List<Voca> findByUserId(int userId);
+    List<Voca> findByUserUserId(int userId);
 }

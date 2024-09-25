@@ -38,7 +38,7 @@ public class VocaService {
     // 단어 목록 조회
     @Transactional(readOnly = true)
     public VocaListResponseDto getVocaList(int userId) {
-        List<VocaResponseDto> vocaList = vocaRepository.findByUserId(userId).stream()
+        List<VocaResponseDto> vocaList = vocaRepository.findByUserUserId(userId).stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
 
