@@ -1,18 +1,12 @@
 package com.gihojise.newscrab.service;
 
-import com.gihojise.newscrab.domain.News;
-import com.gihojise.newscrab.domain.NewsPhoto;
-import com.gihojise.newscrab.domain.User;
-import com.gihojise.newscrab.domain.UserNewsRead;
+import com.gihojise.newscrab.domain.*;
 import com.gihojise.newscrab.dto.response.NewsDetailResponseDto;
 import com.gihojise.newscrab.dto.response.NewsPageResponseDto;
 import com.gihojise.newscrab.dto.response.NewsResponseDto;
 import com.gihojise.newscrab.exception.ErrorCode;
 import com.gihojise.newscrab.exception.NewscrabException;
-import com.gihojise.newscrab.repository.NewsPhotoRepository;
-import com.gihojise.newscrab.repository.NewsRepository;
-import com.gihojise.newscrab.repository.UserNewsReadRepository;
-import com.gihojise.newscrab.repository.UserRepository;
+import com.gihojise.newscrab.repository.*;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -34,6 +28,7 @@ public class NewsService {
     private final NewsPhotoRepository newsPhotoRepository;
     private final UserRepository userRepository;
     private final UserNewsReadRepository userNewsReadRepository;
+    private final UserNewsLikeRepository userNewsLikeRepository;
 
     // 변환 메서드: News 객체를 NewsResponseDto로 변환
     private NewsResponseDto convertToDto(News news) {
@@ -61,6 +56,7 @@ public class NewsService {
                 .newsId(news.getNewsId())
                 .newsTitle(newsTitle)
                 .newsContent(newsContent)
+                .industryId(news.getIndustry().getIndustryId())
                 .newsPublishedAt(news.getNewsPublishedAt())
                 .newsCompany(newsCompany)
                 .newsUrl(newsUrl)
@@ -229,6 +225,9 @@ public class NewsService {
                 .orElseThrow(() -> new NewscrabException(ErrorCode.NEWS_NOT_FOUND));
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NewscrabException(ErrorCode.USER_NOT_FOUND));
+
+        UserNewsLike like = userNewsLikeRepository.findByUserAndNews(user, news)
+                .orElseThrow(() -> new NewscrabException(ErrorCode.LIKE_NOT_FOUND));
 
         user.removeLike(news);
         userRepository.save(user);

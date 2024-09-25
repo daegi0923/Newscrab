@@ -81,8 +81,9 @@ public class NewsController {
     @Operation(summary = "뉴스 좋아요", description = "뉴스를 찜 목록에 추가합니다.")
     @PostMapping("/like/{newsId}")
     public ResponseEntity<ApiResponse<Void>> likeNews(
-            @PathVariable int newsId,
-            @RequestParam int userId) { // 임시로 userId를 RequestParam으로 받아옴
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable int newsId) {
+        int userId = userDetails.getUserId();
         newsService.likeNews(newsId, userId);
         return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "뉴스 좋아요 성공", null));
     }
@@ -91,8 +92,9 @@ public class NewsController {
     @Operation(summary = "뉴스 찜 삭제", description = "뉴스를 찜 목록에서 삭제합니다.")
     @DeleteMapping("/like/{newsId}")
     public ResponseEntity<ApiResponse<Void>> unlikeNews(
-            @PathVariable int newsId,
-            @RequestParam int userId) { // 임시로 userId를 RequestParam으로 받아옴
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable int newsId) {
+        int userId = userDetails.getUserId();
         newsService.unlikeNews(newsId, userId);
         return ResponseEntity.ok(ApiResponse.of(HttpStatus.NO_CONTENT.value(), HttpStatus.NO_CONTENT.getReasonPhrase(), "뉴스 찜 목록 삭제 성공", null));
     }
