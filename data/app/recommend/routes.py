@@ -7,7 +7,7 @@ from typing import List
 import pandas as pd
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
-
+from .schemas import NewsResponse
 
 router = APIRouter()
 
@@ -142,9 +142,10 @@ def collaborative_filtering(user_id: int, db: Session):
 
 
 
+
 @router.get("/list")
-#def read_item(user_id: int = Body(...), db: Session = Depends(get_db)):
-def read_item(user_id: int = 1, db: Session = Depends(get_db)):
+def read_item(user_id: int = Body(...), db: Session = Depends(get_db)):
+# def read_item(user_id: int = 1, db: Session = Depends(get_db)):
 
     # Scrap 테이블에서 user_id가 스크랩한 뉴스의 news_id 조회
     # 아래 주석 풀면, 상호작용 데이터가 없을 때만 조회해서 갱신
@@ -152,17 +153,12 @@ def read_item(user_id: int = 1, db: Session = Depends(get_db)):
     #     get_scrap_like_dataframe(db)
     get_scrap_like_dataframe(db)
 
-    recommend_news = collaborative_filtering(user_id, db)
-    print(recommend_news)
-    return {
-            "recommend" : recommend_news,
-            # "users" : users, 
-            # "scrabs" : scrabs, 
-            # "user_news_like" : user_news_like,
-            # "user_industry" : user_industry,
-            # "news_list" : news_list,
-            }
+    news_list = collaborative_filtering(user_id, db)
+    print(news_list)
+    recommend_news = db.query(models.News).filter(models.News.news_id.in_(news_list)).all()
 
+    print(recommend_news)
+    return {"news_list" : recommend_news}
 
 
 # 일정 시간이 되면 업데이트할 데이터들

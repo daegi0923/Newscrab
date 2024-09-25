@@ -17,7 +17,7 @@ class News(Base):
     created_at = Column(DateTime, default=datetime.now, nullable=False)
     updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now, nullable=False)
     view = Column(Integer, default=0)
-    scrapCnt = Column(Integer, default=0, name="scrap_cnt")
+    scrap_cnt = Column(Integer, default=0, name="scrap_cnt")
     related_news_id_1 = Column(Integer, nullable=True)
     related_news_id_2 = Column(Integer, nullable=True)
     related_news_id_3 = Column(Integer, nullable=True)
