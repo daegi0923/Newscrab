@@ -1,2 +1,2 @@
 export const mock_token =
-  "Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImxvZ2luSWQiOiJldmEiLCJpYXQiOjE3MjcyNDA0MTEsImV4cCI6MTcyNzI0MTAxMX0.8gMSKQAliqMCSHuoCp_vB-NjFNd94P6g4RA7LtOfx6g";
+  "Bearer eyJhbGciOiJIUzI1NiJ9.eyJjYXRlZ29yeSI6ImFjY2VzcyIsImxvZ2luSWQiOiJldmEiLCJpYXQiOjE3MjcyNDI4NjgsImV4cCI6MTcyNzI0MzQ2OH0.kMrsM5ih-HxrDgHqSgbNKksgngclyERxjGuaZ3KO1Oo";

@@ -14,8 +14,7 @@ import ViewCountNewsPage from "@pages/news/ViewCountNewsPage";
 import ScrapCountNewsPage from "@pages/news/ScrapCountNewsPage";
 import NewsDetailPage from "@pages/news/detail/NewsDetailPage";
 // 스크랩
-import UpdatedAtScrapPage from "@pages/scrap/UpdatedAtScrapPage";
-import FilterScrapPage from "@pages/scrap/FilterScrapPage";
+import ScrapListPage from "@pages/scrap/ScrapListPage";
 // 단어장
 import MainVoca from "@pages/voca/VocaPage";
 import VocaDetail from "@pages/voca/VocaDetailPage";
@@ -53,8 +52,7 @@ const AppRouter: React.FC = () => {
         <Route path="/newsDetail/:newsId" element={<NewsDetailPage />} />
 
         {/* 스크랩 */}
-        <Route path="/updatedAtScrap" element={<UpdatedAtScrapPage />} />
-        <Route path="/filterScrap" element={<FilterScrapPage />} />
+        <Route path="/scrapList" element={<ScrapListPage />} />
 
         {/* 단어장 */}
         <Route path="/voca" element={<MainVoca />} />

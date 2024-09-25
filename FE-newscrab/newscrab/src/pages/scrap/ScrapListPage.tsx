@@ -8,7 +8,7 @@ import NewsList from "@pages/news/common/NewsList"; // 분리한 뉴스 리스�
 import { getNewsData } from "@apis/news/newsApi"; // getMockNews 함수 import
 import { NewsItem, NewsData } from "../../types/newsTypes"; // newsTypes.ts에서 타입 import
 
-const AllNewsPage: React.FC = () => {
+const ScrapListPage: React.FC = () => {
   const [newsList, setNewsList] = useState<NewsItem[]>([]); // newsList: 뉴스 데이터를 저장하는 상태
   const [currentPage, setCurrentPage] = useState(1); // currentPage: 현재 페이지 번호를 저장하는 상태 (초기값 1)
   const [totalPages, setTotalPages] = useState(1); // totalPages: 총 페이지 수를 저장하는 상태 (초기값 1, API 응답 후 업데이트)
@@ -46,4 +46,4 @@ const AllNewsPage: React.FC = () => {
   );
 };
 
-export default AllNewsPage;
+export default ScrapListPage;

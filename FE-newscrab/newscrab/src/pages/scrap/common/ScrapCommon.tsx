@@ -5,13 +5,12 @@
 // common
 import Header from "@components/common/Header";
 import Tab from "./Tab";
-import { tabOptions } from "./TabOptions";
 
 const NewsCommon: React.FC = () => {
   return (
     <div>
       <Header />
-      <Tab options={tabOptions} />
+      <Tab />
     </div>
   );
 };

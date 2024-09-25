@@ -1,104 +1,76 @@
 import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
 import styled from "styled-components";
-import crabIcon from "@assets/crab.png";
-import DropDown from "@common/DropDown"; // DropDown 컴포넌트 import
-import { industry } from "@common/Industry"; // 카테고리 데이터 import
-import { TabOption } from "./TabOptions";
+import { tabOptions } from "./TabOptions";
 
-interface TabProps {
-  options: TabOption[];
-}
-
-// 탭 메뉴를 감싸는 컨테이너 스타일 정의
-const TabContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-
-// 네비게이션 링크 스타일 정의 (활성 상태일 때 색상을 다르게 표시)
-const StyledNavLink = styled(NavLink)`
+// 필터 버튼 스타일 정의
+const FilterButton = styled.button<{ selected: boolean }>`
   padding: 8px 16px;
-  text-decoration: none;
-  color: black;
+  margin: 4px;
+  border-radius: 20px;
+  border: ${(props) =>
+    props.selected ? "2px solid #4370e3" : "1px solid #ccc"};
+  background-color: ${(props) => (props.selected ? "#e3f2fd" : "#fff")};
+  color: ${(props) => (props.selected ? "#4370e3" : "#000")};
   font-weight: bold;
+  cursor: pointer;
 
-  &.active {
-    color: #4370e3; // 활성 상태일 때 색상
+  &:hover {
+    background-color: #f0f0f0;
   }
 `;
 
-// 탭 간 구분자를 위한 스타일 (탭 사이에 세퍼레이터 표시)
-const Separator = styled.span`
-  margin: 0 8px;
-  color: #ccc;
+// 필터링 버튼을 감싸는 컨테이너 스타일 정의
+const FilterContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
 `;
 
-// 아이콘 (예: 스크랩 아이콘) 스타일 정의
-const CrabIcon = styled.img`
-  width: 30px;
-  height: 30px;
-  margin-right: 5px;
+// 필터링된 데이터를 보여줄 컨테이너
+const FilteredDataContainer = styled.div`
+  margin-top: 20px;
+  padding: 10px;
+  border: 1px solid #ddd;
 `;
 
-// 탭 컴포넌트 정의
-const Tab: React.FC<TabProps> = ({ options }) => {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false); // 드롭다운 열림 상태 관리
-  const [selectedCategory, setSelectedCategory] = useState("필터링"); // 선택된 카테고리 상태
+const Tab: React.FC = () => {
+  const [selectedTabIds, setSelectedTabIds] = useState<number[]>([]); // 선택된 탭 ID 배열
 
-  // 드롭다운을 토글하는 함수
-  const handleFilterClick = () => {
-    setIsDropdownOpen((prev) => !prev); // 현재 상태의 반대 값으로 드롭다운 열고 닫기
+  // 필터 선택 핸들러
+  const handleTabSelect = (tabId: number) => {
+    setSelectedTabIds(
+      (prevSelected) =>
+        prevSelected.includes(tabId)
+          ? prevSelected.filter((id) => id !== tabId) // 이미 선택된 탭이면 제거
+          : [...prevSelected, tabId] // 선택되지 않았으면 추가
+    );
   };
 
-  // 카테고리 선택 함수
-  const handleCategorySelect = (industryId: number) => {
-    const categoryName =
-      industry.find((ind) => ind.industryId === industryId)?.industryName ||
-      "필터링";
-    setSelectedCategory(categoryName); // 선택된 카테고리 이름을 상태로 설정
-    setIsDropdownOpen(false); // 선택 후 드롭다운 닫기
-  };
+  // 필터링된 데이터를 보여주는 예시 (실제 데이터로 대체 가능)
+  const filteredData =
+    selectedTabIds.length > 0
+      ? `현재 선택된 산업은: ${selectedTabIds
+          .map((id) => tabOptions.find((tab) => tab.id === id)?.label)
+          .join(", ")}`
+      : "선택된 산업이 없습니다.";
 
   return (
-    <TabContainer>
-      <span>
-        <CrabIcon src={crabIcon} alt="스크랩 아이콘" />
-      </span>
-      {options.map((option, index) => (
-        <React.Fragment key={option.id}>
-          {option.id === "filterNews" ? ( // 필터링 탭일 경우
-            <>
-              {/* 선택된 카테고리 이름으로 탭 텍스트 변경 */}
-              <StyledNavLink
-                to={option.path}
-                className={({ isActive }) => (isActive ? "active" : "")}
-                onClick={handleFilterClick} // 필터 탭 클릭 시 드롭다운 열고 닫기
-              >
-                {selectedCategory} {/* 선택된 카테고리 이름 표시 */}
-              </StyledNavLink>
-              {isDropdownOpen && ( // 드롭다운이 열려 있는 상태일 때만 표시
-                <DropDown
-                  dropdownIndustries={industry} // 카테고리 목록을 드롭다운에 전달
-                  handleIndustrySelect={handleCategorySelect} // 선택 시 카테고리 이름 변경
-                />
-              )}
-            </>
-          ) : (
-            // 일반적인 탭의 경우 스타일을 적용하여 네비게이션 링크로 처리
-            <StyledNavLink
-              to={option.path}
-              className={({ isActive }) => (isActive ? "active" : "")}
-            >
-              {option.label}
-            </StyledNavLink>
-          )}
-          {index < options.length - 1 && <Separator>|</Separator>}{" "}
-          {/* 탭 간 구분자 */}
-        </React.Fragment>
-      ))}
-    </TabContainer>
+    <>
+      <FilterContainer>
+        {tabOptions.map((tab) => (
+          <FilterButton
+            key={tab.id}
+            selected={selectedTabIds.includes(tab.id)} // 배열에 해당 ID가 있는지 확인
+            onClick={() => handleTabSelect(tab.id)}
+          >
+            {tab.label}
+          </FilterButton>
+        ))}
+      </FilterContainer>
+      <FilteredDataContainer>{filteredData}</FilteredDataContainer>
+    </>
   );
 };
 
