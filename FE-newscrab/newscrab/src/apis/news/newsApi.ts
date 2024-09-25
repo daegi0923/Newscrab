@@ -6,20 +6,20 @@ import { mock_token } from "./mock_token"; // 토큰 경로와 import 확인
 export const getNewsData = async (page: number): Promise<NewsData> => {
   try {
     const response = await axios.get(
-      "https://newscrab.duckdns.org/api/v1/news?page=1&size=10", // API URL 확인
+      "https://newscrab.duckdns.org/api/v1/news", // 실제 API URL로 요청
       {
         params: {
           page: page,
-          size: 10,
+          size: 10, // 페이지당 아이템 수 설정
         },
         headers: {
-          Authorization: mock_token,
+          Authorization: mock_token, // 인증 헤더
         },
         withCredentials: true,
       }
     );
 
-    const { data } = response.data;
+    const { data } = response.data; // API 응답 데이터 추출
     const news = data.news.map((item: any) => ({
       newsId: item.newsId,
       newsTitle: item.newsTitle,
@@ -44,9 +44,8 @@ export const getNewsData = async (page: number): Promise<NewsData> => {
       totalItems: data.totalItems,
     };
 
-    return newsData;
+    return newsData; // 뉴스 데이터 반환
   } catch (error: any) {
-    // 토큰 관련 에러인지 확인
     if (error.response && error.response.status === 401) {
       console.error("인증 실패: 토큰이 유효하지 않거나 만료되었습니다.");
     } else {
