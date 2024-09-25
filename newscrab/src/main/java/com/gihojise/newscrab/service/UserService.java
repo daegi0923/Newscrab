@@ -2,6 +2,7 @@ package com.gihojise.newscrab.service;
 
 import com.gihojise.newscrab.domain.User;
 import com.gihojise.newscrab.dto.request.SignupRequestDto;
+import com.gihojise.newscrab.dto.request.UserUpdateRequestDto;
 import com.gihojise.newscrab.enums.Gender;
 import com.gihojise.newscrab.enums.ProfileImage;
 import com.gihojise.newscrab.exception.ErrorCode;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -86,5 +88,30 @@ public class UserService {
             throw new NewscrabException(ErrorCode.DUPLICATE_EMAIL);
         }
         return result;
+    }
+
+    //회원정보 수정
+    @Transactional
+    public void update(UserUpdateRequestDto userUpdateRequestDTO, int userId) {
+        String name = userUpdateRequestDTO.getName();
+        String email = userUpdateRequestDTO.getEmail();
+
+        Optional<User> user = userRepository.findById(userId);
+
+        if(user.isEmpty()) {
+            throw new NewscrabException(ErrorCode.USER_NOT_FOUND);
+        }
+
+        if (name.length() < 2 || name.length() > 10) {
+            throw new NewscrabException(ErrorCode.INVALID_NAME);
+        }
+
+        // 이메일 형식 정규표현식으로 체크
+        if (!email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$")) {
+            throw new NewscrabException(ErrorCode.INVALID_EMAIL);
+        }
+
+        user.get().update(userUpdateRequestDTO);
+        userRepository.save(user.get());
     }
 }

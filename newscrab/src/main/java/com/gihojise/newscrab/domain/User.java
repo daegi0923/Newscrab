@@ -1,5 +1,6 @@
 package com.gihojise.newscrab.domain;
 
+import com.gihojise.newscrab.dto.request.UserUpdateRequestDto;
 import com.gihojise.newscrab.enums.Gender;
 import com.gihojise.newscrab.enums.ProfileImage;
 import jakarta.persistence.*;
@@ -88,4 +89,12 @@ public class User extends BaseTimeEntity {
         news.getLikes().removeIf(like -> like.getUser().equals(this));
     }
 
+    // 유저 업데이트 메서드
+    public void update(UserUpdateRequestDto userUpdateRequestDTO) {
+        this.name = userUpdateRequestDTO.getName();
+        this.email = userUpdateRequestDTO.getEmail();
+        this.birthday = userUpdateRequestDTO.getBirthday();
+        this.gender = userUpdateRequestDTO.getGender();
+        this.profileImg = userUpdateRequestDTO.getProfileImage();
+    }
 }
