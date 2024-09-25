@@ -1,10 +1,8 @@
 package com.gihojise.newscrab.controller;
 
+import com.gihojise.newscrab.domain.CustomUserDetails;
 import com.gihojise.newscrab.dto.common.ApiResponse;
-import com.gihojise.newscrab.dto.request.CheckEmailRequestDto;
-import com.gihojise.newscrab.dto.request.CheckIdRequestDto;
-import com.gihojise.newscrab.dto.request.LoginRequestDto;
-import com.gihojise.newscrab.dto.request.SignupRequestDto;
+import com.gihojise.newscrab.dto.request.*;
 import com.gihojise.newscrab.service.UserIndustryService;
 import com.gihojise.newscrab.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,10 +10,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -51,6 +47,23 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "사용 가능한 이메일입니다.", null));
     }
 
+    @Operation(summary = "회원정보 수정", description = "회원정보를 수정합니다.")
+    @PutMapping("/update")
+    public ResponseEntity<ApiResponse<Void>> update(@RequestBody UserUpdateRequestDto userUpdateRequestDTO, @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        int userId = userDetails.getUserId();
+        userService.update(userUpdateRequestDTO, userId);
+        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "회원정보 수정이 완료되었습니다.", null));
+    }
+
+    @Operation(summary = "비밀번호 변경", description = "비밀번호를 변경합니다.")
+    @PutMapping("/password")
+    public ResponseEntity<ApiResponse<Void>> updatePassword(@RequestBody PasswordUpdateRequestDto passwordUpdateRequestDTO, @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        int userId = userDetails.getUserId();
+        userService.updatePassword(passwordUpdateRequestDTO, userId);
+        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "비밀번호 변경이 완료되었습니다.", null));
+    }
 
     // 로그인, 로그아웃은 필터에서 구현하고 스웨거 문서에만 표시하기위해 작성---
     @Operation(summary = "로그인", description = "로그인을 진행합니다.")

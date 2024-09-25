@@ -33,6 +33,7 @@ public enum ErrorCode {
     DUPLICATE_EMAIL(HttpStatus.ALREADY_REPORTED, "이미 존재하는 이메일 계정입니다."),
     DUPLICATE_LOGIN_ID(HttpStatus.ALREADY_REPORTED, "이미 존재하는 로그인 아이디입니다."),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "없는 회원의 정보 입니다."),
+    SAME_PASSWORD(HttpStatus.BAD_REQUEST, "기존 비밀번호와 새 비밀번호가 같습니다."),
 
     NEWS_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 뉴스를 찾을 수 없습니다."),
 
