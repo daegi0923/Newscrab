@@ -6,6 +6,7 @@ import com.gihojise.newscrab.dto.request.VocaAddRequestDto;
 import com.gihojise.newscrab.dto.response.VocaListResponseDto;
 import com.gihojise.newscrab.dto.response.VocaNewsResponseDto;
 import com.gihojise.newscrab.dto.response.VocaResponseDto;
+import com.gihojise.newscrab.dto.response.VocaSimpleResponseDto;
 import com.gihojise.newscrab.service.VocaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -36,11 +37,11 @@ public class VocaController {
     // 2. 단어 상세 조회
     @Operation(summary = "단어 상세 조회", description = "단어 ID로 단어 상세 정보를 조회합니다.")
     @GetMapping("/{vocaId}")
-    public ResponseEntity<ApiResponse<VocaResponseDto>> getVocaDetail(
+    public ResponseEntity<ApiResponse<VocaSimpleResponseDto>> getVocaDetail(
             @AuthenticationPrincipal CustomUserDetails userDetails,
             @PathVariable int vocaId) {
         int userId = userDetails.getUserId();
-        VocaResponseDto response = vocaService.getVocaDetail(userId, vocaId);
+        VocaSimpleResponseDto response = vocaService.getVocaDetail(userId, vocaId);
         return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "단어 상세 조회 성공", response));
     }
 

@@ -4,9 +4,7 @@ import com.gihojise.newscrab.domain.News;
 import com.gihojise.newscrab.domain.User;
 import com.gihojise.newscrab.domain.Voca;
 import com.gihojise.newscrab.dto.request.VocaAddRequestDto;
-import com.gihojise.newscrab.dto.response.VocaListResponseDto;
-import com.gihojise.newscrab.dto.response.VocaNewsResponseDto;
-import com.gihojise.newscrab.dto.response.VocaResponseDto;
+import com.gihojise.newscrab.dto.response.*;
 import com.gihojise.newscrab.exception.ErrorCode;
 import com.gihojise.newscrab.exception.NewscrabException;
 import com.gihojise.newscrab.repository.NewsRepository;
@@ -51,7 +49,7 @@ public class VocaService {
 
     // 단어 상세 조회
     @Transactional(readOnly = true)
-    public VocaResponseDto getVocaDetail(int userId, int vocaId) {
+    public VocaSimpleResponseDto getVocaDetail(int userId, int vocaId) {
         Voca voca = vocaRepository.findById(vocaId)
                 .orElseThrow(() -> new NewscrabException(ErrorCode.VOCA_NOT_FOUND));
 
@@ -59,7 +57,7 @@ public class VocaService {
             throw new NewscrabException(ErrorCode.VOCA_NOT_MATCH_USER);
         }
 
-        return convertToDto(voca);
+        return convertToSimpleDto(voca);
     }
 
     // 단어 추가
@@ -179,7 +177,30 @@ public class VocaService {
                 .build();
     }
 
+    private VocaSimpleResponseDto convertToSimpleDto(Voca voca) {
+        return VocaSimpleResponseDto.builder()
+                .vocaId(voca.getVocaId())
+                .vocaName(voca.getVocaName())
+                .vocaDesc(voca.getVocaDesc())
+                .sentence(voca.getSentence())
+                .industryId(voca.getIndustryId())
+                .originNewsId(voca.getNews().getNewsId())
+                .relatedNews1(convertToNewsSimpleDto(voca.getRelatedNews1()))
+                .relatedNews2(convertToNewsSimpleDto(voca.getRelatedNews2()))
+                .relatedNews3(convertToNewsSimpleDto(voca.getRelatedNews3()))
+                .createdAt(voca.getCreatedAt())
+                .updatedAt(voca.getUpdatedAt())
+                .build();
+    }
 
-
+    // News 객체를 NewsSimpleDto로 변환하는 헬퍼 메서드
+    private NewsSimpleDto convertToNewsSimpleDto(News news) {
+        return NewsSimpleDto.builder()
+                .newsId(news.getNewsId())
+                .newsTitle(news.getNewsTitle())
+                .imageUrl(news.getNewsPhotos().size() > 0 ? news.getNewsPhotos().get(0).getPhotoUrl() : null)
+                .publishedAt(news.getNewsPublishedAt().toString())
+                .build();
+    }
 
 }
