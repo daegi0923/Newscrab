@@ -16,22 +16,22 @@ import imgChemicals from "@assets/voca/화학.png";
 import imgEtc from "@assets/voca/기타.png";
 
 export const words = [
-  { industryId: 16, industryName: "기타", img: imgEtc },
-  { industryId: 1, industryName: "가전", img: imgAppliances },
-  { industryId: 2, industryName: "금융", img: imgFinance },
-  { industryId: 3, industryName: "기계로봇", img: imgRobotics },
-  { industryId: 4, industryName: "디스플레이", img: imgDisplay },
-  { industryId: 5, industryName: "바이오헬스", img: imgBioHealth },
+  { industryId: 5, industryName: "가전", img: imgAppliances },
+  { industryId: 11, industryName: "금융", img: imgFinance },
+  { industryId: 15, industryName: "일반기계", img: imgRobotics },
+  { industryId: 10, industryName: "디스플레이", img: imgDisplay },
+  { industryId: 3, industryName: "바이오헬스", img: imgBioHealth },
   { industryId: 6, industryName: "반도체", img: imgSemiconductor },
-  { industryId: 7, industryName: "섬유", img: imgTextile },
-  { industryId: 8, industryName: "이차전지", img: imgBatteries },
-  { industryId: 9, industryName: "자동차", img: imgAutomobile },
-  { industryId: 10, industryName: "정유", img: imgOil },
-  { industryId: 11, industryName: "조선", img: imgShipbuilding },
-  { industryId: 12, industryName: "철강", img: imgSteel },
-  { industryId: 13, industryName: "컴퓨터", img: imgComputer },
-  { industryId: 14, industryName: "통신장비", img: imgTelecom },
-  { industryId: 15, industryName: "화학", img: imgChemicals }
+  { industryId: 13, industryName: "섬유", img: imgTextile },
+  { industryId: 9, industryName: "이차전지", img: imgBatteries },
+  { industryId: 1, industryName: "자동차", img: imgAutomobile },
+  { industryId: 7, industryName: "정유", img: imgOil },
+  { industryId: 14, industryName: "조선", img: imgShipbuilding },
+  { industryId: 6, industryName: "철강", img: imgSteel },
+  { industryId: 12, industryName: "IT", img: imgComputer },
+  { industryId: 4, industryName: "정보통신기기", img: imgTelecom },
+  { industryId: 8, industryName: "석유화학", img: imgChemicals },
+  { industryId: 16, industryName: "기타", img: imgEtc },
 ];
 
 export const mockWords = [

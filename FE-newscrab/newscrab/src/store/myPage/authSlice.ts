@@ -53,7 +53,8 @@ const profileSlice = createSlice({
         state.userInfo = action.payload;
         state.loading = false;
       })
-      .addCase(fetchUserProfile.rejected, (state, action) => {
+      // .addCase(fetchUserProfile.rejected, (state, action) => {
+      .addCase(fetchUserProfile.rejected, (state) => {
         state.loading = false;
         // state.error = action.payload;
       });

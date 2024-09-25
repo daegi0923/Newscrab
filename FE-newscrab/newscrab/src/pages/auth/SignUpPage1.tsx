@@ -89,7 +89,7 @@ const SignUpPage1: React.FC = () => {
     userIndustry: []  // 관심 분야는 이후 처리
   });
   
-  const [successMessage, setSuccessMessage] = useState<string>("");
+  // const [successMessage, setSuccessMessage] = useState<string>("");
   const [isIdDuplicate, setIsIdDuplicate] = useState<boolean>(false); // ID 중복 여부
   const [isEmailDuplicate, setIsEmailDuplicate] = useState<boolean>(false); // ID 중복 여부
   const [errors, setErrors] = useState({
