@@ -1,9 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { RootState } from '@store/index';
-import { industry } from '@components/common/Industry';
+// import { useSelector } from 'react-redux';
+// import { RootState } from '@store/index';
+// import { industry } from '@components/common/Industry';
 
 // 사용자 정보 컴포넌트 섹션
 const UserInfoSection = styled.section`

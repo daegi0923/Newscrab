@@ -75,7 +75,7 @@ function* loginSaga(action: PayloadAction<{ loginId: string; password: string }>
     console.log("로그인 완료: ", { accessToken });
 
     // 메인 페이지로 이동
-      // window.location.href = "/mainNews";
+      window.location.href = "/mainNews";
     } catch (error: any) {
     console.log(error);
     yield put(loginFail("로그인에 실패했습니다."));

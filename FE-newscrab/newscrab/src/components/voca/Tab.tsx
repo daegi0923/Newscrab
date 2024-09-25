@@ -10,16 +10,16 @@ interface TabProps {
 
 const TabContainer = styled.div``;
 
-const TabButton = styled.button<{ active: boolean; isFilterVoca: boolean }>`
+const TabButton = styled.button<{ $active?: boolean; $isFilterVoca?: boolean }>`
   padding: 8px 8px;
   cursor: pointer;
   text-decoration: none;
   color: black;
-  color: ${(props) => (props.isFilterVoca ? "blue" : "black")}; // 필터링일 때 색상 변경
+  color: ${(props) => (props.$isFilterVoca ? "blue" : "black")}; // 필터링일 때 색상 변경
   font-weight: bold;
   background: none;
   border: none;
-  border-bottom: ${(props) => (props.active ? "2px solid black" : "none")}; // 활성화된 필터에 스타일 추가
+  border-bottom: ${(props) => (props.$active ? "2px solid black" : "none")}; // 활성화된 필터에 스타일 추가
   position: relative;
   `;
 
@@ -34,8 +34,8 @@ const Tab: React.FC<TabProps> = ({ options, onFilterChange, activeFilter }) => {
       {options.map((option, index) => (
         <React.Fragment key={option.id}>
           <TabButton
-            active={activeFilter === option.id}
-            isFilterVoca={option.id === "filterVoca"}
+            $active={activeFilter === option.id}
+            $isFilterVoca={option.id === "filterVoca"}
             onClick={() => onFilterChange(option.id)}
           >
             {option.label}

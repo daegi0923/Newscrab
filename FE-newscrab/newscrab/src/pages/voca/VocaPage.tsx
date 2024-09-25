@@ -1,19 +1,20 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import GlobalStyle from "@components/GlobalStyle";
 import VocaCommon from "@pages/voca/VocaCommon";
 import Tab from "@components/voca/Tab";
 import { tabOptions } from "@components/voca/TabOptions";
 import styled from "styled-components";
-import { words, mockWords } from "@components/voca/VocaList";
-import { MockWord, Word, MockWordWithImages } from "@components/voca/VocaTypes";
+import { words } from "@components/voca/VocaList";
+import { VocaResponseDto , Word, VocaWithImages } from "@components/voca/VocaTypes";
 import AdImage from "@components/common/Advertise";
 import Card from "@components/voca/VocaCard";
 import DropDown from "@components/voca/DropDown"
 import Pagination from "@components/voca/Pagination"
 import SearchBar from "@components/common/SearchBar";
-import { fetchVocaList } from '@store/voca/vocaSlice';
+import { AppDispatch, RootState } from '@store/index';
+import { fetchVocaListThunk } from '@store/voca/vocaSlice';
 
 const SearchContainer = styled.div`
   margin-top: -1%
@@ -38,11 +39,20 @@ const AdContainer = styled.div`
 `;
 
 // 데이터 매핑 함수: mockWords의 industryId와 words 배열의 industryId를 매칭
-const mapWordsWithImages = (mockWords: MockWord[], words: Word[]): MockWordWithImages[] => {
-  return mockWords.map((mockWord) => {
-    const matchedWord = words.find((word) => word.industryId === mockWord.industryId);
+// const mapWordsWithImages = (mockWords: MockWord[], words: Word[]): MockWordWithImages[] => {
+//   return mockWords.map((mockWord) => {
+//     const matchedWord = words.find((word) => word.industryId === mockWord.industryId);
+//     return { 
+//       ...mockWord, 
+//       img: matchedWord ? matchedWord.img : null, 
+//       industryName: matchedWord ? matchedWord.industryName : null }; // 있으면 추가, 없으면 null
+//   });
+// };
+const mapWordsWithImages = (vocaList: VocaResponseDto[], words: Word[]): VocaWithImages[] => {
+  return vocaList.map((vocaItem) => {
+    const matchedWord = words.find((word) => word.industryId === vocaItem.industryId);
     return { 
-      ...mockWord, 
+      ...vocaItem, 
       img: matchedWord ? matchedWord.img : null, 
       industryName: matchedWord ? matchedWord.industryName : null }; // 있으면 추가, 없으면 null
   });
@@ -50,21 +60,31 @@ const mapWordsWithImages = (mockWords: MockWord[], words: Word[]): MockWordWithI
 
 const VocaPage: React.FC = () => {
   const navigate = useNavigate();
-  // const mappedWords: MockWordWithImages[] = mapWordsWithImages(mockWords, words);
-  const mappedWords: MockWordWithImages[] = useMemo(() => mapWordsWithImages(mockWords, words), []);
+  // const dispatch = useDispatch();
+  const dispatch: AppDispatch = useDispatch();
+  
+  useEffect(() => {
+    dispatch(fetchVocaListThunk()); // Voca 리스트 API 요청
+  }, [dispatch])
+
+  // Redux store에서 voca 리스트 가져오기
+  const { vocaList } = useSelector((state: RootState) => state.voca);
+
+  // const mappedWords: MockWordWithImages[] = useMemo(() => mapWordsWithImages(mockWords, words), []);
+  // const mappedWords: VocaWithImages[] = useMemo(() => mapWordsWithImages(vocaList, words), [vocaList]);
+  const mappedWords: VocaWithImages[] = useMemo(() => mapWordsWithImages(vocaList, words), [vocaList, words]);
   const [filter, setFilter] = useState<string>('mainVoca');
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [selectedIndustryId, setSelectedIndustryId] = useState<number | null>(null);
-  const [sortedWords, setSortedWords] = useState<MockWordWithImages[]>(mappedWords);
+  const [sortedWords, setSortedWords] = useState<VocaWithImages[]>(mappedWords);
   const [searchText, setSearchText] = useState<string>('');
-  const dispatch = useDispatch();
   
   // 페이지네이션
   const [currentPage, setCurrentPage] = useState<number>(1);
   const itemPerPage = 10;
   const totalPages = Math.ceil(sortedWords.length / itemPerPage);
 
-  const sortWords = (filterType: string, wordsToSort: MockWordWithImages[]): MockWordWithImages[] => {
+  const sortWords = (filterType: string, wordsToSort: VocaWithImages[]): VocaWithImages[] => {
     let sorted;
     if (filterType === 'mainVoca') {
       sorted = [...wordsToSort].sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
@@ -99,15 +119,18 @@ const VocaPage: React.FC = () => {
     return searchFilteredWords.slice(startIndex, endIndex);
   };
 
+  
+
   useEffect(() => {
-    // dispatch(fetchVocaList());
-  }, [dispatch])
+    console.log("불러와짐")
+    console.log(vocaList);  // 데이터 확인용 로그
+  }, [vocaList]);
 
   useEffect(() => {
     const filterWords = filterIndustry(selectedIndustryId);
     setSortedWords(sortWords(filter, filterWords));
   // }, [filter, selectedIndustryId, mappedWords]);
-}, [filter, selectedIndustryId]);
+}, [vocaList, filter, selectedIndustryId]);
 
   const handleFilterChange = (newFilter: string) => {
     setFilter(newFilter);
@@ -135,7 +158,7 @@ const VocaPage: React.FC = () => {
     }
   };
 
-  const handleCardClick = (word: MockWordWithImages) => {
+  const handleCardClick = (word: VocaWithImages) => {
     navigate(`/voca/${word.vocaId}`, { state: { word } }); // 클릭 시 해당 vocaId로 이동
   };
 

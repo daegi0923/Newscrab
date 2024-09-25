@@ -14,7 +14,7 @@ export const store = configureStore({
     // 예시 => ui: uiSlice.reducer,
     login: loginReducer,
     voca: vocaReducer,
-    myPageReducer,
+    mypage: myPageReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(sagaMiddleware), // 기본 미들웨어에 sagaMiddleware 추가
