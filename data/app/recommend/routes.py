@@ -145,7 +145,7 @@ def collaborative_filtering(user_id: int, db: Session):
 
 @router.get("/list")
 #def read_item(user_id: int = Body(...), db: Session = Depends(get_db)):
-def read_item(user_id: int = 1, db: Session = Depends(get_db)):
+def read_item(user_id: int, db: Session = Depends(get_db)):
 
     # Scrap 테이블에서 user_id가 스크랩한 뉴스의 news_id 조회
     # 아래 주석 풀면, 상호작용 데이터가 없을 때만 조회해서 갱신
