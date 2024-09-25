@@ -38,24 +38,21 @@ public class UserController {
     @Operation(summary = "아이디 중복 확인", description = "아이디 중복을 확인합니다")
     @PostMapping("/nickname")
     public ResponseEntity<ApiResponse<Void>> checkNickname(@RequestBody CheckIdRequestDto checkIdRequestDTO) {
-        if (userService.checkLoginId(checkIdRequestDTO.getLoginId())) {
-            return ResponseEntity.ok(ApiResponse.of(HttpStatus.ALREADY_REPORTED.value(), HttpStatus.ALREADY_REPORTED.getReasonPhrase(), "이미 존재하는 아이디입니다.", null));
-        } else {
-            return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "사용 가능한 아이디입니다.", null));
-        }
+        userService.checkLoginId(checkIdRequestDTO.getLoginId());
+
+        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "사용 가능한 아이디입니다.", null));
     }
 
     @Operation(summary = "이메일 중복 확인", description = "이메일 중복을 확인합니다")
     @PostMapping("/email")
     public ResponseEntity<ApiResponse<Void>> checkEmail(@RequestBody CheckEmailRequestDto checkEmailRequestDTO) {
-        if (userService.checkEmail(checkEmailRequestDTO.getEmail())) {
-            return ResponseEntity.ok(ApiResponse.of(HttpStatus.ALREADY_REPORTED.value(), HttpStatus.ALREADY_REPORTED.getReasonPhrase(), "이미 존재하는 이메일입니다.", null));
-        } else {
-            return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "사용 가능한 이메일입니다.", null));
-        }
+        userService.checkEmail(checkEmailRequestDTO.getEmail());
+
+        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "사용 가능한 이메일입니다.", null));
     }
 
 
+    // 로그인, 로그아웃은 필터에서 구현하고 스웨거 문서에만 표시하기위해 작성---
     @Operation(summary = "로그인", description = "로그인을 진행합니다.")
     @PostMapping("/login")
     public String loginProcess(@RequestBody LoginRequestDto loginRequestDTO) {
@@ -67,4 +64,5 @@ public class UserController {
     public String logoutProcess() {
         return "ok";
     }
+    // 로그인, 로그아웃은 필터에서 구현하고 스웨거 문서에만 표시하기위해 작성---
 }

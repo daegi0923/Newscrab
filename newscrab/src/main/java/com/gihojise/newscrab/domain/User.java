@@ -3,6 +3,8 @@ package com.gihojise.newscrab.domain;
 import com.gihojise.newscrab.enums.Gender;
 import com.gihojise.newscrab.enums.ProfileImage;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
@@ -14,6 +16,8 @@ import java.util.Set;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "user") // 테이블명 지정
+@Builder
+@AllArgsConstructor
 public class User extends BaseTimeEntity {
 
     @Id
@@ -22,15 +26,19 @@ public class User extends BaseTimeEntity {
     private Integer userId; // 회원번호
 
     @Column(name = "login_id", nullable = false, unique = true)
+    @Size(min = 5, max = 20, message = "아이디는 5~20자 사이여야 합니다.")
     private String loginId; // 아이디
 
     @Column(nullable = false)
+    @Size(min = 8, max = 16, message = "비밀번호는 8~16자 사이여야 합니다.")
     private String password; // 비밀번호
 
     @Column(nullable = false)
+    @Size(min = 2, max = 10, message = "닉네임은 2~10자 사이여야 합니다.")
     private String name; // 닉네임
 
     @Column(nullable = false, unique = true)
+    @Email(message = "이메일 형식이 올바르지 않습니다.")
     private String email; // 이메일
 
     @Column(nullable = false)
@@ -53,17 +61,6 @@ public class User extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Set<UserIndustry> userIndustries = new HashSet<>();
-
-    // 필수 필드만 받는 생성자
-    public User(String loginId, String password, String name, String email, LocalDate birthday, Gender gender) {
-        this.loginId = loginId;
-        this.password = password;
-        this.name = name;
-        this.email = email;
-        this.birthday = birthday;
-        this.gender = gender;
-        this.profileImg = ProfileImage.A;
-    }
 
     // 뉴스 찜 추가 메서드
     public void addLike(News news) {

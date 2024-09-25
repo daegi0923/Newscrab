@@ -1,5 +1,7 @@
 package com.gihojise.newscrab.filter;
 
+import com.gihojise.newscrab.exception.ErrorCode;
+import com.gihojise.newscrab.exception.NewscrabException;
 import com.gihojise.newscrab.service.RefreshService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -44,10 +46,9 @@ public class LogoutFilter extends GenericFilterBean {
         String refresh = null;
         Cookie[] cookies = request.getCookies();
 
-        //refresh null check
+        //쿠키에 값이 없을 경우
         if (cookies == null) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return;
+            throw new NewscrabException(ErrorCode.NOT_EXIST_COOKIE);
         }
 
         for (Cookie cookie : cookies) {
@@ -60,29 +61,22 @@ public class LogoutFilter extends GenericFilterBean {
 
         //refresh null check
         if (refresh == null) {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return;
+            throw new NewscrabException(ErrorCode.NOT_EXIST_REFRESH_TOKEN);
         }
 
         //refresh token expired check
         if(refreshService.isRefreshTokenExpired(refresh)) {
-            //response status code
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return;
+            throw new NewscrabException(ErrorCode.EXPIRED_REFRESH_TOKEN);
         }
 
         // 토큰이 refresh인지 확인 (발급시 페이로드에 명시)
         if (!refreshService.confirmRefreshToken(refresh)) {
-            //response status code
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return;
+            throw new NewscrabException(ErrorCode.INVALID_REFRESH_TOKEN);
         }
 
         //DB에 저장되어 있는지 확인
         if (!refreshService.existsByRefresh(refresh)) {
-            //response status code
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return;
+            throw new NewscrabException(ErrorCode.INVALID_REFRESH_TOKEN);
         }
 
         //로그아웃 진행
