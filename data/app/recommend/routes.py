@@ -1,4 +1,4 @@
-from fastapi import Depends, FastAPI, HTTPException, Body
+from fastapi import Depends, FastAPI, HTTPException, Request
 from sqlalchemy.orm import Session
 from . import models
 from app.database import SessionLocal, engine
@@ -144,13 +144,14 @@ def collaborative_filtering(user_id: int, db: Session):
 
 
 @router.get("/list")
-def read_item(user_id: int = Body(...), db: Session = Depends(get_db)):
+def read_item(request: Request, db: Session = Depends(get_db)):
 # def read_item(user_id: int = 1, db: Session = Depends(get_db)):
 
     # Scrap 테이블에서 user_id가 스크랩한 뉴스의 news_id 조회
     # 아래 주석 풀면, 상호작용 데이터가 없을 때만 조회해서 갱신
     # if not scrap_like_df or not user_news_matrix:
     #     get_scrap_like_dataframe(db)
+    user_id = request.json().get("user_id")
     get_scrap_like_dataframe(db)
 
     news_list = collaborative_filtering(user_id, db)
