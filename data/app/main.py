@@ -21,4 +21,4 @@ app.include_router(crawling_router, prefix="/api/v1/reco/crawling")
 app.include_router(voca_router, prefix="/api/v1/reco/voca")
 
 app.include_router(scrap_router, prefix="/api/v1/reco/scrap")
-app.include_router(recommend_router, prefix="/api/v1/reco/scrap")
+app.include_router(recommend_router, prefix="/api/v1/reco/recommend")
