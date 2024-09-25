@@ -37,8 +37,8 @@ public class VocaService {
 
     // 단어 목록 조회
     @Transactional(readOnly = true)
-    public VocaListResponseDto getVocaList() {
-        List<VocaResponseDto> vocaList = vocaRepository.findAll().stream()
+    public VocaListResponseDto getVocaList(int userId) {
+        List<VocaResponseDto> vocaList = vocaRepository.findByUserId(userId).stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
 
@@ -51,9 +51,14 @@ public class VocaService {
 
     // 단어 상세 조회
     @Transactional(readOnly = true)
-    public VocaResponseDto getVocaDetail(int termId) {
-        Voca voca = vocaRepository.findById(termId)
+    public VocaResponseDto getVocaDetail(int userId, int vocaId) {
+        Voca voca = vocaRepository.findById(vocaId)
                 .orElseThrow(() -> new NewscrabException(ErrorCode.VOCA_NOT_FOUND));
+
+        if (userId != voca.getUser().getUserId()) {
+            throw new NewscrabException(ErrorCode.VOCA_NOT_MATCH_USER);
+        }
+
         return convertToDto(voca);
     }
 
@@ -128,8 +133,8 @@ public class VocaService {
 
     // 단어 수정
     @Transactional
-    public void updateVoca(int userId, int termId, VocaAddRequestDto vocaAddRequestDto) {
-        Voca voca = vocaRepository.findById(termId)
+    public void updateVoca(int userId, int vocaId, VocaAddRequestDto vocaAddRequestDto) {
+        Voca voca = vocaRepository.findById(vocaId)
                 .orElseThrow(() -> new NewscrabException(ErrorCode.VOCA_NOT_FOUND));
 
         // voca 의 userId와 다르면 예외
@@ -146,8 +151,8 @@ public class VocaService {
 
     // 단어 삭제
     @Transactional
-    public void deleteVoca(int userId, int termId) {
-        Voca voca = vocaRepository.findById(termId)
+    public void deleteVoca(int userId, int vocaId) {
+        Voca voca = vocaRepository.findById(vocaId)
                 .orElseThrow(() -> new NewscrabException(ErrorCode.VOCA_NOT_FOUND));
 
         if (voca.getUser().getUserId() != userId) {
