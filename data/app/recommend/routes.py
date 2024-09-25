@@ -158,7 +158,7 @@ def read_item(user_id: int = Body(...), db: Session = Depends(get_db)):
     recommend_news = db.query(models.News).filter(models.News.news_id.in_(news_list)).all()
 
     print(recommend_news)
-    return recommend_news
+    return {"news_list" : recommend_news}
 
 
 # 일정 시간이 되면 업데이트할 데이터들
