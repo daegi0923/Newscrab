@@ -20,4 +20,34 @@ public interface NewsRepository extends JpaRepository<News, Integer> {
     Page<News> findHotScrapNews(@Param("oneWeekAgo") LocalDateTime oneWeekAgo, Pageable pageable);
 
     News findByNewsId(int newsId);
+
+    @Query("SELECT n FROM News n " +
+            "WHERE (:industryId IS NULL OR n.industry.industryId = :industryId) " +
+            "AND (:ds IS NULL OR n.newsPublishedAt >= :ds) " +
+            "AND (:de IS NULL OR n.newsPublishedAt <= :de) " +
+            "ORDER BY n.newsPublishedAt DESC")
+    Page<News> findTotalFilteredNews(@Param("industryId") Integer industryId,
+                                     @Param("ds") LocalDateTime ds,
+                                     @Param("de") LocalDateTime de,
+                                     Pageable pageable);
+
+
+
+    @Query("SELECT n FROM News n " +
+            "WHERE (:industryId IS NULL OR n.industry.industryId = :industryId) " +
+            "AND (:ds IS NULL OR n.newsPublishedAt >= :ds) " +
+            "AND (:de IS NULL OR n.newsPublishedAt <= :de) " +
+            "ORDER BY " +
+            "CASE WHEN :option = 'hot' THEN n.view END DESC, " +
+            "CASE WHEN :option = 'scrap' THEN n.scrapCnt END DESC, " +
+            "n.newsPublishedAt DESC") // 기본 정렬은 최신순
+    Page<News> findFilteredNews(@Param("industryId") Integer industryId,
+                                @Param("ds") LocalDateTime ds,
+                                @Param("de") LocalDateTime de,
+                                @Param("option") String option,
+                                Pageable pageable);
+
+
+
+
 }

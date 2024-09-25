@@ -48,7 +48,8 @@ public enum ErrorCode {
     SCRAP_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 스크랩을 찾을 수 없습니다."),
     USER_NOT_MATCH(HttpStatus.FORBIDDEN, "해당 스크랩은 사용자의 스크랩이 아닙니다."),
 
-
+    // LIKE
+    LIKE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 좋아요를 찾을 수 없습니다."),
 
     // 필요한 에러 코드들 계속 추가
     ;
