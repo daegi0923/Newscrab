@@ -90,7 +90,8 @@ const SignUpPage1: React.FC = () => {
   });
   
   const [successMessage, setSuccessMessage] = useState<string>("");
-  // const [isIdDuplicate, setIsIdDuplicate] = useState<boolean>(false); // ID 중복 여부
+  const [isIdDuplicate, setIsIdDuplicate] = useState<boolean>(false); // ID 중복 여부
+  const [isEmailDuplicate, setIsEmailDuplicate] = useState<boolean>(false); // ID 중복 여부
   const [errors, setErrors] = useState({
     loginId: "",
     password: "",
@@ -158,17 +159,40 @@ const SignUpPage1: React.FC = () => {
   // ID 중복 확인
   const handleIdCheck = async () => {
     try {
-      const response = await axios.post("https://newscrab.duckdns.org/api/v1/user/nickname" , { loginId : signupForm.loginId });
-      if (response.data.exists) {
-        setErrors((prevErrors) => ({ ...prevErrors, loginId : "이미 사용 중인 ID입니다." }));
-        // setIsIdDuplicate(true);  // ID 중복이면 입력 필드 비활성화
+      const response = await axios.post("https://newscrab.duckdns.org/api/v1/user/nickname", { loginId: signupForm.loginId });
+      
+      if (response.data.statusCode === 208) {
+        // 백엔드에서 온 메시지 사용
+        setErrors((prevErrors) => ({ ...prevErrors, loginId: `이미 사용중인 아이디입니다.` }));
+        setIsIdDuplicate(true);  // ID 중복이므로 입력 필드 비활성화
       } else {
-        setErrors((prevErrors) => ({ ...prevErrors, loginId : "" }));
-        setSuccessMessage("사용 가능한 아이디입니다.");
-        // setIsIdDuplicate(false); // 중복이 아니면 입력 필드 활성화
+        // ID가 사용 가능할 경우 성공 메시지 표시
+        setErrors((prevErrors) => ({ ...prevErrors, loginId: `${signupForm.loginId}는 사용 가능한 아이디입니다.` }));
+        setIsIdDuplicate(false);  // 중복이 아니므로 입력 필드 활성화
       }
     } catch (error) {
       console.error("ID 중복 확인 실패:", error);
+      // 필요 시 사용자에게 에러 메시지 표시 가능
+      setErrors((prevErrors) => ({ ...prevErrors, loginId: "ID 확인 중 오류가 발생했습니다." }));
+    }
+  };
+
+  // ID 중복 확인
+  const handleEmailCheck = async () => {
+    try {
+      const response = await axios.post("https://newscrab.duckdns.org/api/v1/user/email", { email: signupForm.email });
+      
+      if (response.data.statusCode === 208) {
+        setErrors((prevErrors) => ({ ...prevErrors, email: `이미 사용중인 이메일입니다.` }));
+        setIsEmailDuplicate(true); 
+      } else {
+        setErrors((prevErrors) => ({ ...prevErrors, email: `${signupForm.email}는 사용 가능한 이메일입니다.` }));
+        setIsEmailDuplicate(false);
+      }
+    } catch (error) {
+      console.error("email 중복 확인 실패:", error);
+      // 필요 시 사용자에게 에러 메시지 표시 가능
+      setErrors((prevErrors) => ({ ...prevErrors, email: "ID 확인 중 오류가 발생했습니다." }));
     }
   };
 
@@ -196,14 +220,18 @@ const SignUpPage1: React.FC = () => {
         <FormContainer>
           <div style={{ position: 'relative' }}>
             <Input name="loginId" type="text" label="아이디" placeholder="아이디를 입력하세요" value={signupForm.loginId} onChange={handleChange} error={errors.loginId} 
-            // disabled={isIdDuplicate}
+            disabled={isIdDuplicate}
             />
-            {successMessage && <p style={{ color: "green", fontSize: "12px" }}>{successMessage}</p>}
             <DuplicateButton onClick={handleIdCheck}>중복 확인</DuplicateButton>
           </div>
           <Input name="name" type="text" label="닉네임" placeholder="닉네임을 입력하세요" value={signupForm.name} onChange={handleChange}/>
           <Input name="password" type="password" label="비밀번호" placeholder="비밀번호를 입력하세요" value={signupForm.password} onChange={handleChange} error={errors.password}/>
-          <Input name="email" type="email" label="이메일" placeholder="이메일을 입력하세요" value={signupForm.email} onChange={handleChange} error={errors.email}/>
+          <div style={{ position: 'relative' }}>
+            <Input name="email" type="email" label="이메일" placeholder="이메일를 입력하세요" value={signupForm.email} onChange={handleChange} error={errors.email} 
+            disabled={isEmailDuplicate}
+            />
+            <DuplicateButton onClick={handleEmailCheck}>중복 확인</DuplicateButton>
+          </div>
           <Input name="passwordConfirm" type="password" label="비밀번호 확인" placeholder="비밀번호를 입력하세요" value={signupForm.passwordConfirm} onChange={handleChange} error={errors.passwordConfirm}/>
           <Input name="birthday" type="date" label="생년월일" placeholder="생년월일을 입력하세요" 
             value={signupForm.birthday} onChange={handleChange}/>
@@ -214,9 +242,9 @@ const SignUpPage1: React.FC = () => {
           <RadioButton
             name="gender"
             options={[
-              { value: 'male', label: '남성' },
-              { value: 'female', label: '여성' },
-              { value: 'other', label: '그 외' },
+              { value: 'MALE', label: '남성' },
+              { value: 'FEMALE', label: '여성' },
+              { value: 'OTHER', label: '그 외' },
             ]}
             value={signupForm.gender} // 선택된 값을 상태에 맞게 설정
             onChange={handleChange} // 값이 변경될 때 상태 업데이트

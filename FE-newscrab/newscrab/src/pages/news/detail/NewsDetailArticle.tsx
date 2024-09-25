@@ -4,7 +4,7 @@ import viewIcon from "@assets/view.png";
 import scrapCntIcon from "@assets/scrapCnt.png";
 import likeIcon from "@assets/like.png"; // 찜 완료 시 표시할 이미지
 import unlikeIcon from "@assets/unlike.png"; // 찜하기 시 표시할 이미지
-import { NewsItem } from "../../../types/newsTypes"; // newsTypes.ts에서 타입 import
+import { NewsDetailItem } from "../../../types/newsTypes"; // newsTypes.ts에서 타입 import
 
 const formatDate = (dateString: string) => {
   return dateString.replace("T", " ");
@@ -21,14 +21,27 @@ const NewsContent = styled.div`
   max-height: 680px; /* 스크롤바를 위한 최대 높이 설정 */
   overflow-y: auto; /* 스크롤바 표시 */
   position: relative; /* 절대 위치를 위한 부모 컴포넌트 설정 */
-  scrollbar-width: thin; /* 스크롤바 두께 조절 (Firefox) */
+  /* 크롬에서 스크롤바 스타일링 */
   &::-webkit-scrollbar {
-    width: 6px; /* 스크롤바 두께 조절 (Chrome, Safari) */
+    width: 8px; /* 스크롤바 두께 설정 */
   }
+
   &::-webkit-scrollbar-thumb {
-    background-color: #888; /* 스크롤바 색상 */
-    border-radius: 10px; /* 스크롤바 모서리 둥글게 */
+    background-color: #888; /* 스크롤바 핸들의 단일 색상 설정 */
+    border-radius: 12px; /* 핸들의 모서리를 둥글게 */
+    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3); /* 핸들에 살짝 그림자 효과 추가 */
   }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: #666; /* 마우스를 올렸을 때 색상 변경 */
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: transparent; /* 스크롤 트랙 배경을 투명하게 */
+  }
+
+  /* 스크롤 영역 포함하여 모서리 둥글게 처리 */
+  clip-path: inset(0 round 8px); /* border-radius와 일치 */
 `;
 
 const NewsTitle = styled.h2`
@@ -104,10 +117,12 @@ const HeartButton = styled.button`
 `;
 
 type ScrapDetailArticleProps = {
-  newsItem: NewsItem;
+  newsDetailItem: NewsDetailItem;
 };
 
-const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({ newsItem }) => {
+const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({
+  newsDetailItem,
+}) => {
   const [isScrapped, setIsScrapped] = useState(false);
 
   const toggleScrap = () => {
@@ -123,18 +138,18 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({ newsItem }) => {
         />
       </HeartButton>
 
-      <NewsTitle>{newsItem.newsTitle}</NewsTitle>
+      <NewsTitle>{newsDetailItem.newsTitle}</NewsTitle>
 
       <MetaInfoContainer>
-        <DateInfo>{formatDate(newsItem.newsPublishedAt)}</DateInfo>
+        <DateInfo>{formatDate(newsDetailItem.newsPublishedAt)}</DateInfo>
         <Stats>
           <IconContainer>
             <ViewIcon src={viewIcon} alt="조회수 아이콘" />
-            {newsItem.view}
+            {newsDetailItem.view}
           </IconContainer>
           <IconContainer>
             <ScrapCntIcon src={scrapCntIcon} alt="스크랩수 아이콘" />
-            {newsItem.scrapCnt}
+            {newsDetailItem.scrap}
           </IconContainer>
         </Stats>
       </MetaInfoContainer>
@@ -143,26 +158,15 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({ newsItem }) => {
 
       <NewsText>
         <div>뉴스 소제목 자리</div>
-        <div>뉴스 소제목 자리</div>
-        <div>뉴스 소제목 자리</div>
       </NewsText>
 
-      {newsItem.photoUrlList && newsItem.photoUrlList.length > 0 ? (
-        <NewsImage src={newsItem.photoUrlList[0]} alt="News" />
+      {newsDetailItem.newsPhoto && newsDetailItem.newsPhoto.length > 0 ? (
+        <NewsImage src={newsDetailItem.newsPhoto[0]} alt="News" />
       ) : (
         <div>이미지가 없습니다.</div>
       )}
 
-      <NewsText>
-        {newsItem.newsContent}
-        <div>뉴스 내용 자리</div>
-        <div>뉴스 내용 자리</div>
-        <div>뉴스 내용 자리</div>
-        <div>뉴스 내용 자리</div>
-        <div>뉴스 내용 자리</div>
-        <div>뉴스 내용 자리</div>
-        <div>뉴스 내용 자리</div>
-      </NewsText>
+      <NewsText>{newsDetailItem.newsContent}</NewsText>
     </NewsContent>
   );
 };

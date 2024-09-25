@@ -15,8 +15,8 @@ const DropdownMenu = styled.div`
   background-color: white;
   border-radius: 8px;
   padding: 10px;
-  left: 688px; /* 필터링 글자 바로 밑에 오도록 left 값을 0으로 설정 */
-  top: 115px; /* 필터링 탭 바로 아래에 드롭다운 표시 */
+  left: -20px; /* 필터링 글자 바로 밑에 오도록 left 값을 0으로 설정 */
+  top: 25px; /* 필터링 탭 바로 아래에 드롭다운 표시 */
   z-index: 100;
   width: 125px;
   max-height: 200px;

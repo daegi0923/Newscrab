@@ -5,8 +5,8 @@ import ScrapCommon from "./common/ScrapCommon"; // 헤더, 탭
 import Pagination from "@components/common/Pagination"; // 페이지네이션
 import NewsList from "@pages/news/common/NewsList"; // 분리한 뉴스 리스트
 
-import { getMockNews } from "@apis/newsApi"; // getMockNews 함수 import
-import { NewsItem, MockData } from "../../types/newsTypes"; // newsTypes.ts에서 타입 import
+import { getNewsData } from "@apis/news/newsApi"; // getMockNews 함수 import
+import { NewsItem, NewsData } from "../../types/newsTypes"; // newsTypes.ts에서 타입 import
 
 const AllNewsPage: React.FC = () => {
   const [newsList, setNewsList] = useState<NewsItem[]>([]); // newsList: 뉴스 데이터를 저장하는 상태
@@ -15,7 +15,7 @@ const AllNewsPage: React.FC = () => {
 
   // 뉴스 데이터를 API에서 가져오는 비동기 함수
   const fetchNewsData = async (page: number) => {
-    const mockData: MockData = await getMockNews(page); // API 요청 (mock 데이터를 비동기로 가져옴)
+    const mockData: NewsData = await getNewsData(page); // API 요청 (mock 데이터를 비동기로 가져옴)
     setNewsList(mockData.news); // 받아온 뉴스 데이터를 상태에 저장
     setTotalPages(mockData.totalPages); // API에서 받은 totalPages 값을 상태에 저장
   };

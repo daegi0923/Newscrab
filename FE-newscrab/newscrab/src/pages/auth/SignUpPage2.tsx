@@ -150,13 +150,13 @@ const SignUpPage2: React.FC = () => {
       userIndustry: filteredIndustries.map((industry, index) => ({
         industryId: industry.industryId,
         industryName: industry.industryName,
-        preRank: index + 1, // Store the order as preRank (1 for first, 2 for second, etc.)
+        preRank: index + 1,
     })),
     };
     console.log("회원가입 데이터:", updatedSignupForm);
 
     try {
-      const response = await axios.post('https://newscrab.duckdns.org/api/v1/users/join', {
+      const response = await axios.post('https://newscrab.duckdns.org/api/v1/user/join', {
         loginId: updatedSignupForm.loginId,
         password: updatedSignupForm.password,
         name: updatedSignupForm.name,
@@ -164,6 +164,10 @@ const SignUpPage2: React.FC = () => {
         birthday: updatedSignupForm.birthday,
         gender: updatedSignupForm.gender,
         userIndustry: updatedSignupForm.userIndustry
+      }, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
       });
 
       // 회원가입 성공 시, 다른 페이지로 이동
