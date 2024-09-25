@@ -21,6 +21,8 @@ spec:
             - name: env-volume
               mountPath: /app/.env  # 컨테이너 내에서 마운트할 경로
               subPath: .env
+            - name: tz-seoul
+              mountPath: /etc/localtime
           envFrom:
             - configMapRef:
                 name: spring-env-config
@@ -28,3 +30,6 @@ spec:
         - name: env-volume
           configMap:
             name: spring-env-config
+        - name: tz-seoul
+          hostPath:
+            path: /usr/share/zoneinfo/Asia/Seoul

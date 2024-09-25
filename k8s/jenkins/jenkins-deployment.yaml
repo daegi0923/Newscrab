@@ -26,6 +26,8 @@ spec:
           mountPath: /home/ubuntu
         - name: docker-socket            # Docker 소켓을 마운트하여 Jenkins에서 Docker 사용 가능하게 설정
           mountPath: /var/run/docker.sock
+        - name: tz-seoul
+              mountPath: /etc/localtime
       volumes:
       - name: jenkins-data
         persistentVolumeClaim:
@@ -38,6 +40,10 @@ spec:
         hostPath:
           path: /var/run/docker.sock      # 호스트의 Docker 소켓 경로
           type: Socket
+      - name: tz-seoul
+          hostPath:
+            path: /usr/share/zoneinfo/Asia/Seoul
+
 
 ---
 apiVersion: v1

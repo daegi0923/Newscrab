@@ -21,6 +21,9 @@ spec:
             - name: env-volume
               mountPath: /.env  # 컨테이너 내에 .env 파일 마운트 경로
               subPath: .env
+            - name: tz-seoul
+              mountPath: /etc/localtime
+
           envFrom:
             - configMapRef:
                 name: fastapi-env-config  # 환경 변수를 포함하는 ConfigMap 참조
@@ -28,3 +31,6 @@ spec:
         - name: env-volume
           configMap:
             name: fastapi-env-config  # .env 파일이 포함된 ConfigMap 참조
+        - name: tz-seoul
+          hostPath:
+            path: /usr/share/zoneinfo/Asia/Seoul
