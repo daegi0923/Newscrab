@@ -22,6 +22,7 @@ const NewsContainer = styled.div`
   display: flex;
   justify-content: space-between;
   width: 54%;
+  height: 17%;
 `;
 
 // 이전/다음 단어 컨테이너
