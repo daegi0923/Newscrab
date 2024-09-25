@@ -31,7 +31,7 @@ public class ScrapService {
         // 페이징 안 함
 
         return ScrapListResponseDto.builder()
-                .data(scrapRepository.findByUserId(userId).stream()
+                .data(scrapRepository.findByUserUserId(userId).stream()
                         .map(scrap -> ScrapResponseDto.builder()
                                 .scrapId(scrap.getScrapId())
                                 .newsId(scrap.getNews().getNewsId())
