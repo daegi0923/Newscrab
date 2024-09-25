@@ -233,6 +233,17 @@ public class NewsService {
         userRepository.save(user);
     }
 
+    // 8. 뉴스 찜 여부 조회
+    @Transactional(readOnly = true)
+    public boolean isLiked(int newsId, int userId) {
+        News news = newsRepository.findById(newsId)
+                .orElseThrow(() -> new NewscrabException(ErrorCode.NEWS_NOT_FOUND));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NewscrabException(ErrorCode.USER_NOT_FOUND));
+
+        return userNewsLikeRepository.existsByUserAndNews(user, news);
+    }
+
 
     // 내부 메서드
 

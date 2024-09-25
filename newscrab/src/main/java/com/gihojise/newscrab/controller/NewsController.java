@@ -98,4 +98,15 @@ public class NewsController {
         newsService.unlikeNews(newsId, userId);
         return ResponseEntity.ok(ApiResponse.of(HttpStatus.NO_CONTENT.value(), HttpStatus.NO_CONTENT.getReasonPhrase(), "뉴스 찜 목록 삭제 성공", null));
     }
+
+    // 8. 찜 여부 조회
+    @Operation(summary = "뉴스 찜 여부 조회", description = "뉴스 찜 여부를 조회합니다.")
+    @GetMapping("/like/{newsId}")
+    public ResponseEntity<ApiResponse<Boolean>> isLiked(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @PathVariable int newsId) {
+        int userId = userDetails.getUserId();
+        boolean isLiked = newsService.isLiked(newsId, userId);
+        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "뉴스 찜 여부 조회 성공", isLiked));
+    }
 }
