@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gihojise.newscrab.domain.CustomUserDetails;
 import com.gihojise.newscrab.domain.RefreshEntity;
+import com.gihojise.newscrab.exception.ErrorCode;
+import com.gihojise.newscrab.exception.NewscrabException;
 import com.gihojise.newscrab.service.RefreshService;
 import com.gihojise.newscrab.util.JWTUtil;
 import com.gihojise.newscrab.repository.RefreshRepository;
@@ -43,7 +45,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
             if (contentType != null && contentType.startsWith("multipart/form-data")) {
                 //클라이언트 요청에서 username, password 추출
                 loginId = request.getParameter("loginId");
-                password = obtainPassword(request);
+                password = request.getParameter("password");
 
             }
 
@@ -71,11 +73,11 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
                 // AuthenticationManager로 전달
                 return authenticationManager.authenticate(authToken);
             } else {
-                throw new AuthenticationException("Missing loginId or password") {};
+                throw new NewscrabException(ErrorCode.EMPTY_ID_OR_PASSWORD);
             }
 
         } catch (IOException e) {
-            throw new AuthenticationException("Failed to parse request body") {};
+            throw new NewscrabException(ErrorCode.INVALID_LOGIN_REQUEST);
         }
     }
 
@@ -101,7 +103,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     //로그인 실패시 실행하는 메소드
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {
-        response.setStatus(401);
+        throw new NewscrabException(ErrorCode.LOGIN_FAILED);
     }
 
     private Cookie createCookie(String key, String value) {
