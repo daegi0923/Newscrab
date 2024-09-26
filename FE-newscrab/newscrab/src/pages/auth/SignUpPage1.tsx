@@ -94,7 +94,7 @@ const SignUpPage1: React.FC = () => {
   const [isEmailDuplicate, setIsEmailDuplicate] = useState<boolean>(false); // ID 중복 여부
   // 중복 확인 완료 여부 추가
   const [isIdChecked, setIsIdChecked] = useState<boolean>(false);
-  const [isEmailChecked, setIsEmailChecked] = useState<boolean>(false);
+  // const [isEmailChecked, setIsEmailChecked] = useState<boolean>(false);
 
   const [errors, setErrors] = useState({
     loginId: "",
@@ -203,25 +203,25 @@ const SignUpPage1: React.FC = () => {
   };
 
   // 이메일 중복 확인
-  const handleEmailCheck = async () => {
-    try {
-      const response = await axios.post("https://newscrab.duckdns.org/api/v1/user/email", { email: signupForm.email });
+  // const handleEmailCheck = async () => {
+  //   try {
+  //     const response = await axios.post("https://newscrab.duckdns.org/api/v1/user/email", { email: signupForm.email });
       
-      if (response.data.statusCode === 208) {
-        setErrors((prevErrors) => ({ ...prevErrors, email: "이미 사용중인 이메일입니다." }));
-        setIsEmailDuplicate(true);
-        setIsEmailChecked(false); // 중복 확인 실패
-      } else {
-        setErrors((prevErrors) => ({ ...prevErrors, email: "" }));
-        setIsEmailDuplicate(false);
-        setIsEmailChecked(true); // 중복 확인 성공
-      }
-    } catch (error) {
-      setErrors((prevErrors) => ({ ...prevErrors, email: "이메일 확인 중 오류가 발생했습니다." }));
-      setIsEmailDuplicate(false);
-      setIsEmailChecked(false); // 오류 발생 시 확인 실패 상태로
-    }
-  };
+  //     if (response.data.statusCode === 208) {
+  //       setErrors((prevErrors) => ({ ...prevErrors, email: "이미 사용중인 이메일입니다." }));
+  //       setIsEmailDuplicate(true);
+  //       setIsEmailChecked(false); // 중복 확인 실패
+  //     } else {
+  //       setErrors((prevErrors) => ({ ...prevErrors, email: "" }));
+  //       setIsEmailDuplicate(false);
+  //       setIsEmailChecked(true); // 중복 확인 성공
+  //     }
+  //   } catch (error) {
+  //     setErrors((prevErrors) => ({ ...prevErrors, email: "이메일 확인 중 오류가 발생했습니다." }));
+  //     setIsEmailDuplicate(false);
+  //     setIsEmailChecked(false); // 오류 발생 시 확인 실패 상태로
+  //   }
+  // };
 
   const isFormValid = Object.values(errors).every((error) => error === "") &&
   (Object.keys(signupForm) as (keyof typeof signupForm)[]).every((key) => {
@@ -234,13 +234,9 @@ const SignUpPage1: React.FC = () => {
     console.log("Signup Form Values: ", signupForm);
     console.log("Errors: ", errors);
 
-    if (!isIdChecked || !isEmailChecked) {
-      if (!isIdChecked && !isEmailChecked) {
-        window.alert("아이디와 이메일 중복 확인을 완료해주세요.");
-      } else if (!isIdChecked) {
+    if (!isIdChecked) {
+      if (!isIdChecked) {
         window.alert("아이디 중복 확인을 완료해주세요.");
-      } else if (!isEmailChecked) {
-        window.alert("이메일 중복 확인을 완료해주세요.");
       }
       return;
     }
@@ -264,12 +260,12 @@ const SignUpPage1: React.FC = () => {
           </div>
           <Input name="name" type="text" label="닉네임" placeholder="닉네임을 입력하세요" value={signupForm.name} onChange={handleChange}/>
           <Input name="password" type="password" label="비밀번호" placeholder="비밀번호를 입력하세요" value={signupForm.password} onChange={handleChange} error={errors.password}/>
-          <div style={{ position: 'relative' }}>
+          {/* <div style={{ position: 'relative' }}> */}
             <Input name="email" type="email" label="이메일" placeholder="이메일를 입력하세요" value={signupForm.email} onChange={handleChange} error={errors.email} 
             disabled={isEmailDuplicate} onBlur={() => handleBlur('email')}
             />
-            <DuplicateButton onClick={handleEmailCheck}>중복 확인</DuplicateButton>
-          </div>
+            {/* <DuplicateButton onClick={handleEmailCheck}>중복 확인</DuplicateButton>
+          </div> */}
           <Input name="passwordConfirm" type="password" label="비밀번호 확인" placeholder="비밀번호를 입력하세요" value={signupForm.passwordConfirm} onChange={handleChange} error={errors.passwordConfirm}/>
           <Input name="birthday" type="date" label="생년월일" placeholder="생년월일을 입력하세요" 
             value={signupForm.birthday} onChange={handleChange}/>

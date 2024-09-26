@@ -6,6 +6,9 @@ import Input from '@common/InputBox';
 import RadioButton from '@common/RadioButton';
 import Button from '@common/Button';
 import { useState, useEffect } from 'react';
+import ProfileImageModal  from '@components/myPage/ProfileImageModal';
+import ProfileImageDisplay from '@components/myPage/ProfileImageDisplay';
+import defaultProfile from '@assets/auth/defaultProfile.jpg'
 
 const GlobalStyle = createGlobalStyle`
   body, html {
@@ -34,19 +37,29 @@ const SignUpImage = styled.img`
 const FormContainer = styled.div`
   position: absolute;
   top: 35%;
-  left: 33%;
-  // display: grid;
-  // grid-template-columns: 1fr 1fr;
-  grid-gap: 20px;
+  left: 23%;
+  display: grid;
   gap: 0 20%;
   margin: 0 10%;
-  // width: %;
+  width: 35%;
+  // border: 1px solid red;
+  align-items: center;
 `;
+
+const FormContainer1 = styled.div`
+  top: 35%;
+  left: 25%;
+  justify-content: center;
+  width: 55%;
+  
+`
+const FormContainer2 = styled.div`
+  top: 35%;
+  left: 25%;
+`
 
 const Label = styled.label`
   font-size: 14px;
-  // margin-bottom: %;
-  // grid-column: span 2;  /* 라벨이 두 컬럼을 가로질러 위치 */
 `;
 
 const ButtonWrapper = styled.div`
@@ -63,7 +76,8 @@ const ProfileEdit1: React.FC = () => {
     name: "", 
     email: "",
     birthday: "",
-    gender: "male", // 기본값: 남성
+    gender: "",
+    profileImage: ""
   });
   
   // 유효성 검사 에러 메시지
@@ -72,11 +86,19 @@ const ProfileEdit1: React.FC = () => {
     email: "",
     birthday: "",
   });
+
+  const [isModalOpen, setModalOpen] = useState(false); // 모달 열기/닫기 상태
+  const [selectedImage, setSelectedImage] = useState<string>(editForm.profileImage || defaultProfile);
   
   // 입력 필드 변경 핸들러
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setEditForm({ ...editForm, [name]: value });
+  };
+
+  const handleSelectImage = (image: string) => {
+    setSelectedImage(image);
+    setEditForm({ ...editForm, profileImage: image });
   };
 
   // 이메일 유효성 검사
@@ -112,7 +134,7 @@ const ProfileEdit1: React.FC = () => {
     console.log("Errors: ", errors);
 
     if (isFormValid) {
-      navigate("/edit2", { state: { editForm } });
+      navigate("/mypage", { state: { editForm } });
     } else {
       window.alert("모든 정보를 필수로 입력해야 합니다.");
     }
@@ -123,15 +145,13 @@ const ProfileEdit1: React.FC = () => {
       <GlobalStyle />
       <SignUpContainer>
         <FormContainer>
-        
+          <FormContainer2>
           <Input name="name" type="text" label="닉네임" placeholder="닉네임을 입력하세요" value={editForm.name} onChange={handleChange}/>
           <Input name="email" type="email" label="이메일" placeholder="이메일을 입력하세요" value={editForm.email} onChange={handleChange} error={errors.email}/>
           <Input name="birthday" type="date" label="생년월일" placeholder="생년월일을 입력하세요" 
             value={editForm.birthday} onChange={handleChange}/>
           
-          {/* 성별 라벨 추가 */}
           <Label>성별</Label>
-          
           <RadioButton
             name="gender"
             options={[
@@ -143,10 +163,20 @@ const ProfileEdit1: React.FC = () => {
             onChange={handleChange} // 값이 변경될 때 상태 업데이트
           />
           {errors.name && <p style={{ color: "red" }}>{errors.name}</p>}
+          </FormContainer2>
+          <FormContainer1>
+        <ProfileImageDisplay src={selectedImage} onEdit={() => setModalOpen(true)} />
+          <ProfileImageModal
+            isOpen={isModalOpen}
+            onClose={() => setModalOpen(false)}
+            onSelectImage={handleSelectImage}
+          />         
+        </FormContainer1> 
           <ButtonWrapper>
           <Button onClick={handleNext}>다음</Button>
           </ButtonWrapper>
         </FormContainer>
+        
         <SignUpImage src={NewsImage} alt="SignUpImage" />
       </SignUpContainer>
     </>
