@@ -1,4 +1,11 @@
 // types.ts
+export interface RelatedNews {
+  newsId: number;
+  newsTitle: string;
+  publishedAt: string;
+  imageUrl: string;
+}
+
 export interface VocaResponseDto {
   vocaId: number;
   industryId: number;
@@ -8,23 +15,10 @@ export interface VocaResponseDto {
   originNewsId: number;
   createdAt: string;
   updatedAt: string;
-  relatedNewsId1: number;
-  relatedNewsId2: number;
-  relatedNewsId3: number;
+  relatedNews1: RelatedNews; 
+  relatedNews2: RelatedNews; 
+  relatedNews3: RelatedNews;
 }
-// export interface MockWord {
-//   vocaId: number;
-//   industryId: number;
-//   vocaName: string;
-//   vocaDesc: string;
-//   sentence: string;
-//   originNewsId: number;
-//   createdAt: string;
-//   updatedAt: string;
-//   related_news_id1: number;
-//   related_news_id2: number;
-//   related_news_id3: number;
-// }
 
 export interface Word {
   industryId: number;
