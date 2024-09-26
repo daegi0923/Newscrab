@@ -49,7 +49,7 @@ const AppRouter: React.FC = () => {
         {/* <Route path="/filterNews" element={<FilterNewsPage />} />
         <Route path="/viewCountNews" element={<ViewCountNewsPage />} />
         <Route path="/scrapCountNews" element={<ScrapCountNewsPage />} /> */}
-        <Route path="/newsDetail/:newsId" element={<NewsDetailPage />} />
+        <Route path="/news/:newsId" element={<NewsDetailPage />} />
 
         {/* 스크랩 */}
         <Route path="/scrapList" element={<ScrapListPage />} />

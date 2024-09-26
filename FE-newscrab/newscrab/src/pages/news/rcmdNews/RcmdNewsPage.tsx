@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import GlobalStyle from "@components/GlobalStyle";
-import NewsCommon from "@pages/news/common/NewsCommon";
+// import NewsCommon from "@pages/news/common/NewsCommon";
 import Pagination from "@components/common/Pagination";
 import { NewsItem } from "../../../types/newsTypes";
 import { getNewsData } from "@apis/news/newsApi";
@@ -28,13 +28,13 @@ const RcmdNewsPage: React.FC = () => {
   return (
     <div>
       <GlobalStyle />
-      <NewsCommon
+      {/* <NewsCommon
         showFilter={false}
         selectedIndustry="전체"
         isDropdownOpen={false}
         onFilterTabClick={() => {}}
         onIndustrySelect={() => {}}
-      />
+      /> */}
       <NewsList newsList={newsList} />
       <Pagination
         currentPage={currentPage}

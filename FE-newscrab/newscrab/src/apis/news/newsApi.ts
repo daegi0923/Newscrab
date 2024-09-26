@@ -2,15 +2,25 @@ import axios from "axios";
 import { NewsData } from "../../types/newsTypes";
 import { mock_token } from "./mock_token"; // 토큰 경로와 import 확인
 
-// Axios 요청을 통해 뉴스 데이터를 가져오는 함수
-export const getNewsData = async (page: number): Promise<NewsData> => {
+export const getNewsData = async (
+  industryId: number = -1,
+  page: number = 1,
+  size: number = 10,
+  ds?: string,
+  de?: string,
+  option: string = "total"
+): Promise<NewsData> => {
   try {
     const response = await axios.get(
-      "https://newscrab.duckdns.org/api/v1/news/filter?industryId=-1&page=1&size=10&option=total", // 실제 API URL로 요청
+      "https://newscrab.duckdns.org/api/v1/news/filter",
       {
         params: {
-          page: page,
-          size: 10, // 페이지당 아이템 수 설정
+          industryId, // 선택한 industryId를 전달
+          page, // 현재 페이지 전달
+          size, // 페이지당 아이템 수 전달
+          ds, // 시작 날짜 (선택 사항)
+          de, // 종료 날짜 (선택 사항)
+          option, // 옵션 (예: total)
         },
         headers: {
           Authorization: mock_token, // 인증 헤더
