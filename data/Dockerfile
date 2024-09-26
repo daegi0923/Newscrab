@@ -17,6 +17,9 @@ RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 # 
 COPY ./app /code/app
 
+#
+RUN chmod +x /code/app/crawling/chromedriver.exe
+
 
 # FastAPI 서버 실행 (8000번 포트)
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
