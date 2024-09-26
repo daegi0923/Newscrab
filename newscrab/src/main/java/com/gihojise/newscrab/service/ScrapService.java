@@ -45,6 +45,8 @@ public class ScrapService {
                                 .createdAt(scrap.getCreatedAt())
                                 .updatedAt(scrap.getUpdatedAt())
                                 .industryId(scrap.getNews().getIndustry().getIndustryId())
+                                .view(scrap.getNews().getView())
+                                .scrapCnt(scrap.getNews().getScrapCnt())
                                 .build())
                         .toList())
                 .totalItems(scrapRepository.findAll().size())
