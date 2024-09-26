@@ -10,6 +10,7 @@ interface InputBoxProps {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void; // onChange 핸들러 추가
   error?: string;
   disabled?: boolean;
+  onBlur?: () => void;
 }
 
 const InputBoxContainer = styled.div`

@@ -145,6 +145,12 @@ const SignUpPage2: React.FC = () => {
   const handleSave = async () => {
     console.log("선택된 산업군:", selectedIndustries.filter(Boolean));
     const filteredIndustries = selectedIndustries.filter(Boolean) as { img: string, industryId: number, industryName: string }[];
+    
+    if (filteredIndustries.length < 1) {
+      alert("최소 1개의 산업군을 선택해야 합니다.");
+      return; // 선택된 산업군이 없으면 요청을 보내지 않음
+    }
+
     const updatedSignupForm = {
       ...signupForm,
       userIndustry: filteredIndustries.map((industry, index) => ({
