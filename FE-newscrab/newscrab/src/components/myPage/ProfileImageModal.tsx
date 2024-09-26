@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import profile1 from '@assets/auth/profile1.jpg';
-import profile2 from '@assets/auth/profile2.jpg';
-import profile3 from '@assets/auth/profile3.jpg';
+import React, { useState } from "react";
+import styled from "styled-components";
+import profile1 from "@assets/auth/profile1.jpg";
+import profile2 from "@assets/auth/profile2.jpg";
+import profile3 from "@assets/auth/profile3.jpg";
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -33,7 +33,8 @@ const ImageOption = styled.img<{ isSelected: boolean }>`
   border-radius: 50%;
   margin: 20px;
   cursor: pointer;
-  border: ${({ isSelected }) => (isSelected ? '3px solid #ffbe98' : '1px solid #ccc')};
+  border: ${({ isSelected }) =>
+    isSelected ? "3px solid #ffbe98" : "1px solid #ccc"};
 
   &:hover {
     border: 3px solid #e09520;
@@ -60,28 +61,32 @@ interface ProfileImageModalProps {
 }
 
 const images = [
-  { src: profile1, alt: 'profile1' },
-  { src: profile2, alt: 'profile2' },
-  { src: profile3, alt: 'profile3' },
+  { src: profile1, alt: "profile1" },
+  { src: profile2, alt: "profile2" },
+  { src: profile3, alt: "profile3" },
 ];
 
-const ProfileImageModal: React.FC<ProfileImageModalProps> = ({ isOpen, onClose, onSelectImage }) => {
+const ProfileImageModal: React.FC<ProfileImageModalProps> = ({
+  isOpen,
+  onClose,
+  onSelectImage,
+}) => {
   const [selectedImage, setSelectedImage] = useState<string>("");
 
   if (!isOpen) return null;
 
-  const getImageLabel = (src: string) => {
-    if (src === profile1) return 'A';
-    if (src === profile2) return 'B';
-    if (src === profile3) return 'C';
-    return '';
-  };
+  // const getImageLabel = (src: string) => {
+  //   if (src === profile1) return 'A';
+  //   if (src === profile2) return 'B';
+  //   if (src === profile3) return 'C';
+  //   return '';
+  // };
 
   return (
     <ModalOverlay>
       <ModalContent>
         <h2>프로필 이미지 선택</h2>
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <div style={{ display: "flex", justifyContent: "center" }}>
           {images.map((image, index) => (
             <ImageOption
               key={index}
@@ -94,7 +99,7 @@ const ProfileImageModal: React.FC<ProfileImageModalProps> = ({ isOpen, onClose, 
         </div>
         <Button
           onClick={() => {
-            onSelectImage(selectedImage);  // 경로를 전달합니다.
+            onSelectImage(selectedImage); // 경로를 전달합니다.
             onClose();
           }}
         >
