@@ -26,5 +26,6 @@ public class ScrapResponseDto {
     private int industryId;
     private int view;
     private int scrapCnt;
+    private String newsCompany;
 
 }

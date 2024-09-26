@@ -17,6 +17,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
+
 @Service
 @RequiredArgsConstructor
 public class ScrapService {
@@ -47,6 +49,7 @@ public class ScrapService {
                                 .industryId(scrap.getNews().getIndustry().getIndustryId())
                                 .view(scrap.getNews().getView())
                                 .scrapCnt(scrap.getNews().getScrapCnt())
+                                .newsCompany(scrap.getNews().getNewsCompany())
                                 .build())
                         .toList())
                 .totalItems(scrapRepository.findAll().size())
@@ -59,7 +62,7 @@ public class ScrapService {
         Scrap scrap = scrapRepository.findById(scrapId)
                 .orElseThrow(() -> new NewscrabException(ErrorCode.SCRAP_NOT_FOUND));
 
-        News news = newsRepository.findById(scrap.getNews().getNewsId())
+        News news = newsRepository.findById(scrap.getNews() != null ? scrap.getNews().getNewsId() : 0)
                 .orElseThrow(() -> new NewscrabException(ErrorCode.NEWS_NOT_FOUND));
 
         if (scrap.getUser().getUserId() != userId) {
@@ -70,33 +73,43 @@ public class ScrapService {
                 .scrapId(scrap.getScrapId())
                 .newsId(news.getNewsId())
                 .newsTitle(news.getNewsTitle())
-                .photolist(news.getNewsPhotos().stream()
+                .photolist(news.getNewsPhotos() != null ? news.getNewsPhotos().stream()
                         .map(newsPhoto -> newsPhoto.getPhotoUrl())
-                        .toList())
+                        .toList() : Collections.emptyList())
                 .scrapSummary(scrap.getScrapSummary())
                 .comment(scrap.getComment())
                 .createdAt(scrap.getCreatedAt())
                 .updatedAt(scrap.getUpdatedAt())
-                .vocalist(news.getVocas().stream()
+                .vocalist(news.getVocas() != null ? news.getVocas().stream()
                         .map(voca -> VocaDto.builder()
-                                .vocaId(voca.getVocaId())
+                                .vocaId(voca.getVocaId() != null ? voca.getVocaId() : null)
+                                .newsId(voca.getNews().getNewsId())
+                                .userId(voca.getUser().getUserId())
                                 .vocaName(voca.getVocaName())
                                 .vocaDesc(voca.getVocaDesc())
+                                .originNewsId(voca.getNews().getNewsId())
                                 .sentence(voca.getSentence())
+                                .createdAt(voca.getCreatedAt())
+                                .updatedAt(voca.getUpdatedAt())
+                                .relatedNewsId1(null)
+                                .relatedNewsId2(null)
+                                .relatedNewsId3(null)
                                 .build())
-                        .toList())
+                        .toList() : Collections.emptyList())
                 .newsContent(news.getNewsContent())
-                .highlightList(scrap.getHighlights().stream()
+                .highlightList(scrap.getHighlights() != null ? scrap.getHighlights().stream()
                         .map(highlight -> HighlightDto.builder()
                                 .highlightId(highlight.getHighlightId())
                                 .startPos(highlight.getStartPos())
                                 .endPos(highlight.getEndPos())
                                 .color(highlight.getColor())
                                 .build())
-                        .toList())
-                .industryId(news.getIndustry().getIndustryId())
+                        .toList() : Collections.emptyList())
+                .industryId(news.getIndustry() != null ? news.getIndustry().getIndustryId() : null)
+                .view(news.getView())
+                .scrapCnt(news.getScrapCnt())
+                .newsCompany(news.getNewsCompany())
                 .build();
-
     }
 
     // 3. 스크랩 추가
