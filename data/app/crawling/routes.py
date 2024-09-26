@@ -106,7 +106,7 @@ def crawl_news_data(start_date: datetime, end_date: datetime):
     start_time = time.time()
     
     # 크롬 드라이버 설정
-    chrome_driver_path = os.path.join(os.path.dirname(__file__), 'chromedriver.exe')
+    chrome_driver_path = os.path.join(os.path.dirname(__file__), 'chromedriver')
     service = Service(chrome_driver_path)
     options = Options()
     # options.add_experimental_option("excludeSwitches", ["enable-automation"])
