@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Getter
 @Builder
 public class UserResponseDto {
-    private String userId;
+    private String loginId;
     private String name;
     private String email;
     private LocalDate birthday;
