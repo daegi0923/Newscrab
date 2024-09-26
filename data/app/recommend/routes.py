@@ -199,8 +199,8 @@ def read_item(user_id: int = Body(...), db: Session = Depends(get_db)):
     # print(recommend_news)
     return {
         "user_base" : user_based_recommend_news_list,
-        "item_base" = [],
-		"latest" = []
+        "item_base" : [],
+		"latest" : []
     }
 
 
