@@ -32,4 +32,17 @@ public class UserIndustryService {
             userIndustryRepository.save(userIndustry);
         }
     }
+
+    @Transactional
+    public void updateUserIndustries(int userId, List<IndustryDto> industries) {
+
+        User user = userRepository.findById(userId).get();
+        userIndustryRepository.deleteAllByUser(user);
+
+        for (IndustryDto industry : industries) {
+            Industry industryEntity = industryRepository.findByIndustryId(industry.getIndustryId());
+            UserIndustry userIndustry = new UserIndustry(user, industryEntity, industry.getPreRank());
+            userIndustryRepository.save(userIndustry);
+        }
+    }
 }
