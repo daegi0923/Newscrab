@@ -1,7 +1,7 @@
 import { call, put, takeLatest } from "redux-saga/effects"; // 이 부분은 항상 불러올 수 있습니다.
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
-import { removeCookie } from "./cookies";
+import { setCookie, removeCookie } from "./cookies";
 
 // 초기 상태 정의
 interface AuthState {
@@ -30,11 +30,10 @@ const loginSlice = createSlice({
       state.isLogin = false;
       state.error = null;
     },
-    loginSuccess: (state, action: PayloadAction<{ accessToken: string; refreshToken: string }>) => {
+    loginSuccess: (state, action: PayloadAction<{ accessToken: string;}>) => {
       state.loading = false;
       state.isLogin = true;
       state.accessToken = action.payload.accessToken;
-      state.refreshToken = action.payload.refreshToken;
       state.error = null;
     },
     loginFail: (state, action: PayloadAction<string>) => {
@@ -43,6 +42,8 @@ const loginSlice = createSlice({
       state.error = action.payload;
     },
     logout: (state) => {
+      // 쿠키에서 accessToken 삭제
+      removeCookie("accessToken", { path: "/" });
       state.accessToken = null;
       state.refreshToken = null;
       state.isLogin = false;
@@ -61,46 +62,28 @@ function* loginSaga(action: PayloadAction<{ loginId: string; password: string }>
       password: action.payload.password,
     });
 
-    const accessToken = response.data.accessToken;
-    const refreshToken = response.data.refreshToken;
+    // console.log("Full Response:", response);
+    console.log("Full Response:", response);
 
-    // 성공 시 Redux에 저장
-    yield put(loginSuccess({ accessToken, refreshToken }));
+    const accessToken = response.headers.authorization.substring(7);
+    // console.log("Access Token:", response.headers.authorization);
+    
+    // 쿠키에 토큰 저장
+    setCookie("accessToken", accessToken, { path: "/" });
 
-    // 쿠키에 토큰 저장 (필요할 경우)
-    document.cookie = `accessToken=${accessToken}; path=/`;
-    document.cookie = `refreshToken=${refreshToken}; path=/`;
+    // 콘솔에 로그인 성공 메시지 출력
+    console.log("로그인 완료: ", { accessToken });
 
     // 메인 페이지로 이동
-    window.location.href = "/mainNews";
-  } catch (error: any) {
+      window.location.href = "/mainNews";
+    } catch (error: any) {
     console.log(error);
     yield put(loginFail("로그인에 실패했습니다."));
-  }
-}
-
-// 로그아웃 사가 추가
-function* logoutSaga(): Generator<any, void, any> {
-  try {
-    // 로그아웃 API 호출
-    yield call(axios.post, "https://newscrab.duckdns.org/api/v1/user/logout");
-
-    // 쿠키에서 토큰 삭제
-    removeCookie("accessToken");
-    removeCookie("refreshToken");
-
-    // Redux 상태 초기화
-    yield put(logout());
-
-    // 로그아웃 후 로그인 페이지로 리다이렉션
-    window.location.href = "/login";
-  } catch (error: any) {
-    console.error("로그아웃에 실패했습니다.", error);
   }
 }
 
 // 사가 Watcher
 export function* watchLoginSaga() {
   yield takeLatest(loginLoading.type, loginSaga);
-  yield takeLatest(logout.type, logoutSaga); // 로그아웃 액션 발생 시 실행
+  // yield takeLatest(logout.type, logoutSaga); // 로그아웃 액션 발생 시 실행
 }

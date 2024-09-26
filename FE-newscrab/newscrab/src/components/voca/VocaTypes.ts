@@ -1,5 +1,12 @@
 // types.ts
-export interface MockWord {
+export interface RelatedNews {
+  newsId: number;
+  newsTitle: string;
+  publishedAt: string;
+  imageUrl: string;
+}
+
+export interface VocaResponseDto {
   vocaId: number;
   industryId: number;
   vocaName: string;
@@ -8,9 +15,9 @@ export interface MockWord {
   originNewsId: number;
   createdAt: string;
   updatedAt: string;
-  related_news_id1: number;
-  related_news_id2: number;
-  related_news_id3: number;
+  relatedNews1: RelatedNews; 
+  relatedNews2: RelatedNews; 
+  relatedNews3: RelatedNews;
 }
 
 export interface Word {
@@ -19,7 +26,8 @@ export interface Word {
   img: string;
 }
 
-export interface MockWordWithImages extends MockWord {
+// export interface VocaWithImages extends MockWord {
+export interface VocaWithImages extends VocaResponseDto  {
   img: string | null;
   industryName: string | null;
 }

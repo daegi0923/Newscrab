@@ -68,6 +68,7 @@ const LoginPage: React.FC = () => {
   
   const handleLogin = () => {
     if (isFormValid) {
+      console.log(loginForm);
       dispatch(
         loginLoading({
           loginId: loginForm.loginId,
@@ -83,11 +84,17 @@ const LoginPage: React.FC = () => {
     setLoginForm({...loginForm, [e.target.name]: e.target.value });
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === "Enter") {
+      handleLogin(); // 엔터키를 눌렀을 때 로그인 함수 호출
+    }
+  };
+
   return (
     <>
       <GlobalStyle />  {/* 글로벌 스타일 적용 */}
       <LoginContainer>
-        <FormContainer>
+        <FormContainer onKeyDown={handleKeyDown}>
           <Input name="loginId" type="text" label="아이디" placeholder='아이디를 입력하세요' value={loginForm.loginId} onChange={handleChange}/>
           <Input name="password" type="password" label="비밀번호" placeholder='비밀번호를 입력하세요' value={loginForm.password} onChange={handleChange} />
           <LoginButton onClick={handleLogin} disabled={!isFormValid}>로그인</LoginButton>

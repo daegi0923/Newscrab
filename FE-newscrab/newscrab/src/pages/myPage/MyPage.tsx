@@ -1,6 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
+// import { useSelector } from 'react-redux';
+// import { RootState } from '@store/index';
+// import { industry } from '@components/common/Industry';
 
 // 사용자 정보 컴포넌트 섹션
 const UserInfoSection = styled.section`
@@ -56,9 +59,15 @@ const StyledButton = styled.button`
 // 마이페이지 컴포넌트
 const MyPage: React.FC = () => {
   const navigate = useNavigate();
+  // const {name, userIndustry} = useSelector((state: RootState) => state.mypage.userInfo);
+  // const isAuthenticated = useSelector((state: RootState) => state.mypage.isAuthenticated);
 
-  const handleEdit = () => {
+  const handleEdit1 = () => {
     navigate('/edit1'); // 클릭 시 해당 vocaId로 이동
+  };
+
+  const handleEdit2 = () => {
+    navigate('/edit2'); // 클릭 시 해당 vocaId로 이동
   };
 
   const handlePassword = () => {
@@ -69,10 +78,18 @@ const MyPage: React.FC = () => {
     <UserInfoSection>
       {/* 사용자 이미지 자리 (나중에 실제 이미지를 삽입할 수 있음) */}
       <UserImage />
+
+      {/* {isAuthenticated && (
+        <div>
+          <p>이름 : {name}</p>
+          <p>관심 산업: {userIndustry.map(industry => industry.industryName).join(', ')}</p>
+        </div>
+      )} */}
       
       {/* 회원정보수정 및 비밀번호수정 버튼 */}
       <ButtonGroup>
-        <StyledButton onClick={handleEdit}>회원정보수정</StyledButton>
+        <StyledButton onClick={handleEdit1}>회원정보수정</StyledButton>
+        <StyledButton onClick={handleEdit2}>산업군 수정</StyledButton>
         <StyledButton onClick={handlePassword}>비밀번호수정</StyledButton>
       </ButtonGroup>
     </UserInfoSection>
