@@ -1,5 +1,5 @@
 import axios from "axios";
-import { mock_token } from "./mock_token"; // 토큰 경로와 import 확인
+import { mock_token } from "../mock_token"; // 토큰 경로와 import 확인
 
 // 특정 뉴스의 찜 여부를 조회하는 함수
 export const getLike = async (newsId: number): Promise<boolean> => {

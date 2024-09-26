@@ -1,5 +1,5 @@
 import axios from "axios";
-import { mock_token } from "./mock_token"; // 토큰 경로와 import 확인
+import { mock_token } from "../mock_token"; // 토큰 경로와 import 확인
 
 // Axios 요청을 통해 특정 뉴스의 상세 정보를 가져오는 함수
 export const getNewsDetail = async (newsId: number) => {

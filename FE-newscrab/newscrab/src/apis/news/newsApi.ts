@@ -1,6 +1,6 @@
 import axios from "axios";
 import { NewsData } from "../../types/newsTypes";
-import { mock_token } from "./mock_token"; // 토큰 경로와 import 확인
+import { mock_token } from "../mock_token"; // 토큰 경로와 import 확인
 
 export const getNewsData = async (
   industryId: number = -1,
