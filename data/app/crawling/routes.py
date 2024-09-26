@@ -43,38 +43,46 @@ def get_db():
 
 def update_related_news(db: Session, new_news_ids):
     start_time = time.time()
-    # 새로 추가된 뉴스만 대상으로 데이터프레임 생성
-    news_data = db.query(News).filter(News.news_id.in_(new_news_ids)).all()
 
-    if not news_data:
-        print("새롭게 추가된 뉴스가 없습니다.")
+    # 모든 뉴스 데이터를 가져옵니다 (기존 뉴스 + 새로 추가된 뉴스)
+    all_news_data = db.query(News).all()
+
+    if not all_news_data:
+        print("데이터베이스에 뉴스가 없습니다.")
         return
 
+    # DataFrame으로 변환하여 처리
     final_df = pd.DataFrame([{
         'news_id': news.news_id,
         'news_title': news.news_title if news.news_title else "" 
-    } for news in news_data])
+    } for news in all_news_data])
 
+    # TF-IDF를 사용하여 모든 뉴스의 제목을 벡터화
     tfidf_vectorizer = TfidfVectorizer()
     tfidf_matrix = tfidf_vectorizer.fit_transform(final_df['news_title'])
+
+    # 코사인 유사도를 계산하여 연관 뉴스 추출
     cosine_sim = cosine_similarity(tfidf_matrix, tfidf_matrix)
 
+    # 새로 추가된 뉴스와 기존 뉴스 사이의 연관 뉴스 추출
     for idx, row in final_df.iterrows():
-        sim_scores = list(enumerate(cosine_sim[idx]))
-        sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
-        sim_scores = sim_scores[1:4]
+        if row['news_id'] in new_news_ids:  # 새로 추가된 뉴스인 경우
+            sim_scores = list(enumerate(cosine_sim[idx]))
+            sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
+            sim_scores = sim_scores[1:4]  # 가장 유사한 3개의 뉴스를 추출
 
-        related_ids = [final_df.iloc[i[0]]['news_id'] for i in sim_scores]
-        news_to_update = db.query(News).filter(News.news_id == row['news_id']).first()
-        if news_to_update:
-            news_to_update.related_news_id_1 = related_ids[0] if len(related_ids) > 0 else None
-            news_to_update.related_news_id_2 = related_ids[1] if len(related_ids) > 1 else None
-            news_to_update.related_news_id_3 = related_ids[2] if len(related_ids) > 2 else None
-            db.add(news_to_update)
+            related_ids = [final_df.iloc[i[0]]['news_id'] for i in sim_scores]
+            news_to_update = db.query(News).filter(News.news_id == row['news_id']).first()
+            if news_to_update:
+                news_to_update.related_news_id_1 = related_ids[0] if len(related_ids) > 0 else None
+                news_to_update.related_news_id_2 = related_ids[1] if len(related_ids) > 1 else None
+                news_to_update.related_news_id_3 = related_ids[2] if len(related_ids) > 2 else None
+                db.add(news_to_update)
     
     db.commit()
     end_time = time.time()  # 시간 측정 종료
     print(f"연관 뉴스 업데이트 소요 시간: {end_time - start_time}초")
+
 
 
 # TF-IDF 키워드 추출 함수
