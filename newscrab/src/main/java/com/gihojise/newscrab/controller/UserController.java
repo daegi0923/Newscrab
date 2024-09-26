@@ -77,16 +77,6 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "유저 관심산업 변경이 완료되었습니다.", null));
     }
 
-    //사용자 정보 조회
-    @Operation(summary = "사용자 정보 조회", description = "사용자 정보를 조회합니다.")
-    @GetMapping("/profile")
-    public ResponseEntity<ApiResponse<UserResponseDto>> getProfile(@AuthenticationPrincipal CustomUserDetails userDetails) {
-
-        int userId = userDetails.getUserId();
-        UserResponseDto response = userService.getProfile(userId);
-        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "사용자 정보 조회 성공", response));
-    }
-
     // 로그인, 로그아웃은 필터에서 구현하고 스웨거 문서에만 표시하기위해 작성---
     @Operation(summary = "로그인", description = "로그인을 진행합니다.")
     @PostMapping("/login")
