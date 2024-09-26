@@ -65,6 +65,16 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "비밀번호 변경이 완료되었습니다.", null));
     }
 
+    // 유저 관심산업 변경
+    @Operation(summary = "유저 관심산업 변경", description = "유저의 관심산업을 변경합니다.")
+    @PutMapping("/userindustry")
+    public ResponseEntity<ApiResponse<Void>> updateUserIndustry(@RequestBody UserIndustryUpdateDto userIndustryUpdateDto, @AuthenticationPrincipal CustomUserDetails userDetails) {
+
+        int userId = userDetails.getUserId();
+        userIndustryService.updateUserIndustries(userId, userIndustryUpdateDto.getUserIndustry());
+        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "유저 관심산업 변경이 완료되었습니다.", null));
+    }
+
     // 로그인, 로그아웃은 필터에서 구현하고 스웨거 문서에만 표시하기위해 작성---
     @Operation(summary = "로그인", description = "로그인을 진행합니다.")
     @PostMapping("/login")
