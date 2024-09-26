@@ -6,7 +6,7 @@ import { mock_token } from "./mock_token"; // 토큰 경로와 import 확인
 export const getNewsData = async (page: number): Promise<NewsData> => {
   try {
     const response = await axios.get(
-      "https://newscrab.duckdns.org/api/v1/news", // 실제 API URL로 요청
+      "https://newscrab.duckdns.org/api/v1/news/filter?industryId=-1&page=1&size=10&option=total", // 실제 API URL로 요청
       {
         params: {
           page: page,

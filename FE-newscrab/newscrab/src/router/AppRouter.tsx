@@ -7,11 +7,11 @@ import SignUpPage1 from "@pages/auth/SignUpPage1";
 import SignUpPage2 from "@pages/auth/SignUpPage2";
 //뉴스
 import MainNewsPage from "@pages/news/MainNewsPage";
-import RcmdNewsPage from "@pages/news/RcmdNewsPage";
-import AllNewsPage from "@pages/news/AllNewsPage";
-import FilterNewsPage from "@pages/news/FilterNewsPage";
-import ViewCountNewsPage from "@pages/news/ViewCountNewsPage";
-import ScrapCountNewsPage from "@pages/news/ScrapCountNewsPage";
+import RcmdNewsPage from "@pages/news/rcmdNews/RcmdNewsPage";
+import AllNewsPage from "@pages/news/allNews/AllNewsPage";
+// import FilterNewsPage from "@pages/news/FilterNewsPage";
+// import ViewCountNewsPage from "@pages/news/ViewCountNewsPage";
+// import ScrapCountNewsPage from "@pages/news/ScrapCountNewsPage";
 import NewsDetailPage from "@pages/news/detail/NewsDetailPage";
 // 스크랩
 import ScrapListPage from "@pages/scrap/ScrapListPage";
@@ -46,9 +46,9 @@ const AppRouter: React.FC = () => {
         <Route path="/mainNews" element={<MainNewsPage />} />
         <Route path="/rcmdNews" element={<RcmdNewsPage />} />
         <Route path="/allNews" element={<AllNewsPage />} />
-        <Route path="/filterNews" element={<FilterNewsPage />} />
+        {/* <Route path="/filterNews" element={<FilterNewsPage />} />
         <Route path="/viewCountNews" element={<ViewCountNewsPage />} />
-        <Route path="/scrapCountNews" element={<ScrapCountNewsPage />} />
+        <Route path="/scrapCountNews" element={<ScrapCountNewsPage />} /> */}
         <Route path="/newsDetail/:newsId" element={<NewsDetailPage />} />
 
         {/* 스크랩 */}

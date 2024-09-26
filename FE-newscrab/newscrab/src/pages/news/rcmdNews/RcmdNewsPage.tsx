@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import GlobalStyle from "@components/GlobalStyle";
 import NewsCommon from "@pages/news/common/NewsCommon";
 import Pagination from "@components/common/Pagination";
-import { NewsItem } from "../../types/newsTypes";
+import { NewsItem } from "../../../types/newsTypes";
 import { getNewsData } from "@apis/news/newsApi";
-import NewsList from "./common/NewsList";
+import NewsList from "../common/NewsList";
 
 const RcmdNewsPage: React.FC = () => {
   const [newsList, setNewsList] = useState<NewsItem[]>([]);
