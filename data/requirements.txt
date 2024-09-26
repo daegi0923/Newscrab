@@ -1,5 +1,6 @@
 annotated-types==0.7.0
 anyio==4.4.0
+APScheduler==3.10.4
 attrs==24.2.0
 beautifulsoup4==4.12.3
 certifi==2024.8.30
@@ -44,6 +45,7 @@ trio==0.26.2
 trio-websocket==0.11.1
 typing_extensions==4.12.2
 tzdata==2024.1
+tzlocal==5.2
 urllib3==2.2.2
 uvicorn==0.30.6
 websocket-client==1.8.0
