@@ -449,7 +449,7 @@ def start_scheduler():
     if not scheduler.running:  # 스케줄러가 이미 실행 중인지 확인
         logger.info("스케줄러 시작")
         # 매 시간 정각마다 실행 (minute=0 설정)
-        scheduler.add_job(scheduled_crawl_news_data, 'cron', minute=25)
+        scheduler.add_job(scheduled_crawl_news_data, 'cron', minute=0)
         scheduler.start()
         logger.info(f"현재 스케줄러에 등록된 작업들: {scheduler.get_jobs()}")
 
