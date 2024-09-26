@@ -18,7 +18,7 @@ public class VocaDto {
     private String sentence;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private int relatedNewsId1;
-    private int relatedNewsId2;
-    private int relatedNewsId3;
+    private Integer relatedNewsId1;
+    private Integer relatedNewsId2;
+    private Integer relatedNewsId3;
 }
