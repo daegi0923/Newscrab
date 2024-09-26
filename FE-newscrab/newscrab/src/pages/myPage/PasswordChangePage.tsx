@@ -5,7 +5,7 @@ import BackgroundImage from '../../assets/auth/bg.png';
 import Input from '@common/InputBox';
 import Button from '@common/Button';
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import API from '@apis/apiClient';
 
 const GlobalStyle = createGlobalStyle`
   body, html {
@@ -101,9 +101,9 @@ const PasswordChange: React.FC = () => {
 
     if (isFormValid) {
       try {
-        const response = await axios.put('https://newscrab.duckdns.org/api/v1/user/pw', {
-          currentPassword: editForm.currentPassword,
-          newPassword: editForm.newPassword,
+        const response = await API.put('/user/password', {
+          // currentPassword: editForm.currentPassword,
+          password: editForm.newPassword,
         });
 
         if (response.status === 200) {
@@ -111,14 +111,25 @@ const PasswordChange: React.FC = () => {
           alert("비밀번호가 성공적으로 변경되었습니다.");
           navigate("/mypage"); // 예시: 프로필 페이지로 이동
         }
-      } catch (error) {
-        console.error("비밀번호 변경 실패:", error);
-        alert("비밀번호 변경 중 오류가 발생했습니다.");
+      } catch (error: any) {
+        if (error.response.status === 400) {
+          // 서버에서 동일한 비밀번호일 때 400번대를 반환하는 경우
+          if (error.response.data.message === "새 비밀번호가 이전 비밀번호와 같습니다.") {
+            alert("새 비밀번호는 이전 비밀번호와 같을 수 없습니다.");
+          } else {
+            alert("새 비밀번호는 이전 비밀번호와 같을 수 없습니다.");
+          }
+        } else {
+          // 다른 오류 처리
+          console.error("비밀번호 변경 실패:", error);
+          alert("비밀번호 변경 중 오류가 발생했습니다.");
+        }
       }
     } else {
       window.alert("모든 필드를 올바르게 입력해 주세요.");
     }
   };
+
   return (
     <>
       <GlobalStyle />

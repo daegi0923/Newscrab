@@ -6,9 +6,15 @@ import Input from '@common/InputBox';
 import RadioButton from '@common/RadioButton';
 import Button from '@common/Button';
 import { useState, useEffect } from 'react';
-import ProfileImageModal  from '@components/myPage/ProfileImageModal';
+import { useDispatch, useSelector } from 'react-redux';
+import ProfileImageModal from '@components/myPage/ProfileImageModal';
 import ProfileImageDisplay from '@components/myPage/ProfileImageDisplay';
-import defaultProfile from '@assets/auth/defaultProfile.jpg'
+import defaultProfile from '@assets/auth/defaultProfile.jpg';
+import { AppDispatch, RootState } from '@store/index';
+import { updateUserProfileThunk, fetchUserProfileThunk } from '@store/myPage/profileSlice';
+import profile1 from '@assets/auth/profile1.jpg';
+import profile2 from '@assets/auth/profile2.jpg';
+import profile3 from '@assets/auth/profile3.jpg';
 
 const GlobalStyle = createGlobalStyle`
   body, html {
@@ -16,7 +22,6 @@ const GlobalStyle = createGlobalStyle`
     padding: 0;
     overflow: hidden; /* 배경화면 넘쳐서 스크롤 방지 */
     height: 100%;
-  }
 `;
 
 const SignUpContainer = styled.div`
@@ -42,21 +47,15 @@ const FormContainer = styled.div`
   gap: 0 20%;
   margin: 0 10%;
   width: 35%;
-  // border: 1px solid red;
   align-items: center;
 `;
 
 const FormContainer1 = styled.div`
-  top: 35%;
-  left: 25%;
   justify-content: center;
   width: 55%;
-  
-`
-const FormContainer2 = styled.div`
-  top: 35%;
-  left: 25%;
-`
+`;
+
+const FormContainer2 = styled.div``;
 
 const Label = styled.label`
   font-size: 14px;
@@ -70,17 +69,20 @@ const ButtonWrapper = styled.div`
 
 const ProfileEdit1: React.FC = () => {
   const navigate = useNavigate();
+  const dispatch: AppDispatch = useDispatch();
 
-  // 사용자 정보 상태 관리
+  // Redux 상태에서 사용자 정보 가져오기
+  const { userInfo } = useSelector((state: RootState) => state.mypage);
+
+  // 사용자 정보 상태 관리 (초기값을 사용자 정보로 설정)
   const [editForm, setEditForm] = useState({
-    name: "", 
-    email: "",
-    birthday: "",
-    gender: "",
-    profileImage: ""
+    name: userInfo.name || "",
+    email: userInfo.email || "",
+    birthday: userInfo.birthday || "",
+    gender: userInfo.gender || "",
+    profileImage: userInfo.profileImage || ""
   });
-  
-  // 유효성 검사 에러 메시지
+
   const [errors, setErrors] = useState({
     name: "",
     email: "",
@@ -88,55 +90,62 @@ const ProfileEdit1: React.FC = () => {
   });
 
   const [isModalOpen, setModalOpen] = useState(false); // 모달 열기/닫기 상태
-  const [selectedImage, setSelectedImage] = useState<string>(editForm.profileImage || defaultProfile);
-  
+  const [selectedImage, setSelectedImage] = useState<string>(defaultProfile);
+
+  // 이미지 경로를 A, B, C로 매핑하는 함수
+  const mapImageToEnum = (imageSrc: string) => {
+    if (imageSrc === profile1) return 'A';
+    if (imageSrc === profile2) return 'B';
+    if (imageSrc === profile3) return 'C';
+    return '';
+  };
+
+  const mapEnumToImage = (imageEnum: string) => {
+    if (imageEnum === 'A') return profile1;
+    if (imageEnum === 'B') return profile2;
+    if (imageEnum === 'C') return profile3;
+    return defaultProfile;
+  };
+
+  // 사용자 정보를 불러와서 초기값 설정 (처음 마운트될 때 실행)
+  useEffect(() => {
+    const loadUserProfile = async () => {
+      const profileData = await dispatch(fetchUserProfileThunk());
+      if (profileData.payload) {
+        const data = profileData.payload;
+        setEditForm({
+          name: data.name,
+          email: data.email,
+          birthday: data.birthday,
+          gender: data.gender,
+          profileImage: data.profileImage
+        });
+        setSelectedImage(mapEnumToImage(data.profileImage)); // 백엔드의 이미지 enum에 따라 이미지 설정
+      }
+    };
+    loadUserProfile();
+  }, [dispatch]);
+
   // 입력 필드 변경 핸들러
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setEditForm({ ...editForm, [name]: value });
   };
 
-  const handleSelectImage = (image: string) => {
-    setSelectedImage(image);
-    setEditForm({ ...editForm, profileImage: image });
+  const handleSelectImage = (imageSrc: string) => {
+    const imageEnum = mapImageToEnum(imageSrc);
+    setSelectedImage(imageSrc);
+    setEditForm({ ...editForm, profileImage: imageEnum }); // A, B, C로 설정
   };
 
-  // 이메일 유효성 검사
-  useEffect(() => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (editForm.email && !emailRegex.test(editForm.email)) {
-      setErrors((prevErrors) => ({ ...prevErrors, email: "올바른 이메일 형식을 입력하세요." }));
-    } else {
-      setErrors((prevErrors) => ({ ...prevErrors, email: "" }));
-    }
-  }, [editForm.email]);
-
-  // 생년월일 유효성 검사
-  useEffect(() => {
-    if (editForm.birthday === "") {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        birthday: "생년월일을 선택하세요.",
-      }));
-    } else {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        birthday: "",
-      }));
-    }
-  }, [editForm.birthday]);
-
-  const isFormValid = Object.values(errors).every((error) => error === "") &&
-    Object.keys(editForm).every((key) => editForm[key as keyof typeof editForm] !== "");
-
-  const handleNext = () => {
-    console.log("Edit Form Values: ", editForm);
-    console.log("Errors: ", errors);
-
-    if (isFormValid) {
-      navigate("/mypage", { state: { editForm } });
-    } else {
-      window.alert("모든 정보를 필수로 입력해야 합니다.");
+  const handleNext = async () => {
+    try {
+      // 모든 필드를 포함한 데이터를 PUT 요청으로 전송
+      await dispatch(updateUserProfileThunk(editForm));
+      navigate('/mypage');  // 성공 시 이동
+    } catch (error) {
+      console.error('회원 정보 업데이트 실패:', error);
+      alert('정보를 업데이트하는 중 오류가 발생했습니다.');
     }
   };
 
@@ -148,8 +157,7 @@ const ProfileEdit1: React.FC = () => {
           <FormContainer2>
           <Input name="name" type="text" label="닉네임" placeholder="닉네임을 입력하세요" value={editForm.name} onChange={handleChange}/>
           <Input name="email" type="email" label="이메일" placeholder="이메일을 입력하세요" value={editForm.email} onChange={handleChange} error={errors.email}/>
-          <Input name="birthday" type="date" label="생년월일" placeholder="생년월일을 입력하세요" 
-            value={editForm.birthday} onChange={handleChange}/>
+          <Input name="birthday" type="date" label="생년월일" placeholder="생년월일을 입력하세요" value={editForm.birthday} onChange={handleChange}/>
           
           <Label>성별</Label>
           <RadioButton
@@ -173,10 +181,9 @@ const ProfileEdit1: React.FC = () => {
           />         
         </FormContainer1> 
           <ButtonWrapper>
-          <Button onClick={handleNext}>다음</Button>
+           <Button onClick={handleNext}>다음</Button>
           </ButtonWrapper>
         </FormContainer>
-        
         <SignUpImage src={NewsImage} alt="SignUpImage" />
       </SignUpContainer>
     </>

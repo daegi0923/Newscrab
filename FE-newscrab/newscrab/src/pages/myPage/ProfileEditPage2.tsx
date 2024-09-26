@@ -1,8 +1,9 @@
 import styled from 'styled-components';
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import API from '@apis/apiClient';
 import { words } from "@components/voca/VocaList";
-import axios from 'axios';
+import { AxiosError } from 'axios';  // AxiosError 타입을 불러옴
 
 const SignUpContainer = styled.div`
   flex-direction: column;
@@ -102,9 +103,7 @@ const SaveButton = styled.button`
 `;
 
 const ProfileEdit2: React.FC = () => {
-  const location = useLocation();
   const navigate = useNavigate();
-  const { editForm } = location.state; // 이전 페이지에서 전달받은 사용자 수정 폼 데이터
   const [selectedIndustries, setSelectedIndustries] = useState<Array<{ img: string, industryId: number, industryName: string } | null>>([null, null, null]);
   const [availableIndustries, setAvailableIndustries] = useState(words.filter((industry) => industry.industryId !== 16));
 
@@ -142,7 +141,6 @@ const ProfileEdit2: React.FC = () => {
     const filteredIndustries = selectedIndustries.filter(Boolean) as { img: string, industryId: number, industryName: string }[];
 
     const updatedEditForm = {
-      ...editForm,
       userIndustry: filteredIndustries.map((industry, index) => ({
         industryId: industry.industryId,
         industryName: industry.industryName,
@@ -152,15 +150,8 @@ const ProfileEdit2: React.FC = () => {
 
     console.log("수정할 사용자 데이터:", updatedEditForm);
 
-    // 사용자 ID는 editForm에 포함되어 있다고 가정
-    const userId = updatedEditForm.userId;
-
     try {
-      const response = await axios.put(`https://newscrab.duckdns.org/api/v1/users/${userId}`, {
-        nickname: updatedEditForm.nickname,
-        email: updatedEditForm.email,
-        birthday: updatedEditForm.birthday,
-        gender: updatedEditForm.gender,
+      const response = await API.put('/user/userindustry', {
         userIndustry: updatedEditForm.userIndustry,
       });
 
@@ -170,10 +161,17 @@ const ProfileEdit2: React.FC = () => {
         navigate('/mainNews'); // 업데이트 후 메인 페이지로 이동
       }
     } catch (error) {
-      console.error('사용자 정보 수정 실패:', error);
-      alert('사용자 정보 수정 중 오류가 발생했습니다.');
-    }
-  };
+      if (error instanceof AxiosError) {
+        if (error.response && error.response.status === 400) {
+          alert("잘못된 요청입니다. 다시 확인해주세요.");
+        } else {
+          alert("서버 오류가 발생했습니다. 나중에 다시 시도해 주세요.");
+        }
+      } else {
+        console.error('알 수 없는 오류:', error);
+        alert('알 수 없는 오류가 발생했습니다.');
+      }
+    }};
 
   return (
     <SignUpContainer>

@@ -1,13 +1,19 @@
 import API from "../apiClient";
 
 // 회원 정보 수정(PUT)
-export const fetchVocaList = async () => {
-  try {
-    const response = await API.put("/update");
-    return response.data; // 성공적으로 데이터를 가져왔을 경우
-  } catch (error) {
-    console.error("회원 정보 변경 실패:", error);
-    console.log(error);
-    throw error;
-  }
+export const updateUserProfileAPI = async (updatedProfile: any) => {
+  const response = await API.put('/update', updatedProfile);
+  return response.data;  // 성공적으로 수정된 사용자 정보
+};
+
+// 회원 정보 수정(PUT)
+export const updateUserIndustryAPI = async (updatedInduystry: any) => {
+  const response = await API.put('/update', updatedInduystry);
+  return response.data;  // 성공적으로 수정된 사용자 정보
+};
+
+// 회원 정보 가져오기(GET)
+export const fetchUserProfileAPI = async () => {
+  const response = await API.get('/profile');
+  return response.data;  // 받아온 사용자 정보
 };

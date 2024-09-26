@@ -70,6 +70,13 @@ const ProfileImageModal: React.FC<ProfileImageModalProps> = ({ isOpen, onClose, 
 
   if (!isOpen) return null;
 
+  const getImageLabel = (src: string) => {
+    if (src === profile1) return 'A';
+    if (src === profile2) return 'B';
+    if (src === profile3) return 'C';
+    return '';
+  };
+
   return (
     <ModalOverlay>
       <ModalContent>
@@ -87,7 +94,7 @@ const ProfileImageModal: React.FC<ProfileImageModalProps> = ({ isOpen, onClose, 
         </div>
         <Button
           onClick={() => {
-            onSelectImage(selectedImage);
+            onSelectImage(selectedImage);  // 경로를 전달합니다.
             onClose();
           }}
         >
