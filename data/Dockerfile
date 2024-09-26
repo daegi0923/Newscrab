@@ -16,7 +16,7 @@ RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
 RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
 
-RUN sudo apt install -y ./google-chrome-stable_current_amd64.deb
+RUN apt install -y ./google-chrome-stable_current_amd64.deb
 
 # 
 COPY ./app /code/app
