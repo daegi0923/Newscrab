@@ -246,7 +246,6 @@ def read_item(user_id: int, db: Session = Depends(get_db)):
     # 아래 주석 풀면, 상호작용 데이터가 없을 때만 조회해서 갱신
     # if not scrap_like_df or not user_news_matrix:
     #     get_scrap_like_dataframe(db)
-
     get_scrap_like_dataframe(db)
     user_based_recommend_news_list, ub_scores = collaborative_filtering(user_id, db)
     print(ub_scores)
