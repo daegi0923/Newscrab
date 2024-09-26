@@ -184,7 +184,7 @@ async def get_id_from_body(request:Request):
     return body.get("user_id")  # 'name' 파라미터 추출
 
 @router.get("/list")
-def read_item(user_id: int = Body(...), db: Session = Depends(get_db)):
+def read_item(user_id: int = Depends(get_id_from_body), db: Session = Depends(get_db)):
 # def read_item(user_id: int = 1, db: Session = Depends(get_db)):
 
     # Scrap 테이블에서 user_id가 스크랩한 뉴스의 news_id 조회
