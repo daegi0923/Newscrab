@@ -14,11 +14,12 @@ COPY ./requirements.txt /code/requirements.txt
 # 
 RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
+RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+
+RUN sudo apt install -y ./google-chrome-stable_current_amd64.deb
+
 # 
 COPY ./app /code/app
-
-#
-RUN chmod +x /code/app/crawling/chromedriver.exe
 
 
 # FastAPI 서버 실행 (8000번 포트)
