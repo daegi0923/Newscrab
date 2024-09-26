@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { NewsItem } from "../../../types/newsTypes";
+import { ScrapData } from "../../types/scrapTypes"; // ScrapData 타입 import
 import viewIcon from "@assets/view.png";
 import scrapCntIcon from "@assets/scrapCnt.png";
 import { industry } from "@common/Industry";
@@ -85,10 +85,10 @@ const ScrapCntIcon = styled.img`
   margin-right: 5px;
 `;
 
-const NewsList: React.FC<{
-  newsList: NewsItem[];
-  onNewsClick: (newsId: number) => void;
-}> = ({ newsList, onNewsClick }) => {
+const ScrapList: React.FC<{
+  scrapList: ScrapData[];
+  onScrapClick: (newsId: number) => void;
+}> = ({ scrapList, onScrapClick }) => {
   const getIndustryName = (industryId: number): string => {
     const matchedCategory = industry.find(
       (ind) => ind.industryId === industryId
@@ -98,30 +98,30 @@ const NewsList: React.FC<{
 
   return (
     <GridContainer>
-      {newsList.map((news) => (
+      {scrapList.map((scrap) => (
         <NewsItemContainer
-          key={news.newsId}
-          onClick={() => onNewsClick(news.newsId)} // 클릭 시 onNewsClick 호출
+          key={scrap.newsId}
+          onClick={() => onScrapClick(scrap.newsId)} // 클릭 시 onNewsClick 호출
         >
           <FlexContainer>
-            {news.photoUrlList && (
-              <Image src={news.photoUrlList[0]} alt="이미지가 없습니다." />
+            {scrap.photolist && (
+              <Image src={scrap.photolist[0]} alt="이미지가 없습니다." />
             )}
             <TextContainer>
-              <IndustryId>{getIndustryName(news.industryId)}</IndustryId>
-              <NewsTitle>{news.newsTitle}</NewsTitle>
+              <IndustryId>{getIndustryName(scrap.industryId)}</IndustryId>
+              <NewsTitle>{scrap.newsTitle}</NewsTitle>
               <InfoRow>
-                <span>{news.newsCompany}</span>
-                <span>{formatDate(news.createdAt)}</span>
+                {/* <span>{scrap.newsCompany}</span> */}
+                <span>{formatDate(scrap.createdAt)}</span>
               </InfoRow>
               <StatsRow>
                 <span>
                   <ViewIcon src={viewIcon} alt="조회수 아이콘" />
-                  {news.view}
+                  {/* {scrap.view} */}
                 </span>
                 <span>
                   <ScrapCntIcon src={scrapCntIcon} alt="스크랩수 아이콘" />
-                  {news.scrapCnt}
+                  {/* {scrap.scrapCnt} */}
                 </span>
               </StatsRow>
             </TextContainer>
@@ -132,4 +132,4 @@ const NewsList: React.FC<{
   );
 };
 
-export default NewsList;
+export default ScrapList;

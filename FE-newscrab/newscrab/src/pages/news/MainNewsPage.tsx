@@ -22,9 +22,6 @@ const MainNewsPage: React.FC = () => {
         <li>
           <Link to="/allNews">전체 뉴스 페이지</Link>
         </li>
-        <li>
-          <Link to="/filterNews">필터링 뉴스 페이지</Link>
-        </li>
       </ul>
     </div>
   );

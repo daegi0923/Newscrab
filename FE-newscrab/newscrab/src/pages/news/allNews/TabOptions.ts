@@ -1,9 +1,23 @@
-export interface TabOption {
+export interface TopTabOption {
+  id: number;
+  name: string;
+  label: string;
+}
+
+export interface BottomTabOption {
   id: number;
   label: string;
 }
 
-export const tabOptions: TabOption[] = [
+// 상단 탭 옵션
+export const topTabOptions: TopTabOption[] = [
+  { id: 1, name: "전체", label: "total" },
+  { id: 2, name: "조회수", label: "hot" },
+  { id: 3, name: "스크랩수", label: "scrap" },
+];
+
+// 하단 필터 옵션
+export const bottomTabOptions: BottomTabOption[] = [
   { id: 12, label: "IT" },
   { id: 5, label: "가전" },
   { id: 11, label: "금융" },

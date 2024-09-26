@@ -1,10 +1,14 @@
 import GlobalStyle from "@components/GlobalStyle";
 import VocaCommon from "@pages/voca/VocaCommon";
 import { VocaWithImages } from "@components/voca/VocaTypes";
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import VocaDetail from "@components/voca/VocaDetail";
+import { useDispatch, useSelector } from 'react-redux';
 import styled from "styled-components";
 import ArticleRcmd from "@components/voca/ArticleRcmd";
+import { fetchVocaDetailThunk } from '@store/voca/vocaSlice';
+import { RootState, AppDispatch } from "@store/index";
+import { useEffect } from "react";
 
 const VocaContainer = styled.div`
   position: relative;
@@ -17,11 +21,12 @@ const VocaContainer = styled.div`
 `;
 
 const NewsContainer = styled.div`
-  border: solid 1px black;
+  // border: solid 1px black;
   margin-top: 1%;
   display: flex;
   justify-content: space-between;
-  width: 54%;
+  width: 55%;
+  height: 17%;
 `;
 
 // 이전/다음 단어 컨테이너
@@ -82,8 +87,22 @@ const BackButton = styled.button`
 const VocaDetailPage: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  // const { id } = useParams<{ id: string }>(); // URL에서 id 가져오기
+
+  const { vocaId } = useParams<{ vocaId: string }>();
+  const dispatch: AppDispatch = useDispatch();
+
+  // Redux store에서 selectedVoca 가져오기
+  const selectedVoca = useSelector((state: RootState) => state.voca.selectedVoca);
+  const loading = useSelector((state: RootState) => state.voca.loading);
   
+  useEffect(() => {
+    if (vocaId) {
+      const numericVocaId = parseInt(vocaId, 10);  // 문자열을 숫자로 변환
+      dispatch(fetchVocaDetailThunk(numericVocaId)); // 해당 단어의 상세 정보 API 호출
+    }
+  }, [dispatch, vocaId]);
+
+
   // const mappedWords = mapWordsWithImages(mockWords);
   const { word } = location.state as { word: VocaWithImages };
   // const [currentWord, setCurrentWord] = useState(word);
@@ -92,12 +111,20 @@ const VocaDetailPage: React.FC = () => {
     navigate('/voca');
   };
 
+  if (loading) {
+    return <div>로딩 중...</div>; // 로딩 중일 때 표시
+  }
+
+  if (!selectedVoca) {
+    return <div>단어 정보를 불러오지 못했습니다.</div>; // 데이터가 없을 때 표시
+  }
+
   // 단어 클릭 시 해당 단어로 변경
   // const handleWordClick = (id: number) => {
   //   const newWord = mappedWords.find(w => w.vocaId === id);
   //   if (newWord) {
   //     setCurrentWord(newWord); // 단어 변경
-  //     navigate(`/voca/${id}`);
+  //     navigate(/voca/${id});
   //   }
   // };
 
@@ -125,9 +152,9 @@ const VocaDetailPage: React.FC = () => {
         </WordsContainer> */}
         <VocaDetail word={word} />
         <NewsContainer>
-          <ArticleRcmd newsId={word.relatedNewsId1} />
-          <ArticleRcmd newsId={word.relatedNewsId2} />
-          <ArticleRcmd newsId={word.relatedNewsId3} />
+          {selectedVoca.relatedNews1 && <ArticleRcmd relatedNews={selectedVoca.relatedNews1} />}
+          {selectedVoca.relatedNews2 && <ArticleRcmd relatedNews={selectedVoca.relatedNews2} />}
+          {selectedVoca.relatedNews3 && <ArticleRcmd relatedNews={selectedVoca.relatedNews3} />}
         </NewsContainer>
       </VocaContainer>
     </div>

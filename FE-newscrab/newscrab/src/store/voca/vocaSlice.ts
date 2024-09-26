@@ -21,7 +21,7 @@ export const fetchVocaDetailThunk = createAsyncThunk(
   async (vocaId: number, { rejectWithValue }) => {
     try {
       const response = await fetchVocaDetail(vocaId);
-      return response;
+      return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data || `Voca ID ${vocaId} 가져오기 실패`);
     }

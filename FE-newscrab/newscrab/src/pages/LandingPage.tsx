@@ -8,7 +8,7 @@ const LandingPage: React.FC = () => {
   const handleLogout = () => {
     dispatch(logout());
     navigate("/login");
-  }
+  };
 
   return (
     <div>
@@ -31,15 +31,15 @@ const LandingPage: React.FC = () => {
             <Link to="/mainNews">MainNews 페이지</Link>
           </li>
           <li>
-            <Link to="/updatedAtScrap">스크랩 페이지</Link>
+            <Link to="/scrapList">스크랩 페이지</Link>
           </li>
           <li>
-            <Link to="/newsDetail/1">뉴스 디테일 (임시)</Link>
+            <Link to="/news/1">뉴스 디테일 (임시)</Link>
           </li>
           {/* 다른 링크들은 필요에 따라 추가할 수 있습니다 */}
         </ul>
       </nav>
-      
+
       <button onClick={handleLogout}>로그아웃</button>
     </div>
   );

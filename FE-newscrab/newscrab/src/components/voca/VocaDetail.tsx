@@ -56,7 +56,7 @@ const CardContent = styled.div`
 
 const VocaDesc = styled.div`
   flex: 2;
-  display: flex;
+  // display: flex;
   align-items: center;
   padding-left: 20px;
 `;
@@ -78,6 +78,7 @@ interface VocaDetailProps {
     industryName: string | null;
     vocaName: string;
     vocaDesc: string;
+    sentence: string;
   };
 }
 
@@ -91,6 +92,7 @@ const VocaDetail: React.FC<VocaDetailProps> = ({ word }) => {
       />
       <VocaDesc>
         <h3>{word.vocaDesc}</h3>
+        <h4>{word.sentence}</h4>
       </VocaDesc>
     </DetailContainer>
   );

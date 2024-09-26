@@ -62,8 +62,12 @@ const MyPage: React.FC = () => {
   // const {name, userIndustry} = useSelector((state: RootState) => state.mypage.userInfo);
   // const isAuthenticated = useSelector((state: RootState) => state.mypage.isAuthenticated);
 
-  const handleEdit = () => {
+  const handleEdit1 = () => {
     navigate('/edit1'); // 클릭 시 해당 vocaId로 이동
+  };
+
+  const handleEdit2 = () => {
+    navigate('/edit2'); // 클릭 시 해당 vocaId로 이동
   };
 
   const handlePassword = () => {
@@ -84,7 +88,8 @@ const MyPage: React.FC = () => {
       
       {/* 회원정보수정 및 비밀번호수정 버튼 */}
       <ButtonGroup>
-        <StyledButton onClick={handleEdit}>회원정보수정</StyledButton>
+        <StyledButton onClick={handleEdit1}>회원정보수정</StyledButton>
+        <StyledButton onClick={handleEdit2}>산업군 수정</StyledButton>
         <StyledButton onClick={handlePassword}>비밀번호수정</StyledButton>
       </ButtonGroup>
     </UserInfoSection>

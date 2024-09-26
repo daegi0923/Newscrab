@@ -1,70 +1,86 @@
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
 
 const ArticleContainer = styled.div`
   position: relative;
-  border: 3px solid red;
-  border-radius: 20px;
-  padding: 7px;
-  margin-bottom: 10px;
+  border-radius: 10px;
+  // margin-bottom: 10px;
   cursor: pointer;
-  width: 30%;
-  height: 100%;
+  width: 32%;
+  height: 80%;
   overflow: hidden;
-  box-shadow: 3px 5px 4px rgba(0, 0, 0, 0.3);
-  
+  box-shadow: 3px 5px 4px rgba(0, 0, 0, 0.6);
+
+  // 이미지 위에 얇은 막을 씌우기 위한 ::before 요소
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* 배경을 어둡게 하는 반투명 효과 */
+    z-index: 1; /* 이미지보다 위에 표시 */
+  }
 `;
-
-// RelatedNews 컴포넌트: 각 related_news_id를 받아 해당 뉴스를 렌더링하는 컴포넌트
-interface ArticleRcmdProps {
-  newsId: number;
-}
-
-// const NewsImage = styled.img`
-//   width: 100%;
-//   height: 100%;
-//   object-fit: cover; // 이미지를 박스에 맞추면서 비율 유지
-//   position: absolute;
-//   top: 0;
-//   left: 0;
-//   z-index: 1; // 이미지가 텍스트보다 뒤에 있어야 함
-// `;
 
 const TextContainer = styled.div`
   position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
+  bottom: -16%;
+  left: 0%;
+  width: 96%;
   color: white;
-  background: rgba(0, 0, 0, 0.7); // 아래로 갈수록 투명해지는 배경
-  z-index: 2; // 텍스트가 이미지 위로 올라오도록 함
+  z-index: 2; /* 텍스트가 투명한 배경 위로 올라오도록 */
   padding: 10px;
 `;
 
-// 제목 스타일
 const Title = styled.h3`
-  margin: 0;
-  font-size: 1.2rem;
-`;
-
-// 날짜 스타일
-const DateText = styled.p`
-  margin: 5px 0 0;
   font-size: 0.8rem;
+  margin: -1%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.9);
 `;
 
-const ArticleRcmd: React.FC<ArticleRcmdProps> = ({ newsId }) => {
-// const ArticleRcmd: React.FC<ArticleRcmdProps> = ({ newsId, title, publishedAt, imgUrl }) => {
+const DateText = styled.p`
+  margin: 2% 0 5% 0%;
+  font-size: 0.6rem;
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.9);
+`;
+
+// RelatedNews 컴포넌트: 각 related_news_id를 받아 해당 뉴스를 렌더링하는 컴포넌트
+interface RelatedNews {
+  newsId: number;
+  newsTitle: string;
+  publishedAt: string;
+  imageUrl: string;
+}
+
+interface ArticleRcmdProps {
+  relatedNews: RelatedNews;
+}
+
+const ArticleRcmd: React.FC<ArticleRcmdProps> = ({ relatedNews }) => {
+  const navigate = useNavigate();
+  const handleNewsClick = () => {
+    navigate(`/newsDetail/${relatedNews.newsId}`);
+  };
+
   return (
-    <ArticleContainer>
-      <p>뉴스 ID: {newsId}</p>
-      {/* {imgUrl && <NewsImage src={imgUrl} alt="News Thumbnail" />} */}
+    <ArticleContainer onClick={handleNewsClick}>
+      <img
+        src={relatedNews.imageUrl}
+        alt="News Thumbnail"
+        style={{ width: '100%', height: '100%', objectFit: 'cover', zIndex: 0 }}
+      />
       <TextContainer>
-        <Title>제목</Title>
-        <DateText>시간</DateText>
+        <Title>{relatedNews.newsTitle}</Title>
+        <DateText>{new Date(relatedNews.publishedAt).toLocaleDateString()}</DateText>
       </TextContainer>
     </ArticleContainer>
   );
 };
 
 export default ArticleRcmd;
-
