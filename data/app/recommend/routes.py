@@ -184,22 +184,25 @@ async def get_id_from_body(request:Request):
     return body.get("user_id")  # 'name' 파라미터 추출
 
 @router.get("/list")
-def read_item(user_id: int = Depends(get_id_from_body), db: Session = Depends(get_db)):
+def read_item(user_id: int = Body(...), db: Session = Depends(get_db)):
 # def read_item(user_id: int = 1, db: Session = Depends(get_db)):
 
     # Scrap 테이블에서 user_id가 스크랩한 뉴스의 news_id 조회
     # 아래 주석 풀면, 상호작용 데이터가 없을 때만 조회해서 갱신
     # if not scrap_like_df or not user_news_matrix:
     #     get_scrap_like_dataframe(db)
-
     get_scrap_like_dataframe(db)
 
-    news_list = collaborative_filtering(user_id, db)
-    print(news_list)
-    recommend_news = db.query(models.News).filter(models.News.news_id.in_(news_list)).all()
+    user_based_recommend_news_list = collaborative_filtering(user_id, db)
+    print()
+    # recommend_news = db.query(models.News).filter(models.News.news_id.in_(news_list)).all()
+    # print(recommend_news)
+    return {
+        "user_base" : user_based_recommend_news_list,
+        "item_base" = [],
+		"latest" = []
+    }
 
-    print(recommend_news)
-    return {"news_list" : recommend_news[:10]}
 
 
 # 일정 시간이 되면 업데이트할 데이터들
