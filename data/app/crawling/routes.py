@@ -141,7 +141,7 @@ def crawl_news_data(start_date: datetime, end_date: datetime):
                 try:
                     news_link = item.get('href')
                     news_title = item.text.strip()
-
+                    print(news_title)
                     driver.get(news_link)
                     WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, 'newsct_article')))
                     news_html = driver.page_source
