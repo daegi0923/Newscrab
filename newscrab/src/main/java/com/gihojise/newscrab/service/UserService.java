@@ -4,6 +4,7 @@ import com.gihojise.newscrab.domain.User;
 import com.gihojise.newscrab.dto.request.PasswordUpdateRequestDto;
 import com.gihojise.newscrab.dto.request.SignupRequestDto;
 import com.gihojise.newscrab.dto.request.UserUpdateRequestDto;
+import com.gihojise.newscrab.dto.response.UserResponseDto;
 import com.gihojise.newscrab.enums.Gender;
 import com.gihojise.newscrab.enums.ProfileImage;
 import com.gihojise.newscrab.exception.ErrorCode;
@@ -141,5 +142,25 @@ public class UserService {
 
         user.get().updatePassword(encodedNewPassword);
         userRepository.save(user.get());
+    }
+
+    public UserResponseDto getProfile(int userId) {
+        Optional<User> user = userRepository.findById(userId);
+
+        if(user.isEmpty()) {
+            throw new NewscrabException(ErrorCode.USER_NOT_FOUND);
+        }
+
+        return UserResponseDto.builder()
+                .loginId(user.get().getLoginId())
+                .name(user.get().getName())
+                .email(user.get().getEmail())
+                .birthday(user.get().getBirthday())
+                .gender(user.get().getGender())
+                .createdAt(user.get().getCreatedAt())
+                .newsLikeCount(user.get().getLikedNews().size())
+                .scrapCount(user.get().getGrasses().size())
+                .vocaCount(user.get().getUserIndustries().size())
+                .build();
     }
 }
