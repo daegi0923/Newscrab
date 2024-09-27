@@ -121,6 +121,10 @@ public class ScrapService {
         News news = newsRepository.findById(scrapAddRequestDto.getNewsId())
                 .orElseThrow(() -> new NewscrabException(ErrorCode.NEWS_NOT_FOUND));
 
+        if (scrapRepository.findByUserUserIdAndNewsNewsId(userId, scrapAddRequestDto.getNewsId()).isPresent()) {
+            throw new NewscrabException(ErrorCode.SCRAP_ALREADY_EXIST);
+        }
+
         Scrap scrap = Scrap.builder()
                 .user(user)
                 .news(news)
