@@ -48,7 +48,7 @@ const ScrapListPage: React.FC = () => {
   const handlePageChange = (page: number) => {
     setCurrentPage(page); // 페이지 변경 시 currentPage 업데이트
   };
-
+  
   // 필터에서 선택한 industryId 처리
   const handleIndustrySelect = (industryId: number | null) => {
     setSelectedIndustryId(industryId); // 선택된 industryId 업데이트
