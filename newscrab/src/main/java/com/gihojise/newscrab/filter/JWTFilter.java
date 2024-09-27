@@ -3,9 +3,12 @@ package com.gihojise.newscrab.filter;
 import com.gihojise.newscrab.domain.CustomUserDetails;
 import com.gihojise.newscrab.domain.RefreshEntity;
 import com.gihojise.newscrab.domain.User;
+import com.gihojise.newscrab.exception.ErrorCode;
+import com.gihojise.newscrab.exception.NewscrabException;
 import com.gihojise.newscrab.repository.RefreshRepository;
 import com.gihojise.newscrab.repository.UserRepository;
 import com.gihojise.newscrab.service.RefreshService;
+import com.gihojise.newscrab.service.UserService;
 import com.gihojise.newscrab.util.JWTUtil;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
@@ -35,7 +38,7 @@ public class JWTFilter extends OncePerRequestFilter {
         // request에서 Authorization 헤더를 찾음
         String authorization = request.getHeader("Authorization");
 
-        // Authorization 헤더 검증
+        // 엑세스 토큰이 없다면 필터체인을 통과 -> 로그인 경로는 해당 필터의 인증이 필요없음, 인증이 필요한 경로는 해당 필터를 통과하지 않음
         if (authorization == null || !authorization.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
@@ -50,28 +53,25 @@ public class JWTFilter extends OncePerRequestFilter {
             String refresh = getRefreshTokenFromCookies(request);
 
             if (refresh == null) {
-                sendErrorResponse(response, "refreshtoken is null", HttpServletResponse.SC_UNAUTHORIZED);
-                return;
+                throw new NewscrabException(ErrorCode.NOT_EXIST_REFRESH_TOKEN);
+
             }
 
             //refresh token expired check
             if(refreshService.isRefreshTokenExpired(refresh)) {
                 //response status code
-                response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-                return;
+                throw new NewscrabException(ErrorCode.EXPIRED_REFRESH_TOKEN);
             }
 
             // Refresh Token이 유효한지 검증
             String category = jwtUtil.getCategory(refresh);
             if (!category.equals("refresh")) {
-                sendErrorResponse(response, "invalid refresh token", HttpServletResponse.SC_UNAUTHORIZED);
-                return;
+                throw new NewscrabException(ErrorCode.INVALID_REFRESH_TOKEN);
             }
 
             // Refresh Token이 DB에 존재하는지 확인
             if (!refreshService.existsByRefresh(refresh)) {
-                sendErrorResponse(response, "refreshtoken is not in DB", HttpServletResponse.SC_UNAUTHORIZED);
-                return;
+                throw new NewscrabException(ErrorCode.INVALID_REFRESH_TOKEN);
             }
 
             // DB에 있는 사용자의 loginId 추출
@@ -94,6 +94,10 @@ public class JWTFilter extends OncePerRequestFilter {
         String username = jwtUtil.getUsername(token);
         User user = userRepository.findByLoginId(username);
 
+        if (user == null) {
+            throw new NewscrabException(ErrorCode.USER_NOT_FOUND);
+        }
+
         CustomUserDetails customUserDetails = new CustomUserDetails(user);
         Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authToken);
@@ -114,11 +118,6 @@ public class JWTFilter extends OncePerRequestFilter {
         return null;
     }
 
-    private void sendErrorResponse(HttpServletResponse response, String message, int statusCode) throws IOException {
-        response.setStatus(statusCode);
-        PrintWriter writer = response.getWriter();
-        writer.print(message);
-    }
 
     private Cookie createCookie(String key, String value) {
 

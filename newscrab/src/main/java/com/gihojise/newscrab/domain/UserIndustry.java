@@ -8,6 +8,7 @@ import org.hibernate.annotations.OnDeleteAction;
 @Entity
 @Table(name = "user_industry") // 테이블명 지정
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserIndustry {
 
     @Id
@@ -28,4 +29,10 @@ public class UserIndustry {
     @Column(name = "pre_rank", nullable = false)
     private Integer preRank; // 선호순위
 
+    // 필수 필드만 받는 생성자
+    public UserIndustry(User user, Industry industry, Integer preRank) {
+        this.user = user;
+        this.industry = industry;
+        this.preRank = preRank;
+    }
 }

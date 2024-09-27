@@ -5,6 +5,7 @@ import com.gihojise.newscrab.filter.JWTFilter;
 import com.gihojise.newscrab.filter.LoginFilter;
 import com.gihojise.newscrab.repository.RefreshRepository;
 import com.gihojise.newscrab.repository.UserRepository;
+import com.gihojise.newscrab.service.UserService;
 import com.gihojise.newscrab.util.JWTUtil;
 import com.gihojise.newscrab.service.RefreshService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,7 +36,6 @@ public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
     private final UserRepository userRepository;
-    private final RefreshRepository refreshRepository;
     private final RefreshService refreshService;
 
     //AuthenticationManager Bean 등록
@@ -88,7 +88,7 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/api/v1/user/login", "api/v1/user/join").permitAll()
+                        .requestMatchers("/api/v1/user/login", "api/v1/user/join", "api/v1/user/nickname", "api/v1/user/email").permitAll()
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .anyRequest().authenticated());
 

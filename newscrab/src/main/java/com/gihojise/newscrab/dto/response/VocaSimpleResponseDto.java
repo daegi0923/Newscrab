@@ -1,4 +1,4 @@
-package com.gihojise.newscrab.dto.domain;
+package com.gihojise.newscrab.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -7,18 +7,16 @@ import java.time.LocalDateTime;
 
 @Getter
 @Builder
-public class VocaDto {
-
+public class VocaSimpleResponseDto {
     private int vocaId;
-    private int newsId;
-    private int userId;
+    private int industryId;
     private String vocaName;
     private String vocaDesc;
     private int originNewsId;
     private String sentence;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private Integer relatedNewsId1;
-    private Integer relatedNewsId2;
-    private Integer relatedNewsId3;
+    private NewsSimpleDto relatedNews1;
+    private NewsSimpleDto relatedNews2;
+    private NewsSimpleDto relatedNews3;
 }

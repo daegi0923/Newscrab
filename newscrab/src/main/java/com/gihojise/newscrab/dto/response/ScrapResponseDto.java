@@ -24,5 +24,8 @@ public class ScrapResponseDto {
     private String newsContent;
     private List<HighlightDto> highlightList;
     private int industryId;
+    private int view;
+    private int scrapCnt;
+    private String newsCompany;
 
 }
