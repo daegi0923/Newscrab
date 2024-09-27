@@ -158,6 +158,7 @@ public class UserService {
                 .birthday(user.get().getBirthday())
                 .gender(user.get().getGender())
                 .createdAt(user.get().getCreatedAt())
+                .profileImg(user.get().getProfileImg())
                 .newsLikeCount(user.get().getLikedNews().size())
                 .scrapCount(user.get().getGrasses().size())
                 .vocaCount(user.get().getUserIndustries().size())
