@@ -73,6 +73,7 @@ export const postScrap = async (scrapData: PostScrapRequest): Promise<void> => {
         newsId: scrapData.newsId,
         comment: scrapData.comment,
         scrapSummary: scrapData.scrapSummary,
+        // vocalist: scrapData.vocalist,
         highlights: scrapData.highlights,
       },
       {
