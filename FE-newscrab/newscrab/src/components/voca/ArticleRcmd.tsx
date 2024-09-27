@@ -65,7 +65,7 @@ interface ArticleRcmdProps {
 const ArticleRcmd: React.FC<ArticleRcmdProps> = ({ relatedNews }) => {
   const navigate = useNavigate();
   const handleNewsClick = () => {
-    navigate(`/newsDetail/${relatedNews.newsId}`);
+    navigate(`/news/${relatedNews.newsId}`);
   };
 
   return (

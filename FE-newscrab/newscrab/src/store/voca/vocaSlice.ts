@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { fetchVocaList, fetchVocaDetail, addVoca, deleteVoca } from "../../apis/voca/voca"; // 비동기 함수들 가져오기
+import { fetchVocaList, fetchVocaDetail, addVoca, deleteVoca, updateVoca } from "../../apis/voca/voca"; // 비동기 함수들 가져오기
 
 // Voca 리스트 가져오기 비동기 함수
 export const fetchVocaListThunk = createAsyncThunk(
@@ -7,7 +7,6 @@ export const fetchVocaListThunk = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await fetchVocaList();
-      // return response;
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data || "Voca 리스트 가져오기 실패");
@@ -31,12 +30,25 @@ export const fetchVocaDetailThunk = createAsyncThunk(
 // Voca 추가 비동기 함수
 export const addVocaThunk = createAsyncThunk(
   "voca/addVoca",
-  async (vocaId: number, { rejectWithValue }) => {
+  async (_, { rejectWithValue }) => {
     try {
-      const response = await addVoca(vocaId);
+      const response = await addVoca();
       return response;
     } catch (error: any) {
       return rejectWithValue(error.response?.data || "Voca 추가 실패");
+    }
+  }
+);
+
+// Voca 수정 비동기 함수
+export const updateVocaThunk = createAsyncThunk(
+  "voca/updateVoca",
+  async ({ vocaId, updatedData }: { vocaId: number; updatedData: any }, { rejectWithValue }) => {
+    try {
+      const response = await updateVoca(vocaId, updatedData);
+      return { vocaId, updatedData: response };
+    } catch (error: any) {
+      return rejectWithValue(error.response?.data || "Voca 수정 실패");
     }
   }
 );
@@ -115,7 +127,25 @@ const vocaSlice = createSlice({
       })
       .addCase(addVocaThunk.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || "Voca 추가에 실패했습니다."; // action.error.message 사용
+        state.error = action.error.message || "Voca 추가에 실패했습니다.";
+      });
+
+    builder
+      .addCase(updateVocaThunk.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updateVocaThunk.fulfilled, (state, action) => {
+        state.loading = false;
+        // vocaList에서 해당 vocaId를 찾아 수정
+        const index = state.vocaList.findIndex((voca) => voca.id === action.payload.vocaId);
+        if (index !== -1) {
+          state.vocaList[index] = { ...state.vocaList[index], ...action.payload.updatedData };
+    }
+      })
+      .addCase(updateVocaThunk.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || "Voca 수정에 실패했습니다.";
       });
 
     builder

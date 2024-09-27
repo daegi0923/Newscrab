@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice  } from '@reduxjs/toolkit';
-import { updateUserProfileAPI, fetchUserProfileAPI, updateUserIndustryAPI } from "../../apis/user/user";  // API 경로 맞추기
+import { updateUserProfileAPI, fetchUserProfileAPI } from "../../apis/user/user";  // API 경로 맞추기
 
 // 사용자 프로필 가져오기
 export const fetchUserProfileThunk = createAsyncThunk(
@@ -28,17 +28,17 @@ export const updateUserProfileThunk = createAsyncThunk(
 );
 
 // 선호 산업 수정하기
-export const updateUserIndustryThunk = createAsyncThunk(
-  "profile/updateUserIndustry",
-  async (updatedIndustry: any, { rejectWithValue }) => {
-    try {
-      const response = await updateUserIndustryAPI(updatedIndustry);
-      return response;  // 성공적으로 사용자 산업을 수정하면 반환
-    } catch (error: any) {
-      return rejectWithValue(error.response?.data || "선호 산업을 수정하는 데 실패했습니다.");
-    }
-  }
-);
+// export const updateUserIndustryThunk = createAsyncThunk(
+//   "profile/updateUserIndustry",
+//   async (updatedIndustry: any, { rejectWithValue }) => {
+//     try {
+//       const response = await updateUserIndustryAPI(updatedIndustry);
+//       return response;  // 성공적으로 사용자 산업을 수정하면 반환
+//     } catch (error: any) {
+//       return rejectWithValue(error.response?.data || "선호 산업을 수정하는 데 실패했습니다.");
+//     }
+//   }
+// );
 
 // 초기 상태 정의
 const initialState = {

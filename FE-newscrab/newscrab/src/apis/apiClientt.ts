@@ -5,13 +5,13 @@ import { loginSuccess } from "../store/user/loginLogout";
 
 // JWT를 디코딩하여 만료 시간을 반환하는 함수
 const decodeToken = (token: string) => {
-  const base64Url = token.split(".")[1];
-  const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+  const base64Url = token.split('.')[1];
+  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
   const jsonPayload = decodeURIComponent(
     atob(base64)
-      .split("")
-      .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
-      .join("")
+      .split('')
+      .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+      .join('')
   );
 
   return JSON.parse(jsonPayload);
@@ -29,7 +29,7 @@ const isTokenExpired = (token: string, bufferTime = 120) => {
 
 // Axios 인스턴스 생성
 const API = axios.create({
-  baseURL: "https://newscrab.duckdns.org/api/v1/",
+  baseURL: 'https://newscrab.duckdns.org/api/v1/',
   withCredentials: true,
 });
 
@@ -38,10 +38,11 @@ API.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
     // eslint-disable-next-line prefer-const
     let accessToken = getCookie("accessToken");
-
+    
     // 액세스 토큰이 만료되었는지 확인
     if (accessToken && isTokenExpired(accessToken)) {
       console.log("토큰이 만료되었습니다. 새로운 토큰을 대기 중입니다...");
+      // 백엔드에서 새로운 토큰을 받기 위해 요청을 그대로 진행
     }
 
     // 만료되지 않은 액세스 토큰을 헤더에 추가
@@ -57,7 +58,6 @@ API.interceptors.request.use(
 // 응답 인터셉터: 새로운 액세스 토큰이 헤더에 있는지 확인하고 갱신
 API.interceptors.response.use(
   (response: AxiosResponse) => {
-    console.log(response)
     const newAccessToken = response.headers['authorization']?.substring(7); // 'Bearer ' 이후의 토큰 추출
     if (newAccessToken) {
       setCookie("accessToken", newAccessToken);
@@ -72,16 +72,14 @@ API.interceptors.response.use(
 
     if (error.response?.status === 401 || error.response?.status === 403) {
       console.log("401 또는 403 오류 발생. 새로운 액세스 토큰을 확인 중입니다...");
-      console.log(error)
 
-      const newAccessToken =
-        error.response.headers["authorization"]?.substring(7);
+      const newAccessToken = error.response.headers['authorization']?.substring(7);
       if (newAccessToken) {
         setCookie("accessToken", newAccessToken);
         store.dispatch(loginSuccess({ accessToken: newAccessToken }));
 
         // 실패한 요청을 새로운 액세스 토큰으로 다시 시도
-        originalRequest.headers["Authorization"] = `Bearer ${newAccessToken}`;
+        originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
         return API(originalRequest);
       } else {
         // 새로운 액세스 토큰이 없으면 리프레시 토큰도 만료된 것으로 간주, 로그아웃

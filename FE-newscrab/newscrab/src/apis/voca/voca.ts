@@ -11,10 +11,6 @@ export const fetchVocaList = async () => {
     throw error;
   }
 };
-// {
-// 	totalItems : int,  // 총 단어 개수
-// 	data: List<VocaResponseDto>
-// }
 
 // 특정 Voca 단어 가져오기 (GET 요청)
 export const fetchVocaDetail = async (vocaId: number) => {
@@ -27,24 +23,10 @@ export const fetchVocaDetail = async (vocaId: number) => {
   }
 };
 
-// {
-// 	vocaId: Int,
-// 	industryId: int,
-// 	vacaName: String,
-// 	vocaDesc: String,
-// 	originNewsId: int,
-// 	sentence: String,
-// 	createdAt: LocalDateTime,
-// 	updatedAt: LocalDateTime,
-// 	related_news_id1: int, 
-// 	related_news_id2: int,
-// 	related_news_id2: int,
-// }
-
 // 새로운 Voca 추가하기 (POST 요청)
-export const addVoca = async (vocaId: number) => {
+export const addVoca = async () => {
   try {
-    const response = await API.post(`/voca/${vocaId}`);
+    const response = await API.post('/voca');
     return response.data; // 성공적으로 추가한 경우
   } catch (error) {
     console.error("Voca 추가 실패:", error);
@@ -59,6 +41,17 @@ export const deleteVoca = async (vocaId: number) => {
     return response.data; // 성공적으로 추가한 경우
   } catch (error) {
     console.error("Voca 추가 실패:", error);
+    throw error;
+  }
+};
+
+// Voca 단어 수정 (PUT 요청)
+export const updateVoca = async (vocaId: number, updatedData: any) => {
+  try {
+    const response = await API.put(`/voca/${vocaId}`, updatedData);
+    return response.data; // 성공적으로 수정한 경우
+  } catch (error) {
+    console.error(`Voca ID ${vocaId} 수정 실패:`, error);
     throw error;
   }
 };
