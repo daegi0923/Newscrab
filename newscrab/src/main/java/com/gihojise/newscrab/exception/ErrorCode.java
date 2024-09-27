@@ -52,6 +52,7 @@ public enum ErrorCode {
 
     // LIKE
     LIKE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 좋아요를 찾을 수 없습니다."),
+    LIKE_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 좋아요를 누른 뉴스입니다."),
 
     // 필요한 에러 코드들 계속 추가
     ;
