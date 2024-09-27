@@ -13,6 +13,10 @@ public class VocaSimpleResponseDto {
     private String vocaName;
     private String vocaDesc;
     private int originNewsId;
+    private String originNewsTitle;
+    private String originNewsUrl;
+    private String originNewsImgUrl;
+    private String originNewsPublishedAt;
     private String sentence;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
