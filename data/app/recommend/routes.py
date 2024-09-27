@@ -174,9 +174,11 @@ def collaborative_filtering(user_id: int, db: Session):
     # print(user_record)
     for news_id, score in contents_score.items():
         # print(news_id, score)
-        if user_news_matrix.loc[user_id, news_id] == 0:  # 현재 사용자가 보지 않은 뉴스
+        if interaction_cnt:
+            if user_news_matrix.loc[user_id, news_id] == 0:  # 현재 사용자가 보지 않은 뉴스
+                recommended_news.add(news_id)
+        else:
             recommended_news.add(news_id)
-    
     return (list(recommended_news), contents_score)
 
  
