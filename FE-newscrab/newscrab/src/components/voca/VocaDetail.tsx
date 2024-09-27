@@ -105,7 +105,7 @@ const VocaDetailCard: React.FC<VocaDetailCardProps> = ({ img, industryName, voca
     const y = e.clientY - rect.top;
 
     overlay.style.backgroundPosition = `${(x / rect.width) * 100}% ${(y / rect.height) * 100}%`;
-    container.style.transform = `perspective(1000px) rotateY(${(x / rect.width - 0.5) * 20}deg) rotateX(${(y / rect.height - 0.5) * -20}deg)`;
+    container.style.transform = `perspective(1000px) rotateY(${(x / rect.width - 0.5) * 30}deg) rotateX(${(y / rect.height - 0.5) * -30}deg)`;
     overlay.style.opacity = "1";
   };
 

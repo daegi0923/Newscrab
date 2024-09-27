@@ -12,7 +12,7 @@ const UserInfoSection = styled.section`
   align-items: center;
   border: 2px solid #ccc;
   padding: 20px;
-  width: 250px;
+  width: 350px;
   border-radius: 10px;
   margin: 20px 0;
 `;

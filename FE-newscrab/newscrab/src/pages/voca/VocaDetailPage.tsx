@@ -212,7 +212,7 @@ const VocaDetailPage: React.FC = () => {
     <div>
       <GlobalStyle />
       <VocaCommon />
-      <BackButton onClick={() => navigate('/voca')}></BackButton>
+      <BackButton onClick={() => navigate('/voca')}>돌아가기</BackButton>
       <EditButton onClick={handleEditClick}>수정</EditButton>
       <DelButton onClick={handleDeleteVoca}>삭제</DelButton>
 

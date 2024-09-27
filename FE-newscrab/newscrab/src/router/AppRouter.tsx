@@ -1,5 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import Layout from "@components/common/Layout";
 import LandingPage from "@pages/LandingPage";
 // auth
 import LoginPage from "@pages/auth/LoginPage";
@@ -37,26 +38,25 @@ const AppRouter: React.FC = () => {
         <Route path="/signup2" element={<SignUpPage2 />} />
 
         {/* 마이페이지 */}
-        <Route path="/mypage" element={<MyPage />} />
+        <Route path="/mypage" element={<Layout><MyPage /></Layout>} />
         <Route path="/password" element={<PasswordChange />} />
         <Route path="/edit1" element={<ProfileEdit1 />} />
         <Route path="/edit2" element={<ProfileEdit2 />} />
 
         {/* 뉴스 */}
-        <Route path="/mainNews" element={<MainNewsPage />} />
-        <Route path="/rcmdNews" element={<RcmdNewsPage />} />
-        <Route path="/news" element={<AllNewsPage />} />
+        <Route path="/mainNews" element={<Layout><MainNewsPage /></Layout>} />
+        <Route path="/rcmdNews" element={<Layout><RcmdNewsPage /></Layout>} />
+        <Route path="/news" element={<Layout><AllNewsPage /></Layout>} />
         {/* <Route path="/filterNews" element={<FilterNewsPage />} />
         <Route path="/viewCountNews" element={<ViewCountNewsPage />} />
         <Route path="/scrapCountNews" element={<ScrapCountNewsPage />} /> */}
-        <Route path="/news/:newsId" element={<NewsDetailPage />} />
-
+        <Route path="/news/:newsId" element={<Layout><NewsDetailPage /></Layout>} />
         {/* 스크랩 */}
-        <Route path="/scrapList" element={<ScrapListPage />} />
+        <Route path="/scrapList" element={<Layout><ScrapListPage /></Layout>} />
 
         {/* 단어장 */}
-        <Route path="/voca" element={<MainVoca />} />
-        <Route path="/voca/:vocaId" element={<VocaDetail />} />
+        <Route path="/voca" element={<Layout><MainVoca /></Layout>} />
+        <Route path="/voca/:vocaId" element={<Layout><VocaDetail /></Layout>} />
       </Routes>
     </Router>
   );
