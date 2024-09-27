@@ -68,11 +68,11 @@ const NewsText = styled.div`
   font-size: 16px;
 `;
 
-const NewsImage = styled.img`
-  width: 100%;
-  height: 300px;
-  margin-bottom: 10px;
-`;
+// const NewsImage = styled.img`
+//   width: 100%;
+//   height: 300px;
+//   margin-bottom: 10px;
+// `;
 
 const Divider = styled.hr`
   border: none;

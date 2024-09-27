@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import styled from "styled-components";
 import { getScrapData, postScrap } from "@apis/scrap/scrapApi"; // postScrap 함수 import
-import { ScrapData } from "../../../types/scrapTypes";
 
 const Sidebar = styled.div`
   width: 30%;

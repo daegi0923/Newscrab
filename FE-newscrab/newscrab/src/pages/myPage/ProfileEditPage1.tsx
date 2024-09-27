@@ -1,20 +1,23 @@
-import { useNavigate } from 'react-router-dom';
-import styled, { createGlobalStyle } from 'styled-components';
-import NewsImage from '../../assets/auth/newsImage.png';
-import BackgroundImage from '../../assets/auth/bg.png';
-import Input from '@common/InputBox';
-import RadioButton from '@common/RadioButton';
-import Button from '@common/Button';
-import { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import ProfileImageModal from '@components/myPage/ProfileImageModal';
-import ProfileImageDisplay from '@components/myPage/ProfileImageDisplay';
-import defaultProfile from '@assets/auth/defaultProfile.jpg';
-import { AppDispatch } from '@store/index';
-import { updateUserProfileThunk, fetchUserProfileThunk } from '@store/myPage/profileSlice';
-import profile1 from '@assets/auth/profile1.jpg';
-import profile2 from '@assets/auth/profile2.jpg';
-import profile3 from '@assets/auth/profile3.jpg';
+// import { useNavigate } from "react-router-dom";
+import styled, { createGlobalStyle } from "styled-components";
+import NewsImage from "../../assets/auth/newsImage.png";
+import BackgroundImage from "../../assets/auth/bg.png";
+import Input from "@common/InputBox";
+import RadioButton from "@common/RadioButton";
+import Button from "@common/Button";
+import { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import ProfileImageModal from "@components/myPage/ProfileImageModal";
+import ProfileImageDisplay from "@components/myPage/ProfileImageDisplay";
+import defaultProfile from "@assets/auth/defaultProfile.jpg";
+import { AppDispatch } from "@store/index";
+import {
+  updateUserProfileThunk,
+  fetchUserProfileThunk,
+} from "@store/myPage/profileSlice";
+import profile1 from "@assets/auth/profile1.jpg";
+import profile2 from "@assets/auth/profile2.jpg";
+import profile3 from "@assets/auth/profile3.jpg";
 
 const GlobalStyle = createGlobalStyle`
   body, html {
@@ -84,7 +87,7 @@ interface RootState {
 }
 
 const ProfileEdit1: React.FC = () => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const dispatch: AppDispatch = useDispatch();
 
   // Redux 상태에서 사용자 정보 가져오기
@@ -98,8 +101,8 @@ const ProfileEdit1: React.FC = () => {
     name: "",
     email: "",
     birthday: "",
-    gender: "",  // 성별 기본값은 빈 문자열
-    profileImage: ""
+    gender: "", // 성별 기본값은 빈 문자열
+    profileImage: "",
   });
 
   const [errors] = useState({
@@ -152,10 +155,10 @@ const ProfileEdit1: React.FC = () => {
         name: userInfo.data.name,
         email: userInfo.data.email,
         birthday: userInfo.data.birthday,
-        gender: userInfo.data.gender, 
+        gender: userInfo.data.gender,
         profileImage: userInfo.data.profileImage || "A",
       });
-      setSelectedImage(mapEnumToImage(userInfo.data.profileImage|| "A"));
+      setSelectedImage(mapEnumToImage(userInfo.data.profileImage || "A"));
     }
   }, [userInfo]);
 
@@ -182,10 +185,12 @@ const ProfileEdit1: React.FC = () => {
 
   const handleSave = async () => {
     try {
-      console.log('수정된 사용자 데이터:', editForm);
+      console.log("수정된 사용자 데이터:", editForm);
       // 모든 필드를 포함한 데이터를 PUT 요청으로 전송
-      const response = await dispatch(updateUserProfileThunk(editForm)).unwrap();
-      console.log('수정 완료:', response);
+      const response = await dispatch(
+        updateUserProfileThunk(editForm)
+      ).unwrap();
+      console.log("수정 완료:", response);
       // navigate('/mypage');  // 성공 시 이동
     } catch (error) {
       console.error("회원 정보 업데이트 실패:", error);
@@ -199,17 +204,39 @@ const ProfileEdit1: React.FC = () => {
       <SignUpContainer>
         <FormContainer>
           <FormContainer2>
-            <Input name="name" type="text" label="닉네임" placeholder="닉네임을 입력하세요" value={editForm.name} onChange={handleChange} />
-            <Input name="email" type="email" label="이메일" placeholder="이메일을 입력하세요" value={editForm.email} onChange={handleChange} error={errors.email} />
-            <Input name="birthday" type="date" label="생년월일" placeholder="생년월일을 입력하세요" value={editForm.birthday} onChange={handleChange} />
-            
+            <Input
+              name="name"
+              type="text"
+              label="닉네임"
+              placeholder="닉네임을 입력하세요"
+              value={editForm.name}
+              onChange={handleChange}
+            />
+            <Input
+              name="email"
+              type="email"
+              label="이메일"
+              placeholder="이메일을 입력하세요"
+              value={editForm.email}
+              onChange={handleChange}
+              error={errors.email}
+            />
+            <Input
+              name="birthday"
+              type="date"
+              label="생년월일"
+              placeholder="생년월일을 입력하세요"
+              value={editForm.birthday}
+              onChange={handleChange}
+            />
+
             <Label>성별</Label>
             <RadioButton
               name="gender"
               options={[
-                { value: 'MALE', label: '남성' },
-                { value: 'FEMALE', label: '여성' },
-                { value: 'OTHER', label: '그 외' },
+                { value: "MALE", label: "남성" },
+                { value: "FEMALE", label: "여성" },
+                { value: "OTHER", label: "그 외" },
               ]}
               value={editForm.gender}
               onChange={handleGenderChange}
@@ -217,13 +244,16 @@ const ProfileEdit1: React.FC = () => {
             {errors.name && <p style={{ color: "red" }}>{errors.name}</p>}
           </FormContainer2>
           <FormContainer1>
-            <ProfileImageDisplay src={selectedImage} onEdit={() => setModalOpen(true)} />
+            <ProfileImageDisplay
+              src={selectedImage}
+              onEdit={() => setModalOpen(true)}
+            />
             <ProfileImageModal
               isOpen={isModalOpen}
               onClose={() => setModalOpen(false)}
               onSelectImage={handleSelectImage}
             />
-          </FormContainer1> 
+          </FormContainer1>
           <ButtonWrapper>
             <Button onClick={handleSave}>저장</Button>
           </ButtonWrapper>
