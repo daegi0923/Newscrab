@@ -32,7 +32,7 @@ const NewsDetailPage: React.FC = () => {
 
   useEffect(() => {
     if (newsId) {
-      fetchNewsDetail(parseInt(newsId, 10));
+      fetchNewsDetail(parseInt(newsId, 10)); // newsId를 숫자로 변환하여 사용
     }
   }, [newsId]);
 
@@ -62,14 +62,16 @@ const NewsDetailPage: React.FC = () => {
             newsDetailItem && (
               <>
                 <NewsDetailArticle newsDetailItem={newsDetailItem} />
-                <NewsDetailScrap newsId={parseInt(newsId, 10)} />
+                <NewsDetailScrap newsId={parseInt(newsId, 10)} />{" "}
+                {/* 숫자로 변환하여 전달 */}
               </>
             )
           )}
         </NewsWrapper>
-        <NewsDetailRcmd />
+        {newsId && <NewsDetailRcmd newsId={parseInt(newsId, 10)} />}
       </NewsDetailContainer>
     </div>
   );
 };
+
 export default NewsDetailPage;
