@@ -96,7 +96,7 @@ public class User extends BaseTimeEntity {
         this.email = userUpdateRequestDTO.getEmail();
         this.birthday = userUpdateRequestDTO.getBirthday();
         this.gender = userUpdateRequestDTO.getGender();
-        this.profileImg = userUpdateRequestDTO.getProfileImage();
+        this.profileImg = userUpdateRequestDTO.getProfileImg();
     }
 
     // 비밀번호 변경 메서드

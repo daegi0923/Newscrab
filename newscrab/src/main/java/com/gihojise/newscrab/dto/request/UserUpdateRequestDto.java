@@ -13,6 +13,6 @@ public class UserUpdateRequestDto {
     private String email;       // 이메일
     private LocalDate birthday;       // 생년월일
     private Gender gender;      // 성별
-    private ProfileImage profileImage; // 프로필 이미지
+    private ProfileImage profileImg; // 프로필 이미지
 
 }
