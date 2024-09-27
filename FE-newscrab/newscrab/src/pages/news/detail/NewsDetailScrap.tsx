@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import styled from "styled-components";
-import { getScrapData, postScrap } from "@apis/scrap/scrapApi"; // postScrap 함수 import
+import { getScrapData, postScrap, putScrap } from "@apis/scrap/scrapApi"; // postScrap 함수 import
 
 const Sidebar = styled.div`
   width: 30%;
@@ -108,6 +108,7 @@ const SaveButton = styled.button`
 `;
 
 const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
+  const [scrapId, setScrapId] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState("summary");
   const [summaryText, setSummaryText] = useState("");
   const [opinionText, setOpinionText] = useState("");
@@ -136,6 +137,7 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
         );
 
         if (selectedScrap) {
+          setScrapId(selectedScrap.scrapId || null); // scrapId 설정
           setSummaryText(selectedScrap.scrapSummary || "");
           setOpinionText(selectedScrap.comment || "");
           setWordListText(selectedScrap.vocalist?.join(", ") || ""); // vocalist 배열을 문자열로 변환
@@ -164,8 +166,15 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
     };
 
     try {
-      await postScrap(scrapData); // postScrap API 호출
-      alert("저장되었습니다!");
+      if (scrapId) {
+        // scrapId가 있으면 put 요청 (업데이트)
+        await putScrap(scrapId, scrapData);
+        alert("업데이트되었습니다!");
+      } else {
+        // scrapId가 없으면 post 요청 (새로 생성)
+        await postScrap(scrapData);
+        alert("저장되었습니다!");
+      }
     } catch (error) {
       console.error("Error saving scrap:", error);
       alert("저장에 실패했습니다.");
