@@ -1,17 +1,11 @@
-import axios from "axios";
-import { mock_token } from "../mock_token"; // 토큰 경로와 import 확인
+import API from "@apis/apiClient";
 
 // Axios 요청을 통해 특정 뉴스의 상세 정보를 가져오는 함수
 export const getNewsDetail = async (newsId: number) => {
   try {
-    const response = await axios.get(
-      `https://newscrab.duckdns.org/api/v1/news/${newsId}`, // API URL에 뉴스 ID를 추가하여 요청
-      {
-        headers: {
-          Authorization: mock_token,
-        },
-        withCredentials: true,
-      }
+    const response = await API.get(
+      `/news/${newsId}`, // API URL에 뉴스 ID를 추가하여 요청
+      {}
     );
 
     const data = response.data.data; // 응답에서 'data' 객체 추출

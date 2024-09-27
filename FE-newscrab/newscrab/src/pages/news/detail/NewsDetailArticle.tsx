@@ -30,7 +30,12 @@ const MetaInfoContainer = styled.div`
   margin-bottom: 10px;
 `;
 
-const DateInfo = styled.p`
+const InfoGroup = styled.div`
+  display: flex;
+  gap: 10px; // 간격 설정
+`;
+
+const Info = styled.p`
   color: #888;
   font-size: 14px;
 `;
@@ -87,7 +92,10 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({
       <LikeButton newsId={newsDetailItem.newsId} /> {/* LikeButton 사용 */}
       <NewsTitle>{newsDetailItem.newsTitle}</NewsTitle>
       <MetaInfoContainer>
-        <DateInfo>{newsDetailItem.newsPublishedAt.replace("T", " ")}</DateInfo>
+        <InfoGroup>
+          <Info>{newsDetailItem.newsCompany}</Info>
+          <Info>{newsDetailItem.newsPublishedAt.replace("T", " ")}</Info>
+        </InfoGroup>
         <Stats>
           <IconContainer>
             <ViewIcon src={viewIcon} alt="조회수 아이콘" />
@@ -100,15 +108,17 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({
         </Stats>
       </MetaInfoContainer>
       <Divider />
-      <NewsText>
+      {/* <NewsText>
         <div>뉴스 소제목 자리</div>
       </NewsText>
       {newsDetailItem.newsPhoto && newsDetailItem.newsPhoto.length > 0 ? (
         <NewsImage src={newsDetailItem.newsPhoto[0]} alt="News" />
       ) : (
         <div>이미지가 없습니다.</div>
-      )}
-      <NewsText>{newsDetailItem.newsContent}</NewsText>
+      )} */}
+      <NewsText
+        dangerouslySetInnerHTML={{ __html: newsDetailItem.newsContent }} // HTML로 렌더링
+      />
     </NewsContent>
   );
 };

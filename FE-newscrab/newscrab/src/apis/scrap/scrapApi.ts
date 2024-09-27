@@ -1,25 +1,22 @@
-import axios from "axios";
-import { ScrapListResponse, ScrapData } from "../../types/scrapTypes";
-import { mock_token } from "../mock_token"; // 토큰 경로와 import 확인
+import API from "@apis/apiClient";
+
+import {
+  ScrapListResponse,
+  ScrapData,
+  PostScrapRequest,
+} from "../../types/scrapTypes";
 
 export const getScrapData = async (
   page: number = 1,
   size: number = 10
 ): Promise<ScrapListResponse> => {
   try {
-    const response = await axios.get(
-      "https://newscrab.duckdns.org/api/v1/scrap",
-      {
-        params: {
-          page, // 현재 페이지 전달
-          size, // 페이지당 아이템 수 전달
-        },
-        headers: {
-          Authorization: mock_token, // 인증 헤더
-        },
-        withCredentials: true, // 쿠키와 함께 요청
-      }
-    );
+    const response = await API.get("/scrap", {
+      params: {
+        page, // 현재 페이지 전달
+        size, // 페이지당 아이템 수 전달
+      },
+    });
 
     const { data } = response.data; // API 응답 데이터 추출
     const scrapList: ScrapData[] = data.data.map((item: ScrapData) => ({
@@ -35,6 +32,9 @@ export const getScrapData = async (
       newsContent: item.newsContent,
       highlightList: item.highlightList, // Highlight 배열 그대로 매핑
       industryId: item.industryId,
+      view: item.view,
+      scrapCnt: item.scrapCnt,
+      newsCompany: item.newsCompany,
     }));
 
     const scrapData: ScrapListResponse = {
@@ -54,6 +54,23 @@ export const getScrapData = async (
     } else {
       console.error("Error fetching scrap data:", error);
     }
+    throw error;
+  }
+};
+
+export const postScrap = async (scrapData: PostScrapRequest): Promise<void> => {
+  try {
+    const response = await API.post("/scrap", {
+      newsId: scrapData.newsId,
+      comment: scrapData.comment,
+      scrapSummary: scrapData.scrapSummary,
+      // vocalist: scrapData.vocalist,
+      highlights: scrapData.highlights,
+    });
+
+    console.log("Scrap posted successfully:", response.data);
+  } catch (error: any) {
+    console.error("Error posting scrap:", error);
     throw error;
   }
 };

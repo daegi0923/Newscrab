@@ -7,7 +7,6 @@ import Header from "@common/Header";
 import NewsDetailArticle from "./NewsDetailArticle";
 import NewsDetailScrap from "./NewsDetailScrap";
 import NewsDetailRcmd from "./NewsDetailRcmd";
-import SaveButtonComponent from "./SaveButtonComponent";
 // api
 import { getNewsDetail } from "@apis/news/newsDetailApi";
 import { NewsDetailItem } from "../../../types/newsTypes";
@@ -24,12 +23,6 @@ const NewsWrapper = styled.div`
   gap: 50px;
 `;
 
-const SaveButtonWrapper = styled.div`
-  position: absolute;
-  right: 20px;
-  bottom: 20px;
-`;
-
 const NewsDetailPage: React.FC = () => {
   const { newsId } = useParams<{ newsId: string }>(); // URL에서 newsId를 가져옴
   const [newsDetailItem, setNewsDetailItem] = useState<NewsDetailItem | null>(
@@ -37,12 +30,17 @@ const NewsDetailPage: React.FC = () => {
   );
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  // 뉴스 상세 데이터를 API에서 가져오는 비동기 함수
+  useEffect(() => {
+    if (newsId) {
+      fetchNewsDetail(parseInt(newsId, 10));
+    }
+  }, [newsId]);
+
   const fetchNewsDetail = async (newsId: number) => {
     try {
       setIsLoading(true);
-      const newsData = await getNewsDetail(newsId); // 뉴스 상세 데이터 가져오기
-      setNewsDetailItem(newsData); // 상태에 저장
+      const newsData = await getNewsDetail(newsId);
+      setNewsDetailItem(newsData);
     } catch (error) {
       console.error("Error fetching news:", error);
     } finally {
@@ -50,40 +48,28 @@ const NewsDetailPage: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    if (newsId) {
-      fetchNewsDetail(parseInt(newsId, 10)); // URL에서 가져온 newsId로 뉴스 상세 정보 요청
-    }
-  }, [newsId]);
-
   return (
     <div>
       <GlobalStyle />
-
       <NewsDetailContainer>
         <Header />
-
         <NewsWrapper>
           {isLoading ? (
             <p>Loading news...</p>
+          ) : !newsId ? ( // newsId가 undefined인 경우
+            <p>삭제된 뉴스입니다</p>
           ) : (
             newsDetailItem && (
               <>
                 <NewsDetailArticle newsDetailItem={newsDetailItem} />
-                <NewsDetailScrap />
+                <NewsDetailScrap newsId={parseInt(newsId, 10)} />
               </>
             )
           )}
         </NewsWrapper>
-
-        <SaveButtonWrapper>
-          <SaveButtonComponent />
-        </SaveButtonWrapper>
-
         <NewsDetailRcmd />
       </NewsDetailContainer>
     </div>
   );
 };
-
 export default NewsDetailPage;
