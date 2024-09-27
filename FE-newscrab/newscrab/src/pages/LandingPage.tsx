@@ -12,7 +12,7 @@ const LandingPage: React.FC = () => {
 
   return (
     <div>
-      <h1>newscrab</h1>
+      <h1>newscrab 바꼈나요?</h1>
       <nav>
         <ul>
           <li>
