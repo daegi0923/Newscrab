@@ -108,15 +108,17 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({
         </Stats>
       </MetaInfoContainer>
       <Divider />
-      <NewsText>
+      {/* <NewsText>
         <div>뉴스 소제목 자리</div>
       </NewsText>
       {newsDetailItem.newsPhoto && newsDetailItem.newsPhoto.length > 0 ? (
         <NewsImage src={newsDetailItem.newsPhoto[0]} alt="News" />
       ) : (
         <div>이미지가 없습니다.</div>
-      )}
-      <NewsText>{newsDetailItem.newsContent}</NewsText>
+      )} */}
+      <NewsText
+        dangerouslySetInnerHTML={{ __html: newsDetailItem.newsContent }} // HTML로 렌더링
+      />
     </NewsContent>
   );
 };
