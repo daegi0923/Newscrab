@@ -78,7 +78,7 @@ public class JWTFilter extends OncePerRequestFilter {
             String loginId = jwtUtil.getUsername(refresh);
 
             // 새로운 Access Token과 Refresh Token 발급
-            token = jwtUtil.createJwt("access", loginId, 600000L);
+            token = jwtUtil.createJwt("access", loginId, 86300000L);
             String newRefresh = jwtUtil.createJwt("refresh", loginId, 86400000L);
 
             // 기존 Refresh Token을 DB에서 삭제하고 새로운 Refresh Token 저장
