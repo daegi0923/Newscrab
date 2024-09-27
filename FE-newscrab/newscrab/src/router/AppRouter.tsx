@@ -45,7 +45,7 @@ const AppRouter: React.FC = () => {
         {/* 뉴스 */}
         <Route path="/mainNews" element={<MainNewsPage />} />
         <Route path="/rcmdNews" element={<RcmdNewsPage />} />
-        <Route path="/allNews" element={<AllNewsPage />} />
+        <Route path="/news" element={<AllNewsPage />} />
         {/* <Route path="/filterNews" element={<FilterNewsPage />} />
         <Route path="/viewCountNews" element={<ViewCountNewsPage />} />
         <Route path="/scrapCountNews" element={<ScrapCountNewsPage />} /> */}
