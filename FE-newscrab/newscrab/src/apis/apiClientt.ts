@@ -42,6 +42,7 @@ API.interceptors.request.use(
     // 액세스 토큰이 만료되었는지 확인
     if (accessToken && isTokenExpired(accessToken)) {
       console.log("토큰이 만료되었습니다. 새로운 토큰을 대기 중입니다...");
+      // 백엔드에서 새로운 토큰을 받기 위해 요청을 그대로 진행
     }
 
     // 만료되지 않은 액세스 토큰을 헤더에 추가
@@ -57,7 +58,6 @@ API.interceptors.request.use(
 // 응답 인터셉터: 새로운 액세스 토큰이 헤더에 있는지 확인하고 갱신
 API.interceptors.response.use(
   (response: AxiosResponse) => {
-    console.log(response)
     const newAccessToken = response.headers['authorization']?.substring(7); // 'Bearer ' 이후의 토큰 추출
     if (newAccessToken) {
       setCookie("accessToken", newAccessToken);
@@ -72,7 +72,6 @@ API.interceptors.response.use(
 
     if (error.response?.status === 401 || error.response?.status === 403) {
       console.log("401 또는 403 오류 발생. 새로운 액세스 토큰을 확인 중입니다...");
-      console.log(error)
 
       const newAccessToken = error.response.headers['authorization']?.substring(7);
       if (newAccessToken) {
