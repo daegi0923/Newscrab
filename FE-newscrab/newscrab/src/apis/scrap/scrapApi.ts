@@ -1,5 +1,9 @@
 import axios from "axios";
-import { ScrapListResponse, ScrapData } from "../../types/scrapTypes";
+import {
+  ScrapListResponse,
+  ScrapData,
+  PostScrapRequest,
+} from "../../types/scrapTypes";
 import { mock_token } from "../mock_token"; // 토큰 경로와 import 확인
 
 export const getScrapData = async (
@@ -35,6 +39,9 @@ export const getScrapData = async (
       newsContent: item.newsContent,
       highlightList: item.highlightList, // Highlight 배열 그대로 매핑
       industryId: item.industryId,
+      view: item.view,
+      scrapCnt: item.scrapCnt,
+      newsCompany: item.newsCompany,
     }));
 
     const scrapData: ScrapListResponse = {
@@ -54,6 +61,31 @@ export const getScrapData = async (
     } else {
       console.error("Error fetching scrap data:", error);
     }
+    throw error;
+  }
+};
+
+export const postScrap = async (scrapData: PostScrapRequest): Promise<void> => {
+  try {
+    const response = await axios.post(
+      "https://newscrab.duckdns.org/api/v1/scrap",
+      {
+        newsId: scrapData.newsId,
+        comment: scrapData.comment,
+        scrapSummary: scrapData.scrapSummary,
+        highlights: scrapData.highlights,
+      },
+      {
+        headers: {
+          Authorization: mock_token, // 인증 헤더
+        },
+        withCredentials: true, // 쿠키와 함께 요청
+      }
+    );
+
+    console.log("Scrap posted successfully:", response.data);
+  } catch (error: any) {
+    console.error("Error posting scrap:", error);
     throw error;
   }
 };

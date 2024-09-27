@@ -34,6 +34,9 @@ export interface ScrapData {
   newsContent: string; // 뉴스 본문
   highlightList: Highlight[]; // 강조된 하이라이트 리스트
   industryId: number;
+  view: number;
+  scrapCnt: number;
+  newsCompany: string;
 }
 
 export interface ScrapListResponse {
@@ -44,4 +47,11 @@ export interface ScrapListResponse {
     data: ScrapData[];
     totalItems: number;
   };
+}
+
+export interface PostScrapRequest {
+  newsId: number | null;
+  comment: string | null;
+  scrapSummary: string | null;
+  highlights: Highlight[] | null;
 }
