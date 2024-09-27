@@ -8,18 +8,61 @@ interface CardProps {
   onClick?: () => void;
 }
 
+const CardWrapper = styled.div`
+  perspective: 1000px; /* 3D 공간을 정의 */
+`;
+
 const CardContainer = styled.div`
+  margin: 3% 0% 0 0;
   position: relative;
   width: 150px;
+  height: 200px; /* 카드 크기 설정 */
   border-radius: 10px;
-  overflow: hidden;
-  margin-bottom: 15%;
+  transform-style: preserve-3d; /* 3D 회전 효과 적용 */
+  transition: transform 0.6s ease-in-out, box-shadow 0.3s ease-out, transform 0.3s ease-out; /* 애니메이션 속도 조절 */
+  
+  &:hover {
+    transform: rotateY(180deg) translateY(-10px); /* 살짝 띄워지면서 회전 */
+    box-shadow: -3px 3px 5px rgba(0, 0, 0, 0.1); /* 호버 시 그림자 */
+    cursor: pointer;
+  }
+
+  /* 기본 그림자는 없음 */
+  box-shadow: 0 0px 0px rgba(0, 0, 0, 0);
+
+  /* 마우스가 사라지면 그림자 즉시 제거 */
+  &:not(:hover) {
+    box-shadow: none;
+  }
+`;
+
+const CardFace = styled.div`
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden; /* 카드 뒷면이 보이지 않도록 설정 */
+  border-radius: 10px;
+`;
+
+const CardFront = styled(CardFace)`
+  /* 카드 앞면 */
+  background-color: #fff;
+`;
+
+const CardBack = styled(CardFace)`
+  /* 카드 뒷면 */
+  background-color: #f0f0f0;
+  transform: rotateY(180deg); /* 뒷면을 180도 회전 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 const CardImage = styled.img`
   width: 100%;
   height: 100%;
   object-fit: cover;
+  border-radius: 10px;
 `;
 
 const Industry = styled.div`
@@ -43,13 +86,12 @@ const CardContent = styled.div`
 `;
 
 const CardDate = styled.div`
-  position: absolute;
-  bottom: 6%;
-  left: 10%;
-  z-index: 10;
-  color: #555;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: bold;
+  color: #555;
+
+  /* 수정: 좌우 반전 방지 */
+  transform: rotateY(0);
 `;
 
 // 날짜 포맷 함수
@@ -60,12 +102,21 @@ const formatDate = (dateString: string) => {
 
 const Card: React.FC<CardProps> = ({ img, industryName, vocaName, updatedAt, onClick }) => {
   return (
-    <CardContainer onClick={onClick} style={{ cursor: 'pointer' }}>
-      {img && <CardImage src={img} alt={vocaName} />}
-      <Industry>{industryName}</Industry>
-      <CardContent>{vocaName}</CardContent>
-      <CardDate>{formatDate(updatedAt)}</CardDate>
-    </CardContainer>
+    <CardWrapper>
+      <CardContainer onClick={onClick}>
+        {/* 앞면 */}
+        <CardFront>
+          {img && <CardImage src={img} alt={vocaName} />}
+          <Industry>{industryName}</Industry>
+          <CardContent>{vocaName}</CardContent>
+        </CardFront>
+
+        {/* 뒷면 */}
+        <CardBack>
+          <CardDate>{formatDate(updatedAt)}</CardDate>
+        </CardBack>
+      </CardContainer>
+    </CardWrapper>
   );
 };
 

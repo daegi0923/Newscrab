@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import styled from "styled-components";
+
 import { getScrapData, postScrap } from "@apis/scrap/scrapApi"; // postScrap 함수 import
 
 const Sidebar = styled.div`
@@ -52,7 +53,7 @@ const TabButton = styled.button<{ $active?: boolean }>`
 const StyledTextarea = styled.textarea<{ $isOverflowing: boolean }>`
   width: 100%;
   height: auto;
-  max-height: 615px;
+  max-height: 570px;
   border: 1px solid #ddd;
   border-radius: 8px;
   padding: 10px;
@@ -95,8 +96,11 @@ const SaveButton = styled.button`
   color: white;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  margin-top: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  position: absolute; /* 위치를 고정 */
+  bottom: -50px; /* 아래에서 10px 띄움 */
+  right: 0px; /* 오른쪽에서 10px 띄움 */
 
   &:hover {
     background-color: #d9a654;
@@ -108,6 +112,7 @@ const SaveButton = styled.button`
 `;
 
 const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
+  const [scrapId, setScrapId] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState("summary");
   const [summaryText, setSummaryText] = useState("");
   const [opinionText, setOpinionText] = useState("");
@@ -136,6 +141,7 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
         );
 
         if (selectedScrap) {
+          setScrapId(selectedScrap.scrapId || null); // scrapId 설정
           setSummaryText(selectedScrap.scrapSummary || "");
           setOpinionText(selectedScrap.comment || "");
           setWordListText(selectedScrap.vocalist?.join(", ") || ""); // vocalist 배열을 문자열로 변환
@@ -164,8 +170,15 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
     };
 
     try {
-      await postScrap(scrapData); // postScrap API 호출
-      alert("저장되었습니다!");
+      if (scrapId) {
+        // scrapId가 있으면 put 요청 (업데이트)
+        // await putScrap(scrapId, scrapData);
+        alert("업데이트되었습니다!");
+      } else {
+        // scrapId가 없으면 post 요청 (새로 생성)
+        await postScrap(scrapData);
+        alert("저장되었습니다!");
+      }
     } catch (error) {
       console.error("Error saving scrap:", error);
       alert("저장에 실패했습니다.");
