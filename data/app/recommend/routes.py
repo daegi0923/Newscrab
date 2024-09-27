@@ -271,8 +271,12 @@ def read_item(user_id: int, db: Session = Depends(get_db)):
     # recommend_news = db.query(models.News).filter(models.News.news_id.in_(news_list)).all()
     # print(ib_news_list)
     # 해당 유저의 interaction을 조회
-    user_interactions = user_news_matrix.loc[user_id]
-    
+    interaction_cnt = len(scrap_like_df[scrap_like_df['user_id'] == user_id])
+    if interaction_cnt:
+        user_interactions = user_news_matrix.loc[user_id]
+    else:
+        user_interactions = {}
+        pass
     # 0보다 큰 interaction을 가진 news_id를 set에 저장
     interacted_news_ids = set()
     for news_id, interaction in user_interactions.items():
