@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 // 재사용 components
 import GlobalStyle from "@components/GlobalStyle";
@@ -23,16 +23,35 @@ const NewsWrapper = styled.div`
   gap: 50px;
 `;
 
+const BackButton = styled.button`
+  z-index: 2;
+  position: absolute;
+  top: 12%;
+  left: 0.1%;
+  padding: 10px 15px;
+  background-color: #ffbe98;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 15px;
+  // font-weight: bold;
+  color: white;
+  &:hover {
+    background-color: #ff8f4d;
+  }
+`;
+
 const NewsDetailPage: React.FC = () => {
   const { newsId } = useParams<{ newsId: string }>(); // URL에서 newsId를 가져옴
   const [newsDetailItem, setNewsDetailItem] = useState<NewsDetailItem | null>(
     null
   );
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (newsId) {
-      fetchNewsDetail(parseInt(newsId, 10));
+      fetchNewsDetail(parseInt(newsId, 10)); // newsId를 숫자로 변환하여 사용
     }
   }, [newsId]);
 
@@ -48,11 +67,16 @@ const NewsDetailPage: React.FC = () => {
     }
   };
 
+  const handleBackClick = () => {
+    navigate("/news");
+  };
+
   return (
     <div>
       <GlobalStyle />
       <NewsDetailContainer>
         <Header />
+        <BackButton onClick={handleBackClick}>돌아가기</BackButton>
         <NewsWrapper>
           {isLoading ? (
             <p>Loading news...</p>
@@ -62,14 +86,16 @@ const NewsDetailPage: React.FC = () => {
             newsDetailItem && (
               <>
                 <NewsDetailArticle newsDetailItem={newsDetailItem} />
-                <NewsDetailScrap newsId={parseInt(newsId, 10)} />
+                <NewsDetailScrap newsId={parseInt(newsId, 10)} />{" "}
+                {/* 숫자로 변환하여 전달 */}
               </>
             )
           )}
         </NewsWrapper>
-        <NewsDetailRcmd />
+        {newsId && <NewsDetailRcmd newsId={parseInt(newsId, 10)} />}
       </NewsDetailContainer>
     </div>
   );
 };
+
 export default NewsDetailPage;

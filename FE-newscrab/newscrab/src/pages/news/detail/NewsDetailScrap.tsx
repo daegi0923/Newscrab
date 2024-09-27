@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import styled from "styled-components";
+
 import { getScrapData, postScrap, putScrap } from "@apis/scrap/scrapApi"; // postScrap 함수 import
 
 const Sidebar = styled.div`
@@ -52,7 +53,7 @@ const TabButton = styled.button<{ $active?: boolean }>`
 const StyledTextarea = styled.textarea<{ $isOverflowing: boolean }>`
   width: 100%;
   height: auto;
-  max-height: 615px;
+  max-height: 570px;
   border: 1px solid #ddd;
   border-radius: 8px;
   padding: 10px;
@@ -95,8 +96,11 @@ const SaveButton = styled.button`
   color: white;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  margin-top: 10px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  position: absolute; /* 위치를 고정 */
+  bottom: -50px; /* 아래에서 10px 띄움 */
+  right: 0px; /* 오른쪽에서 10px 띄움 */
 
   &:hover {
     background-color: #d9a654;
