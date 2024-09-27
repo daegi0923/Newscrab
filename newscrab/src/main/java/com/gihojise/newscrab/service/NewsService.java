@@ -224,10 +224,18 @@ public class NewsService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NewscrabException(ErrorCode.USER_NOT_FOUND));
 
-        // User 엔티티의 addLike 메서드에서 중복 추가 방지 로직을 처리
-        user.addLike(news);
+        UserNewsLike userNewsLike = UserNewsLike.builder()
+                .user(user)
+                .news(news)
+                .createdAt(LocalDateTime.now())
+                .build();
 
-        // save 호출 없이 JPA가 관리하는 연관관계만으로 저장 관리
+        if (userNewsLikeRepository.existsByUserAndNews(user, news)) {
+            throw new NewscrabException(ErrorCode.LIKE_ALREADY_EXISTS);
+        }
+
+        userNewsLikeRepository.save(userNewsLike);
+
     }
 
 
@@ -242,8 +250,7 @@ public class NewsService {
         UserNewsLike like = userNewsLikeRepository.findByUserAndNews(user, news)
                 .orElseThrow(() -> new NewscrabException(ErrorCode.LIKE_NOT_FOUND));
 
-        user.removeLike(news);
-        userRepository.save(user);
+        userNewsLikeRepository.delete(like);
     }
 
     // 8. 뉴스 찜 여부 조회

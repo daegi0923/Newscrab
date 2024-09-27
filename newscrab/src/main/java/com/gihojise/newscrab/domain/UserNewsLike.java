@@ -1,6 +1,8 @@
 package com.gihojise.newscrab.domain;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
@@ -12,7 +14,9 @@ import java.util.Objects;
 
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "user_news_like")
 public class UserNewsLike {
 
@@ -31,12 +35,9 @@ public class UserNewsLike {
     private News news;
 
     @CreatedDate
+    @Column(name = "created_at", updatable = false, nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime createdAt;
 
-    public UserNewsLike(User user, News news) {
-        this.user = user;
-        this.news = news;
-    }
 
     @Override
     public boolean equals(Object o) {
