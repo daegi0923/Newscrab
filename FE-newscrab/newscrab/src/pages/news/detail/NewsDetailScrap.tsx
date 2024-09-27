@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import styled from "styled-components";
+import { getScrapData, postScrap } from "@apis/scrap/scrapApi"; // postScrap 함수 import
 
 const Sidebar = styled.div`
   width: 30%;
@@ -84,7 +85,29 @@ const StyledTextarea = styled.textarea<{ $isOverflowing: boolean }>`
   clip-path: inset(0 round 8px);
 `;
 
-const NewsDetailScrap: React.FC = () => {
+const SaveButton = styled.button`
+  background-color: #f0c36d;
+  border: none;
+  border-radius: 12px;
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: bold;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  &:hover {
+    background-color: #d9a654;
+  }
+
+  &:active {
+    background-color: #c89640;
+  }
+`;
+
+const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
   const [activeTab, setActiveTab] = useState("summary");
   const [summaryText, setSummaryText] = useState("");
   const [opinionText, setOpinionText] = useState("");
@@ -103,11 +126,51 @@ const NewsDetailScrap: React.FC = () => {
     }
   };
 
+  // getScrapData를 이용해 서버에서 데이터를 불러오기
+  useEffect(() => {
+    const fetchScrapData = async () => {
+      try {
+        const data = await getScrapData(); // 필요한 경우, page와 size를 인자로 전달
+        const selectedScrap = data.data.data.find(
+          (item) => item.newsId === newsId
+        );
+
+        if (selectedScrap) {
+          setSummaryText(selectedScrap.scrapSummary || "");
+          setOpinionText(selectedScrap.comment || "");
+          setWordListText(selectedScrap.vocalist?.join(", ") || ""); // vocalist 배열을 문자열로 변환
+        }
+      } catch (error) {
+        console.error("Error fetching scrap data:", error);
+      }
+    };
+
+    fetchScrapData();
+  }, [newsId]);
+
   useEffect(() => {
     adjustHeight(summaryTextareaRef.current);
     adjustHeight(opinionTextareaRef.current);
     adjustHeight(wordListTextareaRef.current);
   }, [summaryText, opinionText, wordListText, activeTab]);
+
+  const handleSave = async () => {
+    const scrapData = {
+      newsId: newsId,
+      comment: opinionText,
+      scrapSummary: summaryText,
+      // vocalist: wordListText.split(",").map((item) => item.trim()),
+      highlights: [],
+    };
+
+    try {
+      await postScrap(scrapData); // postScrap API 호출
+      alert("저장되었습니다!");
+    } catch (error) {
+      console.error("Error saving scrap:", error);
+      alert("저장에 실패했습니다.");
+    }
+  };
 
   const summaryPlaceholder = `<서론>\n\n<본론>\n\n<결론>`;
 
@@ -163,6 +226,9 @@ const NewsDetailScrap: React.FC = () => {
           $isOverflowing={isOverflowing}
         />
       )}
+
+      {/* 저장 버튼을 이곳에 추가 */}
+      <SaveButton onClick={handleSave}>저장</SaveButton>
     </Sidebar>
   );
 };

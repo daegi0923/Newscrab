@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import styled, { createGlobalStyle } from "styled-components";
 import NewsImage from "../../assets/auth/newsImage.png";
 import BackgroundImage from "../../assets/auth/bg.png";
@@ -10,7 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import ProfileImageModal from "@components/myPage/ProfileImageModal";
 import ProfileImageDisplay from "@components/myPage/ProfileImageDisplay";
 import defaultProfile from "@assets/auth/defaultProfile.jpg";
-import { AppDispatch, RootState } from "@store/index";
+import { AppDispatch } from "@store/index";
 import {
   updateUserProfileThunk,
   fetchUserProfileThunk,
@@ -70,20 +70,39 @@ const ButtonWrapper = styled.div`
   justify-content: center;
 `;
 
+interface UserProfile {
+  userInfo: {
+    data: {
+      name: string;
+      email: string;
+      birthday: string;
+      gender: string; // 성별: "male", "female", "other" 중 하나
+      profileImage: string;
+    };
+  };
+}
+
+interface RootState {
+  mypage: UserProfile;
+}
+
 const ProfileEdit1: React.FC = () => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const dispatch: AppDispatch = useDispatch();
 
   // Redux 상태에서 사용자 정보 가져오기
   const { userInfo } = useSelector((state: RootState) => state.mypage);
 
+  // 로딩 상태 관리
+  const [loading, setLoading] = useState(true);
+
   // 사용자 정보 상태 관리 (초기값을 사용자 정보로 설정)
   const [editForm, setEditForm] = useState({
-    name: userInfo.name || "",
-    email: userInfo.email || "",
-    birthday: userInfo.birthday || "",
-    gender: userInfo.gender || "",
-    profileImage: userInfo.profileImage || "",
+    name: "",
+    email: "",
+    birthday: "",
+    gender: "", // 성별 기본값은 빈 문자열
+    profileImage: "",
   });
 
   const [errors] = useState({
@@ -98,7 +117,7 @@ const ProfileEdit1: React.FC = () => {
   // });
 
   const [isModalOpen, setModalOpen] = useState(false); // 모달 열기/닫기 상태
-  const [selectedImage, setSelectedImage] = useState<string>(defaultProfile);
+  const [selectedImage, setSelectedImage] = useState<string>(profile1);
 
   // 이미지 경로를 A, B, C로 매핑하는 함수
   const mapImageToEnum = (imageSrc: string) => {
@@ -117,27 +136,45 @@ const ProfileEdit1: React.FC = () => {
 
   // 사용자 정보를 불러와서 초기값 설정 (처음 마운트될 때 실행)
   useEffect(() => {
-    const loadUserProfile = async () => {
-      const profileData = await dispatch(fetchUserProfileThunk());
-      if (profileData.payload) {
-        const data = profileData.payload;
-        setEditForm({
-          name: data.name,
-          email: data.email,
-          birthday: data.birthday,
-          gender: data.gender,
-          profileImage: data.profileImage,
-        });
-        setSelectedImage(mapEnumToImage(data.profileImage)); // 백엔드의 이미지 enum에 따라 이미지 설정
-      }
-    };
-    loadUserProfile();
+    dispatch(fetchUserProfileThunk())
+      .unwrap()
+      .then((res) => {
+        console.log("프로필 데이터 불러옴:", res);
+        setLoading(false); // 데이터가 불러와지면 로딩 해제
+      })
+      .catch((error) => {
+        console.error("프로필 불러오기 오류:", error);
+        setLoading(false); // 에러 발생 시에도 로딩 해제
+      });
   }, [dispatch]);
+
+  useEffect(() => {
+    if (userInfo && userInfo.data) {
+      console.log("업데이트된 사용자 정보:", userInfo);
+      setEditForm({
+        name: userInfo.data.name,
+        email: userInfo.data.email,
+        birthday: userInfo.data.birthday,
+        gender: userInfo.data.gender,
+        profileImage: userInfo.data.profileImage || "A",
+      });
+      setSelectedImage(mapEnumToImage(userInfo.data.profileImage || "A"));
+    }
+  }, [userInfo]);
+
+  if (loading) {
+    return <p>Loading...</p>; // 로딩 중일 때 표시할 UI
+  }
 
   // 입력 필드 변경 핸들러
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setEditForm({ ...editForm, [name]: value });
+  };
+
+  // 라디오 버튼 변경 핸들러
+  const handleGenderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEditForm({ ...editForm, gender: e.target.value });
   };
 
   const handleSelectImage = (imageSrc: string) => {
@@ -146,11 +183,15 @@ const ProfileEdit1: React.FC = () => {
     setEditForm({ ...editForm, profileImage: imageEnum }); // A, B, C로 설정
   };
 
-  const handleNext = async () => {
+  const handleSave = async () => {
     try {
+      console.log("수정된 사용자 데이터:", editForm);
       // 모든 필드를 포함한 데이터를 PUT 요청으로 전송
-      await dispatch(updateUserProfileThunk(editForm));
-      navigate("/mypage"); // 성공 시 이동
+      const response = await dispatch(
+        updateUserProfileThunk(editForm)
+      ).unwrap();
+      console.log("수정 완료:", response);
+      // navigate('/mypage');  // 성공 시 이동
     } catch (error) {
       console.error("회원 정보 업데이트 실패:", error);
       alert("정보를 업데이트하는 중 오류가 발생했습니다.");
@@ -193,12 +234,12 @@ const ProfileEdit1: React.FC = () => {
             <RadioButton
               name="gender"
               options={[
-                { value: "male", label: "남성" },
-                { value: "female", label: "여성" },
-                { value: "other", label: "그 외" },
+                { value: "MALE", label: "남성" },
+                { value: "FEMALE", label: "여성" },
+                { value: "OTHER", label: "그 외" },
               ]}
-              value={editForm.gender} // 선택된 값을 상태에 맞게 설정
-              onChange={handleChange} // 값이 변경될 때 상태 업데이트
+              value={editForm.gender}
+              onChange={handleGenderChange}
             />
             {errors.name && <p style={{ color: "red" }}>{errors.name}</p>}
           </FormContainer2>
@@ -214,7 +255,7 @@ const ProfileEdit1: React.FC = () => {
             />
           </FormContainer1>
           <ButtonWrapper>
-            <Button onClick={handleNext}>다음</Button>
+            <Button onClick={handleSave}>저장</Button>
           </ButtonWrapper>
         </FormContainer>
         <SignUpImage src={NewsImage} alt="SignUpImage" />

@@ -1,6 +1,5 @@
-import axios from "axios";
+import API from "@apis/apiClient";
 import { NewsData } from "../../types/newsTypes";
-import { mock_token } from "../mock_token"; // 토큰 경로와 import 확인
 
 export const getNewsData = async (
   industryId: number = -1,
@@ -11,23 +10,16 @@ export const getNewsData = async (
   option: string = "total"
 ): Promise<NewsData> => {
   try {
-    const response = await axios.get(
-      "https://newscrab.duckdns.org/api/v1/news/filter",
-      {
-        params: {
-          industryId, // 선택한 industryId를 전달
-          page, // 현재 페이지 전달
-          size, // 페이지당 아이템 수 전달
-          ds, // 시작 날짜 (선택 사항)
-          de, // 종료 날짜 (선택 사항)
-          option, // 옵션 (예: total)
-        },
-        headers: {
-          Authorization: mock_token, // 인증 헤더
-        },
-        withCredentials: true,
-      }
-    );
+    const response = await API.get("/news/filter", {
+      params: {
+        industryId, // 선택한 industryId를 전달
+        page, // 현재 페이지 전달
+        size, // 페이지당 아이템 수 전달
+        ds, // 시작 날짜 (선택 사항)
+        de, // 종료 날짜 (선택 사항)
+        option, // 옵션 (예: total)
+      },
+    });
 
     const { data } = response.data; // API 응답 데이터 추출
     const news = data.news.map((item: any) => ({

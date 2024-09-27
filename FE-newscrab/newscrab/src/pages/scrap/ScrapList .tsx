@@ -111,17 +111,17 @@ const ScrapList: React.FC<{
               <IndustryId>{getIndustryName(scrap.industryId)}</IndustryId>
               <NewsTitle>{scrap.newsTitle}</NewsTitle>
               <InfoRow>
-                {/* <span>{scrap.newsCompany}</span> */}
+                <span>{scrap.newsCompany}</span>
                 <span>{formatDate(scrap.createdAt)}</span>
               </InfoRow>
               <StatsRow>
                 <span>
                   <ViewIcon src={viewIcon} alt="조회수 아이콘" />
-                  {/* {scrap.view} */}
+                  {scrap.view}
                 </span>
                 <span>
                   <ScrapCntIcon src={scrapCntIcon} alt="스크랩수 아이콘" />
-                  {/* {scrap.scrapCnt} */}
+                  {scrap.scrapCnt}
                 </span>
               </StatsRow>
             </TextContainer>
