@@ -48,4 +48,16 @@ public class ProfileController {
         return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "최근 본 뉴스 조회 성공", response));
     }
 
+    // 좋아요 한 뉴스
+    @Operation(summary = "좋아요 한 뉴스", description = "사용자가 좋아요한 뉴스를 조회합니다.")
+    @GetMapping("/like")
+    public ResponseEntity<ApiResponse<NewsPageResponseDto>> getLikeNews(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestParam("page") int page) {
+
+        int userId = userDetails.getUserId();
+        NewsPageResponseDto response = profileService.getLikeNewsByPage(userId, page);
+
+        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "좋아요 한 뉴스 조회 성공", response));
+    }
+
+
 }
