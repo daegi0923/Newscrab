@@ -1,25 +1,35 @@
 import axios from "axios";
 import { NewsData } from "../../types/newsTypes";
-import { mock_token } from "./mock_token"; // 토큰 경로와 import 확인
+import { mock_token } from "../mock_token"; // 토큰 경로와 import 확인
 
-// Axios 요청을 통해 뉴스 데이터를 가져오는 함수
-export const getNewsData = async (page: number): Promise<NewsData> => {
+export const getNewsData = async (
+  industryId: number = -1,
+  page: number = 1,
+  size: number = 10,
+  ds?: string,
+  de?: string,
+  option: string = "total"
+): Promise<NewsData> => {
   try {
     const response = await axios.get(
-      "https://newscrab.duckdns.org/api/v1/news?page=1&size=10", // API URL 확인
+      "https://newscrab.duckdns.org/api/v1/news/filter",
       {
         params: {
-          page: page,
-          size: 10,
+          industryId, // 선택한 industryId를 전달
+          page, // 현재 페이지 전달
+          size, // 페이지당 아이템 수 전달
+          ds, // 시작 날짜 (선택 사항)
+          de, // 종료 날짜 (선택 사항)
+          option, // 옵션 (예: total)
         },
         headers: {
-          Authorization: mock_token,
+          Authorization: mock_token, // 인증 헤더
         },
         withCredentials: true,
       }
     );
 
-    const { data } = response.data;
+    const { data } = response.data; // API 응답 데이터 추출
     const news = data.news.map((item: any) => ({
       newsId: item.newsId,
       newsTitle: item.newsTitle,
@@ -44,9 +54,8 @@ export const getNewsData = async (page: number): Promise<NewsData> => {
       totalItems: data.totalItems,
     };
 
-    return newsData;
+    return newsData; // 뉴스 데이터 반환
   } catch (error: any) {
-    // 토큰 관련 에러인지 확인
     if (error.response && error.response.status === 401) {
       console.error("인증 실패: 토큰이 유효하지 않거나 만료되었습니다.");
     } else {

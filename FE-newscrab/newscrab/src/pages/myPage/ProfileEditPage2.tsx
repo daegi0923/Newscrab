@@ -1,9 +1,9 @@
-import styled from 'styled-components';
-import { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import API from '@apis/apiClient';
+import styled from "styled-components";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import API from "@apis/apiClient";
 import { words } from "@components/voca/VocaList";
-import { AxiosError } from 'axios';  // AxiosError 타입을 불러옴
+import { AxiosError } from "axios"; // AxiosError 타입을 불러옴
 
 const SignUpContainer = styled.div`
   flex-direction: column;
@@ -31,7 +31,8 @@ const Card = styled.div<{ isHidden: boolean }>`
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
   cursor: grab;
   position: relative;
-  visibility: ${({ isHidden }) => (isHidden ? 'hidden' : 'visible')}; /* 카드가 선택되면 숨기기 */
+  visibility: ${({ isHidden }) =>
+    isHidden ? "hidden" : "visible"}; /* 카드가 선택되면 숨기기 */
   img {
     width: 100%;
     height: 100%;
@@ -104,24 +105,42 @@ const SaveButton = styled.button`
 
 const ProfileEdit2: React.FC = () => {
   const navigate = useNavigate();
-  const [selectedIndustries, setSelectedIndustries] = useState<Array<{ img: string, industryId: number, industryName: string } | null>>([null, null, null]);
-  const [availableIndustries, setAvailableIndustries] = useState(words.filter((industry) => industry.industryId !== 16));
+  const [selectedIndustries, setSelectedIndustries] = useState<
+    Array<{ img: string; industryId: number; industryName: string } | null>
+  >([null, null, null]);
+  const [availableIndustries, setAvailableIndustries] = useState(
+    words.filter((industry) => industry.industryId !== 16)
+  );
 
-  const handleDragStart = (event: React.DragEvent<HTMLDivElement>, industry: { img: string, industryId: number, industryName: string }) => {
-    event.dataTransfer.setData('industry', JSON.stringify(industry));
+  const handleDragStart = (
+    event: React.DragEvent<HTMLDivElement>,
+    industry: { img: string; industryId: number; industryName: string }
+  ) => {
+    event.dataTransfer.setData("industry", JSON.stringify(industry));
     const dragImg = new Image();
     dragImg.src = industry.img;
     dragImg.onload = () => {
-      event.dataTransfer.setDragImage(dragImg, dragImg.width / 2, dragImg.height / 2);
+      event.dataTransfer.setDragImage(
+        dragImg,
+        dragImg.width / 2,
+        dragImg.height / 2
+      );
     };
   };
 
-  const handleDrop = (event: React.DragEvent<HTMLDivElement>, index: number) => {
-    const industry = JSON.parse(event.dataTransfer.getData('industry'));
+  const handleDrop = (
+    event: React.DragEvent<HTMLDivElement>,
+    index: number
+  ) => {
+    const industry = JSON.parse(event.dataTransfer.getData("industry"));
     const newSelectedIndustries = [...selectedIndustries];
     newSelectedIndustries[index] = industry;
     setSelectedIndustries(newSelectedIndustries);
-    setAvailableIndustries(availableIndustries.filter((item) => item.industryId !== industry.industryId));
+    setAvailableIndustries(
+      availableIndustries.filter(
+        (item) => item.industryId !== industry.industryId
+      )
+    );
   };
 
   const handleRemoveIndustry = (index: number) => {
@@ -129,7 +148,9 @@ const ProfileEdit2: React.FC = () => {
     const removedIndustry = newSelectedIndustries[index];
     newSelectedIndustries[index] = null;
     setSelectedIndustries(newSelectedIndustries);
-    const removedIndustryObj = words.find((item) => item.img === removedIndustry?.img);
+    const removedIndustryObj = words.find(
+      (item) => item.img === removedIndustry?.img
+    );
     if (removedIndustryObj) {
       setAvailableIndustries([...availableIndustries, removedIndustryObj]);
     }
@@ -138,7 +159,11 @@ const ProfileEdit2: React.FC = () => {
   // PUT 요청으로 사용자 정보 업데이트
   const handleSave = async () => {
     console.log("선택된 산업군:", selectedIndustries.filter(Boolean));
-    const filteredIndustries = selectedIndustries.filter(Boolean) as { img: string, industryId: number, industryName: string }[];
+    const filteredIndustries = selectedIndustries.filter(Boolean) as {
+      img: string;
+      industryId: number;
+      industryName: string;
+    }[];
 
     const updatedEditForm = {
       userIndustry: filteredIndustries.map((industry, index) => ({
@@ -151,14 +176,14 @@ const ProfileEdit2: React.FC = () => {
     console.log("수정할 사용자 데이터:", updatedEditForm);
 
     try {
-      const response = await API.put('/user/userindustry', {
+      const response = await API.put("/user/userindustry", {
         userIndustry: updatedEditForm.userIndustry,
       });
 
       // 성공적으로 정보가 업데이트되었을 때 처리
       if (response.status === 200) {
-        alert('사용자 정보가 성공적으로 업데이트되었습니다.');
-        navigate('/mainNews'); // 업데이트 후 메인 페이지로 이동
+        alert("사용자 정보가 성공적으로 업데이트되었습니다.");
+        navigate("/mainNews"); // 업데이트 후 메인 페이지로 이동
       }
     } catch (error) {
       if (error instanceof AxiosError) {
@@ -168,10 +193,11 @@ const ProfileEdit2: React.FC = () => {
           alert("서버 오류가 발생했습니다. 나중에 다시 시도해 주세요.");
         }
       } else {
-        console.error('알 수 없는 오류:', error);
-        alert('알 수 없는 오류가 발생했습니다.');
+        console.error("알 수 없는 오류:", error);
+        alert("알 수 없는 오류가 발생했습니다.");
       }
-    }};
+    }
+  };
 
   return (
     <SignUpContainer>
@@ -185,7 +211,9 @@ const ProfileEdit2: React.FC = () => {
               key={industry.industryId}
               draggable
               onDragStart={(event) => handleDragStart(event, industry)}
-              isHidden={selectedIndustries.some(selected => selected?.img === industry.img)}
+              isHidden={selectedIndustries.some(
+                (selected) => selected?.img === industry.img
+              )}
             >
               <h4>{industry.industryName}</h4>
               <img src={industry.img} alt={industry.industryName} />
@@ -195,10 +223,12 @@ const ProfileEdit2: React.FC = () => {
 
         <DropContainer>
           {selectedIndustries.map((industry, index) => (
-            <DropArea key={index}
+            <DropArea
+              key={index}
               onDrop={(event) => handleDrop(event, index)}
               onDragOver={(event) => event.preventDefault()}
-              onClick={() => handleRemoveIndustry(index)}>
+              onClick={() => handleRemoveIndustry(index)}
+            >
               {industry ? (
                 <>
                   <img src={industry.img} alt={`순위 ${index + 1}`} />

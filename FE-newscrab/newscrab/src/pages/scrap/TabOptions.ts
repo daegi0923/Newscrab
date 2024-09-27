@@ -3,6 +3,7 @@ export interface TabOption {
   label: string;
 }
 
+// 하단 필터 옵션
 export const tabOptions: TabOption[] = [
   { id: 12, label: "IT" },
   { id: 5, label: "가전" },

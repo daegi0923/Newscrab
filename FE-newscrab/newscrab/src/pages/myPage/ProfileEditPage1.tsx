@@ -102,27 +102,32 @@ const ProfileEdit1: React.FC = () => {
     profileImage: ""
   });
 
-  const [errors, setErrors] = useState({
+  const [errors] = useState({
     name: "",
     email: "",
     birthday: "",
   });
+  // const [errors, setErrors] = useState({
+  //   name: "",
+  //   email: "",
+  //   birthday: "",
+  // });
 
   const [isModalOpen, setModalOpen] = useState(false); // 모달 열기/닫기 상태
   const [selectedImage, setSelectedImage] = useState<string>(profile1);
 
   // 이미지 경로를 A, B, C로 매핑하는 함수
   const mapImageToEnum = (imageSrc: string) => {
-    if (imageSrc === profile1) return 'A';
-    if (imageSrc === profile2) return 'B';
-    if (imageSrc === profile3) return 'C';
-    return '';
+    if (imageSrc === profile1) return "A";
+    if (imageSrc === profile2) return "B";
+    if (imageSrc === profile3) return "C";
+    return "";
   };
 
   const mapEnumToImage = (imageEnum: string) => {
-    if (imageEnum === 'A') return profile1;
-    if (imageEnum === 'B') return profile2;
-    if (imageEnum === 'C') return profile3;
+    if (imageEnum === "A") return profile1;
+    if (imageEnum === "B") return profile2;
+    if (imageEnum === "C") return profile3;
     return defaultProfile;
   };
 
@@ -183,8 +188,8 @@ const ProfileEdit1: React.FC = () => {
       console.log('수정 완료:', response);
       // navigate('/mypage');  // 성공 시 이동
     } catch (error) {
-      console.error('회원 정보 업데이트 실패:', error);
-      alert('정보를 업데이트하는 중 오류가 발생했습니다.');
+      console.error("회원 정보 업데이트 실패:", error);
+      alert("정보를 업데이트하는 중 오류가 발생했습니다.");
     }
   };
 
