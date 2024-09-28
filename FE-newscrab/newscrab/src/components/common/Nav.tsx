@@ -1,9 +1,11 @@
-import React from "react";
+import React, {useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import logo from '@assets/crab.png';
 import { logout } from "@store/user/loginLogout";
+import ErrorModal from "./Error";
+import { useAuth } from "./PrivateRoute";
 
 const SidebarContainer = styled.nav`
   padding-top: 3%;
@@ -87,56 +89,79 @@ const ImageTop = styled.img`
   border-radius: 50%;
   object-fit: cover;
   z-index: 2; /* 네비게이션 바 위에 보이도록 설정 */
+  cursor: pointer;
 `;
 
 const Nav: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { isLogedIn } = useAuth(); // 로그인 상태 확인
+  const [errorMessage, setErrorMessage] = useState<string | null>(null); // 에러 메시지 상태
+
   const handleLogout = () => {
-    dispatch(logout());
-    navigate("/login");
+    if (isLogedIn) {
+      dispatch(logout());
+      window.location.href = '/login';
+    } else {
+      setErrorMessage("로그인이 필요합니다!"); // 로그인하지 않은 경우
+    }
+  };
+
+  const handleModalClose = () => {
+    setErrorMessage(null);
+    navigate('/login');
   };
 
   return (
-    <SidebarContainer>
-      {/* 좌측 상단에 프로필 이미지 1 */}
-      <ImageTop src={logo} alt="Profile 1" />
-      
-      <NavList>
-        <NavItem>
-          <NavLink onClick={() => navigate("/mypage")}>
-            <span>🏠</span>
-            <NavText>마이페이지</NavText>
-          </NavLink>
-        </NavItem>
-        <NavItem>
-          <NavLink onClick={() => navigate("/voca")}>
-            <span>📖</span>
-            <NavText>단어장</NavText>
-          </NavLink>
-        </NavItem>
-        <NavItem>
-          <NavLink onClick={() => navigate("/news")}>
-            <span>📰</span>
-            <NavText>전체 뉴스</NavText>
-          </NavLink>
-        </NavItem>
-        <NavItem>
-          <NavLink onClick={() => navigate("/news/scrap")}>
-            <span>📋</span>
-            <NavText>스크랩</NavText>
-          </NavLink>
-        </NavItem>
-      </NavList>
+    <>
+      {/* 에러 메시지가 있을 때만 모달 표시 */}
+      {errorMessage && (
+        <ErrorModal
+          title="오류 발생"
+          message={errorMessage}
+          onClose={handleModalClose}
+        />
+      )}
+      <SidebarContainer>
+        {/* 좌측 상단에 프로필 이미지 */}
+        <ImageTop src={logo} alt="Profile 1" onClick={() => navigate("/")} />
+        
+        <NavList>
+          <NavItem>
+            <NavLink onClick={() => navigate("/mypage")}>
+              <span>🏠</span>
+              <NavText>마이페이지</NavText>
+            </NavLink>
+          </NavItem>
+          <NavItem>
+            <NavLink onClick={() => navigate("/voca")}>
+              <span>📖</span>
+              <NavText>단어장</NavText>
+            </NavLink>
+          </NavItem>
+          <NavItem>
+            <NavLink onClick={() => navigate("/news")}>
+              <span>📰</span>
+              <NavText>전체 뉴스</NavText>
+            </NavLink>
+          </NavItem>
+          <NavItem>
+            <NavLink onClick={() => navigate("/news/scrap")}>
+              <span>📋</span>
+              <NavText>스크랩</NavText>
+            </NavLink>
+          </NavItem>
+        </NavList>
 
-      {/* 좌측 하단에 로그아웃 버튼 */}
-      <LogoutItem>
-        <NavLink onClick={(handleLogout)}>
-          <span>🚪</span>
-          <NavText>로그아웃</NavText>
-        </NavLink>
-      </LogoutItem>
-    </SidebarContainer>
+        {/* 좌측 하단에 로그아웃 버튼 */}
+        <LogoutItem>
+          <NavLink onClick={handleLogout}>
+            <span>🚪</span>
+            <NavText>로그아웃</NavText>
+          </NavLink>
+        </LogoutItem>
+      </SidebarContainer>
+    </>
   );
 };
 

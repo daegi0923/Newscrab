@@ -1,5 +1,8 @@
-import React from "react";
+import React, {useState } from "react";
+import { useAuth } from "@components/common/PrivateRoute";
+import { Navigate } from "react-router-dom";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import ErrorModal from "@components/common/Error";
 import Layout from "@components/common/Layout";
 import LandingPage from "@pages/LandingPage";
 // auth
@@ -26,37 +29,64 @@ import ProfileEdit1 from "@pages/myPage/ProfileEditPage1";
 import ProfileEdit2 from "@pages/myPage/ProfileEditPage2";
 
 const AppRouter: React.FC = () => {
+  const { isLogedIn } = useAuth();
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const handleAuthError = (message: string) => {
+    setErrorMessage(message); // 오류 메시지 설정
+  };
+
   return (
     <Router>
+      {/* 오류 메시지가 있을 때만 모달 표시 */}
+      {errorMessage && (
+        <ErrorModal
+          title="오류 발생"
+          message={errorMessage}
+          onClose={() => {
+            console.log("Closing modal");
+            setErrorMessage(null); // 모달 닫기 시 오류 메시지 초기화
+          }}
+        />
+      )}
+
       <Routes>
-        {/* 랜딩페이지 */}
-        <Route path="/" element={<LandingPage />} />
+        {/* 비로그인 상태일 때 */}
+        {!isLogedIn ? (
+          <>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup1" element={<SignUpPage1 />} />
+            <Route path="/signup2" element={<SignUpPage2 />} />
+            {/* 로그인하지 않았을 때 보호된 경로로 접근 시 오류 처리 */}
+            <Route path="*" 
+              element={<Navigate to="/login" replace state={{ error: "로그인이 필요합니다." }}/>
+              }
+            />
+          </>
+        ) : (
+          <>
+            {/* 마이페이지 */}
+            <Route path="/mypage" element={<Layout><MyPage /></Layout>} />
+            <Route path="/password" element={<PasswordChange />} />
+            <Route path="/edit1" element={<ProfileEdit1 />} />
+            <Route path="/edit2" element={<ProfileEdit2 />} />
 
-        {/* auth */}
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/signup1" element={<SignUpPage1 />} />
-        <Route path="/signup2" element={<SignUpPage2 />} />
+            {/* 뉴스 */}
+            <Route path="/mainNews" element={<Layout><MainNewsPage /></Layout>} />
+            <Route path="/rcmdNews" element={<Layout><RcmdNewsPage /></Layout>} />
+            <Route path="/news" element={<Layout><AllNewsPage /></Layout>} />
+            <Route path="/news/:newsId" element={<Layout><NewsDetailPage /></Layout>} />
 
-        {/* 마이페이지 */}
-        <Route path="/mypage" element={<Layout><MyPage /></Layout>} />
-        <Route path="/password" element={<PasswordChange />} />
-        <Route path="/edit1" element={<ProfileEdit1 />} />
-        <Route path="/edit2" element={<ProfileEdit2 />} />
+            {/* 스크랩 */}
+            <Route path="/scrapList" element={<Layout><ScrapListPage /></Layout>} />
 
-        {/* 뉴스 */}
-        <Route path="/mainNews" element={<Layout><MainNewsPage /></Layout>} />
-        <Route path="/rcmdNews" element={<Layout><RcmdNewsPage /></Layout>} />
-        <Route path="/news" element={<Layout><AllNewsPage /></Layout>} />
-        {/* <Route path="/filterNews" element={<FilterNewsPage />} />
-        <Route path="/viewCountNews" element={<ViewCountNewsPage />} />
-        <Route path="/scrapCountNews" element={<ScrapCountNewsPage />} /> */}
-        <Route path="/news/:newsId" element={<Layout><NewsDetailPage /></Layout>} />
-        {/* 스크랩 */}
-        <Route path="/scrapList" element={<Layout><ScrapListPage /></Layout>} />
-
-        {/* 단어장 */}
-        <Route path="/voca" element={<Layout><MainVoca /></Layout>} />
-        <Route path="/voca/:vocaId" element={<Layout><VocaDetail /></Layout>} />
+            {/* 단어장 */}
+            <Route path="/voca" element={<Layout><MainVoca /></Layout>} />
+            <Route path="/voca/:vocaId" element={<Layout><VocaDetail /></Layout>} />
+            <Route path="*" element={<Navigate to="/" />} />
+          </>
+        )}
       </Routes>
     </Router>
   );
