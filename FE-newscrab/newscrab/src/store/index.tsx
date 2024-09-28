@@ -2,6 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import createSagaMiddleware from "redux-saga";
 import loginReducer, { watchLoginSaga } from "./user/loginLogout"
 import vocaReducer from "./voca/vocaSlice";
+import scrapReducer from "./scrap/scrapSlice";
 import myPageReducer from './myPage/profileSlice';
 
 // 리듀서 import
@@ -15,6 +16,7 @@ export const store = configureStore({
     login: loginReducer,
     voca: vocaReducer,
     mypage: myPageReducer,
+    scrap: scrapReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(sagaMiddleware), // 기본 미들웨어에 sagaMiddleware 추가

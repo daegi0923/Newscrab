@@ -3,7 +3,7 @@ import { getScrapData } from "../../apis/scrap/scrapApi"; // 비동기 함수들
 
 //스크랩 리스트 가져오는 비동기 함수
 export const fetchScrapListThunk = createAsyncThunk(
-  "voca/fetchScrapData",
+  "scrap/fetchScrapData",
   async (_, { rejectWithValue }) => {
     try {
       const response = await getScrapData();
