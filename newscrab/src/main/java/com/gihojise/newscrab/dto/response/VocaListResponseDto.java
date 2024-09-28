@@ -9,5 +9,5 @@ import java.util.List;
 @Builder
 public class VocaListResponseDto {
     private int totalItems;
-    private List<VocaResponseDto> data;
+    private List<VocaSimpleResponseDto> data;
 }
