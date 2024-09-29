@@ -1,11 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
 import styled from "styled-components";
 import { getScrapData, postScrap } from "@apis/scrap/scrapApi"; // postScrap 함수 import
-import { addVocaThunk  } from '@store/voca/vocaSlice';
+import { addVocaThunk } from "@store/voca/vocaSlice";
 import DropDown from "@components/common/DropDown";
 import { words } from "@components/voca/VocaList";
 import { useDispatch } from "react-redux";
-import { AppDispatch } from '@store/index';
+import { AppDispatch } from "@store/index";
 
 const Sidebar = styled.div`
   width: 30%;
@@ -129,8 +129,8 @@ const SelectedIndustry = styled.div`
 `;
 const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
   const dispatch = useDispatch<AppDispatch>();
-  
-  const [scrapId, setScrapId] = useState<number | null>(null);
+
+  const [, setScrapId] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState("summary");
   const [summaryText, setSummaryText] = useState("");
   const [opinionText, setOpinionText] = useState("");
@@ -218,7 +218,7 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
       try {
         // Redux Thunk를 사용하여 단어 추가
         await dispatch(addVocaThunk(VocaData));
-        console.log(VocaData)
+        console.log(VocaData);
         alert("단어가 추가되었습니다!");
       } catch (error) {
         console.error("단어 추가 실패:", error);
@@ -294,35 +294,37 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
 
       {activeTab === "wordlist" && (
         <>
-        <StyledTextarea
-          value={wordText}
-          onChange={(e) => setWordText(e.target.value)}
-          placeholder="단어를 입력하세요."
-          $isOverflowing={false}
-        />
-        <StyledTextarea
-          value={descriptionText}
-          onChange={(e) => setDescriptionText(e.target.value)}
-          placeholder="설명을 입력하세요."
-          $isOverflowing={false}
-        />
+          <StyledTextarea
+            value={wordText}
+            onChange={(e) => setWordText(e.target.value)}
+            placeholder="단어를 입력하세요."
+            $isOverflowing={false}
+          />
+          <StyledTextarea
+            value={descriptionText}
+            onChange={(e) => setDescriptionText(e.target.value)}
+            placeholder="설명을 입력하세요."
+            $isOverflowing={false}
+          />
 
-        <IndustryDropdown>
-          <SelectedIndustry onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
-            {industryId
-              ? words.find((item) => item.industryId === industryId)
-                  ?.industryName || "산업을 선택하세요."
-              : "산업을 선택하세요."}
-          </SelectedIndustry>
-          {isDropdownOpen && (
-            <DropDown
-              dropdownIndustries={words}
-              handleIndustrySelect={handleIndustrySelect}
-            />
-          )}
-        </IndustryDropdown>
-      </>
-    )}
+          <IndustryDropdown>
+            <SelectedIndustry
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            >
+              {industryId
+                ? words.find((item) => item.industryId === industryId)
+                    ?.industryName || "산업을 선택하세요."
+                : "산업을 선택하세요."}
+            </SelectedIndustry>
+            {isDropdownOpen && (
+              <DropDown
+                dropdownIndustries={words}
+                handleIndustrySelect={handleIndustrySelect}
+              />
+            )}
+          </IndustryDropdown>
+        </>
+      )}
 
       {/* 저장 버튼을 이곳에 추가 */}
       <SaveButton onClick={handleSave}>저장</SaveButton>

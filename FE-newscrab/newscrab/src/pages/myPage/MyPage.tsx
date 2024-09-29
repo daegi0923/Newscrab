@@ -1,10 +1,10 @@
-import React, {useEffect} from 'react';
-import styled from 'styled-components';
+import React, { useEffect } from "react";
+import styled from "styled-components";
 import { AppDispatch } from "@store/index";
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { fetchUserProfileThunk } from "@store/myPage/profileSlice";
-import { RootState } from '@store/index';
+import { RootState } from "@store/index";
 import profile1 from "@assets/auth/profile1.jpg";
 import profile2 from "@assets/auth/profile2.jpg";
 import profile3 from "@assets/auth/profile3.jpg";
@@ -88,15 +88,15 @@ const MyPage: React.FC = () => {
   }, [dispatch]);
 
   const handleEdit1 = () => {
-    navigate('/edit1'); // 클릭 시 해당 vocaId로 이동
+    navigate("/edit1"); // 클릭 시 해당 vocaId로 이동
   };
 
   const handleEdit2 = () => {
-    navigate('/edit2'); // 클릭 시 해당 vocaId로 이동
+    navigate("/edit2"); // 클릭 시 해당 vocaId로 이동
   };
 
   const handlePassword = () => {
-    navigate('/password'); // 클릭 시 해당 vocaId로 이동
+    navigate("/password"); // 클릭 시 해당 vocaId로 이동
   };
 
   const selectedImage = images[userInfo.profileImg as keyof typeof images] || profile1;
@@ -110,18 +110,18 @@ const MyPage: React.FC = () => {
         <div>
         <p>이름: {userInfo.name || "이름 없음"}</p>
         </div>
-      
-      {/* 회원정보수정 및 비밀번호수정 버튼 */}
-      <ButtonGroup>
-        <StyledButton onClick={handleEdit1}>회원정보수정</StyledButton>
-        <StyledButton onClick={handleEdit2}>산업군 수정</StyledButton>
-        <StyledButton onClick={handlePassword}>비밀번호수정</StyledButton>
-      </ButtonGroup>
-    </UserInfoSection>
 
-    <p>스크랩 수: {userInfo.scrapCount || "0"}</p>
-    <p>단어 수: {userInfo.vocaCount || "0"}</p>
-    <p>성별: {userInfo.gender || "0"}</p>
+        {/* 회원정보수정 및 비밀번호수정 버튼 */}
+        <ButtonGroup>
+          <StyledButton onClick={handleEdit1}>회원정보수정</StyledButton>
+          <StyledButton onClick={handleEdit2}>산업군 수정</StyledButton>
+          <StyledButton onClick={handlePassword}>비밀번호수정</StyledButton>
+        </ButtonGroup>
+      </UserInfoSection>
+
+      <p>스크랩 수: {userInfo.scrapCount || "0"}</p>
+      <p>단어 수: {userInfo.vocaCount || "0"}</p>
+      <p>성별: {userInfo.gender || "0"}</p>
     </>
   );
 };
