@@ -131,10 +131,13 @@ const getIndustryName = (industryId: number): string => {
 const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({ newsDetailItem }) => {
   const [isHighlightPopupVisible, setIsHighlightPopupVisible] = useState(false);
   const [popupPosition, setPopupPosition] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
+  const [highlightedElement, setHighlightedElement] = useState<HTMLElement | null>(null);
+
 
   const handleTitleClick = () => {
     window.open(newsDetailItem.newsUrl, "_blank"); // 새 창에서 링크 열기
   };
+
 
   // 드래그한 부분에 스타일을 적용하는 함수
   const applyHighlight = (color: string) => {
@@ -156,6 +159,15 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({ newsDetailItem }
   
       selection.removeAllRanges(); // 선택 해제
       setIsHighlightPopupVisible(false); // 팝업 숨기기
+    }
+  };
+
+  // 하이라이트를 삭제하는 함수
+  const removeHighlight = () => {
+    if (highlightedElement) {
+      highlightedElement.replaceWith(...highlightedElement.childNodes); // 하이라이트된 부분을 제거
+      setIsHighlightPopupVisible(false); // 팝업 숨기기
+      setHighlightedElement(null); // 상태 초기화
     }
   };
 
@@ -204,6 +216,10 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({ newsDetailItem }
       const target = event.target as HTMLElement;
       if (target && target.style.backgroundColor) {
         target.style.cursor = "pointer";
+
+        // 클릭된 하이라이트된 요소를 저장
+        setHighlightedElement(target);
+
         // 하이라이트된 부분 클릭 시 팝업을 해당 위치에 표시
         const rect = target.getBoundingClientRect();
         
@@ -267,6 +283,7 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({ newsDetailItem }
         <HighlightComponent
           applyHighlight={applyHighlight}
           closePopup={closePopup}
+          removeHighlight={removeHighlight}
           style={{ top: popupPosition.top, left: popupPosition.left, position: "absolute" }}
         />
       )}
