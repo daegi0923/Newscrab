@@ -6,7 +6,8 @@ import lombok.Getter;
 public enum HighlightColor {
     Y("Yellow"),
     G("Green"),
-    B("Blue");
+    B("Blue"),
+    R("Red");
 
     private final String value;
 
