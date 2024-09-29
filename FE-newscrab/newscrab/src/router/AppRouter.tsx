@@ -1,4 +1,4 @@
-import React, {useState } from "react";
+import React, { useState } from "react";
 import { useAuth } from "@components/common/PrivateRoute";
 import { Navigate } from "react-router-dom";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
@@ -30,9 +30,9 @@ const AppRouter: React.FC = () => {
   const { isLogedIn } = useAuth();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const handleAuthError = (message: string) => {
-    setErrorMessage(message); // 오류 메시지 설정
-  };
+  // const handleAuthError = (message: string) => {
+  //   setErrorMessage(message); // 오류 메시지 설정
+  // };
 
   return (
     <Router>
@@ -49,8 +49,8 @@ const AppRouter: React.FC = () => {
       )}
 
       <Routes>
-            <Route path="/" element={<LandingPage />} />
-            
+        <Route path="/" element={<LandingPage />} />
+
         {/* 비로그인 상태일 때 */}
         {!isLogedIn ? (
           <>
@@ -59,8 +59,14 @@ const AppRouter: React.FC = () => {
             <Route path="/signup1" element={<SignUpPage1 />} />
             <Route path="/signup2" element={<SignUpPage2 />} />
             {/* 로그인하지 않았을 때 보호된 경로로 접근 시 오류 처리 */}
-            <Route path="*" 
-              element={<Navigate to="/login" replace state={{ error: "로그인이 필요합니다." }}/>
+            <Route
+              path="*"
+              element={
+                <Navigate
+                  to="/login"
+                  replace
+                  state={{ error: "로그인이 필요합니다." }}
+                />
               }
             />
           </>
@@ -68,23 +74,80 @@ const AppRouter: React.FC = () => {
           <>
             {/* 마이페이지 */}
             <Route path="/" element={<LandingPage />} />
-            <Route path="/mypage" element={<Layout><MyPage /></Layout>} />
+            <Route
+              path="/mypage"
+              element={
+                <Layout>
+                  <MyPage />
+                </Layout>
+              }
+            />
             <Route path="/password" element={<PasswordChange />} />
             <Route path="/edit1" element={<ProfileEdit1 />} />
             <Route path="/edit2" element={<ProfileEdit2 />} />
 
             {/* 뉴스 */}
-            <Route path="/mainNews" element={<Layout><MainNewsPage /></Layout>} />
-            <Route path="/rcmdNews" element={<Layout><RcmdNewsPage /></Layout>} />
-            <Route path="/news" element={<Layout><AllNewsPage /></Layout>} />
-            <Route path="/news/:newsId" element={<Layout><NewsDetailPage /></Layout>} />
+            <Route
+              path="/mainNews"
+              element={
+                <Layout>
+                  <MainNewsPage />
+                </Layout>
+              }
+            />
+            <Route
+              path="/rcmdNews"
+              element={
+                <Layout>
+                  <RcmdNewsPage />
+                </Layout>
+              }
+            />
+            <Route
+              path="/news"
+              element={
+                <Layout>
+                  <AllNewsPage />
+                </Layout>
+              }
+            />
+            <Route
+              path="/news/:newsId"
+              element={
+                <Layout>
+                  <NewsDetailPage />
+                </Layout>
+              }
+            />
 
             {/* 스크랩 */}
-            <Route path="/scrapList" element={<Layout><ScrapListPage /></Layout>} />
+            <Route
+              path="/scrapList"
+              element={
+                <Layout>
+                  <ScrapListPage />
+                </Layout>
+              }
+            />
+            <Route path="/scrap/:scrapId" element={<ScrapDetailPage />} />
 
             {/* 단어장 */}
-            <Route path="/voca" element={<Layout><MainVoca /></Layout>} />
-            <Route path="/voca/:vocaId" element={<Layout><VocaDetail /></Layout>} />
+            <Route
+              path="/voca"
+              element={
+                <Layout>
+                  <MainVoca />
+                </Layout>
+              }
+            />
+            <Route
+              path="/voca/:vocaId"
+              element={
+                <Layout>
+                  <VocaDetail />
+                </Layout>
+              }
+            />
             <Route path="*" element={<Navigate to="/" />} />
           </>
         )}
