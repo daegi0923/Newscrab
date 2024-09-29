@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { logout } from "@store/user/loginLogout";
+import Nav from "@components/common/Nav";
 
 const LandingPage: React.FC = () => {
   const dispatch = useDispatch();
@@ -12,6 +13,7 @@ const LandingPage: React.FC = () => {
 
   return (
     <div>
+      <Nav/>
       <h1>newscrab 바꼈나요?</h1>
       <nav>
         <ul>
@@ -31,7 +33,7 @@ const LandingPage: React.FC = () => {
             <Link to="/mainNews">MainNews 페이지</Link>
           </li>
           <li>
-            <Link to="/scrapList">스크랩 페이지</Link>
+            <Link to="/scrap">스크랩 페이지</Link>
           </li>
           <li>
             <Link to="/news/1">뉴스 디테일 (임시)</Link>

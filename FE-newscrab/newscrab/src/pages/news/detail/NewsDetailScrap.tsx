@@ -1,7 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
 import styled from "styled-components";
-
-import { getScrapData, postScrap, putScrap } from "@apis/scrap/scrapApi"; // postScrap 함수 import
+import { getScrapData, postScrap } from "@apis/scrap/scrapApi"; // postScrap 함수 import
+import { addVocaThunk } from "@store/voca/vocaSlice";
+import DropDown from "@components/common/DropDown";
+import { words } from "@components/voca/VocaList";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@store/index";
 
 const Sidebar = styled.div`
   width: 30%;
@@ -111,13 +115,31 @@ const SaveButton = styled.button`
   }
 `;
 
+const IndustryDropdown = styled.div`
+  margin-top: 10px;
+  position: relative;
+`;
+
+const SelectedIndustry = styled.div`
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fff;
+  cursor: pointer;
+`;
 const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
-  const [scrapId, setScrapId] = useState<number | null>(null);
+  const dispatch = useDispatch<AppDispatch>();
+
+  const [, setScrapId] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState("summary");
   const [summaryText, setSummaryText] = useState("");
   const [opinionText, setOpinionText] = useState("");
   const [wordListText, setWordListText] = useState("");
   const [isOverflowing, setIsOverflowing] = useState(false);
+  const [wordText, setWordText] = useState("");
+  const [descriptionText, setDescriptionText] = useState("");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [industryId, setIndustryId] = useState<number | null>(null);
 
   const summaryTextareaRef = useRef<HTMLTextAreaElement>(null);
   const opinionTextareaRef = useRef<HTMLTextAreaElement>(null);
@@ -160,29 +182,69 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
     adjustHeight(wordListTextareaRef.current);
   }, [summaryText, opinionText, wordListText, activeTab]);
 
-  const handleSave = async () => {
-    const scrapData = {
-      newsId: newsId,
-      comment: opinionText,
-      scrapSummary: summaryText,
-      // vocalist: wordListText.split(",").map((item) => item.trim()),
-      highlights: [],
-    };
+  // const handleSave = async () => {
+  //   const scrapData = {
+  //     newsId: newsId,
+  //     comment: opinionText,
+  //     scrapSummary: summaryText,
+  //     // vocalist: wordListText.split(",").map((item) => item.trim()),
+  //     highlights: [],
+  //   };
 
-    try {
-      if (scrapId) {
-        // scrapId가 있으면 put 요청 (업데이트)
-        await putScrap(scrapId, scrapData);
-        alert("업데이트되었습니다!");
-      } else {
-        // scrapId가 없으면 post 요청 (새로 생성)
+  //   try {
+  //     await postScrap(scrapData); // postScrap API 호출
+  //     alert("저장되었습니다!");
+  //   } catch (error) {
+  //     console.error("Error saving scrap:", error);
+  //     alert("저장에 실패했습니다.");
+  //   }
+  // };
+
+  const handleSave = async () => {
+    if (activeTab === "wordlist") {
+      if (industryId === null) {
+        alert("산업을 선택해주세요.");
+        return;
+      }
+
+      const VocaData = {
+        newsId: newsId,
+        vocaName: wordText, // 사용자가 입력한 단어
+        vocaDesc: descriptionText, // 사용자가 입력한 설명
+        sentence: "", // 이곳에 예문 추가 가능
+        industryId: industryId, // 선택한 industryId
+      };
+
+      try {
+        // Redux Thunk를 사용하여 단어 추가
+        await dispatch(addVocaThunk(VocaData));
+        console.log(VocaData);
+        alert("단어가 추가되었습니다!");
+      } catch (error) {
+        console.error("단어 추가 실패:", error);
+        alert("단어 추가에 실패했습니다.");
+      }
+    } else {
+      const scrapData = {
+        newsId: newsId,
+        comment: opinionText,
+        scrapSummary: summaryText,
+        highlights: [],
+      };
+
+      try {
         await postScrap(scrapData);
         alert("저장되었습니다!");
+      } catch (error) {
+        console.error("Error saving scrap:", error);
+        alert("저장에 실패했습니다.");
       }
-    } catch (error) {
-      console.error("Error saving scrap:", error);
-      alert("저장에 실패했습니다.");
     }
+  };
+
+  const handleIndustrySelect = (id: number) => {
+    setIndustryId(id); // 선택된 industryId 설정
+    setIsDropdownOpen(false); // 드롭다운 닫기
   };
 
   const summaryPlaceholder = `<서론>\n\n<본론>\n\n<결론>`;
@@ -231,13 +293,37 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
       )}
 
       {activeTab === "wordlist" && (
-        <StyledTextarea
-          ref={wordListTextareaRef}
-          value={wordListText}
-          onChange={(e) => setWordListText(e.target.value)}
-          placeholder="단어장을 작성하세요."
-          $isOverflowing={isOverflowing}
-        />
+        <>
+          <StyledTextarea
+            value={wordText}
+            onChange={(e) => setWordText(e.target.value)}
+            placeholder="단어를 입력하세요."
+            $isOverflowing={false}
+          />
+          <StyledTextarea
+            value={descriptionText}
+            onChange={(e) => setDescriptionText(e.target.value)}
+            placeholder="설명을 입력하세요."
+            $isOverflowing={false}
+          />
+
+          <IndustryDropdown>
+            <SelectedIndustry
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            >
+              {industryId
+                ? words.find((item) => item.industryId === industryId)
+                    ?.industryName || "산업을 선택하세요."
+                : "산업을 선택하세요."}
+            </SelectedIndustry>
+            {isDropdownOpen && (
+              <DropDown
+                dropdownIndustries={words}
+                handleIndustrySelect={handleIndustrySelect}
+              />
+            )}
+          </IndustryDropdown>
+        </>
       )}
 
       {/* 저장 버튼을 이곳에 추가 */}

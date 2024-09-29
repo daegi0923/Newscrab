@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import AdImage from "../../assets/adver.png";
+import AdImage from "../../assets/voca/adver.png";
 
 const AdContainer = styled.div`
   display: flex;

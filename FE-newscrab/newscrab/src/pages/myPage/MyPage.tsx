@@ -1,8 +1,13 @@
-import React from 'react';
-import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
-// import { useSelector } from 'react-redux';
-// import { RootState } from '@store/index';
+import React, { useEffect } from "react";
+import styled from "styled-components";
+import { AppDispatch } from "@store/index";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { fetchUserProfileThunk } from "@store/myPage/profileSlice";
+import { RootState } from "@store/index";
+// import profile1 from "@assets/auth/profile1.jpg";
+// import profile2 from "@assets/auth/profile2.jpg";
+// import profile3 from "@assets/auth/profile3.jpg";
 // import { industry } from '@components/common/Industry';
 
 // 사용자 정보 컴포넌트 섹션
@@ -12,7 +17,7 @@ const UserInfoSection = styled.section`
   align-items: center;
   border: 2px solid #ccc;
   padding: 20px;
-  width: 250px;
+  width: 350px;
   border-radius: 10px;
   margin: 20px 0;
 `;
@@ -59,40 +64,65 @@ const StyledButton = styled.button`
 // 마이페이지 컴포넌트
 const MyPage: React.FC = () => {
   const navigate = useNavigate();
+  const dispatch: AppDispatch = useDispatch();
+  const { userInfo } = useSelector((state: RootState) => state.mypage);
   // const {name, userIndustry} = useSelector((state: RootState) => state.mypage.userInfo);
   // const isAuthenticated = useSelector((state: RootState) => state.mypage.isAuthenticated);
 
+  // const images = [
+  //   { src: profile1, alt: "profile1" },
+  //   { src: profile2, alt: "profile2" },
+  //   { src: profile3, alt: "profile3" },
+  // ];
+
+  // 사용자 정보를 불러와서 초기값 설정 (처음 마운트될 때 실행)
+  useEffect(() => {
+    dispatch(fetchUserProfileThunk())
+      .unwrap()
+      .then((res) => {
+        console.log("프로필 데이터 불러옴:", res);
+      })
+      .catch((error) => {
+        console.error("프로필 불러오기 오류:", error);
+      });
+  }, [dispatch]);
+
   const handleEdit1 = () => {
-    navigate('/edit1'); // 클릭 시 해당 vocaId로 이동
+    navigate("/edit1"); // 클릭 시 해당 vocaId로 이동
   };
 
   const handleEdit2 = () => {
-    navigate('/edit2'); // 클릭 시 해당 vocaId로 이동
+    navigate("/edit2"); // 클릭 시 해당 vocaId로 이동
   };
 
   const handlePassword = () => {
-    navigate('/password'); // 클릭 시 해당 vocaId로 이동
+    navigate("/password"); // 클릭 시 해당 vocaId로 이동
   };
 
   return (
-    <UserInfoSection>
-      {/* 사용자 이미지 자리 (나중에 실제 이미지를 삽입할 수 있음) */}
-      <UserImage />
+    <>
+      <UserInfoSection>
+        {/* 사용자 이미지 자리 (나중에 실제 이미지를 삽입할 수 있음) */}
+        {userInfo.profileImg}
+        <UserImage />
 
-      {/* {isAuthenticated && (
         <div>
-          <p>이름 : {name}</p>
-          <p>관심 산업: {userIndustry.map(industry => industry.industryName).join(', ')}</p>
+          <p>이름: {userInfo.name || "이름 없음"}</p>
+          {/* <p>관심 산업: {userIndustry.map(userInfo.userIndustries => industry.industryName).join(', ')}</p> */}
         </div>
-      )} */}
-      
-      {/* 회원정보수정 및 비밀번호수정 버튼 */}
-      <ButtonGroup>
-        <StyledButton onClick={handleEdit1}>회원정보수정</StyledButton>
-        <StyledButton onClick={handleEdit2}>산업군 수정</StyledButton>
-        <StyledButton onClick={handlePassword}>비밀번호수정</StyledButton>
-      </ButtonGroup>
-    </UserInfoSection>
+
+        {/* 회원정보수정 및 비밀번호수정 버튼 */}
+        <ButtonGroup>
+          <StyledButton onClick={handleEdit1}>회원정보수정</StyledButton>
+          <StyledButton onClick={handleEdit2}>산업군 수정</StyledButton>
+          <StyledButton onClick={handlePassword}>비밀번호수정</StyledButton>
+        </ButtonGroup>
+      </UserInfoSection>
+
+      <p>스크랩 수: {userInfo.scrapCount || "0"}</p>
+      <p>단어 수: {userInfo.vocaCount || "0"}</p>
+      <p>성별: {userInfo.gender || "0"}</p>
+    </>
   );
 };
 
