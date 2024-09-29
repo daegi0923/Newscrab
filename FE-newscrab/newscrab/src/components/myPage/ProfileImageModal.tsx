@@ -75,13 +75,6 @@ const ProfileImageModal: React.FC<ProfileImageModalProps> = ({
 
   if (!isOpen) return null;
 
-  // const getImageLabel = (src: string) => {
-  //   if (src === profile1) return 'A';
-  //   if (src === profile2) return 'B';
-  //   if (src === profile3) return 'C';
-  //   return '';
-  // };
-
   return (
     <ModalOverlay>
       <ModalContent>

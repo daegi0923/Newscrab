@@ -15,6 +15,9 @@ export interface VocaResponseDto {
   originNewsId: number;
   createdAt: string;
   updatedAt: string;
+  originNewsTitle: string;
+  originNewsUrl: string;
+  originNewsImgUrl: string;
   relatedNews1: RelatedNews; 
   relatedNews2: RelatedNews; 
   relatedNews3: RelatedNews;

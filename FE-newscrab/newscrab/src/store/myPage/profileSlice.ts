@@ -47,7 +47,13 @@ const initialState = {
     email: "",
     birthday: "",
     gender: "",
-    profileImage: "",
+    scrapCount: "",
+    newsLikeCount: "",
+    vocaCount: "",
+    createdAt: "",
+    loginId: "",
+    profileImg: "",
+
   },
   loading: false,
   error: null as string | null,
@@ -66,7 +72,7 @@ const profileSlice = createSlice({
         state.error = null;
       })
       .addCase(fetchUserProfileThunk.fulfilled, (state, action) => {
-        state.userInfo = action.payload;
+        state.userInfo = action.payload.data;
         state.loading = false;
       })
       .addCase(fetchUserProfileThunk.rejected, (state, action) => {

@@ -1,8 +1,8 @@
-// import { useNavigate } from "react-router-dom";
 import styled, { createGlobalStyle } from "styled-components";
 import NewsImage from "../../assets/auth/newsImage.png";
 import BackgroundImage from "../../assets/auth/bg.png";
 import Input from "@common/InputBox";
+import { useNavigate } from "react-router-dom";
 import RadioButton from "@common/RadioButton";
 import Button from "@common/Button";
 import { useState, useEffect } from "react";
@@ -11,10 +11,7 @@ import ProfileImageModal from "@components/myPage/ProfileImageModal";
 import ProfileImageDisplay from "@components/myPage/ProfileImageDisplay";
 import defaultProfile from "@assets/auth/defaultProfile.jpg";
 import { AppDispatch } from "@store/index";
-import {
-  updateUserProfileThunk,
-  fetchUserProfileThunk,
-} from "@store/myPage/profileSlice";
+import { updateUserProfileThunk, fetchUserProfileThunk } from "@store/myPage/profileSlice";
 import profile1 from "@assets/auth/profile1.jpg";
 import profile2 from "@assets/auth/profile2.jpg";
 import profile3 from "@assets/auth/profile3.jpg";
@@ -76,8 +73,8 @@ interface UserProfile {
       name: string;
       email: string;
       birthday: string;
-      gender: string; // 성별: "male", "female", "other" 중 하나
-      profileImage: string;
+      gender: string;
+      profileImg: string;
     };
   };
 }
@@ -87,13 +84,10 @@ interface RootState {
 }
 
 const ProfileEdit1: React.FC = () => {
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
   const dispatch: AppDispatch = useDispatch();
 
-  // Redux 상태에서 사용자 정보 가져오기
   const { userInfo } = useSelector((state: RootState) => state.mypage);
-
-  // 로딩 상태 관리
   const [loading, setLoading] = useState(true);
 
   // 사용자 정보 상태 관리 (초기값을 사용자 정보로 설정)
@@ -102,7 +96,7 @@ const ProfileEdit1: React.FC = () => {
     email: "",
     birthday: "",
     gender: "", // 성별 기본값은 빈 문자열
-    profileImage: "",
+    profileImg: "",
   });
 
   const [errors] = useState({
@@ -156,9 +150,9 @@ const ProfileEdit1: React.FC = () => {
         email: userInfo.data.email,
         birthday: userInfo.data.birthday,
         gender: userInfo.data.gender,
-        profileImage: userInfo.data.profileImage || "A",
+        profileImg: userInfo.data.profileImg || "A",
       });
-      setSelectedImage(mapEnumToImage(userInfo.data.profileImage || "A"));
+      setSelectedImage(mapEnumToImage(userInfo.data.profileImg || "A"));
     }
   }, [userInfo]);
 
@@ -180,7 +174,7 @@ const ProfileEdit1: React.FC = () => {
   const handleSelectImage = (imageSrc: string) => {
     const imageEnum = mapImageToEnum(imageSrc);
     setSelectedImage(imageSrc);
-    setEditForm({ ...editForm, profileImage: imageEnum }); // A, B, C로 설정
+    setEditForm({ ...editForm, profileImg: imageEnum }); // A, B, C로 설정
   };
 
   const handleSave = async () => {
@@ -191,7 +185,7 @@ const ProfileEdit1: React.FC = () => {
         updateUserProfileThunk(editForm)
       ).unwrap();
       console.log("수정 완료:", response);
-      // navigate('/mypage');  // 성공 시 이동
+      navigate('/mypage');
     } catch (error) {
       console.error("회원 정보 업데이트 실패:", error);
       alert("정보를 업데이트하는 중 오류가 발생했습니다.");
