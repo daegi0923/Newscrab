@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import viewIcon from "@assets/view.png";
 import scrapCntIcon from "@assets/scrapCnt.png";
 import { NewsDetailItem } from "../../../types/newsTypes";
-import LikeButton from "./LikeButton"; // LikeButton 컴포넌트 임포트
+import LikeButton from "./LikeButton";
+import HighlightComponent from "../../scrap/highlight/HighlightComponent";
 
 const NewsContent = styled.div`
   width: 60%;
@@ -16,6 +17,7 @@ const NewsContent = styled.div`
   max-height: 680px;
   overflow-y: auto;
   position: relative;
+  user-select: text;
 `;
 
 const NewsTitle = styled.h2`
@@ -32,7 +34,7 @@ const MetaInfoContainer = styled.div`
 
 const InfoGroup = styled.div`
   display: flex;
-  gap: 10px; // 간격 설정
+  gap: 10px;
 `;
 
 const Info = styled.p`
@@ -68,12 +70,6 @@ const NewsText = styled.div`
   font-size: 16px;
 `;
 
-// const NewsImage = styled.img`
-//   width: 100%;
-//   height: 300px;
-//   margin-bottom: 10px;
-// `;
-
 const Divider = styled.hr`
   border: none;
   border-top: 1px solid #ddd;
@@ -84,12 +80,51 @@ type ScrapDetailArticleProps = {
   newsDetailItem: NewsDetailItem;
 };
 
-const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({
-  newsDetailItem,
-}) => {
+const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({ newsDetailItem }) => {
+  const [isHighlightPopupVisible, setIsHighlightPopupVisible] = useState(false);
+  const [popupPosition, setPopupPosition] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
+
+  // 드래그한 부분에 스타일을 적용하는 함수
+  const applyHighlight = (color: string) => {
+    const selection = window.getSelection();
+    if (selection && selection.rangeCount > 0) {
+      const range = selection.getRangeAt(0);
+      const span = document.createElement("span");
+      span.style.backgroundColor = color;
+      span.appendChild(range.extractContents()); // 기존 내용 추출
+      range.insertNode(span); // span으로 감싸기
+      selection.removeAllRanges(); // 선택 해제
+      setIsHighlightPopupVisible(false); // 팝업 숨기기
+    }
+  };
+
+  const removeHighlight = () => {
+    // 기존 하이라이트 제거 기능을 추가하려면 여기에 로직을 구현
+    setIsHighlightPopupVisible(false); // 팝업 숨기기
+  };
+
+  useEffect(() => {
+    const handleMouseUp = () => {
+      const selection = window.getSelection();
+      if (selection && selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+        const rect = range.getBoundingClientRect();
+        setPopupPosition({ top: rect.top + window.scrollY - 5, left: rect.left + window.scrollX });
+        setIsHighlightPopupVisible(true);
+      } else {
+        setIsHighlightPopupVisible(false); // 선택이 없을 때 팝업 숨기기
+      }
+    };
+
+    document.addEventListener("mouseup", handleMouseUp);
+    return () => {
+      document.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, []);
+
   return (
-    <NewsContent>
-      <LikeButton newsId={newsDetailItem.newsId} /> {/* LikeButton 사용 */}
+    <NewsContent id="newsContent">
+      <LikeButton newsId={newsDetailItem.newsId} />
       <NewsTitle>{newsDetailItem.newsTitle}</NewsTitle>
       <MetaInfoContainer>
         <InfoGroup>
@@ -108,17 +143,14 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({
         </Stats>
       </MetaInfoContainer>
       <Divider />
-      {/* <NewsText>
-        <div>뉴스 소제목 자리</div>
-      </NewsText>
-      {newsDetailItem.newsPhoto && newsDetailItem.newsPhoto.length > 0 ? (
-        <NewsImage src={newsDetailItem.newsPhoto[0]} alt="News" />
-      ) : (
-        <div>이미지가 없습니다.</div>
-      )} */}
-      <NewsText
-        dangerouslySetInnerHTML={{ __html: newsDetailItem.newsContent }} // HTML로 렌더링
-      />
+      <NewsText dangerouslySetInnerHTML={{ __html: newsDetailItem.newsContent }} />
+      {isHighlightPopupVisible && (
+        <HighlightComponent
+          applyHighlight={applyHighlight}
+          removeHighlight={removeHighlight}
+          style={{ top: popupPosition.top, left: popupPosition.left, position: "absolute" }}
+        />
+      )}
     </NewsContent>
   );
 };
