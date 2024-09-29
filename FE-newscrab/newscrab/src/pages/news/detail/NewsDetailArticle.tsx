@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import viewIcon from "@assets/view.png";
 import scrapCntIcon from "@assets/scrapCnt.png";
 import { NewsDetailItem } from "../../../types/newsTypes";
 import LikeButton from "../common/LikeButton"; // LikeButton 컴포넌트 임포트
 import { industry } from "@common/Industry"; // 산업 데이터를 가져오기
+import HighlightComponent from "../../scrap/highlight/HighlightComponent";
 
 // 스타일 정의
 const NewsContent = styled.div`
@@ -36,6 +37,7 @@ const NewsContent = styled.div`
   &::-webkit-scrollbar-track {
     background-color: transparent;
   }
+  user-select: text;
 `;
 
 const NewsTitle = styled.h2`
@@ -71,7 +73,7 @@ const MetaInfoContainer = styled.div`
 
 const InfoGroup = styled.div`
   display: flex;
-  gap: 10px; // 간격 설정
+  gap: 10px;
 `;
 
 const Info = styled.p`
@@ -117,21 +119,63 @@ type ScrapDetailArticleProps = {
   newsDetailItem: NewsDetailItem;
 };
 
+
 // getIndustryName 함수를 정의하여 industryId를 이용해 산업 이름을 가져오는 함수
 const getIndustryName = (industryId: number): string => {
   const matchedCategory = industry.find((ind) => ind.industryId === industryId);
   return matchedCategory ? matchedCategory.industryName : "알 수 없음";
 };
 
-const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({
-  newsDetailItem,
-}) => {
+
+
+const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({ newsDetailItem }) => {
+  const [isHighlightPopupVisible, setIsHighlightPopupVisible] = useState(false);
+  const [popupPosition, setPopupPosition] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
+
   const handleTitleClick = () => {
     window.open(newsDetailItem.newsUrl, "_blank"); // 새 창에서 링크 열기
   };
 
+  // 드래그한 부분에 스타일을 적용하는 함수
+  const applyHighlight = (color: string) => {
+    const selection = window.getSelection();
+    if (selection && selection.rangeCount > 0) {
+      const range = selection.getRangeAt(0);
+      const span = document.createElement("span");
+      span.style.backgroundColor = color;
+      span.appendChild(range.extractContents()); // 기존 내용 추출
+      range.insertNode(span); // span으로 감싸기
+      selection.removeAllRanges(); // 선택 해제
+      setIsHighlightPopupVisible(false); // 팝업 숨기기
+    }
+  };
+
+  const removeHighlight = () => {
+    // 기존 하이라이트 제거 기능을 추가하려면 여기에 로직을 구현
+    setIsHighlightPopupVisible(false); // 팝업 숨기기
+  };
+
+  useEffect(() => {
+    const handleMouseUp = () => {
+      const selection = window.getSelection();
+      if (selection && selection.rangeCount > 0) {
+        const range = selection.getRangeAt(0);
+        const rect = range.getBoundingClientRect();
+        setPopupPosition({ top: rect.top + window.scrollY - 5, left: rect.left + window.scrollX });
+        setIsHighlightPopupVisible(true);
+      } else {
+        setIsHighlightPopupVisible(false); // 선택이 없을 때 팝업 숨기기
+      }
+    };
+
+    document.addEventListener("mouseup", handleMouseUp);
+    return () => {
+      document.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, []);
+
   return (
-    <NewsContent>
+    <NewsContent id="newsContent">
       <LikeButton newsId={newsDetailItem.newsId} /> {/* LikeButton 사용 */}
       {/* 뉴스 제목 클릭 시 새 창으로 이동 */}
       <NewsTitle onClick={handleTitleClick}>
@@ -159,9 +203,14 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({
         </Stats>
       </MetaInfoContainer>
       <Divider />
-      <NewsText
-        dangerouslySetInnerHTML={{ __html: newsDetailItem.newsContent }} // HTML로 렌더링
-      />
+      <NewsText dangerouslySetInnerHTML={{ __html: newsDetailItem.newsContent }} />
+      {isHighlightPopupVisible && (
+        <HighlightComponent
+          applyHighlight={applyHighlight}
+          removeHighlight={removeHighlight}
+          style={{ top: popupPosition.top, left: popupPosition.left, position: "absolute" }}
+        />
+      )}
     </NewsContent>
   );
 };
