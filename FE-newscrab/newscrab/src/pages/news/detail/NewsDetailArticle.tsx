@@ -161,18 +161,34 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({ newsDetailItem }
       if (selection && selection.rangeCount > 0) {
         const range = selection.getRangeAt(0);
         const rect = range.getBoundingClientRect();
-        setPopupPosition({ top: rect.top + window.scrollY - 5, left: rect.left + window.scrollX });
-        setIsHighlightPopupVisible(true);
+        
+        // 뉴스 기사 컨텐츠 내부의 스크롤을 반영하기 위해 offsetTop과 scrollTop 값을 더해줍니다.
+        const newsContentElement = document.getElementById("newsContent");
+        if (newsContentElement) {
+          const newsContentRect = newsContentElement.getBoundingClientRect();
+          
+          // 전체 화면의 scrollY를 빼고, 뉴스 컨텐츠의 내부 스크롤 값을 더해서 계산
+          const popupWidth = 120; // 팝업 너비 (HighlightComponent의 가로 크기)
+          const adjustedTop = rect.top + newsContentElement.scrollTop - newsContentRect.top - 50; // 드래그 상단에 위치
+          const adjustedLeft = rect.left + newsContentElement.scrollLeft - (popupWidth / 2) + (rect.width / 2); // 가로 중앙 정렬
+  
+          setPopupPosition({
+            top: adjustedTop,
+            left: adjustedLeft,
+          });
+          setIsHighlightPopupVisible(true);
+        }
       } else {
         setIsHighlightPopupVisible(false); // 선택이 없을 때 팝업 숨기기
       }
     };
-
+  
     document.addEventListener("mouseup", handleMouseUp);
     return () => {
       document.removeEventListener("mouseup", handleMouseUp);
     };
   }, []);
+  
 
   return (
     <NewsContent id="newsContent">
