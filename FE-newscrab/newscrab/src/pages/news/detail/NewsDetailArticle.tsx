@@ -142,16 +142,25 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({ newsDetailItem }
     if (selection && selection.rangeCount > 0) {
       const range = selection.getRangeAt(0);
       const span = document.createElement("span");
-      span.style.backgroundColor = color;
-      span.appendChild(range.extractContents()); // 기존 내용 추출
-      range.insertNode(span); // span으로 감싸기
+  
+      // 이미 존재하는 하이라이트인지 확인
+      if (range.startContainer.parentElement?.style.backgroundColor) {
+        // 기존 하이라이트의 색상 변경
+        range.startContainer.parentElement.style.backgroundColor = color;
+      } else {
+        // 새로운 하이라이트 생성
+        span.style.backgroundColor = color;
+        span.appendChild(range.extractContents()); // 기존 내용 추출
+        range.insertNode(span); // span으로 감싸기
+      }
+  
       selection.removeAllRanges(); // 선택 해제
       setIsHighlightPopupVisible(false); // 팝업 숨기기
     }
   };
 
-  const removeHighlight = () => {
-    // 기존 하이라이트 제거 기능을 추가하려면 여기에 로직을 구현
+
+  const closePopup = () => {
     setIsHighlightPopupVisible(false); // 팝업 숨기기
   };
 
@@ -186,6 +195,40 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({ newsDetailItem }
     document.addEventListener("mouseup", handleMouseUp);
     return () => {
       document.removeEventListener("mouseup", handleMouseUp);
+    };
+  }, []);
+
+
+  useEffect(() => {
+    const handleHighlightClick = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (target && target.style.backgroundColor) {
+        target.style.cursor = "pointer";
+        // 하이라이트된 부분 클릭 시 팝업을 해당 위치에 표시
+        const rect = target.getBoundingClientRect();
+        
+        // 뉴스 기사 컨텐츠 내부의 스크롤을 반영하기 위해 offsetTop과 scrollTop 값을 더해줍니다.
+        const newsContentElement = document.getElementById("newsContent");
+        if (newsContentElement) {
+          const newsContentRect = newsContentElement.getBoundingClientRect();
+
+          // 전체 화면의 scrollY를 빼고, 뉴스 컨텐츠의 내부 스크롤 값을 더해서 계산
+          const popupWidth = 120; // 팝업 너비 (HighlightComponent의 가로 크기)
+          const popupHeight = 40; // 팝업 높이
+
+          // 클릭한 위치 바로 위에 팝업을 표시
+          const adjustedTop = rect.top + newsContentElement.scrollTop - newsContentRect.top - popupHeight; // 클릭한 위치 위에 팝업 위치
+          const adjustedLeft = rect.left + newsContentElement.scrollLeft - (popupWidth / 2) + (rect.width / 2); // 가로 중앙 정렬
+
+          setPopupPosition({ top: adjustedTop, left: adjustedLeft });
+          setIsHighlightPopupVisible(true);
+        }
+      }
+    };
+  
+    document.addEventListener("click", handleHighlightClick);
+    return () => {
+      document.removeEventListener("click", handleHighlightClick);
     };
   }, []);
   
@@ -223,7 +266,7 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({ newsDetailItem }
       {isHighlightPopupVisible && (
         <HighlightComponent
           applyHighlight={applyHighlight}
-          removeHighlight={removeHighlight}
+          closePopup={closePopup}
           style={{ top: popupPosition.top, left: popupPosition.left, position: "absolute" }}
         />
       )}

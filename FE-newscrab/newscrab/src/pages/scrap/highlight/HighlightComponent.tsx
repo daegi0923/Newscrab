@@ -28,7 +28,7 @@ const HighlightButton = styled.button<{ color?: string }>`
   outline: none;
 `;
 
-const RemoveButton = styled.button`
+const CloseButton  = styled.button`
   background-color: #fff;
   border: none;
   border-radius: 4px;
@@ -38,13 +38,13 @@ const RemoveButton = styled.button`
 
 type HighlightComponentProps = {
   applyHighlight: (color: string) => void;
-  removeHighlight: () => void;
+  closePopup: () => void;
   style?: React.CSSProperties;
 };
 
 const HighlightComponent: React.FC<HighlightComponentProps> = ({
   applyHighlight,
-  removeHighlight,
+  closePopup,
   style,
 }) => {
   return (
@@ -65,7 +65,7 @@ const HighlightComponent: React.FC<HighlightComponentProps> = ({
         color="#cddafd"
         onClick={() => applyHighlight("#cddafd")}
       />
-      <RemoveButton onClick={removeHighlight}>x</RemoveButton>
+      <CloseButton  onClick={closePopup}>x</CloseButton >
     </HighlightPopup>
   );
 };
