@@ -12,9 +12,9 @@ import profile3 from "@assets/auth/profile3.jpg";
 // 사용자 정보 컴포넌트 섹션
 const UserInfoContainer = styled.div`
   position: relative;
-  width: 300px;
+  width: 280px;
   text-align: center;
-  margin: 10% 5%;
+  margin: 8% 5%;
   padding: 20px;
   border: 2px solid #ccc;
   border-radius: 10px;

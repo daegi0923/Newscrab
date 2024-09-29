@@ -1,31 +1,60 @@
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { AppDispatch } from "@store/index";
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { fetchUserProfileThunk } from "@store/myPage/profileSlice";
 import { RootState } from '@store/index';
-import profile1 from "@assets/auth/profile1.jpg";
-import profile2 from "@assets/auth/profile2.jpg";
-import profile3 from "@assets/auth/profile3.jpg";
 import UserProfile from '@components/myPage/UserProfile';
+import Ping from '@components/myPage/Ping';
+import Fortune from '@components/myPage/Fortune';
+import Calendar from '@components/myPage/Calendar';
 // import { industry } from '@components/common/Industry';
 
-// 마이페이지 컴포넌트
+const PageContainer = styled.div`
+  display: flex;
+  width: 100%;
+  height: 100vh;
+`;
+
+const LeftSection = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  // text-align: center;
+  justify-content: center;
+  margin-top: 5%;
+  width: 30%; /* 왼쪽 섹션 너비 */
+  padding: 20px;
+  // background-color: #f9f9f9;
+  // border-right: 1px solid #ccc;
+`;
+
+const RightSection = styled.div`
+  width: 70%; /* 오른쪽 섹션 너비 */
+  padding: 20px;
+`;
+
+const TopSection = styled.div`
+  width: 100%;
+  height: 30%;
+  display: flex;
+  margin-top: 5%;
+`;
+const BottomSection = styled.div`
+  width: 95%;
+  height: 60%;
+  border: solid black 1px;
+  margin: 3% 0%;
+  background-color: #fff;
+`;
+
 const MyPage: React.FC = () => {
   const navigate = useNavigate();
   const dispatch: AppDispatch = useDispatch();
   const { userInfo } = useSelector((state: RootState) => state.mypage);
-  // const {name, userIndustry} = useSelector((state: RootState) => state.mypage.userInfo);
-  // const isAuthenticated = useSelector((state: RootState) => state.mypage.isAuthenticated);
 
-  const images = {
-    A: profile1,
-    B: profile2,
-    C: profile3,
-  };
-
-  // 사용자 정보를 불러와서 초기값 설정 (처음 마운트될 때 실행)
+  // 사용자 정보를 불러와서 초기값 설정 (처음 마운트될 때)
   useEffect(() => {
     dispatch(fetchUserProfileThunk())
       .unwrap()
@@ -36,9 +65,31 @@ const MyPage: React.FC = () => {
         console.error("프로필 불러오기 오류:", error);
       });
   }, [dispatch]);
-
+  const activityData = {
+    1: 5,
+    2: 10,
+    3: 0,
+    4: 2,
+    5: 15,
+    6: 8,
+    7: 12,
+  };
   return (
-    <UserProfile />
+    <PageContainer>
+      <LeftSection>
+        <UserProfile />
+        <Calendar activityData={activityData} />
+      </LeftSection>
+
+      <RightSection>
+        <TopSection>
+          <Ping />
+          <Fortune />
+        </TopSection>
+        
+        <BottomSection></BottomSection>
+      </RightSection>
+    </PageContainer>
   );
 };
 

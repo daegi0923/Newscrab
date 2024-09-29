@@ -26,6 +26,8 @@ import PasswordChange from "@pages/myPage/PasswordChangePage";
 import ProfileEdit1 from "@pages/myPage/ProfileEditPage1";
 import ProfileEdit2 from "@pages/myPage/ProfileEditPage2";
 
+import FortuneCookie from "@pages/myPage/FortunePage";
+
 const AppRouter: React.FC = () => {
   const { isLogedIn } = useAuth();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -50,6 +52,7 @@ const AppRouter: React.FC = () => {
 
       <Routes>
         <Route path="/" element={<LandingPage />} />
+        <Route path="/fortune" element={<FortuneCookie />} />
 
         {/* 비로그인 상태일 때 */}
         {!isLogedIn ? (
@@ -58,6 +61,7 @@ const AppRouter: React.FC = () => {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup1" element={<SignUpPage1 />} />
             <Route path="/signup2" element={<SignUpPage2 />} />
+            
             {/* 로그인하지 않았을 때 보호된 경로로 접근 시 오류 처리 */}
             <Route
               path="*"
