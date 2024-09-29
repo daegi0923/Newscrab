@@ -2,8 +2,8 @@ import React from "react";
 import styled from "styled-components";
 import viewIcon from "@assets/view.png";
 import scrapCntIcon from "@assets/scrapCnt.png";
-import { NewsDetailItem } from "../../../types/newsTypes";
-import LikeButton from "../common/LikeButton"; // LikeButton 컴포넌트 임포트
+import { NewsDetailItem } from "../../types/newsTypes";
+import LikeButton from "@pages/news/common/LikeButton"; // LikeButton 컴포넌트 임포트
 import { industry } from "@common/Industry"; // 산업 데이터를 가져오기
 
 // 스타일 정의
@@ -123,7 +123,7 @@ const getIndustryName = (industryId: number): string => {
   return matchedCategory ? matchedCategory.industryName : "알 수 없음";
 };
 
-const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({
+const ScrapDetailArticle: React.FC<ScrapDetailArticleProps> = ({
   newsDetailItem,
 }) => {
   const handleTitleClick = () => {
@@ -166,4 +166,4 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({
   );
 };
 
-export default NewsDetailArticle;
+export default ScrapDetailArticle;
