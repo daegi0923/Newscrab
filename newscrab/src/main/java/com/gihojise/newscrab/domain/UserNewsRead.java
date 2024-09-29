@@ -35,7 +35,6 @@ public class UserNewsRead {
     private User user;
 
     @CreatedDate
-    @Column(name = "created_at", updatable = false, nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
     private LocalDateTime readtime;
 
 }
