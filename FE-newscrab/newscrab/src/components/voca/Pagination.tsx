@@ -9,10 +9,14 @@ interface PaginationProps {
 }
 
 const PaginationContainer = styled.div`
+  position: fixed;
+  bottom: 5%; /* 화면 바닥에서 10% 위로 */
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 10px;
+  z-index: 100; /* 다른 요소 위에 표시되도록 z-index 설정 */
 `;
 
 const PageButton = styled.button<{ active?: boolean }>`
