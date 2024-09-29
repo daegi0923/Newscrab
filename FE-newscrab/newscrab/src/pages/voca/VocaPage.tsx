@@ -8,7 +8,7 @@ import { tabOptions } from "@components/voca/TabOptions";
 import styled from "styled-components";
 import { words } from "@components/voca/VocaList";
 import { VocaResponseDto, Word, VocaWithImages } from "@components/voca/VocaTypes";
-import AdImage from "@components/common/Advertise";
+// import AdImage from "@components/common/Advertise";
 import Card from "@components/voca/VocaCard";
 import DropDown from "@components/voca/DropDown";
 import Pagination from "@components/voca/Pagination";
@@ -22,16 +22,16 @@ const SearchContainer = styled.div`
 `;
 
 const VocaContainer = styled.div`
-  width: 70%;
-  margin-right: 5%;
-  margin-top: 2%;
+  width: 80%;
+  // margin-right: %;
+  margin-top: 1%;
 `;
 
 const CardContainer = styled.div`
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   margin-top: 2%;
-  row-gap: 10%;
+  row-gap: 5%;
 `;
 
 const AdContainer = styled.div`
@@ -99,7 +99,7 @@ const VocaPage: React.FC = () => {
   const [selectedIndustryId, setSelectedIndustryId] = useState<number | null>(null);
   const [searchText, setSearchText] = useState<string>('');
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const itemPerPage = 10;
+  const itemPerPage = 12;
 
   // 필터링 및 정렬된 단어 목록을 반환
   const sortedAndFilteredWords = useMemo(() => {
@@ -197,7 +197,7 @@ const VocaPage: React.FC = () => {
               ))}
             </CardContainer>
           </VocaContainer>
-          <AdImage />
+          {/* <AdImage /> */}
         </AdContainer>
         {totalPages > 1 && (
           <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} onPrevPage={handlePrevPage} onNextPage={handleNextPage} />

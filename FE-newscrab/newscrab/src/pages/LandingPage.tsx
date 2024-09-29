@@ -33,7 +33,7 @@ const LandingPage: React.FC = () => {
             <Link to="/mainNews">MainNews 페이지</Link>
           </li>
           <li>
-            <Link to="/scrapList">스크랩 페이지</Link>
+            <Link to="/scrap">스크랩 페이지</Link>
           </li>
           <li>
             <Link to="/news/1">뉴스 디테일 (임시)</Link>

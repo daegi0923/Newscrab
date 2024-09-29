@@ -22,7 +22,7 @@ const UserInfoSection = styled.section`
   margin: 20px 0;
 `;
 
-const UserImage = styled.div`
+const UserImage = styled.img`
   width: 150px;
   height: 150px;
   border-radius: 50%;
@@ -69,12 +69,11 @@ const MyPage: React.FC = () => {
   // const {name, userIndustry} = useSelector((state: RootState) => state.mypage.userInfo);
   // const isAuthenticated = useSelector((state: RootState) => state.mypage.isAuthenticated);
 
-  const images = [
-    { src: profile1, alt: "profile1" },
-    { src: profile2, alt: "profile2" },
-    { src: profile3, alt: "profile3" },
-  ];
-  
+  const images = {
+    A: profile1,
+    B: profile2,
+    C: profile3,
+  };
 
   // 사용자 정보를 불러와서 초기값 설정 (처음 마운트될 때 실행)
   useEffect(() => {
@@ -100,16 +99,16 @@ const MyPage: React.FC = () => {
     navigate('/password'); // 클릭 시 해당 vocaId로 이동
   };
 
+  const selectedImage = images[userInfo.profileImg as keyof typeof images] || profile1;
+
   return (
     <>
     <UserInfoSection>
       {/* 사용자 이미지 자리 (나중에 실제 이미지를 삽입할 수 있음) */}
-      {userInfo.profileImg}
-      <UserImage />
+      <UserImage src={selectedImage} alt="User profile" />
 
         <div>
         <p>이름: {userInfo.name || "이름 없음"}</p>
-          {/* <p>관심 산업: {userIndustry.map(userInfo.userIndustries => industry.industryName).join(', ')}</p> */}
         </div>
       
       {/* 회원정보수정 및 비밀번호수정 버튼 */}

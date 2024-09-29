@@ -11,6 +11,7 @@ import folder from '@assets/common/folder1.png'
 import voca from '@assets/common/dic2.png'
 import home from '@assets/common/home1.png'
 import news from '@assets/all.png'
+import { RootState, AppDispatch } from "@store/index";
 
 const SidebarContainer = styled.nav`
   padding-top: 3%;
@@ -164,7 +165,7 @@ const Nav: React.FC = () => {
             </NavLink>
           </NavItem>
           <NavItem>
-            <NavLink onClick={() => navigate("/news/scrap")}>
+            <NavLink onClick={() => navigate("/scrap")}>
             <Image src={folder} alt="Folder" />
               <NavText>스크랩</NavText>
             </NavLink>
