@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from "react";
+// import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 
 // Highlight Popup 스타일링
 const HighlightPopup = styled.div`
   position: absolute;
-  display: flex; 
-  flex-direction: row; 
-  justify-content: space-between; 
-  align-items: center; 
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
   background-color: white;
   border: 1px solid #ccc;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -42,13 +42,29 @@ type HighlightComponentProps = {
   style?: React.CSSProperties;
 };
 
-const HighlightComponent: React.FC<HighlightComponentProps> = ({ applyHighlight, removeHighlight, style }) => {
+const HighlightComponent: React.FC<HighlightComponentProps> = ({
+  applyHighlight,
+  removeHighlight,
+  style,
+}) => {
   return (
     <HighlightPopup style={style}>
-      <HighlightButton color="#fde2e4" onClick={() => applyHighlight("#fde2e4")} />
-      <HighlightButton color="#ffffb5" onClick={() => applyHighlight("#ffffb5")} />
-      <HighlightButton color="#d1e6d3" onClick={() => applyHighlight("#d1e6d3")} />
-      <HighlightButton color="#cddafd" onClick={() => applyHighlight("#cddafd")} />
+      <HighlightButton
+        color="#fde2e4"
+        onClick={() => applyHighlight("#fde2e4")}
+      />
+      <HighlightButton
+        color="#ffffb5"
+        onClick={() => applyHighlight("#ffffb5")}
+      />
+      <HighlightButton
+        color="#d1e6d3"
+        onClick={() => applyHighlight("#d1e6d3")}
+      />
+      <HighlightButton
+        color="#cddafd"
+        onClick={() => applyHighlight("#cddafd")}
+      />
       <RemoveButton onClick={removeHighlight}>x</RemoveButton>
     </HighlightPopup>
   );

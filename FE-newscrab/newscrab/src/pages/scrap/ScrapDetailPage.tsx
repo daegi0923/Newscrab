@@ -10,12 +10,12 @@ import ScrapDetailScrap from "./ScrapDetailScrap";
 import { getNewsDetail } from "@apis/news/newsDetailApi";
 import { NewsDetailItem } from "../../types/newsTypes";
 
-const NewsDetailContainer = styled.div`
+const ScrapDetailContainer = styled.div`
   margin: 0px 100px;
   position: relative;
 `;
 
-const NewsWrapper = styled.div`
+const ScrapWrapper = styled.div`
   display: flex;
   justify-content: center;
   margin-top: 20px;
@@ -73,10 +73,10 @@ const ScrapDetailPage: React.FC = () => {
   return (
     <div>
       <GlobalStyle />
-      <NewsDetailContainer>
+      <ScrapDetailContainer>
         <Header />
         <BackButton onClick={handleBackClick}>돌아가기</BackButton>
-        <NewsWrapper>
+        <ScrapWrapper>
           {isLoading ? (
             <p>Loading news...</p>
           ) : !scrapId ? ( // newsId가 undefined인 경우
@@ -90,8 +90,8 @@ const ScrapDetailPage: React.FC = () => {
               </>
             )
           )}
-        </NewsWrapper>
-      </NewsDetailContainer>
+        </ScrapWrapper>
+      </ScrapDetailContainer>
     </div>
   );
 };

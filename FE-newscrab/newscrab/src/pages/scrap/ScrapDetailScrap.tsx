@@ -87,7 +87,7 @@ const StyledTextarea = styled.textarea<{ $isOverflowing: boolean }>`
 `;
 
 const ScrapDetailScrap: React.FC<{ scrapId: number }> = ({ scrapId }) => {
-  const [activeScrapId, setActiveScrapId] = useState<number | null>(null);
+  const [, setActiveScrapId] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState("summary");
   const [summaryText, setSummaryText] = useState("");
   const [opinionText, setOpinionText] = useState("");
