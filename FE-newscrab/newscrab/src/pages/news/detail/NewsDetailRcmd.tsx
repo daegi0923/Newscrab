@@ -116,17 +116,21 @@ const NewsDetailRcmd: React.FC<NewsDetailRcmdProps> = ({ newsId }) => {
     // 뉴스 API에서 관련 뉴스를 가져오는 로직
     const fetchRelatedNews = async () => {
       const newsDetail = await getNewsDetail(newsId); // 동적으로 전달받은 newsId 사용
+
       const relatedItems = [
         newsDetail.relatedNews1,
         newsDetail.relatedNews2,
         newsDetail.relatedNews3,
-      ].map((relatedNewsItem) => ({
-        imageUrl:
-          relatedNewsItem.photoUrlList?.[0] || "https://picsum.photos/300/150", // 이미지가 없을 경우 기본 이미지 설정
-        title: relatedNewsItem.newsTitle, // 뉴스 제목
-        newsPublishedAt: relatedNewsItem.newsPublishedAt, // 생성일
-        newsId: relatedNewsItem.newsId, // 뉴스 ID 추가
-      }));
+      ]
+        .filter((relatedNewsItem) => relatedNewsItem !== null) // null인 항목 필터링
+        .map((relatedNewsItem) => ({
+          imageUrl:
+            relatedNewsItem?.photoUrlList?.[0] ||
+            "https://picsum.photos/300/150", // 이미지가 없을 경우 기본 이미지 설정
+          title: relatedNewsItem?.newsTitle || "제목 없음", // 뉴스 제목
+          newsPublishedAt: relatedNewsItem?.newsPublishedAt || "", // 생성일
+          newsId: relatedNewsItem?.newsId || 0, // 뉴스 ID 추가
+        }));
 
       setRelatedNews(relatedItems);
     };

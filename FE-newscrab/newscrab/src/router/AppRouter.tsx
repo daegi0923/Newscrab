@@ -13,12 +13,10 @@ import SignUpPage2 from "@pages/auth/SignUpPage2";
 import MainNewsPage from "@pages/news/MainNewsPage";
 import RcmdNewsPage from "@pages/news/rcmdNews/RcmdNewsPage";
 import AllNewsPage from "@pages/news/allNews/AllNewsPage";
-// import FilterNewsPage from "@pages/news/FilterNewsPage";
-// import ViewCountNewsPage from "@pages/news/ViewCountNewsPage";
-// import ScrapCountNewsPage from "@pages/news/ScrapCountNewsPage";
 import NewsDetailPage from "@pages/news/detail/NewsDetailPage";
 // 스크랩
 import ScrapListPage from "@pages/scrap/ScrapListPage";
+import ScrapDetailPage from "@pages/scrap/ScrapDetailPage";
 // 단어장
 import MainVoca from "@pages/voca/VocaPage";
 import VocaDetail from "@pages/voca/VocaDetailPage";
