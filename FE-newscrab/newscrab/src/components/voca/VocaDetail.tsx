@@ -1,5 +1,6 @@
 import React, { useRef } from "react";
 import styled from "styled-components";
+import defaultImg from '@assets/auth/defaultProfile.jpg'
 
 interface VocaDetailProps {
   img: string | null;
@@ -7,27 +8,35 @@ interface VocaDetailProps {
   vocaName: string;
   vocaDesc: string;
   sentence: string;
+  newsImage?: string;
 }
 
 const DetailContainer = styled.div`
   z-index: 1;
-  display: flex;
+  position: relative;
+  // display: flex;
   align-items: flex-start;
   border-radius: 10px;
-  width: 49%;
+  width: 55%;
+  height: 55%;
   background: #ffffff;
   box-shadow: 5px 5px 3px rgba(0, 0, 0, 0.3);
-  padding: 2%;
+  // padding: 2%;
 `;
 
 const CardContainer = styled.div`
-  position: relative;
+  // position: relative;
+  position: absolute;
+  top: 9%; /* 원하는 위치에 배치 */
+  left: 5%; /* 오른쪽에 배치 */
   width: 200px;
   height: 280px;
   border-radius: 15px;
   overflow: hidden;
   perspective: 1000px;
   transition: transform 0.1s ease;
+  z-index: 5;
+  
 `;
 
 const Overlay = styled.div`
@@ -79,11 +88,64 @@ const CardContent = styled.div`
   font-weight: bold;
 `;
 
+const VocaSection = styled.div`
+  // border : 1px solid blue;
+  position: relative;
+  width: 100%; /* 전체 폭을 차지 */
+  height: 42%; /* 부모 컨테이너의 30%만 차지 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  z-index: 1; /* 추가: z-index 설정 */
+`;
+
+const VocaSection1 = styled.div`
+  // border : 1px solid red;
+  position: relative;
+  width: 100%; /* 전체 폭을 차지 */
+  height: 58%; /* 부모 컨테이너의 30%만 차지 */
+  display: flex;
+  justify-content: center;
+  // align-items: center;
+  overflow: hidden;  
+  // z-index: -1;
+`;
+
+const BlurredImage = styled.img`
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* 이미지가 섹션을 채우도록 설정 */
+  filter: blur(5px); /* 블러 처리 */
+  z-index: 1;
+  border-radius: 10px;
+`;
+
+const VocaTitle = styled.h2`
+  position: absolute; /* 절대 위치로 설정 */
+  z-index: 2; 
+  color: white;
+  font-size: 1.4rem;
+  top: 60%; /* 카드 내에서 가운데에 위치하도록 설정 */
+  left: 36%; /* 가로 중앙 정렬 */
+  // transform: translate(-50%, -50%); /* 중앙에 위치하도록 조정 */
+  text-align: center;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.9);
+  white-space: nowrap; /* 텍스트가 한 줄로 나오게 설정 */
+`;
+
 const VocaDesc = styled.div`
   flex: 2;
+  position: absolute; /* 절대 위치로 설정 */
   align-items: center;
-  padding-left: 20px;
+  text-align: center;
+  left:36%;
+  margin-top: -1%;
 `;
+
 
 interface VocaDetailCardProps {
   img: string | null;
@@ -128,15 +190,25 @@ const VocaDetailCard: React.FC<VocaDetailCardProps> = ({ img, industryName, voca
   );
 };
 
-const VocaDetail: React.FC<VocaDetailProps> = ({ img, industryName, vocaName, vocaDesc, sentence }) => {
+const VocaDetail: React.FC<VocaDetailProps> = ({ img, industryName, vocaName, vocaDesc, sentence, newsImage  }) => {
   return (
     <DetailContainer>
-      <VocaDetailCard img={img} industryName={industryName} vocaName={vocaName} />
+      <VocaSection>
+        {/* <p>{newsImage}</p> */}
+        {newsImage && <BlurredImage src={newsImage} alt="blurred background" onError={(e) => { e.currentTarget.src = defaultImg; }}/>} {/* 블러 처리된 이미지 */}
+        <VocaTitle>{vocaName}</VocaTitle>
+      </VocaSection>
+
+      <VocaSection1>
       <VocaDesc>
         <h3>{vocaDesc}</h3>
         <h4>{sentence}</h4>
+      {/* <p>{newsImage}</p> */}
       </VocaDesc>
+      </VocaSection1>
+      <VocaDetailCard img={img} industryName={industryName} vocaName={vocaName} />
     </DetailContainer>
+    
   );
 };
 

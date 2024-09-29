@@ -1,3 +1,5 @@
+import React from "react";
+import { useNavigate } from "react-router-dom"; // useNavigate 훅 import
 import styled from "styled-components";
 import headerImage from "@assets/headerImage.png";
 
@@ -12,6 +14,7 @@ const HeaderImage = styled.img`
   margin-top: 3%;
   max-width: 100%;
   height: auto;
+  cursor: pointer; // 클릭할 수 있도록 커서 스타일 추가
 `;
 
 const Divider = styled.hr`
@@ -23,9 +26,16 @@ const Divider = styled.hr`
 `;
 
 const Header: React.FC = () => {
+  const navigate = useNavigate(); // useNavigate 훅 사용
+
+  const handleClick = () => {
+    navigate("/"); // '/' 경로로 이동
+  };
+
   return (
     <HeaderContainer>
-      <HeaderImage src={headerImage} alt="Header" />
+      <HeaderImage src={headerImage} alt="Header" onClick={handleClick} />{" "}
+      {/* 클릭 이벤트 추가 */}
       <Divider />
     </HeaderContainer>
   );

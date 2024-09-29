@@ -1,9 +1,9 @@
-import React, {useState } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import logo from '@assets/crab.png';
-import close from '@assets/common/close.png'
+import logo from "@assets/crab.png";
+import close from "@assets/common/close.png";
 import { logout } from "@store/user/loginLogout";
 import ErrorModal from "./Error";
 import { useAuth } from "./PrivateRoute";
@@ -11,6 +11,7 @@ import folder from '@assets/common/folder1.png'
 import voca from '@assets/common/dic2.png'
 import home from '@assets/common/home1.png'
 import news from '@assets/all.png'
+import { RootState, AppDispatch } from "@store/index";
 
 const SidebarContainer = styled.nav`
   padding-top: 3%;
@@ -39,26 +40,26 @@ const NavItem = styled.li`
   width: 100%;
   display: flex;
   align-items: center;
-  padding: 0;  /* 패딩 제거 */
-  margin: 0;  /* 마진 제거 */
+  padding: 0; /* 패딩 제거 */
+  margin: 0; /* 마진 제거 */
 `;
 
 const NavLink = styled.a`
   display: flex;
   align-items: center;
-  padding: 15px 10px;  /* 패딩을 조정하여 공간 확보 */
+  padding: 15px 10px; /* 패딩을 조정하여 공간 확보 */
   text-decoration: none;
   color: #999;
   font-size: 12px;
   width: 100%;
   transition: all 0.2s ease;
-  
+
   &:hover {
     color: white;
     background-color: #000;
     cursor: pointer;
   }
-  
+
   span {
     margin-right: 20px;
     font-size: 15px;
@@ -68,12 +69,12 @@ const NavLink = styled.a`
 
 const NavText = styled.span`
   font-size: 16px;
-  font-family: 'Titillium Web', sans-serif;
+  font-family: "Titillium Web", sans-serif;
   opacity: 0;
   white-space: nowrap;
   transition: opacity 0.3s ease;
   // margin-left: 30%;
-  
+
   ${SidebarContainer}:hover & {
     opacity: 1;
   }
@@ -119,7 +120,7 @@ const Nav: React.FC = () => {
   const handleLogout = () => {
     if (isLogedIn) {
       dispatch(logout());
-      window.location.href = '/login';
+      window.location.href = "/login";
     } else {
       setErrorMessage("로그인이 필요합니다!"); // 로그인하지 않은 경우
     }
@@ -127,7 +128,7 @@ const Nav: React.FC = () => {
 
   const handleModalClose = () => {
     setErrorMessage(null);
-    navigate('/login');
+    navigate("/login");
   };
 
   return (
@@ -143,7 +144,7 @@ const Nav: React.FC = () => {
       <SidebarContainer>
         {/* 좌측 상단에 프로필 이미지 */}
         <ImageTop src={logo} alt="Profile 1" onClick={() => navigate("/")} />
-        
+
         <NavList>
           <NavItem>
             <NavLink onClick={() => navigate("/mypage")}>
@@ -153,18 +154,18 @@ const Nav: React.FC = () => {
           </NavItem>
           <NavItem>
             <NavLink onClick={() => navigate("/voca")}>
-            <Image src={voca} alt="voca" />
+              <Image src={voca} alt="voca" />
               <NavText>단어장</NavText>
             </NavLink>
           </NavItem>
           <NavItem>
             <NavLink onClick={() => navigate("/news")}>
-            <Image src={news} alt="news" />
+              <Image src={news} alt="news" />
               <NavText>전체 뉴스</NavText>
             </NavLink>
           </NavItem>
           <NavItem>
-            <NavLink onClick={() => navigate("/news/scrap")}>
+            <NavLink onClick={() => navigate("/scrap")}>
             <Image src={folder} alt="Folder" />
               <NavText>스크랩</NavText>
             </NavLink>
@@ -174,7 +175,7 @@ const Nav: React.FC = () => {
         {/* 좌측 하단에 로그아웃 버튼 */}
         <LogoutItem>
           <NavLink onClick={handleLogout}>
-          <Image src={close} alt="close" />
+            <Image src={close} alt="close" />
             <NavText>로그아웃</NavText>
           </NavLink>
         </LogoutItem>

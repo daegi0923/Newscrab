@@ -122,7 +122,7 @@ const AppRouter: React.FC = () => {
 
             {/* 스크랩 */}
             <Route
-              path="/scrapList"
+              path="/scrap"
               element={
                 <Layout>
                   <ScrapListPage />

@@ -67,13 +67,17 @@ const BackButton = styled.button`
   top: 12%;
   left: 10%;
   padding: 10px 15px;
+<<<<<<< HEAD
+  background-color: #FCFAF9;
+=======
   background-color: #ffbe98;
+>>>>>>> a0bbbfe69c9bde7f0e331ea9940878c69bd14667
   border: none;
   border-radius: 5px;
   cursor: pointer;
   font-size: 15px;
   // font-weight: bold;
-  color: white;
+  // color: white;
   &:hover {
     background-color: #ff8f4d;
   }
@@ -82,10 +86,17 @@ const BackButton = styled.button`
 const EditButton = styled.button`
   z-index: 2;
   position: absolute;
+<<<<<<< HEAD
+  top: 25%;
+  left: 70%;
+  padding: 5px 10px;
+  background-color: rgba(255, 190, 152, 0);
+=======
   top: 12%;
   left: 20%;
   padding: 10px 15px;
   background-color: #ffbe98;
+>>>>>>> a0bbbfe69c9bde7f0e331ea9940878c69bd14667
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -100,10 +111,17 @@ const EditButton = styled.button`
 const DelButton = styled.button`
   z-index: 2;
   position: absolute;
+<<<<<<< HEAD
+  top: 25%;
+  left: 73.5%;
+  padding: 5px 10px;
+  background-color: rgba(255, 190, 152, 0);
+=======
   top: 12%;
   left: 28%;
   padding: 10px 15px;
   background-color: #ffbe98;
+>>>>>>> a0bbbfe69c9bde7f0e331ea9940878c69bd14667
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -241,6 +259,7 @@ const VocaDetailPage: React.FC = () => {
         {/* <VocaDetail word={selectedVoca} /> */}
         <VocaDetail
           img={industryData?.img || null}
+          newsImage={selectedVoca.originNewsImgUrl}
           industryName={industryData?.industryName || null}
           vocaName={selectedVoca.vocaName}
           vocaDesc={selectedVoca.vocaDesc}
