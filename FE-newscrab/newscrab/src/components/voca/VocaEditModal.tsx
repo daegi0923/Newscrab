@@ -97,18 +97,24 @@ const DropdownWrapper = styled.div`
   width: 80%; /* 드롭다운이 인풋 필드와 동일한 너비로 설정 */
   left: 45%; /* 드롭다운을 중앙에 정렬 */
   z-index: 10;
-
 `;
 
-const VocaEditModal: React.FC<VocaModalProps> = ({ isOpen, onClose, word, onUpdate }) => {
+const VocaEditModal: React.FC<VocaModalProps> = ({
+  isOpen,
+  onClose,
+  word,
+  onUpdate,
+}) => {
   const [vocaName, setVocaName] = useState(word.vocaName);
   const [vocaDesc, setVocaDesc] = useState(word.vocaDesc);
   const [sentence, setSentence] = useState(word.sentence);
-  const [newsId, setNewsId] = useState(word.newsId);
+  const [, setNewsId] = useState(word.newsId);
   const [industryId, setIndustryId] = useState(word.industryId);
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const selectedIndustryName = words.find(ind => ind.industryId === industryId)?.industryName || "산업을 선택하세요";
+  const selectedIndustryName =
+    words.find((ind) => ind.industryId === industryId)?.industryName ||
+    "산업을 선택하세요";
 
   useEffect(() => {
     setVocaName(word.vocaName);
@@ -127,7 +133,7 @@ const VocaEditModal: React.FC<VocaModalProps> = ({ isOpen, onClose, word, onUpda
       vocaDesc,
       sentence,
       newsId: word.newsId,
-      industryId
+      industryId,
     });
     onClose();
   };
@@ -164,19 +170,19 @@ const VocaEditModal: React.FC<VocaModalProps> = ({ isOpen, onClose, word, onUpda
             placeholder="산업 ID를 입력하세요"
           />
         </div> */}
-        <SelectedIndustry  onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
+        <SelectedIndustry onClick={() => setIsDropdownOpen(!isDropdownOpen)}>
           {/* Show the selected industry or prompt */}
           {selectedIndustryName}
-        </SelectedIndustry >
+        </SelectedIndustry>
         {isDropdownOpen && (
           <DropdownWrapper>
-          <DropDown 
-            dropdownIndustries={words} 
-            handleIndustrySelect={handleIndustrySelect} 
-          />
+            <DropDown
+              dropdownIndustries={words}
+              handleIndustrySelect={handleIndustrySelect}
+            />
           </DropdownWrapper>
         )}
-        
+
         <div>
           <Button onClick={onClose}>닫기</Button>
           <Button onClick={handleSave}>수정하기</Button>
