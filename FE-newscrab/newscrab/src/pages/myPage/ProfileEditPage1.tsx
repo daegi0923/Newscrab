@@ -1,4 +1,3 @@
-// import { useNavigate } from "react-router-dom";
 import styled, { createGlobalStyle } from "styled-components";
 import NewsImage from "../../assets/auth/newsImage.png";
 import BackgroundImage from "../../assets/auth/bg.png";

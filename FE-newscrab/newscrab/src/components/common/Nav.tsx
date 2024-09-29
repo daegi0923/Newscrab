@@ -3,9 +3,14 @@ import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import logo from '@assets/crab.png';
+import close from '@assets/common/close.png'
 import { logout } from "@store/user/loginLogout";
 import ErrorModal from "./Error";
 import { useAuth } from "./PrivateRoute";
+import folder from '@assets/common/folder1.png'
+import voca from '@assets/common/dic2.png'
+import home from '@assets/common/home1.png'
+import news from '@assets/all.png'
 
 const SidebarContainer = styled.nav`
   padding-top: 3%;
@@ -67,6 +72,7 @@ const NavText = styled.span`
   opacity: 0;
   white-space: nowrap;
   transition: opacity 0.3s ease;
+  // margin-left: 30%;
   
   ${SidebarContainer}:hover & {
     opacity: 1;
@@ -90,6 +96,18 @@ const ImageTop = styled.img`
   object-fit: cover;
   z-index: 2; /* 네비게이션 바 위에 보이도록 설정 */
   cursor: pointer;
+`;
+
+const Image = styled.img`
+  width: 25px;
+  margin-left: 5px;
+  margin-right: 20px; /* Space between image and text */
+  object-fit: cover;
+  transition: opacity 0.3s ease;
+
+  ${SidebarContainer}:hover & {
+    opacity: 1;
+  }
 `;
 
 const Nav: React.FC = () => {
@@ -129,25 +147,25 @@ const Nav: React.FC = () => {
         <NavList>
           <NavItem>
             <NavLink onClick={() => navigate("/mypage")}>
-              <span>🏠</span>
+              <Image src={home} alt="home" />
               <NavText>마이페이지</NavText>
             </NavLink>
           </NavItem>
           <NavItem>
             <NavLink onClick={() => navigate("/voca")}>
-              <span>📖</span>
+            <Image src={voca} alt="voca" />
               <NavText>단어장</NavText>
             </NavLink>
           </NavItem>
           <NavItem>
             <NavLink onClick={() => navigate("/news")}>
-              <span>📰</span>
+            <Image src={news} alt="news" />
               <NavText>전체 뉴스</NavText>
             </NavLink>
           </NavItem>
           <NavItem>
             <NavLink onClick={() => navigate("/news/scrap")}>
-              <span>📋</span>
+            <Image src={folder} alt="Folder" />
               <NavText>스크랩</NavText>
             </NavLink>
           </NavItem>
@@ -156,7 +174,7 @@ const Nav: React.FC = () => {
         {/* 좌측 하단에 로그아웃 버튼 */}
         <LogoutItem>
           <NavLink onClick={handleLogout}>
-            <span>🚪</span>
+          <Image src={close} alt="close" />
             <NavText>로그아웃</NavText>
           </NavLink>
         </LogoutItem>

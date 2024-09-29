@@ -30,10 +30,10 @@ export const fetchVocaDetailThunk = createAsyncThunk(
 // Voca 추가 비동기 함수
 export const addVocaThunk = createAsyncThunk(
   "voca/addVoca",
-  async (_, { rejectWithValue }) => {
+  async (vocaData: { newsId: number; vocaName: string; vocaDesc: string; sentence: string; industryId: number }, { rejectWithValue }) => {
     try {
-      const response = await addVoca();
-      return response;
+      const response = await addVoca(vocaData);  // vocaData를 API에 전달
+      return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data || "Voca 추가 실패");
     }

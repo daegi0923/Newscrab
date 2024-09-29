@@ -1,7 +1,6 @@
 import React from "react";
 import styled from "styled-components";
 
-// 모달 스타일
 const ModalOverlay = styled.div`
   position: fixed;
   top: 0;
@@ -46,7 +45,6 @@ const CloseButton = styled.button`
   }
 `;
 
-// 에러 모달 컴포넌트 정의
 interface ErrorModalProps {
   title: string;
   message: string;

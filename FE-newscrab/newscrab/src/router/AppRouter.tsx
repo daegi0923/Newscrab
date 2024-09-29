@@ -51,10 +51,12 @@ const AppRouter: React.FC = () => {
       )}
 
       <Routes>
+            <Route path="/" element={<LandingPage />} />
+            
         {/* 비로그인 상태일 때 */}
         {!isLogedIn ? (
           <>
-            <Route path="/" element={<LandingPage />} />
+            {/* <Route path="/" element={<LandingPage />} /> */}
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup1" element={<SignUpPage1 />} />
             <Route path="/signup2" element={<SignUpPage2 />} />
@@ -67,6 +69,7 @@ const AppRouter: React.FC = () => {
         ) : (
           <>
             {/* 마이페이지 */}
+            <Route path="/" element={<LandingPage />} />
             <Route path="/mypage" element={<Layout><MyPage /></Layout>} />
             <Route path="/password" element={<PasswordChange />} />
             <Route path="/edit1" element={<ProfileEdit1 />} />

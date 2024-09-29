@@ -5,6 +5,7 @@ interface CardProps {
   industryName: string | null;
   vocaName: string;
   updatedAt: string;
+  originNewsTitle: string;
   onClick?: () => void;
 }
 
@@ -100,7 +101,7 @@ const formatDate = (dateString: string) => {
   return `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, "0")}.${String(date.getDate()).padStart(2, "0")}`;
 };
 
-const Card: React.FC<CardProps> = ({ img, industryName, vocaName, updatedAt, onClick }) => {
+const Card: React.FC<CardProps> = ({ img, industryName, vocaName, updatedAt, originNewsTitle, onClick }) => {
   return (
     <CardWrapper>
       <CardContainer onClick={onClick}>
@@ -114,6 +115,7 @@ const Card: React.FC<CardProps> = ({ img, industryName, vocaName, updatedAt, onC
         {/* 뒷면 */}
         <CardBack>
           <CardDate>{formatDate(updatedAt)}</CardDate>
+          <CardContent>{originNewsTitle}</CardContent>
         </CardBack>
       </CardContainer>
     </CardWrapper>
