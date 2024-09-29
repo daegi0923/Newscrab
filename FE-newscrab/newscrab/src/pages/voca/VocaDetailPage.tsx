@@ -80,6 +80,7 @@ const BackButton = styled.button`
 `;
 
 const EditButton = styled.button`
+text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.9);
   z-index: 2;
   position: absolute;
   top: 25%;
@@ -98,6 +99,7 @@ const EditButton = styled.button`
 `;
 
 const DelButton = styled.button`
+text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.9);
   z-index: 2;
   position: absolute;
   top: 25%;

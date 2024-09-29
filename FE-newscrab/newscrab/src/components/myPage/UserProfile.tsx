@@ -1,128 +1,176 @@
-// import React, { useEffect } from "react";
-// import styled from "styled-components";
-// import { AppDispatch } from "@store/index";
-// import { useDispatch, useSelector } from "react-redux";
-// import { useNavigate } from "react-router-dom";
-// import { fetchUserProfileThunk } from "@store/myPage/profileSlice";
-// import { RootState } from "@store/index";
-// import profile1 from "@assets/auth/profile1.jpg";
-// import profile2 from "@assets/auth/profile2.jpg";
-// import profile3 from "@assets/auth/profile3.jpg";
+import React, { useEffect, useState, useRef } from 'react';
+import styled from 'styled-components';
+import { AppDispatch } from "@store/index";
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { fetchUserProfileThunk } from "@store/myPage/profileSlice";
+import { RootState } from '@store/index';
+import profile1 from "@assets/auth/profile1.jpg";
+import profile2 from "@assets/auth/profile2.jpg";
+import profile3 from "@assets/auth/profile3.jpg";
 
-// // 사용자 정보 컴포넌트 섹션
-// const UserInfoSection = styled.section`
-//   display: flex;
-//   flex-direction: column;
-//   align-items: center;
-//   border: 2px solid #ccc;
-//   padding: 20px;
-//   width: 350px;
-//   border-radius: 10px;
-//   margin: 20px 0;
-// `;
+// 사용자 정보 컴포넌트 섹션
+const UserInfoContainer = styled.div`
+  position: relative;
+  width: 300px;
+  text-align: center;
+  margin: 10% 5%;
+  padding: 20px;
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  background-color: #fff;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+`;
 
-// const UserImage = styled.img`
-//   width: 150px;
-//   height: 150px;
-//   border-radius: 50%;
-//   border: 2px solid #ccc;
-//   background-color: #f0f0f0;
-//   margin-bottom: 20px;
-// `;
+const UserImage = styled.img`
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+  background-color: #fff;
+  position: absolute;
+  top: -75px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
+`;
 
-// const ButtonGroup = styled.div`
-//   display: flex;
-//   justify-content: space-between;
-//   width: 100%;
-//   margin-top: 20px;
-// `;
+const UserInfoContent = styled.div`
+  margin-top: 75px;
+`;
 
-// const StyledButton = styled.button`
-//   background-color: #3b82f6;
-//   color: white;
-//   padding: 10px 15px;
-//   border: none;
-//   border-radius: 5px;
-//   cursor: pointer;
-//   font-size: 14px;
-//   transition: background-color 0.3s;
+const UserName = styled.p`
+  font-size: 20px;
+  font-weight: bold;
+  display: inline-block;
+  margin-right: 10px;
+`;
 
-//   &:hover {
-//     background-color: #2563eb;
-//   }
+const EditButton = styled.button`
+  background-color: #a6c8e0;
+  color: #ffffff;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+  display: inline-block;
 
-//   &:nth-child(2) {
-//     background-color: #ef4444;
-//   }
+  &:hover {
+    background-color: #90b4d0;
+  }
+`;
 
-//   &:nth-child(2):hover {
-//     background-color: #dc2626;
-//   }
-// `;
+const SmallPopup = styled.div`
+  position: absolute;
+  top: 39%;
+  left: 90%;
+  transform: translateX(-50%);
+  background-color: #fff;
+  border: 1px solid #d1bebe;
+  border-radius: 8px;
+  padding: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  width: 120px;
+`;
 
-// // 마이페이지 컴포넌트
-// const UserProfile: React.FC = () => {
-//   const navigate = useNavigate();
-//   const dispatch: AppDispatch = useDispatch();
-//   const { userInfo } = useSelector((state: RootState) => state.mypage);
-//   // const {name, userIndustry} = useSelector((state: RootState) => state.mypage.userInfo);
-//   // const isAuthenticated = useSelector((state: RootState) => state.mypage.isAuthenticated);
+const PopupButton = styled.button`
+  background-color: #f9b5ac;
+  color: white;
+  padding: 7px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-bottom: 5px;
+  width: 100%;
 
-//   const images = {
-//     A: profile1,
-//     B: profile2,
-//     C: profile3,
-//   };
+  &:hover {
+    background-color: #f69a90;
+  }
 
-//   // 사용자 정보를 불러와서 초기값 설정 (처음 마운트될 때 실행)
-//   useEffect(() => {
-//     dispatch(fetchUserProfileThunk())
-//       .unwrap()
-//       .then((res) => {
-//         console.log("프로필 데이터 불러옴:", res);
-//       })
-//       .catch((error) => {
-//         console.error("프로필 불러오기 오류:", error);
-//       });
-//   }, [dispatch]);
+  &:nth-child(2) {
+    background-color: #b5e3e0;
+  }
 
-//   const handleEdit1 = () => {
-//     navigate("/edit1"); // 클릭 시 해당 vocaId로 이동
-//   };
+  &:nth-child(2):hover {
+    background-color: #a0d1cd;
+  }
 
-//   const handleEdit2 = () => {
-//     navigate("/edit2"); // 클릭 시 해당 vocaId로 이동
-//   };
+  &:nth-child(3) {
+    background-color: #ffdfba;
+  }
 
-//   const handlePassword = () => {
-//     navigate("/password"); // 클릭 시 해당 vocaId로 이동
-//   };
+  &:nth-child(3):hover {
+    background-color: #ffd4a1;
+  }
+`;
 
-//   const selectedImage = images[userInfo.profileImg as keyof typeof images] || profile1;
+// 마이페이지 컴포넌트
+const UserProfile: React.FC = () => {
+  const navigate = useNavigate();
+  const dispatch: AppDispatch = useDispatch();
+  const { userInfo } = useSelector((state: RootState) => state.mypage);
 
-//   return (
-//     <>
-//     <UserInfoSection>
-//       {/* 사용자 이미지 자리 (나중에 실제 이미지를 삽입할 수 있음) */}
-//       <UserImage src={selectedImage} alt="User profile" />
+  const [isPopupOpen, setPopupOpen] = useState(false);
+  const popupRef = useRef<HTMLDivElement>(null);
 
-//         <div>
-//         <p>이름: {userInfo.name || "이름 없음"}</p>
-//         </div>
+  const images = {
+    A: profile1,
+    B: profile2,
+    C: profile3,
+  };
 
-//         {/* 회원정보수정 및 비밀번호수정 버튼 */}
-//         <ButtonGroup>
-//           <StyledButton onClick={handleEdit1}>회원정보수정</StyledButton>
-//           <StyledButton onClick={handleEdit2}>산업군 수정</StyledButton>
-//           <StyledButton onClick={handlePassword}>비밀번호수정</StyledButton>
-//         </ButtonGroup>
-//       </UserInfoSection>
+  // 사용자 정보를 불러와서 초기값 설정 (처음 마운트될 때 실행)
+  useEffect(() => {
+    dispatch(fetchUserProfileThunk())
+      .unwrap()
+      .then((res) => {
+        console.log("프로필 데이터 불러옴:", res);
+      })
+      .catch((error) => {
+        console.error("프로필 불러오기 오류:", error);
+      });
+  }, [dispatch]);
 
-//       <p>스크랩 수: {userInfo.scrapCount || "0"}</p>
-//       <p>단어 수: {userInfo.vocaCount || "0"}</p>
-//       <p>성별: {userInfo.gender || "0"}</p>
-//     </>
-//   );
-// };
+  const handleEdit1 = () => { navigate('/edit1'); };
+  const handleEdit2 = () => { navigate('/edit2'); };
+  const handlePassword = () => { navigate('/password'); };
 
-// export default UserProfile;
+  const selectedImage = images[userInfo.data.profileImg as keyof typeof images] || profile1;
+
+  // 팝업 외부를 클릭하면 팝업 닫기
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (popupRef.current && !popupRef.current.contains(event.target as Node)) {
+        setPopupOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [popupRef]);
+
+  return (
+    <UserInfoContainer>
+      <UserImage src={selectedImage} alt="User profile" />
+      <UserInfoContent>
+        <UserName>{userInfo.data.name || "이름 없음"}</UserName>
+        <EditButton onClick={() => setPopupOpen(!isPopupOpen)}>수정하기</EditButton>
+        {isPopupOpen && (
+          <SmallPopup ref={popupRef}>
+            <PopupButton onClick={handleEdit1}>회원정보 수정</PopupButton>
+            <PopupButton onClick={handleEdit2}>산업군 수정</PopupButton>
+            <PopupButton onClick={handlePassword}>비밀번호 수정</PopupButton>
+          </SmallPopup>
+        )}
+      </UserInfoContent>
+    </UserInfoContainer>
+  );
+};
+
+export default UserProfile;
