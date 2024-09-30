@@ -67,7 +67,7 @@ const InfoGroup = styled.div`
   gap: 10px;
 `;
 
-const Info = styled.p`
+const Info = styled.div`
   color: #888;
   font-size: 14px;
 `;

@@ -188,16 +188,24 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
     const fetchScrapData = async () => {
       try {
         const data = await getScrapData(); // 필요한 경우, page와 size를 인자로 전달
+        console.log("Fetched data:", data);
+
         const selectedScrap = data.data.data.find(
           (item) => item.newsId === newsId
         );
 
         if (selectedScrap) {
+          console.log("Selected Scrap:", selectedScrap); // selectedScrap 확인
+          console.log("News ID:", selectedScrap.newsId); // 찾은 뉴스 ID 확인
+          console.log("Scrap ID:", selectedScrap.scrapId); // 찾은 scrapId 확인
+
           setScrapId(selectedScrap.scrapId || null); // scrapId 설정
           setSummaryText(selectedScrap.scrapSummary || "");
           setOpinionText(selectedScrap.comment || "");
           setWordListText(selectedScrap.vocalist?.join(", ") || ""); // vocalist 배열을 문자열로 변환
           highlightsRef.current = selectedScrap.highlightList || [];
+        } else {
+          console.log("No scrap data found for this newsId:", newsId);
         }
       } catch (error) {
         console.error("Error fetching scrap data:", error);
@@ -262,16 +270,19 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
         scrapSummary: summaryText,
         highlights: highlightsRef.current,
       };
-      console.log(scrapData);
+      console.log("Scrap Data:", scrapData);
+      console.log("Scrap ID:", scrapId); // scrapId 확인용
 
       try {
         if (scrapId) {
           // scrapId가 있으면 put 요청 (업데이트)
           await putScrap(scrapId, scrapData);
+          console.log("put요청 완료");
           alert("업데이트되었습니다!");
         } else {
           // scrapId가 없으면 post 요청 (새로 생성)
           await postScrap(scrapData);
+          console.log("post요청 완료");
           alert("저장되었습니다!");
         }
       } catch (error) {
