@@ -74,13 +74,13 @@ const StatsRow = styled.div`
 `;
 
 const ViewIcon = styled.img`
-  width: 16px;
+  width: 12.45px;
   height: 16px;
   margin-right: 5px;
 `;
 
 const ScrapCntIcon = styled.img`
-  width: 13px;
+  width: 16px;
   height: 16px;
   margin-right: 5px;
 `;
