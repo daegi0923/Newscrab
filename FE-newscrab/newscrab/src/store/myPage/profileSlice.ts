@@ -43,17 +43,18 @@ export const updateUserProfileThunk = createAsyncThunk(
 // 초기 상태 정의
 const initialState = {
   userInfo: {
-    name: "",
-    email: "",
-    birthday: "",
-    gender: "",
-    scrapCount: "",
-    newsLikeCount: "",
-    vocaCount: "",
-    createdAt: "",
-    loginId: "",
-    profileImg: "",
-
+    data: {
+      name: "",
+      email: "",
+      birthday: "",
+      gender: "",
+      profileImg: "",
+      scrapCount: "",
+      vocaCount: "",
+      newsLikeCount: "",
+      createdAt: "",
+      loginId: ""
+    }
   },
   loading: false,
   error: null as string | null,
@@ -72,7 +73,7 @@ const profileSlice = createSlice({
         state.error = null;
       })
       .addCase(fetchUserProfileThunk.fulfilled, (state, action) => {
-        state.userInfo = action.payload.data;
+        state.userInfo = action.payload;
         state.loading = false;
       })
       .addCase(fetchUserProfileThunk.rejected, (state, action) => {

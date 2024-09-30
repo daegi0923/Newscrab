@@ -141,7 +141,7 @@ const VocaDesc = styled.div`
   flex: 2;
   position: absolute; /* 절대 위치로 설정 */
   align-items: center;
-  text-align: center;
+  // text-align: center;
   left:36%;
   margin-top: -1%;
 `;
