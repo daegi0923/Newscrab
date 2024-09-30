@@ -62,3 +62,21 @@ export interface PutScrapRequest {
   scrapSummary: string | null;
   highlights: Highlight[] | null;
 }
+
+export interface ScrapDetailResponse {
+  scrapId: number;
+  newsId: number;
+  newsTitle: string;
+  industryId: number;
+  newsContent: string;
+  createdAt: string;
+  updatedAt: string;
+  newsCompany: string;
+  view: number;
+  scrapCnt: number;
+  scrapSummary: string;
+  comment: string;
+  photolist: string[];
+  vocalist: string[];
+  highlightList: string[];
+}

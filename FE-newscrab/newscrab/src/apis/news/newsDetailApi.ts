@@ -6,6 +6,7 @@ export const getNewsDetail = async (newsId: number) => {
     const response = await API.get(`/news/${newsId}`, {}); // 해당 뉴스 ID로 API 요청
 
     const data = response.data.data; // 응답에서 'data' 객체 추출
+    console.log("Response data:", data);
 
     // 상세 뉴스 데이터를 구조화하여 반환
     const newsDetail = {
