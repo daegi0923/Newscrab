@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import viewIcon from "@assets/view.png";
-import scrapCntIcon from "@assets/scrapCnt.png";
+import viewIcon from "@assets/hot.png";
+import scrapCntIcon from "@assets/scrap.png";
 import crab from "@assets/crab.png";
 import { ScrapDetailResponse } from "../../types/scrapTypes"; // scrap 타입 불러옴
 import LikeButton from "@pages/news/common/LikeButton"; // LikeButton 컴포트 임포트
@@ -126,18 +126,42 @@ const ScrapCntIcon = styled.img`
 const NewsText = styled.div`
   line-height: 1.6;
   font-size: 16px;
+  margin-top: 20px;
+`;
+
+const NewsTextPreview = styled.div`
+  display: -webkit-box;
+  -webkit-line-clamp: 3; /* 3줄까지만 표시 */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.6;
+  font-size: 16px;
+  margin-top: 20px;
+  white-space: normal;
 `;
 
 const Divider = styled.hr`
   border: none;
   border-top: 1px solid #ddd;
-  margin-bottom: 20px;
+  margin-top: 20px;
+  margin-bottom: 10px;
+`;
+
+const CrabTextWrapper = styled.div`
+  display: flex;
+  align-items: center; /* 아이콘과 텍스트를 수평으로 정렬 */
+  gap: 10px;
 `;
 
 const CrabIcon = styled.img`
   width: 25px;
   height: 22px;
 `;
+
+const removeImagesFromContent = (htmlContent: string): string => {
+  return htmlContent.replace(/<img[^>]*>/g, ""); // <img> 태그 제거
+};
 
 type ScrapDetailArticleProps = {
   scrapId: number; // scrapId를 prop으로 전달
@@ -185,7 +209,9 @@ const ScrapDetailArticle: React.FC<ScrapDetailArticleProps> = ({ scrapId }) => {
     <NewsContentWrapper>
       {scrapDetail ? (
         <>
-          <LikeButton newsId={scrapDetail.newsId} /> {/* LikeButton 사용 */}
+          <LikeButton newsId={scrapDetail.newsId} />
+
+          {/* 토글 섹션 */}
           <NewsTitleWrapper>
             <ToggleButton onClick={handleToggleClick}>
               {showContent ? "▼" : "▶"}
@@ -194,7 +220,10 @@ const ScrapDetailArticle: React.FC<ScrapDetailArticleProps> = ({ scrapId }) => {
               {scrapDetail.newsTitle}
             </NewsTitle>
           </NewsTitleWrapper>
+
+          {/* 스크랩 상단 섹션 */}
           <MetaInfoContainer>
+            {/* 산업군, 신문사, 발행일 */}
             <InfoGroup>
               <Info>
                 <IndustryId>
@@ -204,6 +233,7 @@ const ScrapDetailArticle: React.FC<ScrapDetailArticleProps> = ({ scrapId }) => {
               <Info>{scrapDetail.newsCompany}</Info>
               <Info>{scrapDetail.createdAt.replace("T", " ")}</Info>{" "}
             </InfoGroup>
+            {/* 조회수, 스크랩수 아이콘 */}
             <Stats>
               <IconContainer>
                 <ViewIcon src={viewIcon} alt="조회수 아이콘" />
@@ -216,23 +246,48 @@ const ScrapDetailArticle: React.FC<ScrapDetailArticleProps> = ({ scrapId }) => {
             </Stats>
           </MetaInfoContainer>
           <Divider />
-          <CrabIcon src={crab} alt="게 아이콘" /> 본문
-          {showContent && (
+
+          {/* 본문 섹션 */}
+          <CrabTextWrapper>
+            <CrabIcon src={crab} alt="게 아이콘" />
+            <span style={{ fontWeight: "bold" }}>본문</span>
+          </CrabTextWrapper>
+          {showContent ? (
             <NewsText
               dangerouslySetInnerHTML={{
                 __html: scrapDetail?.newsContent ?? "",
-              }} // HTML로 렌더링
+              }}
             />
+          ) : (
+            <NewsTextPreview>
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: removeImagesFromContent(
+                    scrapDetail?.newsContent ?? ""
+                  ),
+                }}
+              />
+            </NewsTextPreview>
           )}
           <Divider />
-          <CrabIcon src={crab} alt="게 아이콘" /> 요약
+
+          {/* 요약 섹션 */}
+          <CrabTextWrapper>
+            <CrabIcon src={crab} alt="게 아이콘" />
+            <span style={{ fontWeight: "bold" }}>요약</span>
+          </CrabTextWrapper>
           <NewsText>
             {scrapDetail.scrapSummary
               ? scrapDetail.scrapSummary
               : "요약이 없습니다."}
           </NewsText>
           <Divider />
-          <CrabIcon src={crab} alt="게 아이콘" /> 의견
+
+          {/* 의견 섹션 */}
+          <CrabTextWrapper>
+            <CrabIcon src={crab} alt="게 아이콘" />
+            <span style={{ fontWeight: "bold" }}>의견</span>
+          </CrabTextWrapper>
           <NewsText>
             {scrapDetail.comment ? scrapDetail.comment : "의견이 없습니다."}
           </NewsText>

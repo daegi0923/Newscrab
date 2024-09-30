@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { ScrapData } from "../../types/scrapTypes"; // ScrapData 타입 import
-import viewIcon from "@assets/view.png";
-import scrapCntIcon from "@assets/scrapCnt.png";
+import viewIcon from "@assets/hot.png";
+import scrapCntIcon from "@assets/scrap.png";
 import { industry } from "@common/Industry";
 
 const formatDate = (dateString: string) => {
