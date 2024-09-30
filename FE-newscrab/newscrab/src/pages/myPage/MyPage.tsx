@@ -1,10 +1,11 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { AppDispatch } from "@store/index";
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+// import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch,  } from 'react-redux';
+// import { useNavigate } from 'react-router-dom';
 import { fetchUserProfileThunk } from "@store/myPage/profileSlice";
-import { RootState } from '@store/index';
+// import { RootState } from '@store/index';
 import UserProfile from '@components/myPage/UserProfile';
 import Ping from '@components/myPage/Ping';
 import Fortune from '@components/myPage/Fortune';
@@ -50,9 +51,9 @@ const BottomSection = styled.div`
 `;
 
 const MyPage: React.FC = () => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const dispatch: AppDispatch = useDispatch();
-  const { userInfo } = useSelector((state: RootState) => state.mypage);
+  // const { userInfo } = useSelector((state: RootState) => state.mypage);
 
   // 사용자 정보를 불러와서 초기값 설정 (처음 마운트될 때)
   useEffect(() => {

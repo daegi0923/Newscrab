@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import React, { useState } from 'react';
-import left from '@assets/common/left.png'
+// import left from '@assets/common/left.png'
 
 export const CalendarContainer = styled.div`
   // width: 82%;
