@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 // 재사용 components
-import GlobalStyle from "@components/GlobalStyle";
 import Header from "@common/Header";
 import ScrapDetailArticle from "./ScrapDetailArticle";
 import NewsDetailRcmd from "@pages/news/detail/NewsDetailRcmd";
@@ -75,7 +74,6 @@ const ScrapDetailPage: React.FC = () => {
 
   return (
     <div>
-      <GlobalStyle />
       <ScrapDetailContainer>
         <Header />
         <BackButton onClick={handleBackClick}>돌아가기</BackButton>

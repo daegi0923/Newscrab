@@ -86,7 +86,7 @@ const StyledTextarea = styled.textarea<{ $isOverflowing: boolean }>`
   clip-path: inset(0 round 8px);
 `;
 
-const ScrapDetailScrap: React.FC<{ scrapId: number }> = ({ scrapId }) => {
+const ScrapDetailVoca: React.FC<{ scrapId: number }> = ({ scrapId }) => {
   const [, setActiveScrapId] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState("summary");
   const [summaryText, setSummaryText] = useState("");
@@ -193,4 +193,4 @@ const ScrapDetailScrap: React.FC<{ scrapId: number }> = ({ scrapId }) => {
   );
 };
 
-export default ScrapDetailScrap;
+export default ScrapDetailVoca;
