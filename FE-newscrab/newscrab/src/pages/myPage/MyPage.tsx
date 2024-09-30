@@ -9,6 +9,7 @@ import UserProfile from '@components/myPage/UserProfile';
 import Ping from '@components/myPage/Ping';
 import Fortune from '@components/myPage/Fortune';
 import Calendar from '@components/myPage/Calendar';
+import ViewNews from '@components/myPage/MyNews';
 // import { industry } from '@components/common/Industry';
 
 const PageContainer = styled.div`
@@ -87,7 +88,9 @@ const MyPage: React.FC = () => {
           <Fortune />
         </TopSection>
         
-        <BottomSection></BottomSection>
+        <BottomSection>
+          <ViewNews/>
+        </BottomSection>
       </RightSection>
     </PageContainer>
   );
