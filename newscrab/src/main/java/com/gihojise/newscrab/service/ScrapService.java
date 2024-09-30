@@ -10,6 +10,7 @@ import com.gihojise.newscrab.dto.response.ScrapListResponseDto;
 import com.gihojise.newscrab.dto.response.ScrapResponseDto;
 import com.gihojise.newscrab.exception.ErrorCode;
 import com.gihojise.newscrab.exception.NewscrabException;
+import com.gihojise.newscrab.repository.HighlightRepository;
 import com.gihojise.newscrab.repository.NewsRepository;
 import com.gihojise.newscrab.repository.ScrapRepository;
 import com.gihojise.newscrab.repository.UserRepository;
@@ -114,7 +115,7 @@ public class ScrapService {
 
     // 3. 스크랩 추가
     @Transactional
-    public void addScrap(int userId, ScrapAddRequestDto scrapAddRequestDto) {
+    public Scrap addScrap(int userId, ScrapAddRequestDto scrapAddRequestDto) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NewscrabException(ErrorCode.USER_NOT_FOUND));
 
@@ -132,8 +133,7 @@ public class ScrapService {
                 .comment(scrapAddRequestDto.getComment())
                 .build();
 
-        scrapRepository.save(scrap);
-
+        return scrapRepository.save(scrap);
     }
 
     // 4. 스크랩 수정

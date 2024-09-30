@@ -14,5 +14,5 @@ public class ScrapAddRequestDto {
     private int newsId;
     private String comment;
     private String scrapSummary;
-    private List<HighlightDto> highlights;
+    private List<HighlightRequestDto> highlights;
 }

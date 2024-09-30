@@ -1,12 +1,15 @@
 package com.gihojise.newscrab.controller;
 
 import com.gihojise.newscrab.domain.CustomUserDetails;
+import com.gihojise.newscrab.domain.Scrap;
 import com.gihojise.newscrab.dto.common.ApiResponse;
+import com.gihojise.newscrab.dto.request.HighlightRequestDto;
 import com.gihojise.newscrab.dto.request.ScrapAddRequestDto;
 import com.gihojise.newscrab.dto.response.NewsDetailResponseDto;
 import com.gihojise.newscrab.dto.response.NewsPageResponseDto;
 import com.gihojise.newscrab.dto.response.ScrapListResponseDto;
 import com.gihojise.newscrab.dto.response.ScrapResponseDto;
+import com.gihojise.newscrab.service.HighlightService;
 import com.gihojise.newscrab.service.NewsService;
 import com.gihojise.newscrab.service.ScrapService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,6 +22,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/scrap")
@@ -27,6 +31,7 @@ import java.time.LocalDate;
 public class ScrapController {
 
     private final ScrapService scrapService;
+    private final HighlightService highlightService;
 
     // 1. 스크랩 목록 조회
     @Operation(summary = "스크랩 목록 조회", description = "사용자가 스크랩한 모든 뉴스 목록을 조회합니다.")
@@ -56,10 +61,12 @@ public class ScrapController {
     public ResponseEntity<ApiResponse<Void>> addScrap(@AuthenticationPrincipal CustomUserDetails userDetails
             , @RequestBody ScrapAddRequestDto scrapAddRequestDto) {
         int userId = userDetails.getUserId();
-        scrapService.addScrap(userId, scrapAddRequestDto);
+        Scrap scrap = scrapService.addScrap(userId, scrapAddRequestDto);
 
+        List<HighlightRequestDto> highlightRequestDtoList = scrapAddRequestDto.getHighlights();
         // TO DO
         // 형광펜 추가 로직
+        highlightService.addHighlight(scrap, highlightRequestDtoList);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.of(HttpStatus.CREATED.value(), HttpStatus.CREATED.getReasonPhrase(), "스크랩 추가 성공", null));
     }
