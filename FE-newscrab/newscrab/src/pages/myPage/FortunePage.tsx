@@ -84,23 +84,23 @@ const MessagePaper = styled(animated.div)`
   animation: ${flyIn} 2s forwards;
 `;
 
-const ShineEffect = styled.div`
-  position: relative;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  &:before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: -150%;
-    width: 300%;
-    height: 50%;
-    background: rgba(255, 255, 255, 0.5);
-    transform: rotate(25deg);
-    animation: shine 2s infinite ease-in-out;
-  }
-`;
+// const ShineEffect = styled.div`
+//   position: relative;
+//   width: 100%;
+//   height: 100%;
+//   overflow: hidden;
+//   &:before {
+//     content: '';
+//     position: absolute;
+//     top: 50%;
+//     left: -150%;
+//     width: 300%;
+//     height: 50%;
+//     background: rgba(255, 255, 255, 0.5);
+//     transform: rotate(25deg);
+//     animation: shine 2s infinite ease-in-out;
+//   }
+// `;
 
 const messages = [
   "111",
