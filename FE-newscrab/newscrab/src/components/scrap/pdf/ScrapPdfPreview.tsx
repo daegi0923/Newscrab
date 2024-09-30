@@ -41,8 +41,9 @@ const ScrapPdfPreview: React.FC = () => {
     <>
       <div>
         <h1>PDF 미리보기</h1>
-        {
-          scrapList.length === 0 ? (
+        <button onClick={handleDownloadPdf}>PDF 다운로드</button>
+        { 
+          scrapList?.length === 0 ? (
             <div>
               <p>스크랩된 PDF가 없습니다.</p>
             </div>
@@ -59,7 +60,6 @@ const ScrapPdfPreview: React.FC = () => {
             </div>
           )
         }
-        <button onClick={handleDownloadPdf}>PDF 다운로드</button>
       </div>
     </>
   );
