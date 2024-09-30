@@ -1,6 +1,7 @@
 package com.gihojise.newscrab.service;
 
 import com.gihojise.newscrab.domain.User;
+import com.gihojise.newscrab.dto.domain.IndustryDto;
 import com.gihojise.newscrab.dto.request.PasswordUpdateRequestDto;
 import com.gihojise.newscrab.dto.request.SignupRequestDto;
 import com.gihojise.newscrab.dto.request.UserUpdateRequestDto;
@@ -16,7 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -151,6 +154,15 @@ public class UserService {
             throw new NewscrabException(ErrorCode.USER_NOT_FOUND);
         }
 
+        //유저 산업 set을 list로 변환
+        List<IndustryDto> userIndustry = user.get().getUserIndustries().stream()
+                .map(userIndustry1 -> IndustryDto.builder()
+                        .industryId(userIndustry1.getIndustry().getIndustryId())
+                        .industryName(userIndustry1.getIndustry().getIndustryName())
+                        .preRank(userIndustry1.getPreRank())
+                        .build())
+                .collect(Collectors.toList());
+
         return UserResponseDto.builder()
                 .loginId(user.get().getLoginId())
                 .name(user.get().getName())
@@ -162,6 +174,7 @@ public class UserService {
                 .newsLikeCount(user.get().getLikedNews().size())
                 .scrapCount(user.get().getGrasses().size())
                 .vocaCount(user.get().getUserIndustries().size())
+                .userIndustry(userIndustry)
                 .build();
     }
 }
