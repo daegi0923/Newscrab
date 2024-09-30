@@ -154,7 +154,7 @@ const ScrapDetailArticle: React.FC<ScrapDetailArticleProps> = ({ scrapId }) => {
     null
   ); // 스크랩 데이터를 저장
   const [showContent, setShowContent] = useState(false); // 디폴트로 안 보이도록 설정
-  const [isLoading, setIsLoading] = useState<boolean>(true); // 로딩 상태
+  const [, setIsLoading] = useState<boolean>(true); // 로딩 상태
   const navigate = useNavigate(); // useNavigate 훅 사용
 
   // 스크랩 데이터를 가져오는 함수

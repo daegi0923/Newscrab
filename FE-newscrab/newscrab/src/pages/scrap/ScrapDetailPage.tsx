@@ -5,7 +5,7 @@ import styled from "styled-components";
 import GlobalStyle from "@components/GlobalStyle";
 import Header from "@common/Header";
 import ScrapDetailArticle from "./ScrapDetailArticle";
-import ScrapDetailScrap from "./ScrapDetailScrap";
+// import ScrapDetailScrap from "./ScrapDetailScrap";
 // api
 import { getScrapDetail } from "@apis/scrap/scrapDetailApi"; // scrap API 불러옴
 import { ScrapDetailResponse } from "../../types/scrapTypes"; // scrap 타입 불러옴
@@ -41,9 +41,8 @@ const BackButton = styled.button`
 
 const ScrapDetailPage: React.FC = () => {
   const { scrapId } = useParams<{ scrapId: string }>(); // URL에서 scrapId를 가져옴
-  const [scrapDetailItem, setScrapDetailItem] =
-    useState<ScrapDetailResponse | null>(null); // scrap 데이터 상태
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [, setScrapDetailItem] = useState<ScrapDetailResponse | null>(null); // scrap 데이터 상태
+  const [, setIsLoading] = useState<boolean>(true);
   const navigate = useNavigate();
 
   useEffect(() => {
