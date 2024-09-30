@@ -1,5 +1,6 @@
 import styled from 'styled-components';
 import React, { useState } from 'react';
+// import left from '@assets/common/left.png'
 
 export const CalendarContainer = styled.div`
   // width: 82%;
@@ -117,7 +118,7 @@ const Calendar: React.FC<CalendarProps> = ({ activityData }) => {
     if (!day) return 'transparent';
     const activity = activityData[day] || 0;
     const intensity = Math.min(activity / 15, 1); // 최대 15 활동 기준으로 그라데이션
-    return `rgba(100, 120, 120, ${intensity})`; // 녹색 그라데이션
+    return `rgba(30, 144, 255, ${intensity})`; // 녹색 그라데이션
   };
 
   const weekDays = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
@@ -129,6 +130,7 @@ const Calendar: React.FC<CalendarProps> = ({ activityData }) => {
         <MonthLabel>
           {currentDate.toLocaleString('default', { month: 'long', year: 'numeric' })}
         </MonthLabel>
+        {/* <NavButton onClick={handleNextMonth}>&gt;</NavButton> */}
         <NavButton onClick={handleNextMonth}>&gt;</NavButton>
       </CalendarHeader>
       <WeekDaysContainer>

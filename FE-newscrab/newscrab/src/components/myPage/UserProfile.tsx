@@ -125,6 +125,8 @@ const UserProfile: React.FC = () => {
 
   // 사용자 정보를 불러와서 초기값 설정 (처음 마운트될 때 실행)
   useEffect(() => {
+    console.log("Fetching user profile..."); 
+    
     dispatch(fetchUserProfileThunk())
       .unwrap()
       .then((res) => {
@@ -134,12 +136,6 @@ const UserProfile: React.FC = () => {
         console.error("프로필 불러오기 오류:", error);
       });
   }, [dispatch]);
-
-  const handleEdit1 = () => { navigate('/edit1'); };
-  const handleEdit2 = () => { navigate('/edit2'); };
-  const handlePassword = () => { navigate('/password'); };
-
-  const selectedImage = images[userInfo.data.profileImg as keyof typeof images] || profile1;
 
   // 팝업 외부를 클릭하면 팝업 닫기
   useEffect(() => {
@@ -154,6 +150,16 @@ const UserProfile: React.FC = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [popupRef]);
+
+  if (!userInfo || !userInfo.data) {
+    return <p>Loading...</p>;
+  }
+
+  const handleEdit1 = () => { navigate('/edit1'); };
+  const handleEdit2 = () => { navigate('/edit2'); };
+  const handlePassword = () => { navigate('/password'); };
+
+  const selectedImage = images[userInfo.data.profileImg as keyof typeof images] || profile1;
 
   return (
     <UserInfoContainer>

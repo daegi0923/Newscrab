@@ -11,7 +11,7 @@ import folder from '@assets/common/folder1.png'
 import voca from '@assets/common/dic2.png'
 import home from '@assets/common/home1.png'
 import news from '@assets/all.png'
-import { RootState, AppDispatch } from "@store/index";
+// import { RootState, AppDispatch } from "@store/index";
 
 const SidebarContainer = styled.nav`
   padding-top: 3%;

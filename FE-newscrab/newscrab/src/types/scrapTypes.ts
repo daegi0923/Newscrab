@@ -14,8 +14,6 @@ export interface Vocalist {
 }
 
 export interface Highlight {
-  highlightId: number;
-  scrapId: number;
   startPos: number;
   endPos: number;
   color: string; // Y, R, G 등의 값으로 색상 표현
