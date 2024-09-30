@@ -11,6 +11,7 @@ import ProfileImageModal from "@components/myPage/ProfileImageModal";
 import ProfileImageDisplay from "@components/myPage/ProfileImageDisplay";
 import defaultProfile from "@assets/auth/defaultProfile.jpg";
 import { AppDispatch } from "@store/index";
+import { useNavigate } from "react-router-dom";
 import {
   updateUserProfileThunk,
   fetchUserProfileThunk,
@@ -87,7 +88,7 @@ interface RootState {
 }
 
 const ProfileEdit1: React.FC = () => {
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
   const dispatch: AppDispatch = useDispatch();
 
   // Redux 상태에서 사용자 정보 가져오기
@@ -102,7 +103,7 @@ const ProfileEdit1: React.FC = () => {
     email: "",
     birthday: "",
     gender: "", // 성별 기본값은 빈 문자열
-    profileImage: "",
+    profileImg: "",
   });
 
   const [errors] = useState({
@@ -156,7 +157,7 @@ const ProfileEdit1: React.FC = () => {
         email: userInfo.data.email,
         birthday: userInfo.data.birthday,
         gender: userInfo.data.gender,
-        profileImage: userInfo.data.profileImg || "A",
+        profileImg: userInfo.data.profileImg || "A",
       });
       setSelectedImage(mapEnumToImage(userInfo.data.profileImg || "A"));
     }
@@ -180,7 +181,7 @@ const ProfileEdit1: React.FC = () => {
   const handleSelectImage = (imageSrc: string) => {
     const imageEnum = mapImageToEnum(imageSrc);
     setSelectedImage(imageSrc);
-    setEditForm({ ...editForm, profileImage: imageEnum }); // A, B, C로 설정
+    setEditForm({ ...editForm, profileImg: imageEnum }); // A, B, C로 설정
   };
 
   const handleSave = async () => {
@@ -191,7 +192,7 @@ const ProfileEdit1: React.FC = () => {
         updateUserProfileThunk(editForm)
       ).unwrap();
       console.log("수정 완료:", response);
-      // navigate('/mypage');  // 성공 시 이동
+      navigate('/mypage');  // 성공 시 이동
     } catch (error) {
       console.error("회원 정보 업데이트 실패:", error);
       alert("정보를 업데이트하는 중 오류가 발생했습니다.");
