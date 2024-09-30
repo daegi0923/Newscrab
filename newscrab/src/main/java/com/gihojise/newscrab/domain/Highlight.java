@@ -2,7 +2,10 @@ package com.gihojise.newscrab.domain;
 
 import com.gihojise.newscrab.enums.HighlightColor;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -10,7 +13,8 @@ import org.hibernate.annotations.OnDeleteAction;
 @Entity
 @Table(name = "highlight")
 @Getter
-public class Highlight {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class Highlight{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,4 +37,11 @@ public class Highlight {
     @ColumnDefault("'Y'")
     private HighlightColor color;
 
+    //생성자
+    public Highlight(Scrap scrap, Integer startPos, Integer endPos, HighlightColor color) {
+        this.scrap = scrap;
+        this.startPos = startPos;
+        this.endPos = endPos;
+        this.color = color;
+    }
 }
