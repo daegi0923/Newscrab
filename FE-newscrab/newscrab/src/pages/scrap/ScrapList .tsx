@@ -85,6 +85,14 @@ const ScrapCntIcon = styled.img`
   margin-right: 5px;
 `;
 
+// 제목 자르기 함수 - 30자 이상이면 '...'으로 자름
+const truncateTitle = (title: string) => {
+  const maxLength = 40; // 최대 글자 수를 30으로 고정
+  return title.length > maxLength
+    ? title.substring(0, maxLength) + "..."
+    : title;
+};
+
 const ScrapList: React.FC<{
   scrapList: ScrapData[];
   onScrapClick: (scrapId: number) => void; // 여기에서 scrapId를 전달하는 것으로 수정
@@ -109,7 +117,7 @@ const ScrapList: React.FC<{
             )}
             <TextContainer>
               <IndustryId>{getIndustryName(scrap.industryId)}</IndustryId>
-              <NewsTitle>{scrap.newsTitle}</NewsTitle>
+              <NewsTitle>{truncateTitle(scrap.newsTitle)}</NewsTitle>
               <InfoRow>
                 <span>{scrap.newsCompany}</span>
                 <span>{formatDate(scrap.createdAt)}</span>
