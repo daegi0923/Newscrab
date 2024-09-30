@@ -87,7 +87,7 @@ const ScrapCntIcon = styled.img`
 
 const ScrapList: React.FC<{
   scrapList: ScrapData[];
-  onScrapClick: (newsId: number) => void;
+  onScrapClick: (scrapId: number) => void; // 여기에서 scrapId를 전달하는 것으로 수정
 }> = ({ scrapList, onScrapClick }) => {
   const getIndustryName = (industryId: number): string => {
     const matchedCategory = industry.find(
@@ -100,8 +100,8 @@ const ScrapList: React.FC<{
     <GridContainer>
       {scrapList.map((scrap) => (
         <NewsItemContainer
-          key={scrap.newsId}
-          onClick={() => onScrapClick(scrap.newsId)} // 클릭 시 onNewsClick 호출
+          key={scrap.scrapId} // key를 scrapId로 설정
+          onClick={() => onScrapClick(scrap.scrapId)} // 클릭 시 scrapId를 전달하도록 수정
         >
           <FlexContainer>
             {scrap.photolist && (

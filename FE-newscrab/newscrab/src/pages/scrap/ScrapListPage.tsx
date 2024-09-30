@@ -25,6 +25,7 @@ const ScrapListPage: React.FC = () => {
     const resData = await getScrapData(page, 10); // API 요청
     setScrapList(resData.data.data); // 받아온 스크랩 데이터를 상태에 저장
     // setTotalPages(Math.ceil(resData.data.totalItems / 10)); // 총 페이지 수 계산 후 상태에 저장
+    console.log("Scrap List:", resData.data.data); // 스크랩 리스트 데이터 출력
   };
 
   // selectedIndustryId에 따른 필터링 적용
@@ -57,6 +58,7 @@ const ScrapListPage: React.FC = () => {
 
   // 스크랩 클릭 시 실행되는 핸들러 (상세 페이지로 이동)
   const handleScrapClick = (scrapId: number) => {
+    console.log("Scrap ID clicked:", scrapId); // 스크랩 ID 출력
     navigate(`/scrap/${scrapId}`); // 클릭한 스크랩의 상세 페이지로 이동
   };
 
