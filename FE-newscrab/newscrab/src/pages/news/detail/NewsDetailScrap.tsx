@@ -4,8 +4,8 @@ import { getScrapData, postScrap, putScrap } from "@apis/scrap/scrapApi"; // pos
 import { addVocaThunk } from "@store/voca/vocaSlice";
 import DropDown from "@components/common/DropDown";
 import { words } from "@components/voca/VocaList";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "@store/index";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@store/index";
 
 const Sidebar = styled.div`
   width: 30%;
@@ -141,6 +141,32 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [industryId, setIndustryId] = useState<number | null>(null);
 
+  // 형광펜 정보 저장하는 ref (리렌더링 없이 데이터 유지)
+  const highlightsRef = useRef<{ startPos: number, endPos: number, color: string }[]>([]);
+
+  // Redux에서 하이라이트(highlight) 정보 가져오기
+  const highlights = useSelector((state: RootState) => state.highlight.highlights);
+
+  // useEffect를 통해 Redux에서 가져온 하이라이트 정보를 ref에 저장
+  useEffect(() => {
+    highlightsRef.current = highlights;
+  }, [highlights]);
+
+  const handleHighlightChange = (startPos: number, endPos: number, color: string) => {
+    // 같은 위치의 형광펜이 있는지 확인하여 수정
+    const existingHighlightIndex = highlightsRef.current.findIndex(
+      (highlight) => highlight.startPos === startPos && highlight.endPos === endPos
+    );
+
+    if (existingHighlightIndex !== -1) {
+      // 이미 존재하는 형광펜은 색상을 변경
+      highlightsRef.current[existingHighlightIndex].color = color;
+    } else {
+      // 새 형광펜 추가
+      highlightsRef.current.push({ startPos, endPos, color });
+    }
+  };
+
   const summaryTextareaRef = useRef<HTMLTextAreaElement>(null);
   const opinionTextareaRef = useRef<HTMLTextAreaElement>(null);
   const wordListTextareaRef = useRef<HTMLTextAreaElement>(null);
@@ -167,6 +193,7 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
           setSummaryText(selectedScrap.scrapSummary || "");
           setOpinionText(selectedScrap.comment || "");
           setWordListText(selectedScrap.vocalist?.join(", ") || ""); // vocalist 배열을 문자열로 변환
+          highlightsRef.current = selectedScrap.highlightList || [];
         }
       } catch (error) {
         console.error("Error fetching scrap data:", error);
@@ -229,8 +256,9 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
         newsId: newsId,
         comment: opinionText,
         scrapSummary: summaryText,
-        highlights: [],
+        highlights: highlightsRef.current,
       };
+      console.log(scrapData);
 
       try {
         if (scrapId) {
