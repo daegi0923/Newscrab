@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
+import scrollbar from "@components/common/ScrollBar";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@store/index";
 import {
@@ -26,24 +27,7 @@ const NewsContent = styled.div`
   max-height: 680px;
   overflow-y: auto;
   position: relative;
-
-  &::-webkit-scrollbar {
-    width: 8px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background-color: #888;
-    border-radius: 12px;
-    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-  }
-
-  &::-webkit-scrollbar-thumb:hover {
-    background-color: #666;
-  }
-
-  &::-webkit-scrollbar-track {
-    background-color: transparent;
-  }
+  ${scrollbar}
   user-select: text;
 `;
 
