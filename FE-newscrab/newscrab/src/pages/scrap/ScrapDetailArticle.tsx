@@ -8,6 +8,7 @@ import { ScrapDetailResponse } from "../../types/scrapTypes"; // scrap 타입 �
 import LikeButton from "@pages/news/common/LikeButton"; // LikeButton 컴포트 임포트
 import { industry } from "@common/Industry"; // 산업 데이터를 가져오기
 import { getScrapDetail } from "@apis/scrap/scrapDetailApi"; // 스크랩 데이터를 가져오기 위한 API 호출
+import { deleteScrap } from "@apis/scrap/scrapApi";
 
 // 스타일 정의
 const NewsContentWrapper = styled.div`
@@ -123,6 +124,34 @@ const ScrapCntIcon = styled.img`
   height: 16px;
 `;
 
+const EditButton = styled.button`
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 12px;
+
+  &:hover {
+    background-color: #45a049;
+  }
+`;
+
+const DeleteButton = styled.button`
+  background-color: #f44336;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 12px;
+
+  &:hover {
+    background-color: #d32f2f;
+  }
+`;
+
 const NewsText = styled.div`
   line-height: 1.6;
   font-size: 16px;
@@ -193,6 +222,26 @@ const ScrapDetailArticle: React.FC<ScrapDetailArticleProps> = ({ scrapId }) => {
     }
   };
 
+  const handleEditClick = () => {
+    // 수정 페이지로 이동하거나 수정 모드를 활성화
+    navigate(`/news/${scrapDetail?.newsId}`); // 수정 페이지로 이동
+  };
+
+  const handleDeleteClick = async () => {
+    const confirmed = window.confirm("정말로 이 스크랩을 삭제하시겠습니까?");
+    if (confirmed) {
+      try {
+        // 삭제 API 호출
+        await deleteScrap(scrapId); // 삭제 API 함수 호출
+        alert("스크랩이 삭제되었습니다.");
+        navigate("/scrap"); // 삭제 후 목록 페이지로 이동
+      } catch (error) {
+        console.error("삭제 중 오류 발생:", error);
+        alert("삭제에 실패했습니다.");
+      }
+    }
+  };
+
   useEffect(() => {
     fetchScrapDetail(scrapId); // 컴포넌트 마운트 시 데이터 요청
   }, [scrapId]);
@@ -202,7 +251,7 @@ const ScrapDetailArticle: React.FC<ScrapDetailArticleProps> = ({ scrapId }) => {
   };
 
   const handleTitleClick = () => {
-    navigate(`/news/${scrapDetail?.newsId}`); // 상세 페이지로 이동
+    navigate(`/news/${scrapDetail?.newsId}`); // 원문기사로 이동
   };
 
   return (
@@ -243,6 +292,8 @@ const ScrapDetailArticle: React.FC<ScrapDetailArticleProps> = ({ scrapId }) => {
                 <ScrapCntIcon src={scrapCntIcon} alt="스크랩수 아이콘" />
                 {scrapDetail.scrapCnt}
               </IconContainer>
+              <EditButton onClick={handleEditClick}>수정</EditButton>
+              <DeleteButton onClick={handleDeleteClick}>삭제</DeleteButton>
             </Stats>
           </MetaInfoContainer>
           <Divider />

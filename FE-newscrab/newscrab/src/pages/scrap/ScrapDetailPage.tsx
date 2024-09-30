@@ -76,7 +76,7 @@ const ScrapDetailPage: React.FC = () => {
     <div>
       <ScrapDetailContainer>
         <Header />
-        <BackButton onClick={handleBackClick}>돌아가기</BackButton>
+        <BackButton onClick={handleBackClick}>스크랩 목록</BackButton>
         <ScrapWrapper>
           {/* scrapId만 ScrapDetailArticle에 넘겨줍니다 */}
           {scrapId && <ScrapDetailArticle scrapId={parseInt(scrapId, 10)} />}
