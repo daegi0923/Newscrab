@@ -12,6 +12,7 @@ import com.gihojise.newscrab.repository.UserRepository;
 import com.gihojise.newscrab.repository.VocaRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,10 @@ public class VocaService {
     private final VocaRepository vocaRepository;
     private final NewsRepository newsRepository;
     private final UserRepository userRepository;
+
+    @Value("${FAST_API_HOST}")
+    String host;
+
 
     // 단어 목록 조회
     @Transactional(readOnly = true)
@@ -108,7 +113,7 @@ public class VocaService {
             log.info("fetchRelatedNews: {}", encodedKeyword);
 
             // 인코딩된 키워드를 포함한 URL 생성
-            String url = String.format("https://newscrab.duckdns.org/api/v1/reco/voca/search_related_news?keyword=%s", encodedKeyword);
+            String url = String.format(host+"/api/v1/reco/voca/search_related_news?keyword=%s", encodedKeyword);
             log.info("Final request URL: {}", url);  // 요청 URL을 로그로 출력하여 확인
 
             // RestTemplate 사용
