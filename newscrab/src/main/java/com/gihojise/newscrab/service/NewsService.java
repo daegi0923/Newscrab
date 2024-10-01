@@ -295,6 +295,14 @@ public class NewsService {
         userNewsReadRepository.save(userNewsRead);
     }
 
+    // 뉴스 조회
+    @Transactional(readOnly = true)
+    public News getNewsByNewsId(int newsId) {
+        News news = newsRepository.findById(newsId)
+                .orElseThrow(() -> new NewscrabException(ErrorCode.NEWS_NOT_FOUND));
+
+        return news;
+
     public NewsRecoResponseDto getRecommendNews(int userId) {
         //fast api에 요청보내서 추천뉴스 받아오기
         try {
@@ -326,6 +334,5 @@ public class NewsService {
             log.error("Encoding failed: {}", e.getMessage());
             throw new RuntimeException("URL encoding failed", e);
         }
-
     }
 }
