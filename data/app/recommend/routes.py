@@ -77,8 +77,8 @@ def get_scrap_like_dataframe(db: Session):
     user_news_matrix = scrap_like_df.pivot_table(index='user_id', columns='news_id', values='interaction', fill_value=0)
     
     # 결과 확인
-    print(scrap_like_df)
-    print(user_news_matrix)
+    # print(scrap_like_df)
+    # print(user_news_matrix)
 
 
 
@@ -109,8 +109,8 @@ def calculate_industry_similarity(user_id:int, db: Session):
         user_sim[user.user_id] = similarity
 
     # 유사도가 높은 사용자 반환
-    print("user_sim")
-    print(user_sim)
+    # print("user_sim")
+    # print(user_sim)
     return user_sim
 
 def calculate_interaction_similarity(user_id:int, db:Session):
@@ -135,7 +135,6 @@ def collaborative_filtering(user_id: int, db: Session):
     interaction_cnt = len(scrap_like_df[scrap_like_df['user_id'] == user_id])
     # 현재 유저의 인덱스 찾기
     user_ids = scrap_like_df['user_id'].unique()
-    user_idx = np.where(user_ids == user_id)[0][0]
     if interaction_cnt < 10:
         user_similarity = calculate_industry_similarity(user_id, db)
     else:
@@ -147,44 +146,118 @@ def collaborative_filtering(user_id: int, db: Session):
     if len(user_similarity) < 1:
         return None
     
-    n_top = 3
+    n_top = 5
     # user_similarity 딕셔너리를 DataFrame으로 변환
     similarity_df = pd.DataFrame(user_similarity, columns=['user_id', 'similarity'])
 
     # 유사도 기준으로 내림차순 정렬 후 상위 N명 선택
     top_users = similarity_df.sort_values(by='similarity', ascending=False).head(n_top)['user_id']
-    print(top_users)
+    # print(top_users)
     similar_users_records = user_news_matrix.loc[top_users]
 
 
-    print(similar_users_records)
+    # print(similar_users_records)
     contents_score = similar_users_records.sum(axis = 0)
-    print(contents_score)
+    # print(contents_score)
     
 
 
     # 유사한 사용자가 찜하거나 스크랩한 뉴스를 추천
     recommended_news = set()
     # 요청 사용자 기록
-    print(user_news_matrix, user_id)
-    user_record = user_news_matrix.loc[user_id]
-    print(user_record)
+    # print(user_news_matrix, user_id)
+    if(interaction_cnt):
+        user_record = user_news_matrix.loc[user_id]
+        pass
+    else:
+        pass
+    # print(user_record)
     for news_id, score in contents_score.items():
-        print(news_id, score)
-        if user_news_matrix.loc[user_id, news_id] == 0:  # 현재 사용자가 보지 않은 뉴스
+        # print(news_id, score)
+        if interaction_cnt:
+            if user_news_matrix.loc[user_id, news_id] == 0:  # 현재 사용자가 보지 않은 뉴스
+                recommended_news.add(news_id)
+        else:
             recommended_news.add(news_id)
-    
-    return list(recommended_news)
+    return (list(recommended_news), contents_score)
+
+ 
+from datetime import datetime, timedelta
+
+def get_related_news(news_list, scores, user_id, db: Session):
+    user_industry = db.query(models.UserIndustry.industry_id).filter(user_id == user_id)
+    related_news_list = dict()
+    # print("user_industry" , user_industry)
+    one_week_ago = datetime.now() - timedelta(days=7)  # 일주일 전 기준
+
+    for news_id, original_score in zip(news_list, scores):
+        news = db.query(models.News).filter(models.News.news_id == news_id).first()
+
+        # 산업군 매칭 가중치 계산
+        industry_weight = 1.0
+        if user_industry and news.industry in user_industry:
+            industry_weight = 1.5
+
+        # 최신 뉴스 가중치 계산
+        latest_news_weight = 1.0
+        if news.created_at >= one_week_ago:  # 일주일 이내
+            latest_news_weight = 1.5
+
+        # 최종 점수 계산
+        final_score = original_score * latest_news_weight * industry_weight
+
+        # 관련 뉴스의 ID로 조회하여 생성 날짜에 따라 점수 추가
+        related_news_ids = [news.related_news_id_1, news.related_news_id_2, news.related_news_id_3]
+        for related_news_id in related_news_ids:
+            if related_news_id:
+                related_news = db.query(models.News).filter(models.News.news_id == related_news_id).first()
+                if related_news and related_news.created_at >= one_week_ago:
+                    # 일주일 이내라면 점수에 1.5배 가중치 추가
+                    final_score *= 1.5
+
+        # 관련 뉴스 ID와 점수 저장
+        related_news_list[news_id] = final_score
+
+        # 역참조된 뉴스에 대해 점수 계산
+        reverse_related_news = db.query(models.News).filter(
+            (models.News.related_news_id_1 == news_id) |
+            (models.News.related_news_id_2 == news_id) |
+            (models.News.related_news_id_3 == news_id)
+        ).all()
+
+        for reverse_news in reverse_related_news:
+            reverse_score = original_score
+            if reverse_news.created_at >= one_week_ago:
+                reverse_score *= 1.5  # 일주일 이내인 경우 가중치 적용
+            related_news_list[reverse_news.news_id] = reverse_score
+
+    # 중복 제거 후 상위 30개 추출
+    unique_news = {k: v for k, v in sorted(related_news_list.items(), key=lambda item: item[1], reverse=True)}
+    return dict(list(unique_news.items()))
 
 
+
+def get_latest_news(user_id: int, db:Session):
+    # 사용자 선호 산업 리스트 추출 (최대 3개)
+    user_industry_ids = db.query(models.UserIndustry.industry_id).filter(models.UserIndustry.user_id == user_id).all()
+    # print(user_industry_ids)
+    # 산업별로 최신 뉴스 10개씩 추출
+    latest_news = []
+    for industry in user_industry_ids:
+        # print(industry)
+        news_list = db.query(models.News.news_id).filter(models.News.news_industry_id == industry[0]).order_by(models.News.created_at.desc()).limit(10).all()
+        for news in news_list:
+            latest_news.append(news[0])
+
+    return latest_news
 
 async def get_id_from_body(request:Request):
     body = await request.json()  # 요청 Body를 JSON으로 파싱
-    print(body)
+    # print(body)
     return body.get("user_id")  # 'name' 파라미터 추출
 
-@router.get("/list")
-def read_item(user_id: int = Depends(get_id_from_body), db: Session = Depends(get_db)):
+@router.get("/list/{user_id}")
+def read_item(user_id: int, db: Session = Depends(get_db)):
 # def read_item(user_id: int = 1, db: Session = Depends(get_db)):
 
     # Scrap 테이블에서 user_id가 스크랩한 뉴스의 news_id 조회
@@ -192,17 +265,34 @@ def read_item(user_id: int = Depends(get_id_from_body), db: Session = Depends(ge
     # if not scrap_like_df or not user_news_matrix:
     #     get_scrap_like_dataframe(db)
     get_scrap_like_dataframe(db)
-
-    user_based_recommend_news_list = collaborative_filtering(user_id, db)
-    print()
+    user_based_recommend_news_list, ub_scores = collaborative_filtering(user_id, db)
+    # print(ub_scores)
+    ib_news_list = get_related_news(user_based_recommend_news_list, ub_scores, user_id, db)
     # recommend_news = db.query(models.News).filter(models.News.news_id.in_(news_list)).all()
+    # print(ib_news_list)
+    # 해당 유저의 interaction을 조회
+    interaction_cnt = len(scrap_like_df[scrap_like_df['user_id'] == user_id])
+    if interaction_cnt:
+        user_interactions = user_news_matrix.loc[user_id]
+    else:
+        user_interactions = {}
+        pass
+    # 0보다 큰 interaction을 가진 news_id를 set에 저장
+    interacted_news_ids = set()
+    for news_id, interaction in user_interactions.items():
+        if interaction > 0:
+            interacted_news_ids.add(news_id)
+
+    item_based_recommend_news_list = list(set(ib_news_list.keys())-set(user_based_recommend_news_list) - interacted_news_ids)
     # print(recommend_news)
+    industry_latest_news = get_latest_news(user_id, db)
+    # print("industry_latest_news", industry_latest_news)
+    industry_latest_news_list = list(set(industry_latest_news) - interacted_news_ids)
     return {
         "user_base" : user_based_recommend_news_list,
-        "item_base" : [],
-		"latest" : []
+        "item_base" : list(item_based_recommend_news_list)[:30],
+        "latest" : industry_latest_news_list
     }
-
 
 
 # 일정 시간이 되면 업데이트할 데이터들
