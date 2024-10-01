@@ -4,6 +4,7 @@ import com.gihojise.newscrab.domain.Highlight;
 import com.gihojise.newscrab.domain.Scrap;
 import com.gihojise.newscrab.dto.domain.HighlightDto;
 import com.gihojise.newscrab.dto.request.HighlightRequestDto;
+import com.gihojise.newscrab.dto.request.HighlightUpdateRequestDto;
 import com.gihojise.newscrab.enums.HighlightColor;
 import com.gihojise.newscrab.repository.HighlightRepository;
 import com.gihojise.newscrab.repository.ScrapRepository;
@@ -58,5 +59,15 @@ public class HighlightService {
     @Transactional
     public void deleteHighlight(int scrapId, int highlightId) {
         highlightRepository.deleteByScrap_ScrapIdAndHighlightId(scrapId, highlightId);
+    }
+
+    // 형광펜 수정
+    @Transactional
+    public void updateHighlight(int scrapId, int highlightId, HighlightUpdateRequestDto highlightRequestDto) {
+        Highlight highlight = highlightRepository.getHighlightByHighlightId(highlightId);
+
+        highlight.changeColor(HighlightColor.valueOf(highlightRequestDto.getColor().toString()));
+
+        highlightRepository.save(highlight);
     }
 }
