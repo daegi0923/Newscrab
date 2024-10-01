@@ -7,8 +7,9 @@ import Layout from "@components/common/Layout";
 import LandingPage from "@pages/LandingPage";
 // auth
 import LoginPage from "@pages/auth/LoginPage";
+import LoginPage1 from "@pages/auth/LoginPage1";
 import SignUpPage1 from "@pages/auth/SignUpPage1";
-import SignUpPage2 from "@pages/auth/SignUpPage2";
+import SignUpPage2 from "@pages/auth/SignUpPage2_1";
 //뉴스
 import MainNewsPage from "@pages/news/MainNewsPage";
 import RcmdNewsPage from "@pages/news/rcmdNews/RcmdNewsPage";
@@ -59,6 +60,7 @@ const AppRouter: React.FC = () => {
           <>
             {/* <Route path="/" element={<LandingPage />} /> */}
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/login1" element={<LoginPage1 />} />
             <Route path="/signup1" element={<SignUpPage1 />} />
             <Route path="/signup2" element={<SignUpPage2 />} />
             

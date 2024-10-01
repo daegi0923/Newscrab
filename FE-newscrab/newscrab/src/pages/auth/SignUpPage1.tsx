@@ -85,7 +85,7 @@ const SignUpPage1: React.FC = () => {
     name: "", 
     email: "",
     birthday: "",
-    gender: "male",
+    gender: "MALE",
     userIndustry: []  // 관심 분야는 이후 처리
   });
   

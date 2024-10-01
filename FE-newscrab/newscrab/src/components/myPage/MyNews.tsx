@@ -5,14 +5,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchUserViewNewsThunk } from '@store/myPage/userNewsSlice';
 import { RootState, AppDispatch } from '@store/index';
 import defaultImage from "@assets/auth/defaultProfile.jpg";
-import arrow from "@assets/common/arrow.png"
+import arrow from "@assets/common/arrow.png";
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 20px;
-  
 `;
 
 const NewsListContainer = styled.div`
@@ -21,18 +20,18 @@ const NewsListContainer = styled.div`
   width: 95%;
   position: relative;
   max-width: 850px;
-  overflow: hidden; /* 스크롤 바를 숨김 */
+  overflow: hidden;
 `;
 
 const NewsList = styled.div`
   display: flex;
   gap: 20px;
-  overflow-x: scroll; /* 여전히 스크롤 가능 */
+  overflow-x: scroll;
   padding: 10px;
   width: 100%;
-  scrollbar-width: none; /* 파이어폭스에서 스크롤 바 숨김 */
+  scrollbar-width: none;
   &::-webkit-scrollbar {
-    display: none; /* 크롬에서 스크롤 바 숨김 */
+    display: none;
   }
 `;
 
@@ -94,23 +93,13 @@ const NewsDate = styled.p`
 
 const SectionName = styled.div`
   font-size: 13px;
-  margin-bottom: 10px;
-  color: #888;
+  margin-bottom: 5px;
+  color: #93939;
   font-weight: bold;
+  position: absolute;
+  top: 41.5%;
+  left: 39.5%;  
 `;
-
-// const LoadMoreButton = styled.button`
-//   margin-top: 20px;
-//   padding: 10px 20px;
-//   background-color: #007bff;
-//   color: white;
-//   border: none;
-//   border-radius: 5px;
-//   cursor: pointer;
-//   &:hover {
-//     background-color: #0056b3;
-//   }
-// `;
 
 const ArrowButton = styled.button`
   background: none;
@@ -125,18 +114,17 @@ const ArrowButton = styled.button`
 
 const LeftArrow = styled(ArrowButton)`
   left: 19%;
-  top: 60%;
+  top: 57%;
   img {
     width: 5%;
     height: 10%;
-    transform: scaleX(-1); /* 이미지 뒤집기 */
+    transform: scaleX(-1);
   }
 `;
 
 const RightArrow = styled(ArrowButton)`
-  // position: absolute;
   left: 86%;
-  top: 60%;
+  top: 57%;
   img {
     width: 13%;
     height: 13%;
@@ -146,46 +134,35 @@ const RightArrow = styled(ArrowButton)`
 const ViewNews: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
-  const { newsList, currentPage, totalPages, loading, error } = useSelector((state: RootState) => state.userNews);
-
-  const [page, setPage] = useState<number>(1); // 초기 페이지
+  const { recentNewsList, loading, error } = useSelector((state: RootState) => state.userNews);
+  const [page, setPage] = useState<number>(1);
   const newsListRef = useRef<HTMLDivElement | null>(null);
-  // console.log('처음 불러오는 데이터 :', currentPage, newsList)
+
+  useEffect(() => {
+    // 컴포넌트가 마운트될 때마다 데이터를 강제로 갱신
+    dispatch(fetchUserViewNewsThunk(1));
+  }, [dispatch]);
+
+  // 데이터가 업데이트될 때마다 렌더링
+  useEffect(() => {
+    console.log('최근에 본 뉴스:', recentNewsList);
+  }, [recentNewsList]);
 
   // 중복된 newsId 제거
-  const uniqueNewsList = newsList.filter(
+  const uniqueRecentNewsList = recentNewsList.filter(
     (item, index, self) => index === self.findIndex((t) => t.newsId === item.newsId)
   );
 
-  // 처음에 0-3페이지까지
-  useEffect(() => {
-    // for (let i = 1; i <= 3; i++) {
-    //   dispatch(fetchUserViewNewsThunk(i));
-    // }
-    dispatch(fetchUserViewNewsThunk(1));
-  }, [dispatch]);
-  console.log(`${currentPage}페이지 불러온 뉴스`, newsList);
+  console.log(uniqueRecentNewsList);
 
   const handleMove = (newsId: number) => {
     navigate(`/news/${newsId}`);
   };
 
-  // 4페이지씩 데이터 추가
-  // const loadMoreNews = () => {
-  //   const nextPageStart = page + 1;
-  //   const nextPageEnd = nextPageStart + 1;
-
-  //   for (let i = nextPageStart; i <= nextPageEnd; i++) {
-  //     dispatch(fetchUserViewNewsThunk(i));
-  //   }
-  //   setPage(nextPageEnd); // 페이지를 다음 세트로 증가
-  // };
-
-  // 한 페이지만 증가
   const loadMoreNews = () => {
     const nextPage = page + 1;
     dispatch(fetchUserViewNewsThunk(nextPage));
-    setPage(nextPage); // 페이지를 하나씩 증가
+    setPage(nextPage);
   };
 
   const scrollLeft = () => {
@@ -198,41 +175,35 @@ const ViewNews: React.FC = () => {
     if (newsListRef.current) {
       newsListRef.current.scrollLeft += 200;
       if (newsListRef.current.scrollLeft + newsListRef.current.clientWidth >= newsListRef.current.scrollWidth) {
-        loadMoreNews(); // 스크롤이 끝에 도달하면 데이터 로드
+        loadMoreNews();
       }
-    }}
+    }
+  };
 
   return (
     <Container>
       <SectionName>최근에 본 뉴스</SectionName>
-      {/* {loading && <p>Loading...</p>}
-      {error && <p>Error: {error}</p>} */}
-      {uniqueNewsList.length > 0 ? (
-        <>
-        <LeftArrow onClick={scrollLeft}><img src={arrow} alt="오른쪽 화살표" /></LeftArrow>
-        <NewsListContainer>
-          <NewsList ref={newsListRef}>
-            {uniqueNewsList.map((item) => (
-              <NewsItem key={item.newsId} onClick={() => handleMove(item.newsId)}>
-                <NewsImage src={item.photoUrlList[0] || defaultImage} alt="뉴스 이미지" />
-                <Overlay>
-                  <NewsContent>
-                    <NewsTitle>{item.newsTitle}</NewsTitle>
-                    <NewsDate>{item.newsPublishedAt.slice(0, 10)}</NewsDate>
-                  </NewsContent>
-                </Overlay>
-              </NewsItem>
-            ))}
-          </NewsList>
-          </NewsListContainer>
-          <RightArrow onClick={scrollRight}><img src={arrow} alt="오른쪽 화살표" /></RightArrow>
-          {/* {page <= totalPages && (
-            <LoadMoreButton onClick={loadMoreNews}>더 보기</LoadMoreButton>
-          )} */}
-        </>
-      ) : (
-        <p>최근 본 뉴스가 없습니다.</p>
-      )}
+      <LeftArrow onClick={scrollLeft}>
+        <img src={arrow} alt="왼쪽 화살표" />
+      </LeftArrow>
+      <NewsListContainer>
+        <NewsList ref={newsListRef}>
+          {uniqueRecentNewsList.map((item) => (
+            <NewsItem key={item.newsId} onClick={() => handleMove(item.newsId)}>
+              <NewsImage src={item.photoUrlList[0] || defaultImage} alt="뉴스 이미지" />
+              <Overlay>
+                <NewsContent>
+                  <NewsTitle>{item.newsTitle}</NewsTitle>
+                  <NewsDate>{item.newsPublishedAt.slice(0, 10)}</NewsDate>
+                </NewsContent>
+              </Overlay>
+            </NewsItem>
+          ))}
+        </NewsList>
+      </NewsListContainer>
+      <RightArrow onClick={scrollRight}>
+        <img src={arrow} alt="오른쪽 화살표" />
+      </RightArrow>
     </Container>
   );
 };

@@ -11,6 +11,7 @@ import Ping from '@components/myPage/Ping';
 import Fortune from '@components/myPage/Fortune';
 import Calendar from '@components/myPage/Calendar';
 import ViewNews from '@components/myPage/MyNews';
+import LikeNews from '@components/myPage/LikeNews';
 // import { industry } from '@components/common/Industry';
 
 const PageContainer = styled.div`
@@ -46,15 +47,18 @@ const TopSection = styled.div`
 const BottomSection = styled.div`
   width: 93%;
   height: 60%;
-  border: solid black 1px;
+  border: dashed #888 1.4px;
   margin: 3% 0%;
   background-color: #fff;
+  border-radius: 10px;
 `;
 
 const MyPage: React.FC = () => {
   // const navigate = useNavigate();
   const dispatch: AppDispatch = useDispatch();
   // const { userInfo } = useSelector((state: RootState) => state.mypage);
+  
+  
 
   // 사용자 정보를 불러와서 초기값 설정 (처음 마운트될 때)
   useEffect(() => {
@@ -76,6 +80,22 @@ const MyPage: React.FC = () => {
     6: 8,
     7: 12,
   };
+  
+   // 컴포넌트가 마운트될 때 새로고침 여부 확인 및 새로고침 실행
+   useEffect(() => {
+    const hasRefreshed = sessionStorage.getItem('hasRefreshed');
+    
+    if (!hasRefreshed) {
+      sessionStorage.setItem('hasRefreshed', 'true'); // 새로고침 방지 위한 값 설정
+      window.location.reload(); // 페이지 리로드
+    }
+
+    // 페이지 떠날 때 sessionStorage에서 값 제거
+    return () => {
+      sessionStorage.removeItem('hasRefreshed');
+    };
+  }, []);
+
   return (
     <PageContainer>
       <LeftSection>
@@ -91,6 +111,7 @@ const MyPage: React.FC = () => {
         
         <BottomSection>
           <ViewNews/>
+          <LikeNews/>
         </BottomSection>
       </RightSection>
     </PageContainer>
