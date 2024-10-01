@@ -1,5 +1,6 @@
 package com.gihojise.newscrab.controller;
 
+import com.gihojise.newscrab.dto.common.ApiResponse;
 import com.gihojise.newscrab.dto.domain.HighlightDto;
 import com.gihojise.newscrab.service.HighlightService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,11 +21,15 @@ public class HightlightController {
     private final HighlightService highlightService;
 
     // 스크랩의 모든 형광펜 조회
+    @Operation(summary = "스크랩의 모든 형광펜 조회", description = "특정 스크랩에 속한 모든 형광펜을 조회합니다.")
     @GetMapping
-    public ResponseEntity<List<HighlightDto>> getAllHighlights(@PathVariable int scrapId) {
+    public ResponseEntity<ApiResponse<List<HighlightDto>>> getAllHighlights(@PathVariable int scrapId) {
         List<HighlightDto> responseDtoList = highlightService.getAllHighlights(scrapId);
-        return new ResponseEntity<>(responseDtoList, HttpStatus.OK);
+        return ResponseEntity.ok(
+                ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "형광펜 목록 조회 성공", responseDtoList)
+        );
     }
+
 
 //    // 형광펜 추가
 //    @Operation(summary = "전체 뉴스 조회", description = "모든 뉴스를 최신순으로 조회합니다.")
@@ -34,10 +39,14 @@ public class HightlightController {
 //        return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
 //    }
 //
-//    // 형광펜 삭제
-//    @DeleteMapping("/{highlightId}")
-//    public ResponseEntity<Void> deleteHighlight(@PathVariable int scrapId, @PathVariable int highlightId) {
-//        highlightService.deleteHighlight(scrapId, highlightId);
-//        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-//    }
+    // 형광펜 삭제
+    @Operation(summary = "형광펜 삭제", description = "특정 형광펜을 삭제합니다.")
+    @DeleteMapping("/{highlightId}")
+    public ResponseEntity<ApiResponse<Void>> deleteHighlight(@PathVariable int scrapId, @PathVariable int highlightId) {
+        highlightService.deleteHighlight(scrapId, highlightId);
+        return ResponseEntity.ok(
+            ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "형광펜 삭제 성공", null)
+    );
+}
+
 }

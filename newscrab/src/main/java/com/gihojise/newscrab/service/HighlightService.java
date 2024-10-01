@@ -44,4 +44,10 @@ public class HighlightService {
                         .build())
                 .collect(Collectors.toList());
     }
+
+    // 형광펜 삭제
+    @Transactional
+    public void deleteHighlight(int scrapId, int highlightId) {
+        highlightRepository.deleteByScrap_ScrapIdAndHighlightId(scrapId, highlightId);
+    }
 }
