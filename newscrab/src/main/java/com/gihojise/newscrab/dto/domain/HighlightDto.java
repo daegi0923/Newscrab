@@ -9,7 +9,6 @@ import lombok.Getter;
 public class HighlightDto {
 
     private int highlightId;
-    private int scrapId;
     private int startPos;
     private int endPos;
     private HighlightColor color;
