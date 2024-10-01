@@ -52,13 +52,6 @@ const NewsTitleWrapper = styled.div`
 const NewsTitle = styled.h2`
   font-size: 24px;
   font-weight: bold;
-  cursor: pointer;
-  color: #007bff;
-  text-decoration: underline;
-
-  &:hover {
-    color: #0056b3;
-  }
 `;
 
 const ToggleButton = styled.button`
