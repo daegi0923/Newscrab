@@ -298,6 +298,14 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({ newsDetailItem }
         // 클릭된 하이라이트된 요소를 저장
         setHighlightedElement(target);
 
+        // 하이라이트된 부분 클릭 시 시작 위치와 끝 위치를 콘솔에 출력
+        const startPos = target.dataset.startPos;
+        const endPos = target.dataset.endPos;
+
+        if (startPos && endPos) {
+          console.log(`Highlight clicked! Start: ${startPos}, End: ${endPos}`);
+        }
+
         // 하이라이트된 부분 클릭 시 팝업을 해당 위치에 표시
         const rect = target.getBoundingClientRect();
         

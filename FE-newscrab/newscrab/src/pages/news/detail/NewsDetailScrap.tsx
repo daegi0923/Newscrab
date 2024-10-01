@@ -141,35 +141,10 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [industryId, setIndustryId] = useState<number | null>(null);
 
-  // 형광펜 정보 저장하는 ref (리렌더링 없이 데이터 유지)
-  const highlightsRef = useRef<
-    { startPos: number; endPos: number; color: string }[]
-  >([]);
-
   // Redux에서 하이라이트(highlight) 정보 가져오기
   const highlights = useSelector(
     (state: RootState) => state.highlight.highlights
   );
-
-  // useEffect를 통해 Redux에서 가져온 하이라이트 정보를 ref에 저장
-  useEffect(() => {
-    highlightsRef.current = highlights;
-  }, [highlights]);
-
-  // const handleHighlightChange = (startPos: number, endPos: number, color: string) => {
-  //   // 같은 위치의 형광펜이 있는지 확인하여 수정
-  //   const existingHighlightIndex = highlightsRef.current.findIndex(
-  //     (highlight) => highlight.startPos === startPos && highlight.endPos === endPos
-  //   );
-
-  //   if (existingHighlightIndex !== -1) {
-  //     // 이미 존재하는 형광펜은 색상을 변경
-  //     highlightsRef.current[existingHighlightIndex].color = color;
-  //   } else {
-  //     // 새 형광펜 추가
-  //     highlightsRef.current.push({ startPos, endPos, color });
-  //   }
-  // };
 
   const summaryTextareaRef = useRef<HTMLTextAreaElement>(null);
   const opinionTextareaRef = useRef<HTMLTextAreaElement>(null);
@@ -203,7 +178,6 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
           setSummaryText(selectedScrap.scrapSummary || "");
           setOpinionText(selectedScrap.comment || "");
           setWordListText(selectedScrap.vocalist?.join(", ") || ""); // vocalist 배열을 문자열로 변환
-          highlightsRef.current = selectedScrap.highlightList || [];
         } else {
           console.log("No scrap data found for this newsId:", newsId);
         }
@@ -220,24 +194,6 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
     adjustHeight(opinionTextareaRef.current);
     adjustHeight(wordListTextareaRef.current);
   }, [summaryText, opinionText, wordListText, activeTab]);
-
-  // const handleSave = async () => {
-  //   const scrapData = {
-  //     newsId: newsId,
-  //     comment: opinionText,
-  //     scrapSummary: summaryText,
-  //     // vocalist: wordListText.split(",").map((item) => item.trim()),
-  //     highlights: [],
-  //   };
-
-  //   try {
-  //     await postScrap(scrapData); // postScrap API 호출
-  //     alert("저장되었습니다!");
-  //   } catch (error) {
-  //     console.error("Error saving scrap:", error);
-  //     alert("저장에 실패했습니다.");
-  //   }
-  // };
 
   const handleSave = async () => {
     if (activeTab === "wordlist") {
@@ -268,7 +224,7 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
         newsId: newsId,
         comment: opinionText,
         scrapSummary: summaryText,
-        highlights: highlightsRef.current,
+        highlights: highlights,
       };
       console.log("Scrap Data:", scrapData);
       console.log("Scrap ID:", scrapId); // scrapId 확인용
