@@ -131,8 +131,6 @@ public class NewsService {
     }
 
 
-
-
     // 3. 뉴스 상세 조회
     @Transactional
     public NewsDetailResponseDto getNewsDetail(int userId, int newsId) {
@@ -302,12 +300,13 @@ public class NewsService {
                 .orElseThrow(() -> new NewscrabException(ErrorCode.NEWS_NOT_FOUND));
 
         return news;
+    }
 
-    public NewsRecoResponseDto getRecommendNews(int userId) {
+    public NewsRecoResponseDto getRecommendNews ( int userId){
         //fast api에 요청보내서 추천뉴스 받아오기
         try {
             // 인코딩된 키워드를 포함한 URL 생성
-            String url = String.format(host+"/api/v1/reco/recommend/list/%d", userId);
+            String url = String.format(host + "/api/v1/reco/recommend/list/%d", userId);
             log.info("Final request URL: {}", url);  // 요청 URL을 로그로 출력하여 확인
 
             // RestTemplate 사용
@@ -316,13 +315,13 @@ public class NewsService {
 
             if (response.getStatusCode() == HttpStatus.OK) {
                 log.info("fetchRelatedNews response: {}", response.getBody());
-                List<NewsResponseDto> user_base= response.getBody().getUser_base().stream()
+                List<NewsResponseDto> user_base = response.getBody().getUser_base().stream()
                         .map(newsId -> convertToDto(newsRepository.findByNewsId(newsId)))
                         .toList();
-                List<NewsResponseDto> item_base= response.getBody().getItem_base().stream()
+                List<NewsResponseDto> item_base = response.getBody().getItem_base().stream()
                         .map(newsId -> convertToDto(newsRepository.findByNewsId(newsId)))
                         .toList();
-                List<NewsResponseDto> latest= response.getBody().getLatest().stream()
+                List<NewsResponseDto> latest = response.getBody().getLatest().stream()
                         .map(newsId -> convertToDto(newsRepository.findByNewsId(newsId)))
                         .toList();
                 return new NewsRecoResponseDto(user_base, item_base, latest);
