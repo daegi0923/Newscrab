@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import GlobalStyle from "@components/GlobalStyle"; // 배경색
 import Header from "@components/common/Header";
+import SearchBar from "@common/SearchBar";
 import Tab from "./Tab";
 // import Pagination from "@components/common/Pagination"; // 페이지네이션
 import ScrapList from "./ScrapList "; // ScrapList 컴포넌트 import
@@ -18,7 +19,14 @@ const ScrapListPage: React.FC = () => {
     null
   ); // 선택된 industryId 상태 (초기값 null로 수정)
 
+  const [searchText, setSearchText] = useState(""); // 검색 텍스트 상태 추가
+
   const navigate = useNavigate(); // useNavigate 훅 사용
+
+  // 검색 텍스트가 변경될 때마다 상태 업데이트
+  const handleSearchChange = (text: string) => {
+    setSearchText(text);
+  };
 
   // 스크랩 데이터를 API에서 가져오는 비동기 함수
   const fetchScrapData = async (page: number) => {
@@ -30,15 +38,26 @@ const ScrapListPage: React.FC = () => {
 
   // selectedIndustryId에 따른 필터링 적용
   useEffect(() => {
-    if (selectedIndustryId === null) {
-      setFilteredScrapList(scrapList); // industryId가 없을 때는 전체 데이터
-    } else {
-      const filteredData = scrapList.filter(
+    let filteredData = scrapList;
+
+    // industryId가 선택된 경우 해당 industryId로 필터링
+    if (selectedIndustryId !== null) {
+      filteredData = filteredData.filter(
         (scrap) => scrap.industryId === selectedIndustryId
-      ); // 선택한 industryId에 맞는 데이터 필터링
-      setFilteredScrapList(filteredData);
+      );
     }
-  }, [scrapList, selectedIndustryId]);
+
+    // 검색어가 입력된 경우 검색어로 필터링
+    if (searchText) {
+      filteredData = filteredData.filter(
+        (scrap) =>
+          scrap.newsTitle.toLowerCase().includes(searchText.toLowerCase()) ||
+          scrap.newsContent.toLowerCase().includes(searchText.toLowerCase())
+      );
+    }
+
+    setFilteredScrapList(filteredData);
+  }, [scrapList, selectedIndustryId, searchText]);
 
   // currentPage가 변경될 때마다 데이터 새로 가져오기
   useEffect(() => {
@@ -66,6 +85,8 @@ const ScrapListPage: React.FC = () => {
     <div>
       <GlobalStyle /> {/* 글로벌 스타일 적용 */}
       <Header />
+      <SearchBar searchText={searchText} onSearchChange={handleSearchChange} />
+      {/* SearchBar에 필요한 props 전달 */}
       <Tab onIndustrySelect={handleIndustrySelect} />
       {/* 필터링된 스크랩 리스트 컴포넌트 */}
       <ScrapList

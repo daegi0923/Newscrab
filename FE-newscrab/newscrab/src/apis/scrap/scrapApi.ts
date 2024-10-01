@@ -94,3 +94,13 @@ export const putScrap = async (
     throw error;
   }
 };
+
+export const deleteScrap = async (scrapId: number): Promise<void> => {
+  try {
+    const response = await API.delete(`/scrap/${scrapId}`);
+    console.log("Scrap deleted successfully:", response.data);
+  } catch (error: any) {
+    console.error("Error deleting scrap:", error);
+    throw error;
+  }
+};

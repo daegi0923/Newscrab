@@ -67,6 +67,12 @@ const Pagination: React.FC<PaginationProps> = ({
 
   const handlePageClick = (page: number) => {
     onPageChange(page); // 클릭한 페이지로 이동
+
+    // 스크롤을 최상단으로 이동 (home 키 누른 효과처럼)
+    window.scrollTo({
+      top: 0, // 페이지의 최상단으로 이동
+      behavior: "smooth", // 스크롤 애니메이션을 부드럽게 처리
+    });
   };
 
   const handlePrevGroup = () => {

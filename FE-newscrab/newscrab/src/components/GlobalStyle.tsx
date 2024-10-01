@@ -1,5 +1,6 @@
 import { createGlobalStyle } from "styled-components";
 import { Helmet } from "react-helmet";
+import scrollbar from "@common/ScrollBar";
 
 const GlobalStyle = createGlobalStyle`
   html, body {
@@ -16,6 +17,7 @@ const GlobalStyle = createGlobalStyle`
 
   body {
     background-color: #FDFAF8;
+    ${scrollbar}
   }
 `;
 
