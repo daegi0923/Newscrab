@@ -284,4 +284,13 @@ public class NewsService {
 
         userNewsReadRepository.save(userNewsRead);
     }
+
+    // 뉴스 내용 조회
+    @Transactional(readOnly = true)
+    public String getNewsContent(int newsId) {
+        News news = newsRepository.findById(newsId)
+                .orElseThrow(() -> new NewscrabException(ErrorCode.NEWS_NOT_FOUND));
+
+        return news.getNewsContent();
+    }
 }
