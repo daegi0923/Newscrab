@@ -41,7 +41,7 @@ interface UserNewsState {
 const initialState: UserNewsState = {
   newsList: [], // 빈 배열로 초기화
   currentPage: 1,
-  totalPages: 1,
+  totalPages: 0,
   totalItems: 0,
   loading: false,
   error: null,
@@ -59,8 +59,8 @@ const userNewsSlice = createSlice({
         state.error = null;
       })
       .addCase(fetchUserViewNewsThunk.fulfilled, (state, action) => {
-        console.log("응답 Data: ", action.payload);
-        state.newsList = [...state.newsList, ...action.payload.news]; // response에서 news 배열 가져오기
+        // console.log("뉴스 응답 Data: ", action.payload);
+        state.newsList = [...state.newsList,...action.payload.news]; // response에서 news 배열 가져오기
         state.currentPage = action.payload.currentPage;
         state.totalPages = action.payload.totalPages;
         state.totalItems = action.payload.totalItems;

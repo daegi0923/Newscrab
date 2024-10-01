@@ -44,7 +44,7 @@ const TopSection = styled.div`
   margin-top: 5%;
 `;
 const BottomSection = styled.div`
-  width: 95%;
+  width: 93%;
   height: 60%;
   border: solid black 1px;
   margin: 3% 0%;
