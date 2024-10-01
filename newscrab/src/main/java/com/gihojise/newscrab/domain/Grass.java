@@ -8,6 +8,9 @@ import org.hibernate.annotations.OnDeleteAction;
 @Entity
 @Table(name = "grass") // 테이블명 지정
 @Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Grass extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

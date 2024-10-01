@@ -1,9 +1,6 @@
 package com.gihojise.newscrab.service;
 
-import com.gihojise.newscrab.domain.Highlight;
-import com.gihojise.newscrab.domain.News;
-import com.gihojise.newscrab.domain.Scrap;
-import com.gihojise.newscrab.domain.User;
+import com.gihojise.newscrab.domain.*;
 import com.gihojise.newscrab.dto.domain.HighlightDto;
 import com.gihojise.newscrab.dto.domain.VocaDto;
 import com.gihojise.newscrab.dto.request.ScrapAddRequestDto;
@@ -12,6 +9,7 @@ import com.gihojise.newscrab.dto.response.ScrapListResponseDto;
 import com.gihojise.newscrab.dto.response.ScrapResponseDto;
 import com.gihojise.newscrab.exception.ErrorCode;
 import com.gihojise.newscrab.exception.NewscrabException;
+import com.gihojise.newscrab.repository.GrassRepository;
 import com.gihojise.newscrab.repository.NewsRepository;
 import com.gihojise.newscrab.repository.ScrapRepository;
 import com.gihojise.newscrab.repository.UserRepository;
@@ -19,8 +17,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,6 +33,7 @@ public class ScrapService {
     private final NewsRepository newsRepository;
 
     private final HighlightService highlightService;
+    private final GrassRepository grassRepository;
 
     // 1. 스크랩 목록 조회
     @Transactional(readOnly = true)
@@ -155,6 +157,30 @@ public class ScrapService {
                     .collect(Collectors.toList());
 
             scrap.setHighlights(highlights);
+        }
+
+        // 잔디 추가 로직
+        // 현재 날짜 추출
+        LocalDate now = LocalDate.now();
+
+        // 해당 유저가 해당 날짜의 grass 테이블에 데이터가 있는지 확인
+        List<Grass> grasses = grassRepository.findAllByUser_UserId(userId);
+        Optional<Grass> todayGrass = grasses.stream()
+                .filter(grass -> grass.getCreatedAt().toLocalDate().isEqual(now))
+                .findFirst();
+
+        if (todayGrass.isPresent()) {
+            // 데이터가 있으면 count 증가
+            Grass grass = todayGrass.get();
+            grass.increaseCount();
+            grassRepository.save(grass);
+        } else {
+            // 데이터가 없으면 새로운 Grass 생성
+            Grass newGrass = Grass.builder()
+                    .user(user)
+                    .count(1)  // 기본 count 값을 설정
+                    .build();
+            grassRepository.save(newGrass);
         }
 
         return scrap;
