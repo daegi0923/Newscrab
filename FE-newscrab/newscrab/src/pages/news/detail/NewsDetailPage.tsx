@@ -76,7 +76,7 @@ const NewsDetailPage: React.FC = () => {
       <GlobalStyle />
       <NewsDetailContainer>
         <Header />
-        <BackButton onClick={handleBackClick}>돌아가기</BackButton>
+        <BackButton onClick={handleBackClick}>뉴스 목록</BackButton>
         <NewsWrapper>
           {isLoading ? (
             <p>Loading news...</p>
