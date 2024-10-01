@@ -43,4 +43,9 @@ public class Highlight{
         this.endPos = endPos;
         this.color = color;
     }
+
+    // 색 변경
+    public void changeColor(HighlightColor color) {
+        this.color = color;
+    }
 }
