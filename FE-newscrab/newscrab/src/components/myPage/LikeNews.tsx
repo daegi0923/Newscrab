@@ -263,10 +263,12 @@ const NewsListContainer = styled.div`
   max-width: 850px;
   overflow: hidden;
   margin: -3%;
+  // border: 1px solid blue;
 `;
 
 const NewsList = styled.div`
-  display: flex;
+  // border: 1px solid red;
+display: flex;
   gap: 20px;
   overflow-x: scroll;
   padding: 10px;

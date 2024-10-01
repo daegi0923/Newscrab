@@ -1,11 +1,23 @@
 import React, { useEffect, useRef, useState } from 'react';
-import styled from 'styled-components';
+import styled, { keyframes, css } from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchUserViewNewsThunk } from '@store/myPage/userNewsSlice';
 import { RootState, AppDispatch } from '@store/index';
 import defaultImage from "@assets/auth/defaultProfile.jpg";
 import arrow from "@assets/common/arrow.png";
+
+// 애니메이션 정의
+const fadeIn = keyframes`
+  from {
+    opacity: 0.5;
+    transform: translateY(5px); /* 아래에서 위로 슬라이드 인 */
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`;
 
 const Container = styled.div`
   display: flex;
@@ -35,7 +47,7 @@ const NewsList = styled.div`
   }
 `;
 
-const NewsItem = styled.div`
+const NewsItem = styled.div<{ animate: boolean }>`
   cursor: pointer;
   position: relative;
   background-color: white;
@@ -45,6 +57,11 @@ const NewsItem = styled.div`
   height: 180px;
   flex-shrink: 0;
   overflow: hidden;
+  ${({ animate }) =>
+    animate &&
+    css`
+      animation: ${fadeIn} 0.5s ease-out; /* 애니메이션 적용 */
+    `}
 `;
 
 const NewsImage = styled.img`
@@ -135,25 +152,19 @@ const ViewNews: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
   const { recentNewsList, loading, error } = useSelector((state: RootState) => state.userNews);
-  const [page, setPage] = useState<number>(1);
+  const [page, setPage] = useState<number>(1); // 현재 페이지 상태
+  const [animatedItems, setAnimatedItems] = useState<{ [newsId: number]: boolean }>({}); // 애니메이션 상태 저장
   const newsListRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    // 컴포넌트가 마운트될 때마다 데이터를 강제로 갱신
+    // 첫 번째 페이지 뉴스 불러오기
     dispatch(fetchUserViewNewsThunk(1));
   }, [dispatch]);
-
-  // 데이터가 업데이트될 때마다 렌더링
-  useEffect(() => {
-    console.log('최근에 본 뉴스:', recentNewsList);
-  }, [recentNewsList]);
 
   // 중복된 newsId 제거
   const uniqueRecentNewsList = recentNewsList.filter(
     (item, index, self) => index === self.findIndex((t) => t.newsId === item.newsId)
   );
-
-  console.log(uniqueRecentNewsList);
 
   const handleMove = (newsId: number) => {
     navigate(`/news/${newsId}`);
@@ -164,6 +175,22 @@ const ViewNews: React.FC = () => {
     dispatch(fetchUserViewNewsThunk(nextPage));
     setPage(nextPage);
   };
+
+  useEffect(() => {
+    if (page > 1) {
+      // 새로운 페이지 로딩 시, 새로 추가된 아이템에만 애니메이션 적용
+      const newItems = recentNewsList.slice((page - 1) * 10); // 각 페이지 10개 아이템 로드 가정
+      const newAnimatedItems = newItems.reduce((acc, item) => {
+        acc[item.newsId] = true;
+        return acc;
+      }, {} as { [newsId: number]: boolean });
+
+      setAnimatedItems(prevState => ({
+        ...prevState,
+        ...newAnimatedItems,
+      }));
+    }
+  }, [page, recentNewsList]);
 
   const scrollLeft = () => {
     if (newsListRef.current) {
@@ -189,7 +216,11 @@ const ViewNews: React.FC = () => {
       <NewsListContainer>
         <NewsList ref={newsListRef}>
           {uniqueRecentNewsList.map((item) => (
-            <NewsItem key={item.newsId} onClick={() => handleMove(item.newsId)}>
+            <NewsItem
+              key={item.newsId}
+              onClick={() => handleMove(item.newsId)}
+              animate={!!animatedItems[item.newsId]} // 개별 아이템 애니메이션 관리
+            >
               <NewsImage src={item.photoUrlList[0] || defaultImage} alt="뉴스 이미지" />
               <Overlay>
                 <NewsContent>
