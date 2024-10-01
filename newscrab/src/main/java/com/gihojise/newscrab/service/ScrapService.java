@@ -30,6 +30,8 @@ public class ScrapService {
     private final UserRepository userRepository;
     private final NewsRepository newsRepository;
 
+    private final HighlightService highlightService;
+
     // 1. 스크랩 목록 조회
     @Transactional(readOnly = true)
     public ScrapListResponseDto getAllScraps(int userId, int page, int size) {
@@ -72,6 +74,8 @@ public class ScrapService {
             throw new NewscrabException(ErrorCode.USER_NOT_MATCH);
         }
 
+        List<HighlightDto> highlightList = highlightService.getAllHighlights(scrapId);
+
         return ScrapResponseDto.builder()
                 .scrapId(scrap.getScrapId())
                 .newsId(news.getNewsId())
@@ -81,6 +85,7 @@ public class ScrapService {
                         .toList() : Collections.emptyList())
                 .scrapSummary(scrap.getScrapSummary())
                 .comment(scrap.getComment())
+                .highlightList(highlightList)
                 .createdAt(scrap.getCreatedAt())
                 .updatedAt(scrap.getUpdatedAt())
                 .vocalist(news.getVocas() != null ? news.getVocas().stream()
