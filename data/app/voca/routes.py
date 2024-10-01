@@ -101,11 +101,23 @@ def search_related_news(keyword: str, db: Session = Depends(get_db)):
     if not related_news_ids:
         raise HTTPException(status_code=404, detail="해당 키워드와 관련된 뉴스를 찾을 수 없습니다.")
 
-    # Step 6: 3개의 관련 뉴스 ID 리턴
+    # 관련 뉴스 중 하나의 본문에서 중요한 문장 추출
+    important_sentence = None
+    for news_id in related_news_ids:
+        news_row = final_df[final_df['news_id'] == news_id]
+        important_sentence = extract_important_sentence(news_row['news_content_text'].values[0], keyword)
+        if important_sentence:
+            break
+
+    if not important_sentence:
+        raise HTTPException(status_code=404, detail="키워드가 포함된 문장을 찾을 수 없습니다.")
+
+    # 관련 뉴스 ID와 중요한 문장을 반환
     response = {
         "related_news_id_1": related_news_ids[0] if len(related_news_ids) > 0 else None,
         "related_news_id_2": related_news_ids[1] if len(related_news_ids) > 1 else None,
-        "related_news_id_3": related_news_ids[2] if len(related_news_ids) > 2 else None
+        "related_news_id_3": related_news_ids[2] if len(related_news_ids) > 2 else None,
+        "important_sentence": important_sentence
     }
 
     return response
