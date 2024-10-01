@@ -15,8 +15,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/scrap/{scrapId}/highlight")
 @RequiredArgsConstructor
-@Tag(name = "Scrap Controller", description = "형광펜 관리 API")
-public class HightlightController {
+@Tag(name = "Highlight Controller", description = "형광펜 관리 API")
+public class HighlightController {
 
     private final HighlightService highlightService;
 
@@ -29,7 +29,6 @@ public class HightlightController {
                 ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "형광펜 목록 조회 성공", responseDtoList)
         );
     }
-
 
     // 형광펜 추가
     @Operation(summary = "형광펜 추가", description = "해당 스크랩에 형광펜을 추가합니다.")
@@ -50,5 +49,4 @@ public class HightlightController {
                 ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "형광펜 삭제 성공", null)
         );
     }
-
 }
