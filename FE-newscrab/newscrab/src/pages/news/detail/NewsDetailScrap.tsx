@@ -297,7 +297,7 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
     setIsDropdownOpen(false); // 드롭다운 닫기
   };
 
-  const summaryPlaceholder = `<서론>\n\n<본론>\n\n<결론>`;
+  // const summaryPlaceholder = `<서론>\n\n<본론>\n\n<결론>`;
 
   return (
     <Sidebar>
@@ -325,9 +325,8 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
       {activeTab === "summary" && (
         <StyledTextarea
           ref={summaryTextareaRef}
-          value={summaryText}
+          value={summaryText || "<서론>\n\n<본론>\n\n<결론>"}
           onChange={(e) => setSummaryText(e.target.value)}
-          placeholder={summaryPlaceholder}
           $isOverflowing={isOverflowing}
         />
       )}
