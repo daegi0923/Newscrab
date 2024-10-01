@@ -26,4 +26,7 @@ data:
     JWT_SECRET : asdfhsljkdafhjjhsdauiwefbcxnlkzcblkjhsakjhdkjashdkjlabcksabkbasckb
 
     # 도메인 주소
-  DOMAIN : https://newscrab.duckdns.org/
+    DOMAIN : https://newscrab.duckdns.org
+  
+    # Fastapi 주소
+    FAST_API_HOST : fastapi-service
