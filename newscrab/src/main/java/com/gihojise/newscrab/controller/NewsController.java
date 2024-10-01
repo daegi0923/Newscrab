@@ -125,7 +125,7 @@ public class NewsController {
 
     // 9. 추천뉴스 조회
     @Operation(summary = "추천 뉴스 조회", description = "사용자에게 추천되는 뉴스를 조회합니다.")
-    @GetMapping("/recommend/List")
+    @GetMapping("/recommend/list")
     public ResponseEntity<ApiResponse<NewsRecoResponseDto>> getRecommendNews(@AuthenticationPrincipal CustomUserDetails userDetails) {
         int userId = userDetails.getUserId();
         // fastapi로 추천뉴스 받아오기
