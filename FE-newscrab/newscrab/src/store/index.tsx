@@ -2,6 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import createSagaMiddleware from "redux-saga";
 import loginReducer, { watchLoginSaga } from "./user/loginLogout"
 import vocaReducer from "./voca/vocaSlice";
+import scrapReducer from "./scrap/scrapSlice";
 import myPageReducer from './myPage/profileSlice';
 import userNewsReducer from "./myPage/userNewsSlice";
 import highlightReducer from "./highlight/highlightSlice";
@@ -17,6 +18,7 @@ export const store = configureStore({
     login: loginReducer,
     voca: vocaReducer,
     mypage: myPageReducer,
+    scrap: scrapReducer,
     userNews: userNewsReducer,
     highlight: highlightReducer,
   },
