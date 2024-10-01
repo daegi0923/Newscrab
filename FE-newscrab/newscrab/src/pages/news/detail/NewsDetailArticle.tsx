@@ -25,6 +25,7 @@ const NewsContent = styled.div`
   padding: 15px 100px;
   background-color: #fff;
   max-height: 680px;
+  min-height: 680px;
   overflow-y: auto;
   position: relative;
   ${scrollbar}

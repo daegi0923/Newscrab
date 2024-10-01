@@ -61,7 +61,7 @@ const AppRouter: React.FC = () => {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup1" element={<SignUpPage1 />} />
             <Route path="/signup2" element={<SignUpPage2 />} />
-            
+
             {/* 로그인하지 않았을 때 보호된 경로로 접근 시 오류 처리 */}
             <Route
               path="*"
@@ -133,7 +133,14 @@ const AppRouter: React.FC = () => {
                 </Layout>
               }
             />
-            <Route path="/scrap/:scrapId" element={<ScrapDetailPage />} />
+            <Route
+              path="/scrap/:scrapId"
+              element={
+                <Layout>
+                  <ScrapDetailPage />
+                </Layout>
+              }
+            />
 
             {/* 단어장 */}
             <Route

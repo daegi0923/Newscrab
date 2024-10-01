@@ -31,21 +31,13 @@ interface TabProps {
 }
 
 const Tab: React.FC<TabProps> = ({ onIndustrySelect }) => {
-  const [selectedTabIds, setSelectedTabIds] = useState<number[]>([]); // 하단 필터 상태
+  const [selectedTabId, setSelectedTabId] = useState<number | null>(null); // 선택된 탭의 ID 상태
 
   // 필터 버튼 선택 시 상태 업데이트
   const handleTabSelect = (tabId: number) => {
-    setSelectedTabIds((prevSelected) => {
-      const isSelected = prevSelected.includes(tabId);
-      const updatedSelectedIds = isSelected
-        ? prevSelected.filter((id) => id !== tabId)
-        : [...prevSelected, tabId];
-
-      const selectedId = updatedSelectedIds.length > 0 ? tabId : null;
-      onIndustrySelect(selectedId);
-
-      return updatedSelectedIds;
-    });
+    const newSelectedId = selectedTabId === tabId ? null : tabId; // 이미 선택된 탭 클릭 시 선택 해제
+    setSelectedTabId(newSelectedId); // 선택된 탭 업데이트
+    onIndustrySelect(newSelectedId); // 부모 컴포넌트에 선택된 탭 ID 전달
   };
 
   return (
@@ -55,7 +47,7 @@ const Tab: React.FC<TabProps> = ({ onIndustrySelect }) => {
         {tabOptions.map((tab) => (
           <FilterButton
             key={tab.id}
-            selected={selectedTabIds.includes(tab.id)}
+            selected={selectedTabId === tab.id} // 현재 선택된 탭과 비교
             onClick={() => handleTabSelect(tab.id)}
           >
             {tab.label}

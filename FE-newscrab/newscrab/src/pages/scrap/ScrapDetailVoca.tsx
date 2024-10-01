@@ -9,31 +9,50 @@ import scrollbar from "@components/common/ScrollBar";
 
 const Sidebar = styled.div`
   width: 30%;
-  border: 1px solid #ddd;
   border-radius: 8px;
-  padding: 15px;
-  background-color: #fff;
+  padding-right: 5px;
+  background-color: #fdfaf8;
   height: 680px; /* 스크롤을 위한 고정 높이 */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   position: relative;
   ${scrollbar}
   user-select: text;
   overflow-y: auto; /* 세로 스크롤바 */
 `;
 
-const VocaItem = styled.div`
+const Wrapper = styled.div`
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
   margin-bottom: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 부드러운 그림자 */
+  background-color: #fff; /* 카드 스타일을 위한 흰색 배경 */
+`;
+
+const VocaItem = styled.div`
+  margin-bottom: 10px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
 `;
 
 const VocaTitle = styled.h4`
   font-size: 18px;
   font-weight: bold;
   color: #333;
+  margin-top: 0px;
+  margin-bottom: 20px;
 `;
 
 const VocaDescription = styled.p`
   font-size: 14px;
   color: #666;
+`;
+
+const Divider = styled.hr`
+  border: none;
+  border-top: 1px solid black;
+  margin: 10px 0;
 `;
 
 // ScrapDetailVoca가 scrapId를 props로 받음
@@ -65,10 +84,13 @@ const ScrapDetailVoca: React.FC<{ scrapId: number }> = ({ scrapId }) => {
   return (
     <Sidebar>
       {vocalist.map((voca) => (
-        <VocaItem key={voca.vocaId}>
-          <VocaTitle>💡 {voca.vocaName}</VocaTitle>
-          <VocaDescription>{voca.vocaDesc}</VocaDescription>
-        </VocaItem>
+        <Wrapper key={voca.vocaId}>
+          <VocaItem>
+            <VocaTitle>💡 {voca.vocaName}</VocaTitle>
+            <Divider />
+            <VocaDescription>{voca.vocaDesc}</VocaDescription>
+          </VocaItem>
+        </Wrapper>
       ))}
     </Sidebar>
   );

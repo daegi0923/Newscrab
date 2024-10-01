@@ -31,9 +31,13 @@ const ScrapListPage: React.FC = () => {
   // 스크랩 데이터를 API에서 가져오는 비동기 함수
   const fetchScrapData = async (page: number) => {
     const resData = await getScrapData(page, 10); // API 요청
-    setScrapList(resData.data.data); // 받아온 스크랩 데이터를 상태에 저장
+    const sortedData = resData.data.data.sort(
+      (a: ScrapData, b: ScrapData) =>
+        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+    ); // updatedAt 기준으로 내림차순 정렬
+    setScrapList(sortedData); // 정렬된 스크랩 데이터를 상태에 저장
     // setTotalPages(Math.ceil(resData.data.totalItems / 10)); // 총 페이지 수 계산 후 상태에 저장
-    console.log("Scrap List:", resData.data.data); // 스크랩 리스트 데이터 출력
+    console.log("Scrap List:", sortedData); // 정렬된 스크랩 리스트 데이터 출력
   };
 
   // selectedIndustryId에 따른 필터링 적용
