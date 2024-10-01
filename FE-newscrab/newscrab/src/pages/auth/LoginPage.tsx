@@ -6,6 +6,8 @@ import Input from '@common/InputBox';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { loginLoading } from '../../store/user/loginLogout'
+import ErrorModal from '@components/common/Error';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const GlobalStyle = createGlobalStyle`
   body, html {
@@ -63,9 +65,12 @@ const LoginPage: React.FC = () => {
     loginId: "",
     password: "",
   });
-  const [errorMessage, setErrorMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const isFormValid = loginForm.loginId !== "" && loginForm.password !== "";
-  
+  const location = useLocation();
+  const navigate = useNavigate();
+  const error = location.state?.error;
+
   const handleLogin = () => {
     if (isFormValid) {
       console.log(loginForm);
@@ -89,9 +94,15 @@ const LoginPage: React.FC = () => {
       handleLogin(); // 엔터키를 눌렀을 때 로그인 함수 호출
     }
   };
+  const handleModalClose = () => {
+    console.log("Closing modal");
+    setErrorMessage(null);
+    navigate("/login", { replace: true, state: {} });
+  };
 
   return (
     <>
+      {error && (<ErrorModal title="로그인 오류" message={error} onClose={handleModalClose}/>)}
       <GlobalStyle />  {/* 글로벌 스타일 적용 */}
       <LoginContainer>
         <FormContainer onKeyDown={handleKeyDown}>

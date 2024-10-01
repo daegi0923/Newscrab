@@ -23,10 +23,18 @@ export const fetchVocaDetail = async (vocaId: number) => {
   }
 };
 
+interface VocaData {
+  newsId: number;
+  vocaName: string;
+  vocaDesc: string;
+  sentence: string;
+  industryId: number;
+}
+
 // 새로운 Voca 추가하기 (POST 요청)
-export const addVoca = async () => {
+export const addVoca = async (vocaData : VocaData) => {
   try {
-    const response = await API.post('/voca');
+    const response = await API.post('/voca', vocaData);
     return response.data; // 성공적으로 추가한 경우
   } catch (error) {
     console.error("Voca 추가 실패:", error);

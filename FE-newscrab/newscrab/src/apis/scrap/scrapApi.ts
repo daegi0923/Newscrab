@@ -4,6 +4,7 @@ import {
   ScrapListResponse,
   ScrapData,
   PostScrapRequest,
+  PutScrapRequest,
 } from "../../types/scrapTypes";
 
 export const getScrapData = async (
@@ -71,6 +72,25 @@ export const postScrap = async (scrapData: PostScrapRequest): Promise<void> => {
     console.log("Scrap posted successfully:", response.data);
   } catch (error: any) {
     console.error("Error posting scrap:", error);
+    throw error;
+  }
+};
+
+export const putScrap = async (
+  scrapId: number,
+  scrapData: PutScrapRequest
+): Promise<void> => {
+  try {
+    const response = await API.put(`/scrap/${scrapId}`, {
+      newsId: scrapData.newsId,
+      comment: scrapData.comment,
+      scrapSummary: scrapData.scrapSummary,
+      highlights: scrapData.highlights,
+    });
+
+    console.log("Scrap updated successfully:", response.data);
+  } catch (error: any) {
+    console.error("Error updating scrap:", error);
     throw error;
   }
 };

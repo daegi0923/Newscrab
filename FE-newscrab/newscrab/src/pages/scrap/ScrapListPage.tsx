@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import GlobalStyle from "@components/GlobalStyle"; // 배경색
 import Header from "@components/common/Header";
 import Tab from "./Tab";
-import Pagination from "@components/common/Pagination"; // 페이지네이션
+// import Pagination from "@components/common/Pagination"; // 페이지네이션
 import ScrapList from "./ScrapList "; // ScrapList 컴포넌트 import
 
 import { getScrapData } from "@apis/scrap/scrapApi";
@@ -15,7 +15,7 @@ const ScrapListPage: React.FC = () => {
   const [scrapList, setScrapList] = useState<ScrapData[]>([]); // 스크랩 데이터를 저장하는 상태
   const [filteredScrapList, setFilteredScrapList] = useState<ScrapData[]>([]); // 필터링된 스크랩 데이터
   const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 상태
-  const [totalPages, setTotalPages] = useState(1); // 총 페이지 수 상태
+  // const [totalPages, setTotalPages] = useState(1); // 총 페이지 수 상태
   const [selectedIndustryId, setSelectedIndustryId] = useState<number | null>(
     null
   ); // 선택된 industryId 상태 (초기값 null로 수정)
@@ -26,7 +26,8 @@ const ScrapListPage: React.FC = () => {
   const fetchScrapData = async (page: number) => {
     const resData = await getScrapData(page, 10); // API 요청
     setScrapList(resData.data.data); // 받아온 스크랩 데이터를 상태에 저장
-    setTotalPages(Math.ceil(resData.data.totalItems / 10)); // 총 페이지 수 계산 후 상태에 저장
+    // setTotalPages(Math.ceil(resData.data.totalItems / 10)); // 총 페이지 수 계산 후 상태에 저장
+    console.log("Scrap List:", resData.data.data); // 스크랩 리스트 데이터 출력
   };
 
   // selectedIndustryId에 따른 필터링 적용
@@ -47,11 +48,10 @@ const ScrapListPage: React.FC = () => {
   }, [currentPage]);
 
   // 페이지네이션을 위한 페이지 변경 핸들러
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page); // 페이지 변경 시 currentPage 업데이트
-  };
+  // const handlePageChange = (page: number) => {
+  //   setCurrentPage(page); // 페이지 변경 시 currentPage 업데이트
+  // };
 
-  
   // 필터에서 선택한 industryId 처리
   const handleIndustrySelect = (industryId: number | null) => {
     setSelectedIndustryId(industryId); // 선택된 industryId 업데이트
@@ -60,6 +60,7 @@ const ScrapListPage: React.FC = () => {
 
   // 스크랩 클릭 시 실행되는 핸들러 (상세 페이지로 이동)
   const handleScrapClick = (scrapId: number) => {
+    console.log("Scrap ID clicked:", scrapId); // 스크랩 ID 출력
     navigate(`/scrap/${scrapId}`); // 클릭한 스크랩의 상세 페이지로 이동
   };
 
@@ -73,11 +74,11 @@ const ScrapListPage: React.FC = () => {
         scrapList={filteredScrapList}
         onScrapClick={handleScrapClick}
       />
-      <Pagination
+      {/* <Pagination
         currentPage={currentPage} // 현재 페이지 번호 전달
         totalPages={totalPages} // 총 페이지 수 전달
         onPageChange={handlePageChange} // 페이지 변경 핸들러 전달
-      />
+      /> */}
       <ScrapPdfGenerator></ScrapPdfGenerator>
     </div>
   );

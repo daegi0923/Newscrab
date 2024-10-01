@@ -14,8 +14,6 @@ export interface Vocalist {
 }
 
 export interface Highlight {
-  highlightId: number;
-  scrapId: number;
   startPos: number;
   endPos: number;
   color: string; // Y, R, G 등의 값으로 색상 표현
@@ -54,4 +52,29 @@ export interface PostScrapRequest {
   comment: string | null;
   scrapSummary: string | null;
   highlights: Highlight[] | null;
+}
+
+export interface PutScrapRequest {
+  newsId: number | null;
+  comment: string | null;
+  scrapSummary: string | null;
+  highlights: Highlight[] | null;
+}
+
+export interface ScrapDetailResponse {
+  scrapId: number;
+  newsId: number;
+  newsTitle: string;
+  industryId: number;
+  newsContent: string;
+  createdAt: string;
+  updatedAt: string;
+  newsCompany: string;
+  view: number;
+  scrapCnt: number;
+  scrapSummary: string;
+  comment: string;
+  photolist: string[];
+  vocalist: string[];
+  highlightList: string[];
 }

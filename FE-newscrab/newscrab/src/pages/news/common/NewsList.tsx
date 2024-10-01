@@ -112,7 +112,7 @@ const NewsList: React.FC<{
               <NewsTitle>{news.newsTitle}</NewsTitle>
               <InfoRow>
                 <span>{news.newsCompany}</span>
-                <span>{formatDate(news.createdAt)}</span>
+                <span>{formatDate(news.newsPublishedAt)}</span>
               </InfoRow>
               <StatsRow>
                 <span>

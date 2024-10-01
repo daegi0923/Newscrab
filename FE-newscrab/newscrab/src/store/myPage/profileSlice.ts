@@ -43,11 +43,18 @@ export const updateUserProfileThunk = createAsyncThunk(
 // 초기 상태 정의
 const initialState = {
   userInfo: {
-    name: "",
-    email: "",
-    birthday: "",
-    gender: "",
-    profileImage: "",
+    data: {
+      name: "",
+      email: "",
+      birthday: "",
+      gender: "",
+      profileImg: "",
+      scrapCount: "",
+      vocaCount: "",
+      newsLikeCount: "",
+      createdAt: "",
+      loginId: ""
+    }
   },
   loading: false,
   error: null as string | null,

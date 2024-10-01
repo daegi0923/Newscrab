@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom"; // useNavigate 추가
 import styled from "styled-components";
 import { getNewsDetail } from "@apis/news/newsDetailApi"; // API 함수 가져오기
 
@@ -51,6 +52,7 @@ const NewsContainer = styled.div`
   position: relative;
   width: 300px;
   height: 150px;
+  cursor: pointer; /* 클릭 가능하게 커서 스타일 추가 */
 `;
 
 const NewsImage = styled.img`
@@ -75,7 +77,7 @@ const NewsTitle = styled.p`
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 `;
 
-const CreatedAt = styled.p`
+const PublishedAt = styled.p`
   position: absolute;
   bottom: 10px;
   left: 10px;
@@ -85,40 +87,56 @@ const CreatedAt = styled.p`
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 `;
 
-const PopupImages: React.FC = () => {
+interface NewsDetailRcmdProps {
+  newsId: number; // props로 newsId를 전달받도록 인터페이스 정의
+}
+
+const NewsDetailRcmd: React.FC<NewsDetailRcmdProps> = ({ newsId }) => {
   const [showPopup, setShowPopup] = useState(false);
   const [relatedNews, setRelatedNews] = useState<
-    { imageUrl: string; title: string; createdAt: string }[]
+    {
+      imageUrl: string;
+      title: string;
+      newsPublishedAt: string;
+      newsId: number;
+    }[] // newsId 추가
   >([]);
+
+  const navigate = useNavigate(); // useNavigate 훅 호출
 
   const togglePopup = () => {
     setShowPopup(!showPopup);
   };
 
-  useEffect(() => {
-    // Lorem Picsum에서 랜덤 이미지를 가져오는 함수
-    const getRandomImageUrl = () => {
-      return "https://picsum.photos/300/150"; // 300x150 사이즈의 랜덤 이미지
-    };
+  const handleNewsClick = (id: number) => {
+    navigate(`/news/${id}`); // 클릭 시 해당 뉴스 페이지로 이동
+  };
 
+  useEffect(() => {
     // 뉴스 API에서 관련 뉴스를 가져오는 로직
     const fetchRelatedNews = async () => {
-      const mockData = await getNewsDetail(1); // 뉴스 API 호출
+      const newsDetail = await getNewsDetail(newsId); // 동적으로 전달받은 newsId 사용
+
       const relatedItems = [
-        mockData.relatedNews1,
-        mockData.relatedNews2,
-        mockData.relatedNews3,
-      ].map((relatedNewsItem) => ({
-        imageUrl: relatedNewsItem.photoUrlList?.[0] || getRandomImageUrl(), // 이미지가 없을 경우 Lorem Picsum에서 랜덤 이미지 가져오기
-        title: relatedNewsItem.newsTitle, // 뉴스 제목
-        createdAt: relatedNewsItem.createdAt, // 생성일
-      }));
+        newsDetail.relatedNews1,
+        newsDetail.relatedNews2,
+        newsDetail.relatedNews3,
+      ]
+        .filter((relatedNewsItem) => relatedNewsItem !== null) // null인 항목 필터링
+        .map((relatedNewsItem) => ({
+          imageUrl:
+            relatedNewsItem?.photoUrlList?.[0] ||
+            "https://picsum.photos/300/150", // 이미지가 없을 경우 기본 이미지 설정
+          title: relatedNewsItem?.newsTitle || "제목 없음", // 뉴스 제목
+          newsPublishedAt: relatedNewsItem?.newsPublishedAt || "", // 생성일
+          newsId: relatedNewsItem?.newsId || 0, // 뉴스 ID 추가
+        }));
 
       setRelatedNews(relatedItems);
     };
 
     fetchRelatedNews();
-  }, []);
+  }, [newsId]); // newsId가 변경될 때마다 관련 뉴스 다시 가져옴
 
   return (
     <>
@@ -126,13 +144,18 @@ const PopupImages: React.FC = () => {
       <PopupContainer $show={showPopup}>
         <ImageWrapper>
           {relatedNews.map((item, index) => (
-            <NewsContainer key={index}>
+            <NewsContainer
+              key={index}
+              onClick={() => handleNewsClick(item.newsId)}
+            >
+              {" "}
+              {/* 클릭 이벤트 추가 */}
               <NewsImage
                 src={item.imageUrl}
                 alt={`Related news image ${index}`}
               />
               <NewsTitle>{item.title}</NewsTitle>
-              <CreatedAt>{formatDate(item.createdAt)}</CreatedAt>
+              <PublishedAt>{formatDate(item.newsPublishedAt)}</PublishedAt>
             </NewsContainer>
           ))}
         </ImageWrapper>
@@ -141,4 +164,4 @@ const PopupImages: React.FC = () => {
   );
 };
 
-export default PopupImages;
+export default NewsDetailRcmd;

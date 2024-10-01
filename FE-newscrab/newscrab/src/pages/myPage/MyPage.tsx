@@ -1,98 +1,99 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
-// import { useSelector } from 'react-redux';
+import { AppDispatch } from "@store/index";
+// import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch,  } from 'react-redux';
+// import { useNavigate } from 'react-router-dom';
+import { fetchUserProfileThunk } from "@store/myPage/profileSlice";
 // import { RootState } from '@store/index';
+import UserProfile from '@components/myPage/UserProfile';
+import Ping from '@components/myPage/Ping';
+import Fortune from '@components/myPage/Fortune';
+import Calendar from '@components/myPage/Calendar';
+import ViewNews from '@components/myPage/MyNews';
 // import { industry } from '@components/common/Industry';
 
-// 사용자 정보 컴포넌트 섹션
-const UserInfoSection = styled.section`
+const PageContainer = styled.div`
+  display: flex;
+  width: 100%;
+  height: 100vh;
+`;
+
+const LeftSection = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  border: 2px solid #ccc;
+  // text-align: center;
+  justify-content: center;
+  margin-top: 5%;
+  width: 30%; /* 왼쪽 섹션 너비 */
   padding: 20px;
-  width: 250px;
-  border-radius: 10px;
-  margin: 20px 0;
+  // background-color: #f9f9f9;
+  // border-right: 1px solid #ccc;
 `;
 
-const UserImage = styled.div`
-  width: 150px;
-  height: 150px;
-  border-radius: 50%;
-  border: 2px solid #ccc;
-  background-color: #f0f0f0;
-  margin-bottom: 20px;
+const RightSection = styled.div`
+  width: 70%; /* 오른쪽 섹션 너비 */
+  padding: 20px;
 `;
 
-const ButtonGroup = styled.div`
-  display: flex;
-  justify-content: space-between;
+const TopSection = styled.div`
   width: 100%;
-  margin-top: 20px;
+  height: 30%;
+  display: flex;
+  margin-top: 5%;
+`;
+const BottomSection = styled.div`
+  width: 95%;
+  height: 60%;
+  border: solid black 1px;
+  margin: 3% 0%;
+  background-color: #fff;
 `;
 
-const StyledButton = styled.button`
-  background-color: #3b82f6;
-  color: white;
-  padding: 10px 15px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 14px;
-  transition: background-color 0.3s;
-
-  &:hover {
-    background-color: #2563eb;
-  }
-
-  &:nth-child(2) {
-    background-color: #ef4444;
-  }
-
-  &:nth-child(2):hover {
-    background-color: #dc2626;
-  }
-`;
-
-// 마이페이지 컴포넌트
 const MyPage: React.FC = () => {
-  const navigate = useNavigate();
-  // const {name, userIndustry} = useSelector((state: RootState) => state.mypage.userInfo);
-  // const isAuthenticated = useSelector((state: RootState) => state.mypage.isAuthenticated);
+  // const navigate = useNavigate();
+  const dispatch: AppDispatch = useDispatch();
+  // const { userInfo } = useSelector((state: RootState) => state.mypage);
 
-  const handleEdit1 = () => {
-    navigate('/edit1'); // 클릭 시 해당 vocaId로 이동
+  // 사용자 정보를 불러와서 초기값 설정 (처음 마운트될 때)
+  useEffect(() => {
+    dispatch(fetchUserProfileThunk())
+      .unwrap()
+      .then((res) => {
+        console.log("프로필 데이터 불러옴:", res);
+      })
+      .catch((error) => {
+        console.error("프로필 불러오기 오류:", error);
+      });
+  }, [dispatch]);
+  const activityData = {
+    1: 5,
+    2: 10,
+    3: 0,
+    4: 2,
+    5: 15,
+    6: 8,
+    7: 12,
   };
-
-  const handleEdit2 = () => {
-    navigate('/edit2'); // 클릭 시 해당 vocaId로 이동
-  };
-
-  const handlePassword = () => {
-    navigate('/password'); // 클릭 시 해당 vocaId로 이동
-  };
-
   return (
-    <UserInfoSection>
-      {/* 사용자 이미지 자리 (나중에 실제 이미지를 삽입할 수 있음) */}
-      <UserImage />
+    <PageContainer>
+      <LeftSection>
+        <UserProfile />
+        <Calendar activityData={activityData} />
+      </LeftSection>
 
-      {/* {isAuthenticated && (
-        <div>
-          <p>이름 : {name}</p>
-          <p>관심 산업: {userIndustry.map(industry => industry.industryName).join(', ')}</p>
-        </div>
-      )} */}
-      
-      {/* 회원정보수정 및 비밀번호수정 버튼 */}
-      <ButtonGroup>
-        <StyledButton onClick={handleEdit1}>회원정보수정</StyledButton>
-        <StyledButton onClick={handleEdit2}>산업군 수정</StyledButton>
-        <StyledButton onClick={handlePassword}>비밀번호수정</StyledButton>
-      </ButtonGroup>
-    </UserInfoSection>
+      <RightSection>
+        <TopSection>
+          <Ping />
+          <Fortune />
+        </TopSection>
+        
+        <BottomSection>
+          <ViewNews/>
+        </BottomSection>
+      </RightSection>
+    </PageContainer>
   );
 };
 
