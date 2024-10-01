@@ -2,6 +2,7 @@ package com.gihojise.newscrab.controller;
 
 import com.gihojise.newscrab.dto.common.ApiResponse;
 import com.gihojise.newscrab.dto.domain.HighlightDto;
+import com.gihojise.newscrab.dto.request.HighlightUpdateRequestDto;
 import com.gihojise.newscrab.service.HighlightService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -47,6 +48,16 @@ public class HighlightController {
         highlightService.deleteHighlight(scrapId, highlightId);
         return ResponseEntity.ok(
                 ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "형광펜 삭제 성공", null)
+        );
+    }
+
+    // 형광펜 수정
+    @Operation(summary = "형광펜 색 수정", description = "특정 형광펜의 색을 수정합니다.")
+    @PatchMapping("/{highlightId}")
+    public ResponseEntity<ApiResponse<Void>> updateHighlight(@PathVariable int scrapId, @PathVariable int highlightId, @RequestBody HighlightUpdateRequestDto highlightUpdateRequestDto) {
+        highlightService.updateHighlight(scrapId, highlightId, highlightUpdateRequestDto);
+        return ResponseEntity.ok(
+                ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "형광펜 색 수정 성공", null)
         );
     }
 }
