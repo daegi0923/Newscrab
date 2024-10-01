@@ -20,13 +20,13 @@ const Overlay = styled.div`
 
 const FormContainer = styled.div`
   background-color: rgba(255, 255, 255, 0.9); /* 투명 배경 */
-  padding: 15px;
+  padding: 9px;
   border-radius: 12px;
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 350px; /* 너비를 조정 */
+  width: 330px; /* 너비를 조정 */
   position: relative; /* 상대적인 위치를 설정 */
   z-index: 2; /* 폼 컨테이너는 오버레이 위로 */
 `;
@@ -43,7 +43,7 @@ const LoginButton = styled.button`
   font-size: 16px;
   border-radius: 25px;
   height: 40px;
-  width: 70%;
+  width: 60%;
   color: white;
   font-weight: bold;
   cursor: pointer;
@@ -54,7 +54,7 @@ const LoginButton = styled.button`
 `;
 
 const SignupContainer = styled.div`
-  margin-top: 20px;
+  margin: 12px 0 8px;
   font-size: 14px;
 `;
 
