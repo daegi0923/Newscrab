@@ -31,22 +31,24 @@ public class HightlightController {
     }
 
 
-//    // 형광펜 추가
-//    @Operation(summary = "전체 뉴스 조회", description = "모든 뉴스를 최신순으로 조회합니다.")
-//    @PostMapping
-//    public ResponseEntity<HighlightResponseDto> addHighlight(@PathVariable int scrapId, @RequestBody HighlightRequestDto highlightRequestDto) {
-//        HighlightResponseDto responseDto = highlightService.addHighlight(scrapId, highlightRequestDto);
-//        return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
-//    }
-//
+    // 형광펜 추가
+    @Operation(summary = "형광펜 추가", description = "해당 스크랩에 형광펜을 추가합니다.")
+    @PostMapping
+    public ResponseEntity<ApiResponse<Void>> addHighlight(@PathVariable int scrapId, @RequestBody HighlightDto highlightDto) {
+        highlightService.addHighlight(scrapId, highlightDto);
+        return ResponseEntity.ok(
+                ApiResponse.of(HttpStatus.CREATED.value(), HttpStatus.CREATED.getReasonPhrase(), "형광펜 추가 성공", null)
+        );
+    }
+
     // 형광펜 삭제
     @Operation(summary = "형광펜 삭제", description = "특정 형광펜을 삭제합니다.")
     @DeleteMapping("/{highlightId}")
     public ResponseEntity<ApiResponse<Void>> deleteHighlight(@PathVariable int scrapId, @PathVariable int highlightId) {
         highlightService.deleteHighlight(scrapId, highlightId);
         return ResponseEntity.ok(
-            ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "형광펜 삭제 성공", null)
-    );
-}
+                ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "형광펜 삭제 성공", null)
+        );
+    }
 
 }

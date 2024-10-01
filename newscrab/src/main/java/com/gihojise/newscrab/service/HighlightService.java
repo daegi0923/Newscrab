@@ -6,6 +6,7 @@ import com.gihojise.newscrab.dto.domain.HighlightDto;
 import com.gihojise.newscrab.dto.request.HighlightRequestDto;
 import com.gihojise.newscrab.enums.HighlightColor;
 import com.gihojise.newscrab.repository.HighlightRepository;
+import com.gihojise.newscrab.repository.ScrapRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,14 +20,22 @@ import java.util.stream.Collectors;
 public class HighlightService {
 
     private final HighlightRepository highlightRepository;
+    private final ScrapRepository scrapRepository;
 
     // 형광펜 추가
     @Transactional
-    public void addHighlight(Scrap scrap) {
-        List<Highlight> highlights = scrap.getHighlights();
-        highlights.forEach(highlight -> {
-            highlightRepository.save(new Highlight(scrap, highlight.getStartPos(), highlight.getEndPos(),highlight.getColor()));
-        });
+    public void addHighlight(int scrapId, HighlightDto highlightDto) {
+
+        Scrap scrap = scrapRepository.getSrapByScrapId(scrapId);
+
+        Highlight highlight = Highlight.builder()
+                .scrap(scrap)
+                .startPos(highlightDto.getStartPos())
+                .endPos(highlightDto.getEndPos())
+                .color(HighlightColor.valueOf(highlightDto.getColor().toString())) // Enum을 문자열로 변환하여 저장
+                .build();
+
+        highlightRepository.save(highlight);
     }
 
     // 형광펜 조회
