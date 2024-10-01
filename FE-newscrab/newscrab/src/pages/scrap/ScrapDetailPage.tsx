@@ -4,7 +4,6 @@ import styled from "styled-components";
 // 재사용 components
 import Header from "@common/Header";
 import ScrapDetailArticle from "./ScrapDetailArticle";
-import NewsDetailRcmd from "@pages/news/detail/NewsDetailRcmd";
 // api
 import { getScrapDetail } from "@apis/scrap/scrapDetailApi"; // scrap API 불러옴
 import { ScrapDetailResponse } from "../../types/scrapTypes"; // scrap 타입 불러옴
@@ -81,8 +80,6 @@ const ScrapDetailPage: React.FC = () => {
           {/* scrapId만 ScrapDetailArticle에 넘겨줍니다 */}
           {scrapId && <ScrapDetailArticle scrapId={parseInt(scrapId, 10)} />}
         </ScrapWrapper>
-        {/* newsId가 설정된 경우에만 NewsDetailRcmd를 렌더링 */}
-        {newsId && <NewsDetailRcmd newsId={newsId} />}
       </ScrapDetailContainer>
     </div>
   );
