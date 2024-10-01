@@ -7,6 +7,7 @@ import com.gihojise.newscrab.domain.User;
 import com.gihojise.newscrab.dto.domain.HighlightDto;
 import com.gihojise.newscrab.dto.domain.VocaDto;
 import com.gihojise.newscrab.dto.request.ScrapAddRequestDto;
+import com.gihojise.newscrab.dto.request.ScrapUpdateRequestDto;
 import com.gihojise.newscrab.dto.response.ScrapListResponseDto;
 import com.gihojise.newscrab.dto.response.ScrapResponseDto;
 import com.gihojise.newscrab.exception.ErrorCode;
@@ -162,7 +163,7 @@ public class ScrapService {
 
     // 4. 스크랩 수정
     @Transactional
-    public void updateScrap(int userId, int scrapId, ScrapAddRequestDto scrapAddRequestDto) {
+    public void updateScrap(int userId, int scrapId, ScrapUpdateRequestDto scrapUpdateRequestDto) {
         Scrap scrap = scrapRepository.findById(scrapId)
                 .orElseThrow(() -> new NewscrabException(ErrorCode.SCRAP_NOT_FOUND));
 
@@ -170,7 +171,7 @@ public class ScrapService {
             throw new NewscrabException(ErrorCode.USER_NOT_MATCH);
         }
 
-        scrap.update(scrapAddRequestDto.getScrapSummary(), scrapAddRequestDto.getComment());
+        scrap.update(scrapUpdateRequestDto.getScrapSummary(), scrapUpdateRequestDto.getComment());
     }
 
     // 5. 스크랩 삭제
