@@ -1,20 +1,26 @@
 package com.gihojise.newscrab.service;
 
 import com.gihojise.newscrab.domain.*;
-import com.gihojise.newscrab.dto.response.NewsDetailResponseDto;
-import com.gihojise.newscrab.dto.response.NewsPageResponseDto;
-import com.gihojise.newscrab.dto.response.NewsResponseDto;
+import com.gihojise.newscrab.dto.response.*;
 import com.gihojise.newscrab.exception.ErrorCode;
 import com.gihojise.newscrab.exception.NewscrabException;
 import com.gihojise.newscrab.repository.*;
 
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,6 +28,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class NewsService {
 
     private final NewsRepository newsRepository;
@@ -29,6 +36,9 @@ public class NewsService {
     private final UserRepository userRepository;
     private final UserNewsReadRepository userNewsReadRepository;
     private final UserNewsLikeRepository userNewsLikeRepository;
+
+    @Value("${FAST_API_HOST}")
+    String host;
 
     // 변환 메서드: News 객체를 NewsResponseDto로 변환
     private NewsResponseDto convertToDto(News news) {
@@ -283,5 +293,39 @@ public class NewsService {
                 .build();
 
         userNewsReadRepository.save(userNewsRead);
+    }
+
+    public NewsRecoResponseDto getRecommendNews(int userId) {
+        //fast api에 요청보내서 추천뉴스 받아오기
+        try {
+            // 인코딩된 키워드를 포함한 URL 생성
+            String url = String.format(host+"/api/v1/reco/recommend/list/%d", userId);
+            log.info("Final request URL: {}", url);  // 요청 URL을 로그로 출력하여 확인
+
+            // RestTemplate 사용
+            RestTemplate restTemplate = new RestTemplate();
+            ResponseEntity<RecoListResponseDto> response = restTemplate.getForEntity(url, RecoListResponseDto.class);
+
+            if (response.getStatusCode() == HttpStatus.OK) {
+                log.info("fetchRelatedNews response: {}", response.getBody());
+                List<NewsResponseDto> user_base= response.getBody().getUser_base().stream()
+                        .map(newsId -> convertToDto(newsRepository.findByNewsId(newsId)))
+                        .toList();
+                List<NewsResponseDto> item_base= response.getBody().getItem_base().stream()
+                        .map(newsId -> convertToDto(newsRepository.findByNewsId(newsId)))
+                        .toList();
+                List<NewsResponseDto> latest= response.getBody().getLatest().stream()
+                        .map(newsId -> convertToDto(newsRepository.findByNewsId(newsId)))
+                        .toList();
+                return new NewsRecoResponseDto(user_base, item_base, latest);
+            } else {
+                log.error("Failed to fetch related news");
+                throw new RuntimeException("Failed to fetch related news");
+            }
+        } catch (Error e) {
+            log.error("Encoding failed: {}", e.getMessage());
+            throw new RuntimeException("URL encoding failed", e);
+        }
+
     }
 }
