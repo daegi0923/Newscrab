@@ -16,7 +16,7 @@ import AllNewsPage from "@pages/news/allNews/AllNewsPage";
 import NewsDetailPage from "@pages/news/detail/NewsDetailPage";
 // 스크랩
 import ScrapListPage from "@pages/scrap/ScrapListPage";
-import ScrapDetailPage from "@pages/scrap/ScrapDetailPage";
+import ScrapDetailPage from "@pages/scrap/detail/ScrapDetailPage";
 // 단어장
 import MainVoca from "@pages/voca/VocaPage";
 import VocaDetail from "@pages/voca/VocaDetailPage";

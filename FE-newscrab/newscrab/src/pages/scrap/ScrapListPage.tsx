@@ -8,6 +8,7 @@ import ScrapList from "./ScrapList "; // ScrapList 컴포넌트 import
 
 import { getScrapData } from "@apis/scrap/scrapApi";
 import { ScrapData } from "../../types/scrapTypes"; // scrapApi에서 타입 import
+import { useScrapContext } from "./ScrapContext"; // ScrapContext 사용
 
 const ScrapListPage: React.FC = () => {
   const [scrapList, setScrapList] = useState<ScrapData[]>([]); // 스크랩 데이터를 저장하는 상태

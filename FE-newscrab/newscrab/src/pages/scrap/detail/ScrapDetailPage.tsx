@@ -7,7 +7,7 @@ import Header from "@common/Header";
 import ScrapDetailArticle from "./ScrapDetailArticle";
 // api
 import { getScrapDetail } from "@apis/scrap/scrapDetailApi"; // scrap API 불러옴
-import { ScrapDetailResponse } from "../../types/scrapTypes"; // scrap 타입 불러옴
+import { ScrapDetailResponse } from "../../../types/scrapTypes"; // scrap 타입 불러옴
 
 const ScrapDetailContainer = styled.div`
   margin: 0px 100px;

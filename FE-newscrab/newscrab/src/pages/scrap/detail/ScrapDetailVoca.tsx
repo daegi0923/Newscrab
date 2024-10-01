@@ -4,7 +4,7 @@ import { getScrapDetail } from "@apis/scrap/scrapDetailApi";
 import {
   ScrapDetailVocaListResponse,
   ScrapDetailResponse,
-} from "../../types/scrapTypes"; // 새 타입 불러옴
+} from "../../../types/scrapTypes"; // 새 타입 불러옴
 import scrollbar from "@components/common/ScrollBar";
 
 const Sidebar = styled.div`

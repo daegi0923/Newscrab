@@ -5,7 +5,7 @@ import scrollbar from "@components/common/ScrollBar";
 import viewIcon from "@assets/hot.png";
 import scrapCntIcon from "@assets/scrap.png";
 import crab from "@assets/crab.png";
-import { ScrapDetailResponse } from "../../types/scrapTypes"; // scrap 타입 불러옴
+import { ScrapDetailResponse } from "../../../types/scrapTypes"; // scrap 타입 불러옴
 import LikeButton from "@pages/news/common/LikeButton"; // LikeButton 컴포트 임포트
 import { industry } from "@common/Industry"; // 산업 데이터를 가져오기
 import { getScrapDetail } from "@apis/scrap/scrapDetailApi"; // 스크랩 데이터를 가져오기 위한 API 호출
