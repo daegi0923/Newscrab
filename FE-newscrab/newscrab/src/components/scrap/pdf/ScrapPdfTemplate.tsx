@@ -33,6 +33,7 @@ const TitleRow = styled.tr`
 const ScrapDetail = styled.div`
   display: flex;
   justify-content: center;
+  height : 300px;
 `;
 
 const ScrapPdfTemplate: React.FC<{ scrap: ScrapData }> = ({ scrap }) => {
@@ -50,8 +51,10 @@ const ScrapPdfTemplate: React.FC<{ scrap: ScrapData }> = ({ scrap }) => {
         <tbody>
           {/* 기사 내용 */}
           <tr>
-            <Td colSpan={2}>기사 내용</Td>
-            <Td dangerouslySetInnerHTML={{ __html: scrap.newsContent }} />{/* HTML로 렌더링 */}
+            <Td colSpan={2}>기사내용</Td>
+            <Td>형광펜칠한문단만 넣어!!!!</Td>
+            {/* <Td dangerouslySetInnerHTML={{ __html: scrap.newsContent }} /> */}
+            
           </tr>
           {/* 요약 */}
           <tr>
