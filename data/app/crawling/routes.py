@@ -368,92 +368,92 @@ def upload_csv(db: Session = Depends(get_db)):
         db.rollback()
         raise HTTPException(status_code=400, detail=str(e))
 
-# 로그 설정
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+# # 로그 설정
+# logging.basicConfig(level=logging.INFO)
+# logger = logging.getLogger(__name__)
 
-# 스케줄러 초기화
-scheduler = BackgroundScheduler()
+# # 스케줄러 초기화
+# scheduler = BackgroundScheduler()
 
-# 크롤링 및 데이터 처리 함수 (기존의 crawl_news_data 함수 재사용)
-def scheduled_crawl_news_data():
-    logger.info("스케줄러 작업 시작")
-    db = next(get_db())  # 데이터베이스 세션 생성 (올바르게 세션을 닫지 않음 - 개선 필요)
-    try:
-        start_date = datetime.today().strftime('%Y-%m-%d')
-        end_date = datetime.today().strftime('%Y-%m-%d')
+# # 크롤링 및 데이터 처리 함수 (기존의 crawl_news_data 함수 재사용)
+# def scheduled_crawl_news_data():
+#     logger.info("스케줄러 작업 시작")
+#     db = next(get_db())  # 데이터베이스 세션 생성 (올바르게 세션을 닫지 않음 - 개선 필요)
+#     try:
+#         start_date = datetime.today().strftime('%Y-%m-%d')
+#         end_date = datetime.today().strftime('%Y-%m-%d')
 
-        # 크롤링 데이터 호출 (오늘 날짜로 설정)
-        data = crawl_news_data(start_date=start_date, end_date=end_date)
-        logger.info(f"{len(data)}개의 뉴스 크롤링 완료")
+#         # 크롤링 데이터 호출 (오늘 날짜로 설정)
+#         data = crawl_news_data(start_date=start_date, end_date=end_date)
+#         logger.info(f"{len(data)}개의 뉴스 크롤링 완료")
 
-        new_news_ids = []
-        for row in data:
-            # 중복 뉴스 확인 및 DB 저장 로직
-            existing_news = db.query(News).filter(News.news_url == row['news_url']).first()
-            if existing_news:
-                continue  # 중복된 경우 건너뜀
+#         new_news_ids = []
+#         for row in data:
+#             # 중복 뉴스 확인 및 DB 저장 로직
+#             existing_news = db.query(News).filter(News.news_url == row['news_url']).first()
+#             if existing_news:
+#                 continue  # 중복된 경우 건너뜀
 
-            industry = db.query(Industry).filter(Industry.industry_name == row['predicted_industry']).first()
-            if industry:
-                news = News(
-                    news_industry_id=industry.industry_id,
-                    news_url=row['news_url'],
-                    news_title=row['news_title'],
-                    news_content=row['news_content'],
-                    news_company=row['news_company'],
-                    news_published_at=datetime.strptime(row['news_published_at'], '%Y-%m-%d %H:%M:%S') if row['news_published_at'] else None,
-                    created_at=datetime.now(),
-                    updated_at=datetime.now(),
-                )
-                db.add(news)
-                db.commit()
+#             industry = db.query(Industry).filter(Industry.industry_name == row['predicted_industry']).first()
+#             if industry:
+#                 news = News(
+#                     news_industry_id=industry.industry_id,
+#                     news_url=row['news_url'],
+#                     news_title=row['news_title'],
+#                     news_content=row['news_content'],
+#                     news_company=row['news_company'],
+#                     news_published_at=datetime.strptime(row['news_published_at'], '%Y-%m-%d %H:%M:%S') if row['news_published_at'] else None,
+#                     created_at=datetime.now(),
+#                     updated_at=datetime.now(),
+#                 )
+#                 db.add(news)
+#                 db.commit()
 
-                new_news_ids.append(news.news_id)
+#                 new_news_ids.append(news.news_id)
 
-                for photo_url in row['photo_urls']:
-                    news_photo = NewsPhoto(
-                        news_id=news.news_id,
-                        photo_url=photo_url
-                    )
-                    db.add(news_photo)
-                db.commit()
+#                 for photo_url in row['photo_urls']:
+#                     news_photo = NewsPhoto(
+#                         news_id=news.news_id,
+#                         photo_url=photo_url
+#                     )
+#                     db.add(news_photo)
+#                 db.commit()
 
-                keywords = row['extracted_keywords'].split()
-                for keyword in keywords:
-                    existing_keyword = db.query(NewsKeyword).filter(
-                        NewsKeyword.news_id == news.news_id,
-                        NewsKeyword.news_keyword_name == keyword
-                    ).first()
+#                 keywords = row['extracted_keywords'].split()
+#                 for keyword in keywords:
+#                     existing_keyword = db.query(NewsKeyword).filter(
+#                         NewsKeyword.news_id == news.news_id,
+#                         NewsKeyword.news_keyword_name == keyword
+#                     ).first()
 
-                    if not existing_keyword:
-                        news_keyword = NewsKeyword(
-                            industry_id=industry.industry_id,
-                            news_id=news.news_id,
-                            news_keyword_name=keyword
-                        )
-                        db.add(news_keyword)
-                db.commit()
+#                     if not existing_keyword:
+#                         news_keyword = NewsKeyword(
+#                             industry_id=industry.industry_id,
+#                             news_id=news.news_id,
+#                             news_keyword_name=keyword
+#                         )
+#                         db.add(news_keyword)
+#                 db.commit()
 
-        # 관련 뉴스 업데이트
-        update_related_news(db, new_news_ids)
+#         # 관련 뉴스 업데이트
+#         update_related_news(db, new_news_ids)
 
-        print("크롤링 작업 완료")
+#         print("크롤링 작업 완료")
 
-    finally:
-        db.close()  # 세션 종료
-        logger.info("스케줄러 작업 완료")
+#     finally:
+#         db.close()  # 세션 종료
+#         logger.info("스케줄러 작업 완료")
 
-# 스케줄러 설정 (매일 특정 시간에 크롤링 작업 실행 예시)
-def start_scheduler():
-    if not scheduler.running:  # 스케줄러가 이미 실행 중인지 확인
-        logger.info("스케줄러 시작")
-        # 매 시간 정각마다 실행 (minute=0 설정)
-        scheduler.add_job(scheduled_crawl_news_data, 'cron', minute=0)
-        scheduler.start()
-        logger.info(f"현재 스케줄러에 등록된 작업들: {scheduler.get_jobs()}")
+# # 스케줄러 설정 (매일 특정 시간에 크롤링 작업 실행 예시)
+# def start_scheduler():
+#     if not scheduler.running:  # 스케줄러가 이미 실행 중인지 확인
+#         logger.info("스케줄러 시작")
+#         # 매 시간 정각마다 실행 (minute=0 설정)
+#         scheduler.add_job(scheduled_crawl_news_data, 'cron', minute=0)
+#         scheduler.start()
+#         logger.info(f"현재 스케줄러에 등록된 작업들: {scheduler.get_jobs()}")
 
-# 백그라운드에서 스케줄러 실행
-@router.on_event("startup")
-def on_startup():
-    start_scheduler() 
+# # 백그라운드에서 스케줄러 실행
+# @router.on_event("startup")
+# def on_startup():
+#     start_scheduler() 
