@@ -3,6 +3,7 @@ package com.gihojise.newscrab.controller;
 import com.gihojise.newscrab.domain.CustomUserDetails;
 import com.gihojise.newscrab.dto.common.ApiResponse;
 import com.gihojise.newscrab.dto.request.ScrapAddRequestDto;
+import com.gihojise.newscrab.dto.request.ScrapUpdateRequestDto;
 import com.gihojise.newscrab.dto.response.ScrapListResponseDto;
 import com.gihojise.newscrab.dto.response.ScrapResponseDto;
 import com.gihojise.newscrab.service.HighlightService;
@@ -62,9 +63,9 @@ public class ScrapController {
     @Operation(summary = "스크랩 수정", description = "스크랩을 수정합니다.")
     @PutMapping("/{scrapId}")
     public ResponseEntity<ApiResponse<Void>> updateScrap(@AuthenticationPrincipal CustomUserDetails userDetails
-            , @PathVariable int scrapId, @RequestBody ScrapAddRequestDto scrapAddRequestDto) {
+            , @PathVariable int scrapId, @RequestBody ScrapUpdateRequestDto scrapUpdateRequestDto) {
         int userId = userDetails.getUserId();
-        scrapService.updateScrap(userId, scrapId, scrapAddRequestDto);
+        scrapService.updateScrap(userId, scrapId, scrapUpdateRequestDto);
         return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "스크랩 수정 성공", null));
     }
 
