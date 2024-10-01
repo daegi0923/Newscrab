@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.UnsupportedEncodingException;
@@ -113,12 +114,17 @@ public class VocaService {
             log.info("fetchRelatedNews: {}", encodedKeyword);
 
             // 인코딩된 키워드를 포함한 URL 생성
-            String url = String.format(host+"/api/v1/reco/voca/search_related_news?keyword=%s", encodedKeyword);
+//            String url = String.format(host+"/api/v1/reco/voca/search_related_news?keyword=%s", encodedKeyword);
+
+            // 인코딩 안 한 키워드로 요청
+            String url = String.format(host+"/api/v1/reco/voca/search_related_news?keyword=%s", keyword);
             log.info("Final request URL: {}", url);  // 요청 URL을 로그로 출력하여 확인
 
             // RestTemplate 사용
             RestTemplate restTemplate = new RestTemplate();
             ResponseEntity<VocaNewsResponseDto> response = restTemplate.getForEntity(url, VocaNewsResponseDto.class);
+
+            System.out.println(response);
 
             if (response.getStatusCode() == HttpStatus.OK) {
                 log.info("fetchRelatedNews response: {}", response.getBody());
@@ -130,6 +136,12 @@ public class VocaService {
         } catch (UnsupportedEncodingException e) {
             log.error("Encoding failed: {}", e.getMessage());
             throw new RuntimeException("URL encoding failed", e);
+        } catch (HttpClientErrorException.NotFound e) {
+            log.warn("키워드 '{}'에 대한 관련 뉴스를 찾을 수 없습니다.", keyword);
+            throw new NewscrabException(ErrorCode.NEWS_NOT_FOUND_BY_KEYWORD);
+        } catch (Exception e) {
+            log.error("외부 API 호출 중 오류 발생: {}", e.getMessage());
+            throw new NewscrabException(ErrorCode.EXTERNAL_API_ERROR);
         }
     }
 

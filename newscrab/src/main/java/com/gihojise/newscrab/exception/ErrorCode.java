@@ -43,6 +43,7 @@ public enum ErrorCode {
     VOCA_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 단어를 찾을 수 없습니다."),
 
     VOCA_NOT_MATCH_USER(HttpStatus.FORBIDDEN, "해당 단어는 사용자의 단어가 아닙니다."),
+    NEWS_NOT_FOUND_BY_KEYWORD(HttpStatus.NOT_FOUND, "해당 키워드로 관련된 뉴스를 찾을 수 없습니다."),
 
 
     // Scrap
@@ -57,6 +58,8 @@ public enum ErrorCode {
     // ChatGPT
     CHATGPT_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "ChatGPT 서버 에러입니다."),
 
+    // 외부 API 호출
+    EXTERNAL_API_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "외부 API 호출 에러입니다."),
 
     // 필요한 에러 코드들 계속 추가
     ;
