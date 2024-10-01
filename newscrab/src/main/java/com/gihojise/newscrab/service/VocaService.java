@@ -94,11 +94,11 @@ public class VocaService {
                 .user(user) // 조회된 User 객체 설정
                 .vocaName(vocaAddRequestDto.getVocaName())
                 .vocaDesc(vocaAddRequestDto.getVocaDesc())
-                .sentence(vocaAddRequestDto.getSentence())
                 .industryId(vocaAddRequestDto.getIndustryId())
                 .relatedNews1(relatedNews1)
                 .relatedNews2(relatedNews2)
                 .relatedNews3(relatedNews3)
+                .sentence(responseDto.getImportantSentence())
                 .build();
 
         vocaRepository.save(voca);
@@ -148,7 +148,7 @@ public class VocaService {
         // update
         voca.update(vocaAddRequestDto.getVocaName(),
                 vocaAddRequestDto.getVocaDesc(),
-                vocaAddRequestDto.getSentence(),
+                voca.getSentence(),
                 vocaAddRequestDto.getIndustryId());
     }
 
