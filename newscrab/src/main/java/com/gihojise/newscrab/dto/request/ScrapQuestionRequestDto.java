@@ -4,9 +4,8 @@ import com.gihojise.newscrab.domain.News;
 import lombok.Getter;
 
 @Getter
-public class PredictedQuestionRequestDto {
+public class ScrapQuestionRequestDto {
 
-    private String industry;
     private String text;
     private int newsId;
 }

@@ -3,10 +3,10 @@ package com.gihojise.newscrab.dto.response;
 import lombok.Getter;
 
 @Getter
-public class PredictedQuestionResponseDto {
+public class ScrapQuestionResponseDto {
     private final String question;
 
-    public PredictedQuestionResponseDto(String question) {
+    public ScrapQuestionResponseDto(String question) {
         this.question = question;
     }
 
