@@ -9,6 +9,8 @@ import ScrapList from "./ScrapList "; // ScrapList 컴포넌트 import
 import { getScrapData } from "@apis/scrap/scrapApi";
 import { ScrapData } from "../../types/scrapTypes"; // scrapApi에서 타입 import
 
+import ScrapPdfGenerator from "@components/scrap/pdf/ScrapPdfGenerator"
+
 const ScrapListPage: React.FC = () => {
   const [scrapList, setScrapList] = useState<ScrapData[]>([]); // 스크랩 데이터를 저장하는 상태
   const [filteredScrapList, setFilteredScrapList] = useState<ScrapData[]>([]); // 필터링된 스크랩 데이터
@@ -77,6 +79,7 @@ const ScrapListPage: React.FC = () => {
         totalPages={totalPages} // 총 페이지 수 전달
         onPageChange={handlePageChange} // 페이지 변경 핸들러 전달
       /> */}
+      <ScrapPdfGenerator></ScrapPdfGenerator>
     </div>
   );
 };
