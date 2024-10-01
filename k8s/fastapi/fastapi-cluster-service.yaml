@@ -1,0 +1,13 @@
+# fastapi-cluster-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: fastapi-cluster-service
+spec:
+  type: ClusterIP  # ClusterIP로 설정
+  selector:
+    app: fastapi
+  ports:
+    - protocol: TCP
+      port: 8000  # 내부에서 접근할 포트
+      targetPort: 8000  # FastAPI 컨테이너의 포트
