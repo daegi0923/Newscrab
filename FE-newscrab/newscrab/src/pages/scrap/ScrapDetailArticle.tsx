@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import scrollbar from "@components/common/ScrollBar";
 import viewIcon from "@assets/hot.png";
 import scrapCntIcon from "@assets/scrap.png";
 import crab from "@assets/crab.png";
@@ -11,7 +12,7 @@ import { getScrapDetail } from "@apis/scrap/scrapDetailApi"; // 스크랩 데이
 import { deleteScrap } from "@apis/scrap/scrapApi";
 
 // 스타일 정의
-const NewsContentWrapper = styled.div`
+const ScrapContent = styled.div`
   width: 60%;
   padding-right: 20px;
   border: 1px solid #ddd;
@@ -22,24 +23,8 @@ const NewsContentWrapper = styled.div`
   max-height: 680px;
   overflow-y: auto;
   position: relative;
-
-  &::-webkit-scrollbar {
-    width: 8px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background-color: #888;
-    border-radius: 12px;
-    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-  }
-
-  &::-webkit-scrollbar-thumb:hover {
-    background-color: #666;
-  }
-
-  &::-webkit-scrollbar-track {
-    background-color: transparent;
-  }
+  ${scrollbar}
+  user-select: text;
 `;
 
 const NewsTitleWrapper = styled.div`
@@ -248,7 +233,7 @@ const ScrapDetailArticle: React.FC<ScrapDetailArticleProps> = ({ scrapId }) => {
   };
 
   return (
-    <NewsContentWrapper>
+    <ScrapContent>
       {scrapDetail ? (
         <>
           <LikeButton newsId={scrapDetail.newsId} />
@@ -340,7 +325,7 @@ const ScrapDetailArticle: React.FC<ScrapDetailArticleProps> = ({ scrapId }) => {
       ) : (
         <div>데이터를 불러오는 중입니다...</div>
       )}
-    </NewsContentWrapper>
+    </ScrapContent>
   );
 };
 

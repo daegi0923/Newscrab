@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
+import ScrapDetailVoca from "./ScrapDetailVoca";
 // 재사용 components
 import Header from "@common/Header";
 import ScrapDetailArticle from "./ScrapDetailArticle";
@@ -40,7 +41,6 @@ const BackButton = styled.button`
 const ScrapDetailPage: React.FC = () => {
   const { scrapId } = useParams<{ scrapId: string }>(); // URL에서 scrapId만 가져옴
   const [, setScrapDetailItem] = useState<ScrapDetailResponse | null>(null); // scrap 데이터 상태
-  const [newsId, setNewsId] = useState<number | null>(null); // newsId 상태 추가
   const [, setIsLoading] = useState<boolean>(true);
   const navigate = useNavigate();
 
@@ -57,9 +57,6 @@ const ScrapDetailPage: React.FC = () => {
       setIsLoading(true);
       const scrapData = await getScrapDetail(scrapId); // scrapId에 맞는 스크랩 데이터 가져오기
       setScrapDetailItem(scrapData); // API 응답 데이터를 상태로 설정
-      if (scrapData) {
-        setNewsId(scrapData.newsId); // 응답에서 newsId를 가져와 상태로 설정
-      }
     } catch (error) {
       console.error("Error fetching scrap detail:", error);
     } finally {
@@ -79,6 +76,8 @@ const ScrapDetailPage: React.FC = () => {
         <ScrapWrapper>
           {/* scrapId만 ScrapDetailArticle에 넘겨줍니다 */}
           {scrapId && <ScrapDetailArticle scrapId={parseInt(scrapId, 10)} />}
+          {/* scrapId를 ScrapDetailVoca로도 전달합니다 */}
+          {scrapId && <ScrapDetailVoca scrapId={parseInt(scrapId, 10)} />}
         </ScrapWrapper>
       </ScrapDetailContainer>
     </div>
