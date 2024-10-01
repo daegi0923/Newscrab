@@ -14,4 +14,8 @@ public class VocaNewsResponseDto {
 
     @JsonProperty("related_news_id_3")
     private int relatedNewsId3;
+
+    @JsonProperty("important_sentence")
+    private String importantSentence;
+
 }
