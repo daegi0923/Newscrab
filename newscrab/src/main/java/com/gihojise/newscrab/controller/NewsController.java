@@ -4,6 +4,8 @@ import com.gihojise.newscrab.domain.CustomUserDetails;
 import com.gihojise.newscrab.dto.common.ApiResponse;
 import com.gihojise.newscrab.dto.response.NewsDetailResponseDto;
 import com.gihojise.newscrab.dto.response.NewsPageResponseDto;
+import com.gihojise.newscrab.dto.response.NewsRecoResponseDto;
+import com.gihojise.newscrab.dto.response.RecoListResponseDto;
 import com.gihojise.newscrab.service.NewsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -120,4 +122,15 @@ public class NewsController {
         boolean isLiked = newsService.isLiked(newsId, userId);
         return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "뉴스 찜 여부 조회 성공", isLiked));
     }
+
+    // 9. 추천뉴스 조회
+    @Operation(summary = "추천 뉴스 조회", description = "사용자에게 추천되는 뉴스를 조회합니다.")
+    @GetMapping("/recommend/list")
+    public ResponseEntity<ApiResponse<NewsRecoResponseDto>> getRecommendNews(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        int userId = userDetails.getUserId();
+        // fastapi로 추천뉴스 받아오기
+        NewsRecoResponseDto response = newsService.getRecommendNews(userId);
+        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "추천 뉴스 조회 성공", response));
+    }
+
 }

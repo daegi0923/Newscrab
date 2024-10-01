@@ -39,7 +39,7 @@ public class User extends BaseTimeEntity {
     @Size(min = 2, max = 10, message = "닉네임은 2~10자 사이여야 합니다.")
     private String name; // 닉네임
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     @Email(message = "이메일 형식이 올바르지 않습니다.")
     private String email; // 이메일
 

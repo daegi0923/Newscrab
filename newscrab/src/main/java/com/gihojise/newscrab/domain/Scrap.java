@@ -53,4 +53,7 @@ public class Scrap extends BaseTimeEntity {
         }
     }
 
+    public void setHighlights(List<Highlight> highlights) {
+        this.highlights = highlights;
+    }
 }
