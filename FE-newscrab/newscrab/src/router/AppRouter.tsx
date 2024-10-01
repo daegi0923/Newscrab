@@ -15,7 +15,7 @@ import AllNewsPage from "@pages/news/allNews/AllNewsPage";
 import NewsDetailPage from "@pages/news/detail/NewsDetailPage";
 // 스크랩
 import ScrapListPage from "@pages/scrap/ScrapListPage";
-import ScrapPdfPreview from "@components/scrap/pdf/ScrapPdfPreview";
+import ScrapPdfGenerator from "@components/scrap/pdf/ScrapPdfGenerator";
 // 단어장
 import MainVoca from "@pages/voca/VocaPage";
 import VocaDetail from "@pages/voca/VocaDetailPage";
@@ -54,7 +54,7 @@ const AppRouter: React.FC = () => {
 
         {/* 스크랩 */}
         <Route path="/scrapList" element={<ScrapListPage />} />
-        <Route path="/scrap/pdf" element={<ScrapPdfPreview />} />
+        {/* <Route path="/scrap/pdf" element={<ScrapPdfGenerator />} /> */}
 
         {/* 단어장 */}
         <Route path="/voca" element={<MainVoca />} />

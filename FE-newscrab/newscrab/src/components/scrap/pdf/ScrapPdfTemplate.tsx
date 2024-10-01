@@ -39,33 +39,46 @@ const ScrapPdfTemplate: React.FC<{ scrap: ScrapData }> = ({ scrap }) => {
   return (
     <ScrapDetail>
       <Table>
+        {/* 맨 위칸: 기사 제목과 날짜 */}
         <thead>
           <TitleRow>
             <Th colSpan={3}>
-                {scrap.newsTitle} - {new Date(scrap.createdAt).toLocaleDateString()}
+              {scrap.newsTitle} - {new Date(scrap.createdAt).toLocaleDateString()}{/* 날짜 표시 */}
             </Th>
           </TitleRow>
         </thead>
         <tbody>
+          {/* 기사 내용 */}
           <tr>
             <Td colSpan={2}>기사 내용</Td>
-            <Td>형광펜칠 내용 들갈예정</Td>
+            <Td dangerouslySetInnerHTML={{ __html: scrap.newsContent }} />{/* HTML로 렌더링 */}
           </tr>
+          {/* 요약 */}
           <tr>
             <Td colSpan={2}>요약</Td>
             <Td>{scrap.scrapSummary}</Td>
           </tr>
+          {/* 의견 */}
           <tr>
             <Td colSpan={2}>의견</Td>
             <Td>{scrap.comment}</Td>
           </tr>
+          {/* 단어 정리 */}
           {scrap.vocalist && scrap.vocalist.length > 0 ? (
+            <>
               <tr>
                 <Td rowSpan={scrap.vocalist.length}>단어</Td>
                 <Td>{scrap.vocalist[0].vocaName}</Td>
                 <Td>{scrap.vocalist[0].vocaDesc}</Td>
               </tr>
-          ) : null}
+              {scrap.vocalist.slice(1).map((voca: Vocalist) => (
+                <tr key={voca.vocaId}>
+                  <Td>{voca.vocaName}</Td>
+                  <Td>{voca.vocaDesc}</Td>
+                </tr>
+              ))}
+            </>
+          ) : null}{/* vocalist가 비어있을 때는 null을 반환 */}
         </tbody>
       </Table>
     </ScrapDetail>
