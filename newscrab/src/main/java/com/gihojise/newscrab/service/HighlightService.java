@@ -19,9 +19,10 @@ public class HighlightService {
 
     // 하이라이트 저장
     @Transactional
-    public void addHighlight(Scrap scrap, List<HighlightRequestDto> highlightRequestDtoList) {
-        highlightRequestDtoList.forEach(highlightRequestDto -> {
-            highlightRepository.save(new Highlight(scrap, highlightRequestDto.getStartPos(), highlightRequestDto.getEndPos(),highlightRequestDto.getColor()));
+    public void addHighlight(Scrap scrap) {
+        List<Highlight> highlights = scrap.getHighlights();
+        highlights.forEach(highlight -> {
+            highlightRepository.save(new Highlight(scrap, highlight.getStartPos(), highlight.getEndPos(),highlight.getColor()));
         });
     }
 }

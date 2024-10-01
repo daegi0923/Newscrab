@@ -1,5 +1,6 @@
 package com.gihojise.newscrab.service;
 
+import com.gihojise.newscrab.domain.Highlight;
 import com.gihojise.newscrab.domain.News;
 import com.gihojise.newscrab.domain.Scrap;
 import com.gihojise.newscrab.domain.User;
@@ -10,7 +11,6 @@ import com.gihojise.newscrab.dto.response.ScrapListResponseDto;
 import com.gihojise.newscrab.dto.response.ScrapResponseDto;
 import com.gihojise.newscrab.exception.ErrorCode;
 import com.gihojise.newscrab.exception.NewscrabException;
-import com.gihojise.newscrab.repository.HighlightRepository;
 import com.gihojise.newscrab.repository.NewsRepository;
 import com.gihojise.newscrab.repository.ScrapRepository;
 import com.gihojise.newscrab.repository.UserRepository;
@@ -19,6 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -131,9 +133,26 @@ public class ScrapService {
                 .news(news)
                 .scrapSummary(scrapAddRequestDto.getScrapSummary())
                 .comment(scrapAddRequestDto.getComment())
+                .highlights(Collections.emptyList())
                 .build();
 
-        return scrapRepository.save(scrap);
+        scrap = scrapRepository.save(scrap);
+
+        if (scrapAddRequestDto.getHighlights() != null && !scrapAddRequestDto.getHighlights().isEmpty()) {
+            Scrap finalScrap = scrap;
+            List<Highlight> highlights = scrapAddRequestDto.getHighlights().stream()
+                    .map(highlightDto -> new Highlight(
+                            finalScrap,  // Now that Scrap is persisted, associate it
+                            highlightDto.getStartPos(),
+                            highlightDto.getEndPos(),
+                            highlightDto.getColor()))
+                    .collect(Collectors.toList());
+
+            scrap.setHighlights(highlights);
+        }
+
+        return scrap;
+
     }
 
     // 4. 스크랩 수정
