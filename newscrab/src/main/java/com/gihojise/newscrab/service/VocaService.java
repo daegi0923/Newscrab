@@ -4,6 +4,7 @@ import com.gihojise.newscrab.domain.News;
 import com.gihojise.newscrab.domain.User;
 import com.gihojise.newscrab.domain.Voca;
 import com.gihojise.newscrab.dto.request.VocaAddRequestDto;
+import com.gihojise.newscrab.dto.request.VocaListAddRequestDto;
 import com.gihojise.newscrab.dto.response.*;
 import com.gihojise.newscrab.exception.ErrorCode;
 import com.gihojise.newscrab.exception.NewscrabException;
@@ -68,41 +69,45 @@ public class VocaService {
 
     // 단어 추가
     @Transactional
-    public void addVoca(VocaAddRequestDto vocaAddRequestDto, int userId) {
+    public void addVocaList(VocaListAddRequestDto vocaListAddRequestDto, int userId) {
         // User 객체를 userId로 조회
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NewscrabException(ErrorCode.USER_NOT_FOUND));
 
-        // News 객체를 newsId로 조회
-        News news = newsRepository.findById(vocaAddRequestDto.getNewsId())
-                .orElseThrow(() -> new NewscrabException(ErrorCode.NEWS_NOT_FOUND));
+        // 단어 리스트를 순회하면서 각각의 단어 처리
+        for (VocaAddRequestDto vocaAddRequestDto : vocaListAddRequestDto.getVocaAddList()) {
 
-        // 단어 연관 뉴스 추천 API 호출
-        VocaNewsResponseDto responseDto = fetchRelatedNews(vocaAddRequestDto.getVocaName());
+            // News 객체를 newsId로 조회
+            News news = newsRepository.findById(vocaAddRequestDto.getNewsId())
+                    .orElseThrow(() -> new NewscrabException(ErrorCode.NEWS_NOT_FOUND));
 
-        // 연관 뉴스 1, 2, 3을 조회하여 News 객체로 변환
-        News relatedNews1 = newsRepository.findById(responseDto.getRelatedNewsId1())
-                .orElse(null); // 관련 뉴스가 없을 수도 있으므로 예외 대신 null 반환
-        News relatedNews2 = newsRepository.findById(responseDto.getRelatedNewsId2())
-                .orElse(null);
-        News relatedNews3 = newsRepository.findById(responseDto.getRelatedNewsId3())
-                .orElse(null);
+            // 단어 연관 뉴스 추천 API 호출
+            VocaNewsResponseDto responseDto = fetchRelatedNews(vocaAddRequestDto.getVocaName());
 
+            // 연관 뉴스 1, 2, 3을 조회하여 News 객체로 변환
+            News relatedNews1 = newsRepository.findById(responseDto.getRelatedNewsId1())
+                    .orElse(null); // 관련 뉴스가 없을 수도 있으므로 예외 대신 null 반환
+            News relatedNews2 = newsRepository.findById(responseDto.getRelatedNewsId2())
+                    .orElse(null);
+            News relatedNews3 = newsRepository.findById(responseDto.getRelatedNewsId3())
+                    .orElse(null);
 
-        // Voca 엔티티 생성 및 저장
-        Voca voca = Voca.builder()
-                .news(news)
-                .user(user) // 조회된 User 객체 설정
-                .vocaName(vocaAddRequestDto.getVocaName())
-                .vocaDesc(vocaAddRequestDto.getVocaDesc())
-                .industryId(vocaAddRequestDto.getIndustryId())
-                .relatedNews1(relatedNews1)
-                .relatedNews2(relatedNews2)
-                .relatedNews3(relatedNews3)
-                .sentence(responseDto.getImportantSentence())
-                .build();
+            // Voca 엔티티 생성 및 저장
+            Voca voca = Voca.builder()
+                    .news(news)
+                    .user(user) // 조회된 User 객체 설정
+                    .vocaName(vocaAddRequestDto.getVocaName())
+                    .vocaDesc(vocaAddRequestDto.getVocaDesc())
+                    .industryId(vocaAddRequestDto.getIndustryId())
+                    .relatedNews1(relatedNews1)
+                    .relatedNews2(relatedNews2)
+                    .relatedNews3(relatedNews3)
+                    .sentence(responseDto.getImportantSentence())
+                    .build();
 
-        vocaRepository.save(voca);
+            // Voca 엔티티 저장
+            vocaRepository.save(voca);
+        }
     }
 
     // 연관 뉴스 API 호출 메소드
