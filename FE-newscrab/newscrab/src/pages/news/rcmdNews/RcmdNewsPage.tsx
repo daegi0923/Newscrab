@@ -1,63 +1,68 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import styled from "styled-components";
 import Header from "@components/common/Header";
 import Tab from "./Tab";
-import Pagination from "@components/common/Pagination"; // 페이지네이션
-import NewsList from "@pages/news/common/NewsList"; // 뉴스 리스트
+import RcmdNewsList from "./RcmdNewsList"; // 뉴스 리스트
 
-import { getNewsData } from "@apis/news/newsApi";
-import { NewsItem, NewsData } from "../../../types/newsTypes"; // newsTypes.ts에서 타입 import
+import { getRcmdNews } from "@apis/news/newsRcmdApi";
+import { RcmdNewsItem } from "../../../types/newsTypes"; // newsTypes.ts에서 타입 import
 
-const AllNewsPage: React.FC = () => {
-  const [newsList, setNewsList] = useState<NewsItem[]>([]); // 뉴스 데이터를 저장하는 상태
-  const [currentPage, setCurrentPage] = useState(1); // 현재 페이지 상태
-  const [totalPages, setTotalPages] = useState(1); // 총 페이지 수 상태
-  const [selectedIndustryId, setSelectedIndustryId] = useState<number | null>(
-    -1
-  ); // 선택된 industryId 상태
-  const [option, setOption] = useState<string>("total"); // 선택된 option 상태 ('total', 'hot', 'scrap')
+// 상단 탭과 버튼을 묶는 컨테이너 스타일
+const TopContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0px 100px;
+  margin-bottom: 20px;
+`;
+
+// "다른 추천 받기" 버튼 스타일
+const NextButton = styled.button`
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+
+  &:hover {
+    background-color: #0056b3;
+  }
+`;
+
+const RcmdNewsPage: React.FC = () => {
+  const [newsList, setNewsList] = useState<RcmdNewsItem[]>([]); // 전체 뉴스 데이터를 저장하는 상태
+  const [displayedNews, setDisplayedNews] = useState<RcmdNewsItem[]>([]); // 현재 보여지는 뉴스 데이터를 저장하는 상태
+  const [startIndex, setStartIndex] = useState(0); // 현재 시작 인덱스를 저장하는 상태
 
   const navigate = useNavigate(); // useNavigate 훅 사용
 
   // 뉴스 데이터를 API에서 가져오는 비동기 함수
-  const fetchNewsData = async (
-    page: number,
-    industryId: number | null,
-    option: string
-  ) => {
-    const resData: NewsData = await getNewsData(
-      industryId ?? -1,
-      page,
-      10,
-      undefined,
-      undefined,
-      option
-    ); // API 요청
-    setNewsList(resData.news); // 받아온 뉴스 데이터를 상태에 저장
-    setTotalPages(resData.totalPages); // API에서 받은 totalPages 값을 상태에 저장
+  const fetchNewsData = async () => {
+    const mergedRcmdNews: RcmdNewsItem[] = await getRcmdNews(); // API 요청으로 mergedRcmdNews 가져오기
+    setNewsList(mergedRcmdNews); // 전체 뉴스 데이터를 상태에 저장
+    setDisplayedNews(mergedRcmdNews.slice(0, 8)); // 처음에 1~8까지의 뉴스만 표시
   };
 
-  // currentPage, selectedIndustryId 또는 option이 변경될 때마다 데이터 새로 가져오기
+  // "다른 추천 받기" 버튼 클릭 시 실행되는 함수
+  const handleNextNews = () => {
+    const nextIndex = startIndex + 8; // 다음 8개의 항목을 가져올 인덱스
+    if (nextIndex >= newsList.length) {
+      // 마지막 데이터에 도달했으면 다시 처음부터 보여줌
+      setStartIndex(0);
+      setDisplayedNews(newsList.slice(0, 8));
+    } else {
+      setStartIndex(nextIndex); // 새로운 시작 인덱스 설정
+      setDisplayedNews(newsList.slice(nextIndex, nextIndex + 8)); // 다음 8개의 뉴스만 표시
+    }
+  };
+
+  // 컴포넌트가 마운트될 때 뉴스 데이터를 가져옴
   useEffect(() => {
-    fetchNewsData(currentPage, selectedIndustryId, option);
-  }, [currentPage, selectedIndustryId, option]);
-
-  // 페이지네이션을 위한 페이지 변경 핸들러
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page); // 페이지 변경 시 currentPage 업데이트
-  };
-
-  // 상단 탭에서 선택한 option 값 처리
-  const handleOptionSelect = (selectedOption: string) => {
-    setOption(selectedOption); // 선택된 option 업데이트
-    setCurrentPage(1); // 탭 변경 시 페이지를 1로 초기화
-  };
-
-  // 하단 필터에서 선택한 industryId 처리
-  const handleIndustrySelect = (industryId: number | null) => {
-    setSelectedIndustryId(industryId); // 선택된 industryId 업데이트
-    setCurrentPage(1); // industryId 변경 시 페이지를 1로 초기화
-  };
+    fetchNewsData(); // 페이지네이션이 없으므로 한번만 호출
+  }, []);
 
   // 뉴스 클릭 시 실행되는 핸들러 (상세 페이지로 이동)
   const handleNewsClick = (newsId: number) => {
@@ -67,20 +72,13 @@ const AllNewsPage: React.FC = () => {
   return (
     <div>
       <Header />
-      {/* 상단 탭에서 선택한 option 값을 전달 */}
-      <Tab
-        onIndustrySelect={handleIndustrySelect}
-        onOptionSelect={handleOptionSelect}
-      />
-      {/* 뉴스 리스트 컴포넌트 */}
-      <NewsList newsList={newsList} onNewsClick={handleNewsClick} />
-      <Pagination
-        currentPage={currentPage} // 현재 페이지 번호 전달
-        totalPages={totalPages} // 총 페이지 수 전달
-        onPageChange={handlePageChange} // 페이지 변경 핸들러 전달
-      />
+      <TopContainer>
+        <Tab />
+        <NextButton onClick={handleNextNews}>다른 추천 받기</NextButton>
+      </TopContainer>
+      <RcmdNewsList newsList={displayedNews} onNewsClick={handleNewsClick} />
     </div>
   );
 };
 
-export default AllNewsPage;
+export default RcmdNewsPage;
