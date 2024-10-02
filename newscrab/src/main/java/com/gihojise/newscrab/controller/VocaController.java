@@ -3,9 +3,9 @@ package com.gihojise.newscrab.controller;
 import com.gihojise.newscrab.domain.CustomUserDetails;
 import com.gihojise.newscrab.dto.common.ApiResponse;
 import com.gihojise.newscrab.dto.request.VocaAddRequestDto;
+import com.gihojise.newscrab.dto.request.VocaListAddRequestDto;
 import com.gihojise.newscrab.dto.response.VocaListResponseDto;
 import com.gihojise.newscrab.dto.response.VocaNewsResponseDto;
-import com.gihojise.newscrab.dto.response.VocaResponseDto;
 import com.gihojise.newscrab.dto.response.VocaSimpleResponseDto;
 import com.gihojise.newscrab.service.VocaService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -48,9 +48,9 @@ public class VocaController {
     // 3. 단어 추가
     @Operation(summary = "단어 추가", description = "단어를 추가합니다.")
     @PostMapping
-    public ResponseEntity<ApiResponse<Void>> addVoca(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody VocaAddRequestDto vocaAddRequestDto) {
+    public ResponseEntity<ApiResponse<Void>> addVoca(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestBody VocaListAddRequestDto vocaListAddRequestDto) {
         int userId = userDetails.getUserId();
-        vocaService.addVoca(vocaAddRequestDto, userId);
+        vocaService.addVocaList(vocaListAddRequestDto, userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.of(HttpStatus.CREATED.value(), HttpStatus.CREATED.getReasonPhrase(), "단어 추가 성공", null));
     }
 
