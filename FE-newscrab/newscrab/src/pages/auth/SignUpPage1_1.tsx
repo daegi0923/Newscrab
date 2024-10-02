@@ -47,7 +47,7 @@ const FormContainer = styled.div`
   margin: 0 10%;
   z-index: 2; /* Above the overlay */
   padding: 25px; /* Padding for the container */
-  background: rgba(255, 255, 255, 0.9); /* Light background for contrast */
+  background: rgba(255, 255, 255, 0.95); /* Light background for contrast */
   border-radius: 10px; /* Rounded corners */
   // border: 1px solid red;
   padding: 2%;
@@ -231,7 +231,7 @@ const SignUpPage1: React.FC = () => {
     }
 
     if (isFormValid) {
-      navigate("/signup2", { state: { signupForm } });
+      navigate("/signup21", { state: { signupForm } });
     } else {
       window.alert("모든 정보를 필수로 입력해야 합니다.");
     }

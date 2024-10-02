@@ -33,7 +33,7 @@ const TitleContainer = styled.div`
 `;
 
 const SignUpContainer = styled.div`
-  background-color: rgba(255, 255, 255, 0.9);
+  background-color: rgba(255, 255, 255, 1);
   border-radius: 10px;
   padding: 2px 15px 55px;
   width: 70%;
@@ -161,6 +161,7 @@ const Overlay = styled.div`
 const SignUpPage2: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  // const { signupForm } = location.state; // 앞에서 전달 받은 form
   const signupForm = location.state?.signupForm || {
     loginId: "",
     password: "",
