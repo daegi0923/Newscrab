@@ -28,7 +28,7 @@ const AllNewsPage: React.FC = () => {
     const resData: NewsData = await getNewsData(
       industryId ?? -1,
       page,
-      10,
+      20,
       undefined,
       undefined,
       option

@@ -11,6 +11,7 @@ export const CalendarContainer = styled.div`
   background-color: #ffffff; /* 배경을 흰색으로 설정 */
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 그림자 효과 */
+  border: 1px solid #ccc;
   text-align: center;
 `;
 
