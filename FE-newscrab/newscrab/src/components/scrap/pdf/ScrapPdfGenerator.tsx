@@ -1,8 +1,6 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import ScrapChecklist from './ScrapCheckList';
 import ScrapPreview from './ScrapPreview';
-import { useSelector } from 'react-redux';
-import { RootState } from '@store/index';
 import styled from 'styled-components';
 
 
@@ -139,26 +137,4 @@ const ModalTitle = styled.h1`
   text-align: center;
 `;
 
-const ModalFooter = styled.footer`
-  display: flex;
-  justify-content: space-between;
-  padding-top: 16px;
-  border-top: 1px solid #ddd;
-`;
-
-const Button = styled.button`
-  padding: 10px 20px;
-  margin: 10px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-
-  &:hover {
-    background-color: #0056b3;
-  }
-`;
 export default ScrapPdfGenerator;
