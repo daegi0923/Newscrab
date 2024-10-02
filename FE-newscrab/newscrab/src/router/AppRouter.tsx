@@ -13,7 +13,7 @@ import SignUpPage1_1 from "@pages/auth/SignUpPage1_1";
 import SignUpPage2 from "@pages/auth/SignUpPage2";
 import SignUpPage2_1 from "@pages/auth/SignUpPage2_1";
 //뉴스
-import MainNewsPage from "@pages/news/MainNewsPage";
+import MainNewsPage from "@pages/news/mainPage/MainNewsPage";
 import RcmdNewsPage from "@pages/news/rcmdNews/RcmdNewsPage";
 import AllNewsPage from "@pages/news/allNews/AllNewsPage";
 import NewsDetailPage from "@pages/news/detail/NewsDetailPage";
@@ -67,7 +67,7 @@ const AppRouter: React.FC = () => {
             <Route path="/signup2" element={<SignUpPage2 />} />
             <Route path="/signup11" element={<SignUpPage1_1 />} />
             <Route path="/signup21" element={<SignUpPage2_1 />} />
-            
+
             {/* 로그인하지 않았을 때 보호된 경로로 접근 시 오류 처리 */}
             <Route
               path="*"
