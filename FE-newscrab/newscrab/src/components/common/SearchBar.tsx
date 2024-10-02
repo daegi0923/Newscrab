@@ -39,7 +39,7 @@ const SearchIcon = styled.span`
 `;
 
 interface ClearButtonProps {
-  isVisible: boolean;
+  $isVisible: boolean;
 }
 
 const ClearButton = styled.span<ClearButtonProps>`
@@ -48,7 +48,7 @@ const ClearButton = styled.span<ClearButtonProps>`
   font-size: 16px;
   color: #888;
   cursor: pointer;
-  display: ${({ isVisible }) => (isVisible ? "block" : "none")};
+  display: ${({ $isVisible }) => ($isVisible ? "block" : "none")};
 `;
 
 interface SearchBarProps {
@@ -74,7 +74,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
           value={searchText}
           onChange={(e) => onSearchChange(e.target.value)} // Trigger search on change
         />
-        <ClearButton isVisible={searchText.length > 0} onClick={handleClear}>
+        <ClearButton $isVisible={searchText.length > 0} onClick={handleClear}>
           ✕
         </ClearButton>
       </SearchBarContainer>

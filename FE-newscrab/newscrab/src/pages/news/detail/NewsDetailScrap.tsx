@@ -8,6 +8,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@store/index";
 import addIcon from "@assets/common/add.png"
 import removeIcon from "@assets/common/remove.png"
+import NewsDetailAISummary from "./NewsDetailAISummary";
+import NewsDetailAIQuestion from "./NewsDetailAIQuestion";
 
 const Sidebar = styled.div`
   width: 30%;
@@ -232,26 +234,6 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
     (state: RootState) => state.highlight.highlights
   );
 
-  // useEffect를 통해 Redux에서 가져온 하이라이트 정보를 ref에 저장
-  useEffect(() => {
-    highlightsRef.current = highlights;
-  }, [highlights]);
-
-  // const handleHighlightChange = (startPos: number, endPos: number, color: string) => {
-  //   // 같은 위치의 형광펜이 있는지 확인하여 수정
-  //   const existingHighlightIndex = highlightsRef.current.findIndex(
-  //     (highlight) => highlight.startPos === startPos && highlight.endPos === endPos
-  //   );
-
-  //   if (existingHighlightIndex !== -1) {
-  //     // 이미 존재하는 형광펜은 색상을 변경
-  //     highlightsRef.current[existingHighlightIndex].color = color;
-  //   } else {
-  //     // 새 형광펜 추가
-  //     highlightsRef.current.push({ startPos, endPos, color });
-  //   }
-  // };
-
   const summaryTextareaRef = useRef<HTMLTextAreaElement>(null);
   const opinionTextareaRef = useRef<HTMLTextAreaElement>(null);
   const wordListTextareaRef = useRef<HTMLTextAreaElement>(null);
@@ -263,6 +245,17 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
       setIsOverflowing(textarea.scrollHeight > 615);
     }
   };
+
+  // 요약 텍스트를 업데이트하는 함수
+  const handleTransferText = (newSummary: string) => {
+    setSummaryText((prevSummary) => prevSummary + "\n" + newSummary); // 기존 요약에 새 텍스트를 추가
+  };
+
+  // 의견 텍스트를 업데이트하는 함수
+  const handleTransferOpinionText = (newOpinion: string) => {
+    setOpinionText((prevOpinion) => prevOpinion + "\n" + newOpinion); // 기존 의견에 새 텍스트를 추가
+  };
+
 
   // getScrapData를 이용해 서버에서 데이터를 불러오기
   useEffect(() => {
@@ -284,7 +277,6 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
           setSummaryText(selectedScrap.scrapSummary || "");
           setOpinionText(selectedScrap.comment || "");
           setWordListText(selectedScrap.vocalist?.join(", ") || ""); // vocalist 배열을 문자열로 변환
-          highlightsRef.current = selectedScrap.highlightList || [];
         } else {
           console.log("No scrap data found for this newsId:", newsId);
         }
@@ -302,23 +294,6 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
     adjustHeight(wordListTextareaRef.current);
   }, [summaryText, opinionText, wordListText, activeTab]);
 
-  // const handleSave = async () => {
-  //   const scrapData = {
-  //     newsId: newsId,
-  //     comment: opinionText,
-  //     scrapSummary: summaryText,
-  //     // vocalist: wordListText.split(",").map((item) => item.trim()),
-  //     highlights: [],
-  //   };
-
-  //   try {
-  //     await postScrap(scrapData); // postScrap API 호출
-  //     alert("저장되었습니다!");
-  //   } catch (error) {
-  //     console.error("Error saving scrap:", error);
-  //     alert("저장에 실패했습니다.");
-  //   }
-  // };
   const handleSave = async () => {
     // scrapData 생성: 요약, 의견, 형광펜 데이터를 저장할 객체
     const scrapData = {
@@ -459,22 +434,30 @@ const toggleDropdown = (index: number) => {
       </TabMenu>
 
       {activeTab === "summary" && (
+        <>
         <StyledTextarea
           ref={summaryTextareaRef}
           value={summaryText || "<서론>\n\n<본론>\n\n<결론>"}
           onChange={(e) => setSummaryText(e.target.value)}
           $isOverflowing={isOverflowing}
         />
+        
+        <NewsDetailAISummary onTransferText={handleTransferText} />
+      </>
+        
       )}
 
       {activeTab === "opinion" && (
-        <StyledTextarea
-          ref={opinionTextareaRef}
-          value={opinionText}
-          onChange={(e) => setOpinionText(e.target.value)}
-          placeholder="의견을 작성하세요."
-          $isOverflowing={isOverflowing}
-        />
+        <>
+          <StyledTextarea
+            ref={opinionTextareaRef}
+            value={opinionText}
+            onChange={(e) => setOpinionText(e.target.value)}
+            placeholder="의견을 작성하세요."
+            $isOverflowing={isOverflowing}
+          />
+          <NewsDetailAIQuestion onTransferText={handleTransferOpinionText} />
+        </>
       )}
 
       {/* {activeTab === "wordlist" && (

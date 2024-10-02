@@ -12,7 +12,7 @@
 //   flex-direction: column;
 //   align-items: center;
 //   padding: 20px;
-  
+
 // `;
 
 // const NewsListContainer = styled.div`
@@ -239,12 +239,12 @@
 
 // export default LikeNews;
 
-import React, { useEffect, useRef, useState } from 'react';
-import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchUserLikeNewsThunk } from '@store/myPage/userNewsSlice';
-import { RootState, AppDispatch } from '@store/index';
+import React, { useEffect, useRef, useState } from "react";
+import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchUserLikeNewsThunk } from "@store/myPage/userNewsSlice";
+import { RootState, AppDispatch } from "@store/index";
 import defaultImage from "@assets/auth/defaultProfile.jpg";
 import arrow from "@assets/common/arrow.png";
 
@@ -268,7 +268,7 @@ const NewsListContainer = styled.div`
 
 const NewsList = styled.div`
   // border: 1px solid red;
-display: flex;
+  display: flex;
   gap: 20px;
   overflow-x: scroll;
   padding: 10px;
@@ -331,11 +331,11 @@ const NewsDate = styled.p`
 `;
 
 const SectionName = styled.div`
-position:absolute;  
-font-size: 13px;
+  position: absolute;
+  font-size: 13px;
   // margin-bottom: 10px;
   top: 70%;
-  left: 39.5%;  
+  left: 39.5%;
   color: #93939;
   font-weight: bold;
 `;
@@ -373,14 +373,15 @@ const RightArrow = styled(ArrowButton)`
 const LikeNews: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
-  const { likedNewsList, loading, error } = useSelector((state: RootState) => state.userNews);
+  const { likedNewsList } = useSelector((state: RootState) => state.userNews);
 
   const [page, setPage] = useState<number>(1);
   const newsListRef = useRef<HTMLDivElement | null>(null);
 
   // 중복된 newsId 제거
   const uniqueLikedNewsList = likedNewsList.filter(
-    (item, index, self) => index === self.findIndex((t) => t.newsId === item.newsId)
+    (item, index, self) =>
+      index === self.findIndex((t) => t.newsId === item.newsId)
   );
 
   useEffect(() => {
@@ -390,7 +391,7 @@ const LikeNews: React.FC = () => {
 
   // 데이터가 업데이트될 때마다 렌더링
   useEffect(() => {
-    console.log('찜한 뉴스:', likedNewsList);
+    console.log("찜한 뉴스:", likedNewsList);
   }, [likedNewsList]);
 
   const handleMove = (newsId: number) => {
@@ -412,7 +413,10 @@ const LikeNews: React.FC = () => {
   const scrollRight = () => {
     if (newsListRef.current) {
       newsListRef.current.scrollLeft += 200;
-      if (newsListRef.current.scrollLeft + newsListRef.current.clientWidth >= newsListRef.current.scrollWidth) {
+      if (
+        newsListRef.current.scrollLeft + newsListRef.current.clientWidth >=
+        newsListRef.current.scrollWidth
+      ) {
         loadMoreNews();
       }
     }
@@ -428,7 +432,10 @@ const LikeNews: React.FC = () => {
         <NewsList ref={newsListRef}>
           {uniqueLikedNewsList.map((item) => (
             <NewsItem key={item.newsId} onClick={() => handleMove(item.newsId)}>
-              <NewsImage src={item.photoUrlList[0] || defaultImage} alt="뉴스 이미지" />
+              <NewsImage
+                src={item.photoUrlList[0] || defaultImage}
+                alt="뉴스 이미지"
+              />
               <Overlay>
                 <NewsContent>
                   <NewsTitle>{item.newsTitle}</NewsTitle>
@@ -447,4 +454,3 @@ const LikeNews: React.FC = () => {
 };
 
 export default LikeNews;
-
