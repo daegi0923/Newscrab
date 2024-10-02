@@ -183,6 +183,9 @@ public class ScrapService {
             grassRepository.save(newGrass);
         }
 
+        // 해당 뉴스 스크랩 횟수 증가
+        news.increaseScrapCnt();
+
         return scrap;
 
     }

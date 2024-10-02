@@ -78,4 +78,9 @@ public class News extends BaseTimeEntity {
     public void increaseView() {
         this.view++;
     }
+
+    // 스크랩 증가 메서드
+    public void increaseScrapCnt() {
+        this.scrapCnt++;
+    }
 }
