@@ -14,7 +14,7 @@ import org.hibernate.annotations.OnDeleteAction;
 public class Grass extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long grassId; // 잔디 ID (Primary Key)
+    private Integer grassId; // 잔디 ID (Primary Key)
 
     @ManyToOne(fetch = FetchType.LAZY) // 다대일 관계, 여러 잔디는 하나의 사용자와 연결
     @OnDelete(action = OnDeleteAction.CASCADE)

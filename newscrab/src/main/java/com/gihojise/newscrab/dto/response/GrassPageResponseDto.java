@@ -10,4 +10,8 @@ import java.util.List;
 @Builder
 public class GrassPageResponseDto {
     private List<GrassDto> data;
+
+    public GrassPageResponseDto(List<GrassDto> data) {
+        this.data = data;
+    }
 }
