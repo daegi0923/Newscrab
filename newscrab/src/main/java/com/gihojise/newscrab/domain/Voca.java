@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "voca")
 @Getter
@@ -57,7 +59,10 @@ public class Voca extends BaseTimeEntity {
     @JoinColumn(name = "related_news_id_3")
     private News relatedNews3;
 
-    public void update(String vocaName, String vocaDesc, String sentence, Integer industryId) {
+    public void update(News news, String vocaName, String vocaDesc, String sentence, Integer industryId) {
+        if (news != null) {
+            this.news = news;
+        }
         if (vocaName != null) {
             this.vocaName = vocaName;
         }
@@ -70,6 +75,8 @@ public class Voca extends BaseTimeEntity {
         if (industryId != null) {
             this.industryId = industryId;
         }
+
+        this.updatedAt = LocalDateTime.now();
     }
 
 }
