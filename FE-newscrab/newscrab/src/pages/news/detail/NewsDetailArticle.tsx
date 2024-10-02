@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useDispatch, useSelector  } from "react-redux";
 import { RootState } from "@store/index";
-import { addHighlight, removeHighlight, clearHighlights} from "@store/highlight/highlightSlice";
+import { addHighlight, removeHighlight, updateHighlight, clearHighlights} from "@store/highlight/highlightSlice";
 import viewIcon from "@assets/view.png";
 import scrapCntIcon from "@assets/scrapCnt.png";
 import { NewsDetailItem } from "../../../types/newsTypes";
@@ -198,23 +198,42 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({ newsDetailItem }
       if (range.startContainer.parentElement?.style.backgroundColor) {
         // 기존 하이라이트의 색상 변경
         range.startContainer.parentElement.style.backgroundColor = color;
+        const parentStartPos = range.startContainer.parentElement.dataset.startPos;
+        const parentEndPos = range.startContainer.parentElement.dataset.endPos;
+
+        console.log(
+          `Parent element startPos: ${parentStartPos}, endPos: ${parentEndPos}`
+        );
+
+        if (parentStartPos && parentEndPos) {
+          // 기존 하이라이트가 있을 경우 색상만 업데이트
+          dispatch(
+            updateHighlight({
+              startPos: Number(parentStartPos),
+              endPos: Number(parentEndPos),
+              color: colorToLetterMap[color as ColorKeys],
+            })
+          );
+          console.log(`Updated highlight: startPos: ${parentStartPos}, endPos: ${parentEndPos}`);
+        }
+        
       } else {
         // 새로운 하이라이트 생성
         span.style.backgroundColor = color;
         span.appendChild(range.extractContents()); // 기존 내용 추출
         range.insertNode(span); // span으로 감싸기
-      }
 
-      // Redux에 하이라이트 추가 (R, Y, G, B로 저장)
-      const mappedColor = colorToLetterMap[color as ColorKeys];
-      if (mappedColor) {
-        dispatch(
-          addHighlight({
-            startPos,
-            endPos,
-            color: mappedColor,
-          })
-        );
+        // Redux에 하이라이트 추가 (R, Y, G, B로 저장)
+        const mappedColor = colorToLetterMap[color as ColorKeys];
+        if (mappedColor) {
+          dispatch(
+            addHighlight({
+              startPos,
+              endPos,
+              color: mappedColor,
+            })
+          );
+        }
       }
 
       selection.removeAllRanges(); // 선택 해제
