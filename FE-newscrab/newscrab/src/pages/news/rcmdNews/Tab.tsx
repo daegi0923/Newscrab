@@ -8,7 +8,6 @@ const Message = styled.div`
   justify-content: center;
   align-items: center;
   font-size: 24px;
-  margin-top: 20px;
 `;
 
 // 사용자 이름 스타일

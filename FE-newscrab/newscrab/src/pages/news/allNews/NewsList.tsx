@@ -22,6 +22,7 @@ const NewsItemContainer = styled.div`
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   padding: 16px;
   cursor: pointer; /* 클릭 가능한 커서 추가 */
+  background-color: white;
 `;
 
 const FlexContainer = styled.div`
