@@ -1,9 +1,26 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { topTabOptions, bottomTabOptions } from "./TabOptions";
 import hotImage from "@assets/hot.png";
 import scrapImage from "@assets/scrap.png";
 import allImage from "@assets/all.png";
+
+const TopWrapper = styled.div`
+  display: flex;
+  justify-content: space-between; /* Tab과 추천 뉴스 보기를 양쪽에 배치 */
+  align-items: center;
+  margin-top: 10px;
+  padding: 0 100px; /* 좌우 패딩 추가 */
+`;
+
+const TabContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px;
+  margin-left: 36%;
+`;
 
 // 상단 탭 버튼 스타일
 const TopTabButton = styled.button<{ selected: boolean }>`
@@ -49,6 +66,24 @@ const TopTabButton = styled.button<{ selected: boolean }>`
   }
 `;
 
+const GoRcmdNews = styled.div`
+  color: #007bff;
+  cursor: pointer;
+  font-weight: bold;
+
+  &:hover {
+    text-decoration: underline;
+  }
+`;
+
+const FilterContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+`;
+
 // 하단 필터 버튼 스타일
 const FilterButton = styled.button<{ selected: boolean }>`
   padding: 8px 16px;
@@ -63,21 +98,6 @@ const FilterButton = styled.button<{ selected: boolean }>`
   &:hover {
     background-color: #f0f0f0;
   }
-`;
-
-const TabContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 10px;
-`;
-
-const FilterContainer = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  margin-top: 20px;
 `;
 
 interface TabProps {
@@ -103,6 +123,8 @@ const Tab: React.FC<TabProps> = ({ onIndustrySelect, onOptionSelect }) => {
     if (tabName === "스크랩수") return scrapImage;
   };
 
+  const navigate = useNavigate(); // useNavigate 훅 사용
+
   // 하단 필터 버튼 선택 시 상태 업데이트
   const handleBottomTabSelect = (tabId: number) => {
     const newSelectedId = selectedBottomTab === tabId ? null : tabId; // 이미 선택된 탭 클릭 시 선택 해제
@@ -110,24 +132,30 @@ const Tab: React.FC<TabProps> = ({ onIndustrySelect, onOptionSelect }) => {
     onIndustrySelect(newSelectedId); // 선택된 ID 전달
   };
 
+  const handleGoRcmdNews = () => {
+    navigate("/rcmdNews");
+  };
+
   return (
     <>
-      {/* 상단 탭 */}
-      <TabContainer>
-        {topTabOptions.map((tab) => (
-          <TopTabButton
-            key={tab.id}
-            selected={selectedTopTab === tab.id}
-            onClick={() => handleTopTabSelect(tab.id, tab.label)}
-          >
-            {getTabImage(tab.name) && (
-              <img src={getTabImage(tab.name)} alt="" />
-            )}
-            <span>{tab.name}</span>
-          </TopTabButton>
-        ))}
-      </TabContainer>
-
+      {/* 상단 탭과 추천 뉴스 보기를 묶는 컨테이너 */}
+      <TopWrapper>
+        <TabContainer>
+          {topTabOptions.map((tab) => (
+            <TopTabButton
+              key={tab.id}
+              selected={selectedTopTab === tab.id}
+              onClick={() => handleTopTabSelect(tab.id, tab.label)}
+            >
+              {getTabImage(tab.name) && (
+                <img src={getTabImage(tab.name)} alt="" />
+              )}
+              <span>{tab.name}</span>
+            </TopTabButton>
+          ))}
+        </TabContainer>
+        <GoRcmdNews onClick={handleGoRcmdNews}>🔍 추천 뉴스 보기</GoRcmdNews>
+      </TopWrapper>
       {/* 하단 필터 버튼 */}
       <FilterContainer>
         {bottomTabOptions.map((tab) => (
