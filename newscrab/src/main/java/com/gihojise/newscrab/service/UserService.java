@@ -5,6 +5,7 @@ import com.gihojise.newscrab.dto.domain.IndustryDto;
 import com.gihojise.newscrab.dto.request.PasswordUpdateRequestDto;
 import com.gihojise.newscrab.dto.request.SignupRequestDto;
 import com.gihojise.newscrab.dto.request.UserUpdateRequestDto;
+import com.gihojise.newscrab.dto.response.UserNameResponseDto;
 import com.gihojise.newscrab.dto.response.UserResponseDto;
 import com.gihojise.newscrab.enums.Gender;
 import com.gihojise.newscrab.enums.ProfileImage;
@@ -175,6 +176,19 @@ public class UserService {
                 .scrapCount(user.get().getGrasses().size())
                 .vocaCount(user.get().getUserIndustries().size())
                 .userIndustry(userIndustry)
+                .build();
+    }
+
+    // 유저 이름 조회
+    public UserNameResponseDto getUserName(int userId) {
+        Optional<User> user = userRepository.findById(userId);
+
+        if(user.isEmpty()) {
+            throw new NewscrabException(ErrorCode.USER_NOT_FOUND);
+        }
+
+        return UserNameResponseDto.builder()
+                .name(user.get().getName())
                 .build();
     }
 }

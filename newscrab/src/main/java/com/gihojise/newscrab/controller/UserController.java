@@ -4,6 +4,7 @@ import com.gihojise.newscrab.domain.CustomUserDetails;
 import com.gihojise.newscrab.domain.User;
 import com.gihojise.newscrab.dto.common.ApiResponse;
 import com.gihojise.newscrab.dto.request.*;
+import com.gihojise.newscrab.dto.response.UserNameResponseDto;
 import com.gihojise.newscrab.dto.response.UserResponseDto;
 import com.gihojise.newscrab.service.UserIndustryService;
 import com.gihojise.newscrab.service.UserService;
@@ -90,4 +91,13 @@ public class UserController {
         return "ok";
     }
     // 로그인, 로그아웃은 필터에서 구현하고 스웨거 문서에만 표시하기위해 작성---
+
+
+    @Operation(summary = "회원 이름 조회", description = "회원 이름을 조회합니다.")
+    @GetMapping("/name")
+    public ResponseEntity<ApiResponse<UserNameResponseDto>> getUserName(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        int userId = userDetails.getUserId();
+        UserNameResponseDto userNameResponseDto = userService.getUserName(userId);
+        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "회원 이름 조회 성공", userNameResponseDto));
+    }
 }
