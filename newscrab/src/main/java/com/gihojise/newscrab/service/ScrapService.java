@@ -60,7 +60,7 @@ public class ScrapService {
                                 .newsCompany(scrap.getNews().getNewsCompany())
                                 .build())
                         .toList())
-                .totalItems(scrapRepository.findAll().size())
+                .totalItems(scrapRepository.findByUserUserId(userId).size())
                 .build();
     }
 
