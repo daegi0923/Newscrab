@@ -79,6 +79,24 @@ const BackButton = styled.button`
   }
 `;
 
+const NewsButton = styled.button`
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.9);
+  z-index: 2;
+  position: absolute;
+  top: 25%;
+  left: 60.5%;
+  padding: 5px 10px;
+  background-color: rgba(255, 190, 152, 0);
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 15px;
+  // font-weight: bold;
+  color: white;
+  &:hover {
+    background-color: #ff8f4d;
+  }
+`;
 const EditButton = styled.button`
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.9);
   z-index: 2;
@@ -149,6 +167,9 @@ const VocaDetailPage: React.FC = () => {
   // const { word } = location.state as { word: VocaWithImages };
   // const [currentWord, setCurrentWord] = useState(word);
 
+  const handleNewsClick = (originNewsId:number) => {
+    navigate(`/news/${originNewsId}`) // 수정 버튼 클릭 시 모달 열기
+  };
   const handleEditClick = () => {
     setIsModalOpen(true); // 수정 버튼 클릭 시 모달 열기
   };
@@ -224,6 +245,7 @@ const VocaDetailPage: React.FC = () => {
       <GlobalStyle />
       <VocaCommon />
       <BackButton onClick={() => navigate("/voca")}>단어장 목록</BackButton>
+      <NewsButton onClick={() => handleNewsClick(selectedVoca.originNewsId)}>해당 뉴스로 이동</NewsButton>
       <EditButton onClick={handleEditClick}>수정</EditButton>
       <DelButton onClick={handleDeleteVoca}>삭제</DelButton>
 

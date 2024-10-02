@@ -13,10 +13,10 @@ import SignUpPage1_1 from '@pages/auth/SignUpPage1_1';
 import SignUpPage2 from '@pages/auth/SignUpPage2';
 import SignUpPage2_1 from '@pages/auth/SignUpPage2_1';
 //뉴스
-import MainNewsPage from '@pages/news/MainNewsPage';
-import RcmdNewsPage from '@pages/news/rcmdNews/RcmdNewsPage';
-import AllNewsPage from '@pages/news/allNews/AllNewsPage';
-import NewsDetailPage from '@pages/news/detail/NewsDetailPage';
+import MainNewsPage from "@pages/news/mainPage/MainNewsPage";
+import RcmdNewsPage from "@pages/news/rcmdNews/RcmdNewsPage";
+import AllNewsPage from "@pages/news/allNews/AllNewsPage";
+import NewsDetailPage from "@pages/news/detail/NewsDetailPage";
 // 스크랩
 import ScrapListPage from '@pages/scrap/ScrapListPage';
 import ScrapDetailPage from '@pages/scrap/detail/ScrapDetailPage';

@@ -236,23 +236,24 @@ const UserInfoContainer = styled.div`
   text-align: center;
   margin: 8% 5%;
   padding: 20px;
-  border: 2px solid #ccc;
   border-radius: 10px;
   background-color: #fff;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #ccc;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 `;
 
 const UserImage = styled.img`
   width: 150px;
   height: 150px;
   border-radius: 50%;
-  border: 2px solid #ccc;
+  border: 0.5px solid grey;
   background-color: #fff;
   position: absolute;
   top: -75px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 1;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 `;
 
 const UserInfoContent = styled.div`
