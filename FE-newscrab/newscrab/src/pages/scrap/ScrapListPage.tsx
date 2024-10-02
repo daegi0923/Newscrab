@@ -6,13 +6,20 @@ import SearchBar from "@common/SearchBar";
 import Tab from "./Tab";
 import ScrapList from "./ScrapList "; // ScrapList 컴포넌트 import
 
-import { getScrapData } from "@apis/scrap/scrapApi";
+// import { getScrapData } from "@apis/scrap/scrapApi";
 import { ScrapData } from "../../types/scrapTypes"; // scrapApi에서 타입 import
 
 import ScrapPdfGenerator from "@components/scrap/pdf/ScrapPdfGenerator"
 
+//redux 사용해서 scrapList 관리
+import { fetchScrapListThunk } from '@store/scrap/scrapSlice';
+import { AppDispatch, RootState } from '@store/index';
+import { useDispatch, useSelector } from 'react-redux';
+
+
+
 const ScrapListPage: React.FC = () => {
-  const [scrapList, setScrapList] = useState<ScrapData[]>([]); // 스크랩 데이터를 저장하는 상태
+  // const [scrapList, setScrapList] = useState<ScrapData[]>([]); // 스크랩 데이터를 저장하는 상태
   const [filteredScrapList, setFilteredScrapList] = useState<ScrapData[]>([]); // 필터링된 스크랩 데이터
   const [selectedIndustryId, setSelectedIndustryId] = useState<number | null>(
     null
@@ -26,16 +33,26 @@ const ScrapListPage: React.FC = () => {
     setSearchText(text);
   };
 
-  // 스크랩 데이터를 API에서 가져오는 비동기 함수
-  const fetchScrapData = async () => {
-    const resData = await getScrapData(1, 10); // API 요청 (페이지네이션이 없으므로 페이지는 1로 고정)
-    const sortedData = resData.data.data.sort(
-      (a: ScrapData, b: ScrapData) =>
-        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-    ); // updatedAt 기준으로 내림차순 정렬
-    setScrapList(sortedData); // 정렬된 스크랩 데이터를 상태에 저장
-    console.log("Scrap List:", sortedData); // 정렬된 스크랩 리스트 데이터 출력
-  };
+// redux 전역상태관리로 scrapList 관리
+  const dispatch: AppDispatch = useDispatch();
+
+  const { scrapList } = useSelector((state: RootState) => state.scrap);
+
+  useEffect(() => {
+    dispatch(fetchScrapListThunk()); // Scrap 리스트 API 요청
+  }, [dispatch]);
+
+
+// --------------------------------
+
+
+  // // 스크랩 데이터를 API에서 가져오는 비동기 함수
+  // const fetchScrapData = async (page: number) => {
+  //   const resData = await getScrapData(page, 10); // API 요청
+  //   setScrapList(resData.data.data); // 받아온 스크랩 데이터를 상태에 저장
+  //   // setTotalPages(Math.ceil(resData.data.totalItems / 10)); // 총 페이지 수 계산 후 상태에 저장
+  //   console.log("Scrap List:", resData.data.data); // 스크랩 리스트 데이터 출력
+  // };
 
   // selectedIndustryId에 따른 필터링 적용
   useEffect(() => {
@@ -61,9 +78,9 @@ const ScrapListPage: React.FC = () => {
   }, [scrapList, selectedIndustryId, searchText]);
 
   // 컴포넌트 마운트 시 데이터 가져오기
-  useEffect(() => {
-    fetchScrapData(); // 페이지네이션이 없으므로 currentPage에 대한 의존성 제거
-  }, []);
+  // useEffect(() => {
+  //   fetchScrapData(); // 페이지네이션이 없으므로 currentPage에 대한 의존성 제거
+  // }, []);
 
   // 필터에서 선택한 industryId 처리
   const handleIndustrySelect = (industryId: number | null) => {
