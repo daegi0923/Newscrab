@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import styled from "styled-components";
 import { useDispatch, useSelector  } from "react-redux";
 import { RootState } from "@store/index";
 import { addHighlight, removeHighlight, updateHighlight, clearHighlights} from "@store/highlight/highlightSlice";
