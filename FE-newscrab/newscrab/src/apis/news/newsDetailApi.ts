@@ -21,6 +21,7 @@ export const getNewsDetail = async (newsId: number) => {
       newsUrl: data.newsUrl,
       view: data.view,
       scrap: data.scrap,
+      scrapId: data.scrapId,
       newsPhoto: data.newsPhoto.length
         ? data.newsPhoto
         : ["https://picsum.photos/100/80"], // 이미지가 없을 경우 기본 이미지 설정

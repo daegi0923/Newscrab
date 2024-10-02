@@ -25,13 +25,13 @@ const ScrapItemContainer = styled.div`
   overflow: hidden;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   padding: 16px;
-  cursor: pointer;
   min-height: 150px; /* 최소 높이 줄임 */
   background-color: #fffcf0;
   background-color: #fbffb9; /* 4순위 */
   background-color: #f9cdad; /* 3순위 */
   background-color: #fffff3; /* 2순위 */
   background-color: #ffeee4; /* 1순위 */
+  background-color: white; /* 0순위 */
 `;
 
 const FlexContainer = styled.div`

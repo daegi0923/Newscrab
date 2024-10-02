@@ -1,152 +1,58 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { topTabOptions, bottomTabOptions } from "./TabOptions";
-import hotImage from "@assets/hot.png";
-import scrapImage from "@assets/scrap.png";
-import allImage from "@assets/all.png";
+import { getUsername } from "@apis/news/newsRcmdApi"; // getUsername 함수 import
 
-// 상단 탭 버튼 스타일
-const TopTabButton = styled.button<{ selected: boolean }>`
-  padding: 8px 16px;
-  margin: 0 10px;
-  border: none;
-  background-color: transparent;
-  color: #555;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-
-  &:hover {
-    color: #4370e3;
-  }
-
-  img {
-    width: 20px;
-    height: 20px;
-    margin-right: 8px;
-  }
-
-  span {
-    position: relative;
-    color: ${(props) => (props.selected ? "#4370e3" : "#555")};
-    transition: color 0.3s ease; /* 텍스트 색상도 부드럽게 변환 */
-    &:after {
-      content: "";
-      position: absolute;
-      width: 100%;
-      height: 2px;
-      background-color: #4370e3;
-      bottom: -4px;
-      left: 0;
-      transition: all 0.3s ease; /* 언더바 애니메이션 */
-      transform: scaleX(
-        ${(props) => (props.selected ? 1 : 0)}
-      ); /* 선택되지 않은 경우에는 언더바 숨김 */
-      transform-origin: left; /* 애니메이션이 왼쪽에서 오른쪽으로 */
-    }
-  }
-`;
-
-// 하단 필터 버튼 스타일
-const FilterButton = styled.button<{ selected: boolean }>`
-  padding: 8px 16px;
-  margin: 4px;
-  border-radius: 20px;
-  border: ${(props) =>
-    props.selected ? "2px solid #4370e3" : "1px solid #ccc"};
-  background-color: ${(props) => (props.selected ? "#e3f2fd" : "#fff")};
-  color: ${(props) => (props.selected ? "#4370e3" : "#000")};
-  font-weight: bold;
-  cursor: pointer;
-  &:hover {
-    background-color: #f0f0f0;
-  }
-`;
-
-const TabContainer = styled.div`
+// 텍스트 전체 스타일링
+const Message = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 10px;
-`;
-
-const FilterContainer = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
+  font-size: 24px;
   margin-top: 20px;
 `;
 
-interface TabProps {
-  onIndustrySelect: (industryId: number | null) => void;
-  onOptionSelect: (option: string) => void; // 상단 탭 선택 시 호출될 함수 추가
-}
+// 사용자 이름 스타일
+const Username = styled.span`
+  font-weight: bold;
+  color: #333;
+`;
 
-const Tab: React.FC<TabProps> = ({ onIndustrySelect, onOptionSelect }) => {
-  const [selectedTopTab, setSelectedTopTab] = useState<number>(1); // 상단 탭 상태
-  const [selectedTabIds, setSelectedTabIds] = useState<number[]>([]); // 하단 필터 상태
+// "님을 위한 추천 뉴스에요!" 텍스트 스타일
+const HighlightText = styled.span`
+  font-weight: normal;
+  color: #555;
+  front-size: 10px;
+`;
 
-  // 상단 탭 선택 시 상태 업데이트 및 option 전달
-  const handleTopTabSelect = (tabId: number, option: string) => {
-    setSelectedTopTab(tabId);
-    onOptionSelect(option); // 선택된 option 값을 상위 컴포넌트로 전달
+const Tab: React.FC = () => {
+  const [username, setUsername] = useState<string>(""); // 사용자 이름을 저장하는 상태
+
+  // API 호출로 사용자 이름을 가져오는 함수
+  const fetchUsername = async () => {
+    try {
+      const name = await getUsername(); // API에서 사용자 이름 가져오기
+      setUsername(name); // 상태에 저장
+    } catch (error) {
+      console.error("Error fetching username:", error);
+    }
   };
 
-  const getTabImage = (tabName: string) => {
-    if (tabName === "전체") return allImage;
-    if (tabName === "조회수") return hotImage;
-    if (tabName === "스크랩수") return scrapImage;
-  };
-
-  // 하단 필터 버튼 선택 시 상태 업데이트
-  const handleTabSelect = (tabId: number) => {
-    setSelectedTabIds((prevSelected) => {
-      const isSelected = prevSelected.includes(tabId);
-      const updatedSelectedIds = isSelected
-        ? prevSelected.filter((id) => id !== tabId)
-        : [...prevSelected, tabId];
-
-      const selectedId = updatedSelectedIds.length > 0 ? tabId : null;
-      onIndustrySelect(selectedId);
-
-      return updatedSelectedIds;
-    });
-  };
+  // 컴포넌트가 마운트될 때 사용자 이름을 가져옴
+  useEffect(() => {
+    fetchUsername();
+  }, []);
 
   return (
-    <>
-      {/* 상단 탭 */}
-      <TabContainer>
-        {topTabOptions.map((tab) => (
-          <TopTabButton
-            key={tab.id}
-            selected={selectedTopTab === tab.id}
-            onClick={() => handleTopTabSelect(tab.id, tab.label)}
-          >
-            {getTabImage(tab.name) && (
-              <img src={getTabImage(tab.name)} alt="" />
-            )}
-            <span>{tab.name}</span>
-          </TopTabButton>
-        ))}
-      </TabContainer>
-
-      {/* 하단 필터 버튼 */}
-      <FilterContainer>
-        {bottomTabOptions.map((tab) => (
-          <FilterButton
-            key={tab.id}
-            selected={selectedTabIds.includes(tab.id)}
-            onClick={() => handleTabSelect(tab.id)}
-          >
-            {tab.label}
-          </FilterButton>
-        ))}
-      </FilterContainer>
-    </>
+    <Message>
+      {username ? (
+        <>
+          🔍 <Username>{username}</Username>
+          <HighlightText>님을 위한 추천 뉴스에요!</HighlightText>
+        </>
+      ) : (
+        "추천 뉴스를 로드 중입니다..."
+      )}
+    </Message>
   );
 };
 

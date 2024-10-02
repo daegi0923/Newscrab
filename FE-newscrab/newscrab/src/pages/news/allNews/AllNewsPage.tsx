@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Header from "@components/common/Header";
 import Tab from "./Tab";
 import Pagination from "@components/common/Pagination"; // 페이지네이션
-import NewsList from "@pages/news/common/NewsList"; // 뉴스 리스트
+import NewsList from "./NewsList"; // 뉴스 리스트
 
 import { getNewsData } from "@apis/news/newsApi";
 import { NewsItem, NewsData } from "../../../types/newsTypes"; // newsTypes.ts에서 타입 import
