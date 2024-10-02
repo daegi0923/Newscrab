@@ -236,8 +236,6 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({ newsDetailItem }
         }
       }
 
-      
-
       selection.removeAllRanges(); // 선택 해제
       setIsHighlightPopupVisible(false);
     }
