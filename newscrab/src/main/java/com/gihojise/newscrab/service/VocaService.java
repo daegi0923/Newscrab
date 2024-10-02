@@ -158,7 +158,9 @@ public class VocaService {
         }
 
         // update
-        voca.update(vocaAddRequestDto.getVocaName(),
+        voca.update(
+                newsRepository.findById(vocaAddRequestDto.getNewsId()).orElseThrow(() -> new NewscrabException(ErrorCode.NEWS_NOT_FOUND)),
+                vocaAddRequestDto.getVocaName(),
                 vocaAddRequestDto.getVocaDesc(),
                 voca.getSentence(),
                 vocaAddRequestDto.getIndustryId());

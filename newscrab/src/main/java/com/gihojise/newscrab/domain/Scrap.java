@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -51,6 +52,8 @@ public class Scrap extends BaseTimeEntity {
         if (comment != null) {
             this.comment = comment;
         }
+
+        this.updatedAt = LocalDateTime.now();
     }
 
     public void setHighlights(List<Highlight> highlights) {
