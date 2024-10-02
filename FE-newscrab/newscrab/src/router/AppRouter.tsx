@@ -19,7 +19,7 @@ import AllNewsPage from "@pages/news/allNews/AllNewsPage";
 import NewsDetailPage from "@pages/news/detail/NewsDetailPage";
 // 스크랩
 import ScrapListPage from "@pages/scrap/ScrapListPage";
-import ScrapDetailPage from "@pages/scrap/ScrapDetailPage";
+import ScrapDetailPage from "@pages/scrap/detail/ScrapDetailPage";
 // 단어장
 import MainVoca from "@pages/voca/VocaPage";
 import VocaDetail from "@pages/voca/VocaDetailPage";
@@ -139,7 +139,14 @@ const AppRouter: React.FC = () => {
                 </Layout>
               }
             />
-            <Route path="/scrap/:scrapId" element={<ScrapDetailPage />} />
+            <Route
+              path="/scrap/:scrapId"
+              element={
+                <Layout>
+                  <ScrapDetailPage />
+                </Layout>
+              }
+            />
 
             {/* 단어장 */}
             <Route
