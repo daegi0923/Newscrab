@@ -27,12 +27,28 @@ export const fetchVocaDetailThunk = createAsyncThunk(
   }
 );
 
-// Voca 추가 비동기 함수
+// // Voca 추가 비동기 함수
+// export const addVocaThunk = createAsyncThunk(
+//   "voca/addVoca",
+//   async (vocaData: { newsId: number; vocaName: string; vocaDesc: string; sentence: string; industryId: number }[], { rejectWithValue }) => {
+//     try {
+//       const response = await addVoca(vocaData);  // vocaData를 API에 전달
+//       return response.data;
+//     } catch (error: any) {
+//       return rejectWithValue(error.response?.data || "Voca 추가 실패");
+//     }
+//   }
+// );
+
+// Voca 추가 비동기 함수 (배열 형태로 vocaAddList 받기)
 export const addVocaThunk = createAsyncThunk(
   "voca/addVoca",
-  async (vocaData: { newsId: number; vocaName: string; vocaDesc: string; sentence: string; industryId: number }, { rejectWithValue }) => {
+  async (
+    vocaAddList: { vocaAddList: { newsId: number; vocaName: string; vocaDesc: string; industryId: number }[] }, 
+    { rejectWithValue }
+  ) => {
     try {
-      const response = await addVoca(vocaData);  // vocaData를 API에 전달
+      const response = await addVoca(vocaAddList); // vocaAddList를 배열로 전달
       return response.data;
     } catch (error: any) {
       return rejectWithValue(error.response?.data || "Voca 추가 실패");
@@ -124,6 +140,8 @@ const vocaSlice = createSlice({
       .addCase(addVocaThunk.fulfilled, (state, action) => {
         state.loading = false;
         state.vocaList.push(action.payload);
+        // 기존 단어 리스트에 새로 추가된 단어들을 결합
+        // state.vocaList = [...state.vocaList, ...action.payload];
       })
       .addCase(addVocaThunk.rejected, (state, action) => {
         state.loading = false;
