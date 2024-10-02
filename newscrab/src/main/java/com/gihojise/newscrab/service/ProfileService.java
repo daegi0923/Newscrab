@@ -27,13 +27,13 @@ public class ProfileService {
 
     public NewsPageResponseDto getRecentNewsByPage(int userId, int page) {
         // 한 페이지에 보여줄 뉴스 개수 설정
-        int pageSize = 5; // 원하는 페이지 크기를 설정
+        int pageSize = 15; // 원하는 페이지 크기를 설정
 
         // Pageable 객체 생성 (page는 0부터 시작)
         Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.by("readtime").descending());
 
         // 레포지토리에서 페이지 단위로 데이터 가져오기
-        Page<UserNewsRead> newsPage = userNewsReadRepository.findByUser_UserId(userId, pageable);
+        Page<UserNewsRead> newsPage = userNewsReadRepository.findDistinctNewsByUserId(userId, pageable);
 
         // 페이지 정보와 함께 DTO로 변환
         List<NewsResponseDto> newsDtoList = newsPage.getContent().stream()
@@ -52,7 +52,7 @@ public class ProfileService {
 
     public NewsPageResponseDto getLikeNewsByPage(int userId, int page) {
         // 한 페이지에 보여줄 뉴스 개수 설정
-        int pageSize = 5; // 원하는 페이지 크기를 설정
+        int pageSize = 15; // 원하는 페이지 크기를 설정
 
         // Pageable 객체 생성 (page는 0부터 시작)
         Pageable pageable = PageRequest.of(page - 1, pageSize, Sort.by("createdAt").descending());
