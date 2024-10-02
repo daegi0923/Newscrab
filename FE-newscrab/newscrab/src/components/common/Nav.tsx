@@ -1,17 +1,18 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector  } from "react-redux";
 import logo from "@assets/crab.png";
 import close from "@assets/common/close.png";
 import { logout } from "@store/user/loginLogout";
 import ErrorModal from "./Error";
+import { fetchUserProfileThunk } from "@store/myPage/profileSlice";
 import { useAuth } from "./PrivateRoute";
 import folder from "@assets/common/folder1.png";
 import voca from "@assets/common/dic2.png";
 import home from "@assets/common/home1.png";
 import news from "@assets/all.png";
-// import { RootState, AppDispatch } from "@store/index";
+import { RootState } from "@store/index";
 
 const SidebarContainer = styled.nav`
   padding-top: 3%;
@@ -116,6 +117,14 @@ const Nav: React.FC = () => {
   const navigate = useNavigate();
   const { isLogedIn } = useAuth(); // 로그인 상태 확인
   const [errorMessage, setErrorMessage] = useState<string | null>(null); // 에러 메시지 상태
+  const userInfo = useSelector((state: RootState) => state.mypage.userInfo);
+
+  // 컴포넌트가 마운트되었을 때 userInfo가 비어있다면 API 호출
+  useEffect(() => {
+    if (!userInfo) {
+      dispatch(fetchUserProfileThunk());
+    }
+  }, [userInfo, dispatch]); // userInfo가 변경될 때만 호출
 
   const handleLogout = () => {
     if (isLogedIn) {
@@ -174,6 +183,10 @@ const Nav: React.FC = () => {
 
         {/* 좌측 하단에 로그아웃 버튼 */}
         <LogoutItem>
+          <NavLink onClick={() => navigate("/mypage")}>
+            <Image src={close} alt="mypage" />
+            <NavText>마이페이지</NavText>
+          </NavLink>
           <NavLink onClick={handleLogout}>
             <Image src={close} alt="close" />
             <NavText>로그아웃</NavText>
