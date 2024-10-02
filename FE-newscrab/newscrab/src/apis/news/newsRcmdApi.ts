@@ -28,3 +28,18 @@ export const getRcmdNews = async (): Promise<RcmdNewsItem[]> => {
     throw error;
   }
 };
+
+// 사용자 이름을 가져오는 함수
+export const getUsername = async (): Promise<string> => {
+  try {
+    const response = await API.get("/user/name");
+
+    const { data } = response.data; // API 응답 데이터 추출
+    const username = data.name; // 응답 데이터에서 사용자 이름 추출
+
+    return username; // 사용자 이름 반환
+  } catch (error: any) {
+    console.error("Error fetching username:", error);
+    throw error;
+  }
+};
