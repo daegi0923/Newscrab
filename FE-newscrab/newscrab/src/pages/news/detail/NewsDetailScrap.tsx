@@ -6,6 +6,8 @@ import DropDown from "@components/common/DropDown";
 import { words } from "@components/voca/VocaList";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@store/index";
+import addIcon from "@assets/common/add.png"
+import removeIcon from "@assets/common/remove.png"
 
 const Sidebar = styled.div`
   width: 30%;
@@ -115,18 +117,75 @@ const SaveButton = styled.button`
   }
 `;
 
-const IndustryDropdown = styled.div`
-  margin-top: 10px;
-  position: relative;
-`;
-
 const SelectedIndustry = styled.div`
-  padding: 10px;
+  padding: 3px 7px;
   border: 1px solid #ddd;
-  border-radius: 8px;
+  border-radius: 15px;
   background-color: #fff;
   cursor: pointer;
+  font-size: 13px;
+  white-space: nowrap; /* 한 줄로 표시 */
+  overflow: hidden;
+  text-overflow: ellipsis; /* 긴 텍스트 생략 */
 `;
+
+const VocaSection = styled.div`
+  border: 1px solid #818181;
+  border-radius: 12px;
+  padding: 5px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-top: 10px;
+  width: 85%;
+  position: relative; /* Remove 버튼 위치를 위한 설정 */
+`;
+
+const VocaInputWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-radius: 8px;
+  padding: 10px;
+`;
+const Divider = styled.hr`
+  border: none;
+  border-top: 1px solid #818181; /* 실선 색상 */
+  margin: 5px 0; /* 위아래 여백 */
+`;
+
+const IndustryDropdownWrapper = styled.div`
+  display: flex;
+  justify-content: flex-end; /* 오른쪽 정렬 */
+  // margin-bottom: 10px; /* 아래 여백 */
+`;
+
+const StyledInput = styled.input`
+  width: 100%;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  background-color: transparent;
+`;
+
+const RemoveButton = styled.img`
+  position: absolute;
+  top: 50%; /* 중앙정렬을 위해 top을 50%로 */
+  right: -40px; /* 오른쪽 옆에 배치 */
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  transform: translateY(-50%); /* 수직 중앙정렬 */
+`;
+
+const AddButton = styled.img`
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+`;
+
 const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
   const dispatch = useDispatch<AppDispatch>();
 
@@ -140,6 +199,28 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
   const [descriptionText, setDescriptionText] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [industryId, setIndustryId] = useState<number | null>(null);
+
+
+  // vocaSections 배열에 드롭다운 상태도 포함
+  const [vocaSections, setVocaSections] = useState<{ word: string; desc: string; industryId: number | null, isDropdownOpen: boolean }[]>([
+    { word: "", desc: "", industryId: null, isDropdownOpen: false },
+  ]);  
+  // Voca 섹션 추가 함수
+  const handleAddSection = () => {
+    setVocaSections([...vocaSections, { word: "", desc: "", industryId: null, isDropdownOpen: false }]);
+  };
+  // Voca 섹션 삭제 함수
+  const handleRemoveSection = (index: number) => {
+    const newSections = vocaSections.filter((_, i) => i !== index);
+    setVocaSections(newSections);
+  };
+
+  // Industry 선택 함수
+  const handleIndustrySelect = (index: number, id: number) => {
+    const newSections = [...vocaSections];
+    newSections[index].industryId = id;
+    setVocaSections(newSections);
+  };
 
   // 형광펜 정보 저장하는 ref (리렌더링 없이 데이터 유지)
   const highlightsRef = useRef<
@@ -238,64 +319,119 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
   //     alert("저장에 실패했습니다.");
   //   }
   // };
-
   const handleSave = async () => {
-    if (activeTab === "wordlist") {
-      if (industryId === null) {
-        alert("산업을 선택해주세요.");
-        return;
+    // scrapData 생성: 요약, 의견, 형광펜 데이터를 저장할 객체
+    const scrapData = {
+      newsId: newsId,
+      comment: opinionText,  // 의견 탭의 데이터
+      scrapSummary: summaryText,  // 요약 탭의 데이터
+      highlights: highlightsRef.current,  // 형광펜 정보
+    };
+  
+    // wordlist 데이터를 vocaAddList로 변환
+    const vocaAddList = vocaSections.map((section) => ({
+      newsId: newsId,
+      vocaName: section.word,
+      vocaDesc: section.desc,
+      industryId: section.industryId!,  // 선택된 industryId 저장
+    }));
+  
+    console.log("Scrap Data!!:", scrapData);
+    console.log("vocaAddList!!:", vocaAddList);
+  
+    try {
+      // 먼저 scrapData 저장 (요약, 의견, 형광펜 정보)
+      if (scrapId) {
+        // scrapId가 있으면 업데이트 (put 요청)
+        await putScrap(scrapId, scrapData);
+        console.log("put 요청 완료");
+      } else {
+        // scrapId가 없으면 새로 생성 (post 요청)
+        await postScrap(scrapData);
+        console.log("post 요청 완료");
       }
-
-      const VocaData = {
-        newsId: newsId,
-        vocaName: wordText, // 사용자가 입력한 단어
-        vocaDesc: descriptionText, // 사용자가 입력한 설명
-        sentence: "", // 이곳에 예문 추가 가능
-        industryId: industryId, // 선택한 industryId
-      };
-
-      try {
-        // Redux Thunk를 사용하여 단어 추가
-        await dispatch(addVocaThunk(VocaData));
-        console.log(VocaData);
-        alert("단어가 추가되었습니다!");
-      } catch (error) {
-        console.error("단어 추가 실패:", error);
-        alert("단어 추가에 실패했습니다.");
+  
+      // vocaAddList가 존재할 경우 단어도 저장
+      if (vocaAddList.length > 0) {
+        await dispatch(addVocaThunk({ vocaAddList }));  // wordlist 데이터 전송
+        console.log("단어 추가 완료!");
       }
-    } else {
-      const scrapData = {
-        newsId: newsId,
-        comment: opinionText,
-        scrapSummary: summaryText,
-        highlights: highlightsRef.current,
-      };
-      console.log("Scrap Data:", scrapData);
-      console.log("Scrap ID:", scrapId); // scrapId 확인용
-
-      try {
-        if (scrapId) {
-          // scrapId가 있으면 put 요청 (업데이트)
-          await putScrap(scrapId, scrapData);
-          console.log("put요청 완료");
-          alert("업데이트되었습니다!");
-        } else {
-          // scrapId가 없으면 post 요청 (새로 생성)
-          await postScrap(scrapData);
-          console.log("post요청 완료");
-          alert("저장되었습니다!");
-        }
-      } catch (error) {
-        console.error("Error saving scrap:", error);
-        alert("저장에 실패했습니다.");
-      }
+  
+      // 성공 시 알림
+      alert("저장되었습니다!");
+  
+    } catch (error) {
+      // 실패 시 오류 처리
+      console.error("저장 중 오류 발생:", error);
+      alert("저장에 실패했습니다.");
     }
   };
+  // const handleSave = async () => {
+  //   if (activeTab === "wordlist") {
+  //     if (industryId === null) {
+  //       alert("산업을 선택해주세요.");
+  //       return;
+  //     }
 
-  const handleIndustrySelect = (id: number) => {
-    setIndustryId(id); // 선택된 industryId 설정
-    setIsDropdownOpen(false); // 드롭다운 닫기
-  };
+  //     const VocaData = {
+  //       newsId: newsId,
+  //       vocaName: wordText, // 사용자가 입력 한 단어
+  //       vocaDesc: descriptionText, // 사용자가 입력한 설명
+  //       industryId: industryId, // 선택한 industryId
+  //     };
+
+  //     try {
+  //       // Redux Thunk를 사용하여 단어 추가
+  //       await dispatch(addVocaThunk(VocaData));
+  //       console.log(VocaData);
+  //       alert("단어가 추가되었습니다!");
+  //     } catch (error) {
+  //       console.error("단어 추가 실패:", error);
+  //       alert("단어 추가에 실패했습니다.");
+  //     }
+  //   } else {
+  //     const scrapData = {
+  //       newsId: newsId,
+  //       comment: opinionText,
+  //       scrapSummary: summaryText,
+  //       highlights: highlightsRef.current,
+  //     };
+  //     console.log("Scrap Data:", scrapData);
+  //     console.log("Scrap ID:", scrapId); // scrapId 확인용
+
+  //     try {
+  //       if (scrapId) {
+  //         // scrapId가 있으면 put 요청 (업데이트)
+  //         await putScrap(scrapId, scrapData);
+  //         console.log("put요청 완료");
+  //         alert("업데이트되었습니다!");
+  //       } else {
+  //         // scrapId가 없으면 post 요청 (새로 생성)
+  //         await postScrap(scrapData);
+  //         console.log("post요청 완료");
+  //         alert("저장되었습니다!");
+  //       }
+  //     } catch (error) {
+  //       console.error("Error saving scrap:", error);
+  //       alert("저장에 실패했습니다.");
+  //     }
+  //   }
+  // };
+
+ // Industry 선택 함수
+ const handleIndustrySelectVoca = (index: number, id: number) => {
+  const newSections = [...vocaSections];
+  newSections[index].industryId = id; // 선택한 industryId 저장
+  newSections[index].isDropdownOpen = false; // 드롭다운 닫기
+  setVocaSections(newSections);
+};
+
+// 드롭다운 열기/닫기 함수
+const toggleDropdown = (index: number) => {
+  const newSections = [...vocaSections];
+  newSections[index].isDropdownOpen = !newSections[index].isDropdownOpen;
+  setVocaSections(newSections);
+};
 
   // const summaryPlaceholder = `<서론>\n\n<본론>\n\n<결론>`;
 
@@ -341,8 +477,26 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
         />
       )}
 
-      {activeTab === "wordlist" && (
+      {/* {activeTab === "wordlist" && (
         <>
+        <VocaSection>
+          <IndustryDropdown>
+              <SelectedIndustry
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              >
+                {industryId
+                  ? words.find((item) => item.industryId === industryId)
+                      ?.industryName || "산업"
+                  : "산업"}
+              </SelectedIndustry>
+              {isDropdownOpen && (
+                <DropDown
+                  dropdownIndustries={words}
+                  handleIndustrySelect={handleIndustrySelect}
+                />
+              )}
+            </IndustryDropdown>
+            <VocaSection1>
           <StyledTextarea
             value={wordText}
             onChange={(e) => setWordText(e.target.value)}
@@ -355,26 +509,58 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
             placeholder="설명을 입력하세요."
             $isOverflowing={false}
           />
+          </VocaSection1>
+          </VocaSection>
+        </>
+      )} */}
+      {activeTab === "wordlist" && (
+        <>
+          {vocaSections.map((section, index) => (
+            <VocaSection key={index}>
+              <IndustryDropdownWrapper>
+                <SelectedIndustry onClick={() => toggleDropdown(index)}>
+                  {section.industryId
+                    ? words.find((item) => item.industryId === section.industryId)?.industryName || "산업"
+                    : "산업"}
+                </SelectedIndustry>
 
-          <IndustryDropdown>
-            <SelectedIndustry
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            >
-              {industryId
-                ? words.find((item) => item.industryId === industryId)
-                    ?.industryName || "산업을 선택하세요."
-                : "산업을 선택하세요."}
-            </SelectedIndustry>
-            {isDropdownOpen && (
-              <DropDown
-                dropdownIndustries={words}
-                handleIndustrySelect={handleIndustrySelect}
-              />
-            )}
-          </IndustryDropdown>
+                {/* 드롭다운 상태가 true일 때만 보여줌 */}
+                {section.isDropdownOpen && (
+                  <DropDown
+                    dropdownIndustries={words}
+                    handleIndustrySelect={(id) => handleIndustrySelectVoca(index, id)} // 선택된 값 전달
+                  />
+                )}
+              </IndustryDropdownWrapper>
+
+              <VocaInputWrapper>
+                <StyledInput
+                  value={section.word}
+                  onChange={(e) => {
+                    const newSections = [...vocaSections];
+                    newSections[index].word = e.target.value;
+                    setVocaSections(newSections);
+                  }}
+                  placeholder="💡 단어를 입력하세요."
+                />
+                <Divider />
+                <StyledInput
+                  value={section.desc}
+                  onChange={(e) => {
+                    const newSections = [...vocaSections];
+                    newSections[index].desc = e.target.value;
+                    setVocaSections(newSections);
+                  }}
+                  placeholder="설명을 입력하세요."
+                />
+              </VocaInputWrapper>
+              {index > 0 && (
+          <RemoveButton src={removeIcon} onClick={() => handleRemoveSection(index)} />)}            
+        </VocaSection>
+          ))}
+          <AddButton src={addIcon} onClick={handleAddSection} />
         </>
       )}
-
       {/* 저장 버튼을 이곳에 추가 */}
       <SaveButton onClick={handleSave}>저장</SaveButton>
     </Sidebar>

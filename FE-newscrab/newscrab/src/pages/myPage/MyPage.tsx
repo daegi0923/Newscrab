@@ -47,7 +47,9 @@ const TopSection = styled.div`
 const BottomSection = styled.div`
   width: 93%;
   height: 60%;
-  border: dashed #888 1.4px;
+  // border: dashed #888 1.4px;
+  border: 1px solid #ccc;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   margin: 3% 0%;
   background-color: #fff;
   border-radius: 10px;

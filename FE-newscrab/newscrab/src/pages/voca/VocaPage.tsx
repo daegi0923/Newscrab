@@ -123,7 +123,6 @@ const VocaPage: React.FC = () => {
     } else if (filter === 'orderVoca') {
       return filteredWords.sort((a, b) => a.vocaName.localeCompare(b.vocaName, 'ko-KR'));
     }
-
     return filteredWords;
   }, [mappedWords, selectedIndustryId, searchText, filter]);
 
