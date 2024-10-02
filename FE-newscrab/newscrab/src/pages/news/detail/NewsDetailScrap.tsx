@@ -4,10 +4,10 @@ import { getScrapData, postScrap, putScrap } from "@apis/scrap/scrapApi"; // pos
 import { addVocaThunk } from "@store/voca/vocaSlice";
 import DropDown from "@components/common/DropDown";
 import { words } from "@components/voca/VocaList";
-import { useDispatch, useSelector } from "react-redux";
-import { AppDispatch, RootState } from "@store/index";
-import addIcon from "@assets/common/add.png"
-import removeIcon from "@assets/common/remove.png"
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@store/index";
+import addIcon from "@assets/common/add.png";
+import removeIcon from "@assets/common/remove.png";
 import NewsDetailAISummary from "./NewsDetailAISummary";
 import NewsDetailAIQuestion from "./NewsDetailAIQuestion";
 
@@ -197,19 +197,26 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
   const [opinionText, setOpinionText] = useState("");
   const [wordListText, setWordListText] = useState("");
   const [isOverflowing, setIsOverflowing] = useState(false);
-  const [wordText, setWordText] = useState("");
-  const [descriptionText, setDescriptionText] = useState("");
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [industryId, setIndustryId] = useState<number | null>(null);
-
+  // const [wordText, setWordText] = useState("");
+  // const [descriptionText, setDescriptionText] = useState("");
+  // const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  // const [industryId, setIndustryId] = useState<number | null>(null);
 
   // vocaSections 배열에 드롭다운 상태도 포함
-  const [vocaSections, setVocaSections] = useState<{ word: string; desc: string; industryId: number | null, isDropdownOpen: boolean }[]>([
-    { word: "", desc: "", industryId: null, isDropdownOpen: false },
-  ]);  
+  const [vocaSections, setVocaSections] = useState<
+    {
+      word: string;
+      desc: string;
+      industryId: number | null;
+      isDropdownOpen: boolean;
+    }[]
+  >([{ word: "", desc: "", industryId: null, isDropdownOpen: false }]);
   // Voca 섹션 추가 함수
   const handleAddSection = () => {
-    setVocaSections([...vocaSections, { word: "", desc: "", industryId: null, isDropdownOpen: false }]);
+    setVocaSections([
+      ...vocaSections,
+      { word: "", desc: "", industryId: null, isDropdownOpen: false },
+    ]);
   };
   // Voca 섹션 삭제 함수
   const handleRemoveSection = (index: number) => {
@@ -218,11 +225,11 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
   };
 
   // Industry 선택 함수
-  const handleIndustrySelect = (index: number, id: number) => {
-    const newSections = [...vocaSections];
-    newSections[index].industryId = id;
-    setVocaSections(newSections);
-  };
+  // const handleIndustrySelect = (index: number, id: number) => {
+  //   const newSections = [...vocaSections];
+  //   newSections[index].industryId = id;
+  //   setVocaSections(newSections);
+  // };
 
   // 형광펜 정보 저장하는 ref (리렌더링 없이 데이터 유지)
   const highlightsRef = useRef<
@@ -230,9 +237,9 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
   >([]);
 
   // Redux에서 하이라이트(highlight) 정보 가져오기
-  const highlights = useSelector(
-    (state: RootState) => state.highlight.highlights
-  );
+  // const highlights = useSelector(
+  //   (state: RootState) => state.highlight.highlights
+  // );
 
   const summaryTextareaRef = useRef<HTMLTextAreaElement>(null);
   const opinionTextareaRef = useRef<HTMLTextAreaElement>(null);
@@ -255,7 +262,6 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
   const handleTransferOpinionText = (newOpinion: string) => {
     setOpinionText((prevOpinion) => prevOpinion + "\n" + newOpinion); // 기존 의견에 새 텍스트를 추가
   };
-
 
   // getScrapData를 이용해 서버에서 데이터를 불러오기
   useEffect(() => {
@@ -298,22 +304,22 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
     // scrapData 생성: 요약, 의견, 형광펜 데이터를 저장할 객체
     const scrapData = {
       newsId: newsId,
-      comment: opinionText,  // 의견 탭의 데이터
-      scrapSummary: summaryText,  // 요약 탭의 데이터
-      highlights: highlightsRef.current,  // 형광펜 정보
+      comment: opinionText, // 의견 탭의 데이터
+      scrapSummary: summaryText, // 요약 탭의 데이터
+      highlights: highlightsRef.current, // 형광펜 정보
     };
-  
+
     // wordlist 데이터를 vocaAddList로 변환
     const vocaAddList = vocaSections.map((section) => ({
       newsId: newsId,
       vocaName: section.word,
       vocaDesc: section.desc,
-      industryId: section.industryId!,  // 선택된 industryId 저장
+      industryId: section.industryId!, // 선택된 industryId 저장
     }));
-  
+
     console.log("Scrap Data!!:", scrapData);
     console.log("vocaAddList!!:", vocaAddList);
-  
+
     try {
       // 먼저 scrapData 저장 (요약, 의견, 형광펜 정보)
       if (scrapId) {
@@ -325,16 +331,15 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
         await postScrap(scrapData);
         console.log("post 요청 완료");
       }
-  
+
       // vocaAddList가 존재할 경우 단어도 저장
       if (vocaAddList.length > 0) {
-        await dispatch(addVocaThunk({ vocaAddList }));  // wordlist 데이터 전송
+        await dispatch(addVocaThunk({ vocaAddList })); // wordlist 데이터 전송
         console.log("단어 추가 완료!");
       }
-  
+
       // 성공 시 알림
       alert("저장되었습니다!");
-  
     } catch (error) {
       // 실패 시 오류 처리
       console.error("저장 중 오류 발생:", error);
@@ -393,20 +398,20 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
   //   }
   // };
 
- // Industry 선택 함수
- const handleIndustrySelectVoca = (index: number, id: number) => {
-  const newSections = [...vocaSections];
-  newSections[index].industryId = id; // 선택한 industryId 저장
-  newSections[index].isDropdownOpen = false; // 드롭다운 닫기
-  setVocaSections(newSections);
-};
+  // Industry 선택 함수
+  const handleIndustrySelectVoca = (index: number, id: number) => {
+    const newSections = [...vocaSections];
+    newSections[index].industryId = id; // 선택한 industryId 저장
+    newSections[index].isDropdownOpen = false; // 드롭다운 닫기
+    setVocaSections(newSections);
+  };
 
-// 드롭다운 열기/닫기 함수
-const toggleDropdown = (index: number) => {
-  const newSections = [...vocaSections];
-  newSections[index].isDropdownOpen = !newSections[index].isDropdownOpen;
-  setVocaSections(newSections);
-};
+  // 드롭다운 열기/닫기 함수
+  const toggleDropdown = (index: number) => {
+    const newSections = [...vocaSections];
+    newSections[index].isDropdownOpen = !newSections[index].isDropdownOpen;
+    setVocaSections(newSections);
+  };
 
   // const summaryPlaceholder = `<서론>\n\n<본론>\n\n<결론>`;
 
@@ -435,16 +440,15 @@ const toggleDropdown = (index: number) => {
 
       {activeTab === "summary" && (
         <>
-        <StyledTextarea
-          ref={summaryTextareaRef}
-          value={summaryText || "<서론>\n\n<본론>\n\n<결론>"}
-          onChange={(e) => setSummaryText(e.target.value)}
-          $isOverflowing={isOverflowing}
-        />
-        
-        <NewsDetailAISummary onTransferText={handleTransferText} />
-      </>
-        
+          <StyledTextarea
+            ref={summaryTextareaRef}
+            value={summaryText || "<서론>\n\n<본론>\n\n<결론>"}
+            onChange={(e) => setSummaryText(e.target.value)}
+            $isOverflowing={isOverflowing}
+          />
+
+          <NewsDetailAISummary onTransferText={handleTransferText} />
+        </>
       )}
 
       {activeTab === "opinion" && (
@@ -503,7 +507,9 @@ const toggleDropdown = (index: number) => {
               <IndustryDropdownWrapper>
                 <SelectedIndustry onClick={() => toggleDropdown(index)}>
                   {section.industryId
-                    ? words.find((item) => item.industryId === section.industryId)?.industryName || "산업"
+                    ? words.find(
+                        (item) => item.industryId === section.industryId
+                      )?.industryName || "산업"
                     : "산업"}
                 </SelectedIndustry>
 
@@ -511,7 +517,9 @@ const toggleDropdown = (index: number) => {
                 {section.isDropdownOpen && (
                   <DropDown
                     dropdownIndustries={words}
-                    handleIndustrySelect={(id) => handleIndustrySelectVoca(index, id)} // 선택된 값 전달
+                    handleIndustrySelect={(id) =>
+                      handleIndustrySelectVoca(index, id)
+                    } // 선택된 값 전달
                   />
                 )}
               </IndustryDropdownWrapper>
@@ -538,8 +546,12 @@ const toggleDropdown = (index: number) => {
                 />
               </VocaInputWrapper>
               {index > 0 && (
-          <RemoveButton src={removeIcon} onClick={() => handleRemoveSection(index)} />)}            
-        </VocaSection>
+                <RemoveButton
+                  src={removeIcon}
+                  onClick={() => handleRemoveSection(index)}
+                />
+              )}
+            </VocaSection>
           ))}
           <AddButton src={addIcon} onClick={handleAddSection} />
         </>
