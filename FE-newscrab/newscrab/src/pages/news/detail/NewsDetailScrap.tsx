@@ -220,24 +220,31 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
         alert("단어 추가에 실패했습니다.");
       }
     } else {
-      const scrapData = {
+      const postscrapData = {
         newsId: newsId,
         comment: opinionText,
         scrapSummary: summaryText,
         highlights: highlights,
       };
-      console.log("Scrap Data:", scrapData);
+
+      const putscrapData = {
+        newsId: newsId,
+        comment: opinionText,
+        scrapSummary: summaryText,
+      };
       console.log("Scrap ID:", scrapId); // scrapId 확인용
 
       try {
         if (scrapId) {
           // scrapId가 있으면 put 요청 (업데이트)
-          await putScrap(scrapId, scrapData);
+          await putScrap(scrapId, putscrapData);
+          console.log("putscrapData :",putscrapData)
           console.log("put요청 완료");
           alert("업데이트되었습니다!");
         } else {
           // scrapId가 없으면 post 요청 (새로 생성)
-          await postScrap(scrapData);
+          await postScrap(postscrapData);
+          console.log("postscrapData :", postscrapData)
           console.log("post요청 완료");
           alert("저장되었습니다!");
         }
