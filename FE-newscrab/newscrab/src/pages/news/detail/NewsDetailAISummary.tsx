@@ -1,4 +1,3 @@
-// NewsDetailAISummary.tsx
 import React, { useState } from "react";
 import styled from "styled-components";
 
@@ -80,14 +79,27 @@ const TextTransferButton = styled.button`
   }
 `;
 
-const NewsDetailAISummary: React.FC = () => {
+interface NewsDetailAISummaryProps {
+  onTransferText: (text: string) => void; // summaryText를 업데이트하는 함수
+}
+
+const NewsDetailAISummary: React.FC<NewsDetailAISummaryProps> = ({ onTransferText }) => {
   const [showSummary, setShowSummary] = useState(false);
 
   const handleAIButtonClick = () => {
     setShowSummary(!showSummary); // 버튼을 클릭할 때마다 상태를 토글
   };
 
+  const summaryText = `
+  <서론> 부산 지역의 트리콜마트가 납품업체에 대금을 지급하지 않아 소규모 업체들이 피해를 호소하고 있습니다.
+
+  <본론> 일부 업체는 6개월 동안 대금을 받지 못했고, 본사는 법적 해결을 요구하며 소극적인 태도를 보였습니다.
   
+  <결론> 영세 납품업체들은 대응 비용이 부담되며 상황이 더욱 악화되고 있습니다.`;
+
+  const handleTextTransfer = () => {
+    onTransferText(summaryText); // summaryText를 업데이트하는 함수를 호출
+  };
 
   return (
     <div>
@@ -97,18 +109,13 @@ const NewsDetailAISummary: React.FC = () => {
       {showSummary && (
         <AISummaryBox>
           <AISummaryHeader>AI 요약</AISummaryHeader>
-            <AISummaryText>뉴스 본문을 자동으로 요약한 내용입니다.</AISummaryText>
+          <AISummaryText>뉴스 본문을 자동으로 요약한 내용입니다.</AISummaryText>
           <AISummaryTextContainer>
-            <AISummaryText>
-              <strong>&lt;서론&gt;</strong> 부산 지역의 트리콜마트가 납품업체에
-              대금을 지급하지 않아 소규모 업체들이 피해를 호소하고 있습니다.{" "}
-              <strong>&lt;본론&gt;</strong> 일부 업체는 6개월 동안 대금을 받지
-              못했고, 본사는 법적 해결을 요구하며 소극적인 태도를 보였습니다.{" "}
-              <strong>&lt;결론&gt;</strong> 영세 납품업체들은 대응 비용이
-              부담되며 상황이 더욱 악화되고 있습니다.
-            </AISummaryText>
+            <AISummaryText>{summaryText}</AISummaryText>
           </AISummaryTextContainer>
-          <TextTransferButton>위의 텍스트로 보내기</TextTransferButton>
+          <TextTransferButton onClick={handleTextTransfer}>
+            위의 텍스트로 보내기
+          </TextTransferButton>
         </AISummaryBox>
       )}
     </div>

@@ -79,11 +79,26 @@ const TextTransferButton = styled.button`
   }
 `;
 
-const NewsDetailAIQuestion: React.FC = () => {
+interface NewsDetailAIQuestionProps {
+  onTransferText: (text: string) => void; // opinionText를 업데이트하는 함수
+}
+
+const NewsDetailAIQuestion: React.FC<NewsDetailAIQuestionProps> = ({ onTransferText }) => {
   const [showQuestion, setShowQuestion] = useState(false);
 
   const handleAIButtonClick = () => {
     setShowQuestion(!showQuestion); // 버튼을 클릭할 때마다 상태를 토글
+  };
+
+  const questionText = `
+  1. 트리콜마트가 납품업체에 대금을 지급하지 않은 이유는 무엇인가요?
+
+  2. 납품업체들이 피해를 해결하기 위해 어떤 조치를 취하고 있나요?
+  
+  3. 이번 사태가 지역 경제에 미치는 영향은 무엇인가요?`;
+
+  const handleTextTransfer = () => {
+    onTransferText(questionText); // AI 예상 질문을 추가하는 함수 호출
   };
 
   return (
@@ -96,17 +111,11 @@ const NewsDetailAIQuestion: React.FC = () => {
           <AIQuestionHeader>AI 예상질문</AIQuestionHeader>
           <AIQuestionText>뉴스 본문을 바탕으로 자동 생성된 질문입니다.</AIQuestionText>
           <AIQuestionTextContainer>
-            <AIQuestionText>
-              1. 트리콜마트가 납품업체에 대금을 지급하지 않은 이유는 무엇인가요?
-            </AIQuestionText>
-            <AIQuestionText>
-              2. 납품업체들이 피해를 해결하기 위해 어떤 조치를 취하고 있나요?
-            </AIQuestionText>
-            <AIQuestionText>
-              3. 이번 사태가 지역 경제에 미치는 영향은 무엇인가요?
-            </AIQuestionText>
+            <AIQuestionText>{questionText}</AIQuestionText>
           </AIQuestionTextContainer>
-          <TextTransferButton>위의 텍스트로 보내기</TextTransferButton>
+          <TextTransferButton onClick={handleTextTransfer}>
+            위의 텍스트로 보내기
+          </TextTransferButton>
         </AIQuestionBox>
       )}
     </div>
