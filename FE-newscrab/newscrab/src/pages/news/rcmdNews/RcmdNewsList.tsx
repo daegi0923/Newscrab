@@ -87,7 +87,7 @@ const ScrapCntIcon = styled.img`
 
 // 제목 자르기 함수 - 30자 이상이면 '...'으로 자름
 const truncateTitle = (title: string) => {
-  const maxLength = 35; // 최대 글자 수를 30으로 고정
+  const maxLength = 30; // 최대 글자 수를 30으로 고정
   return title.length > maxLength
     ? title.substring(0, maxLength) + "..."
     : title;
