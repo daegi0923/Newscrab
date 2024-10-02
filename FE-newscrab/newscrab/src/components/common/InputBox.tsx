@@ -17,12 +17,16 @@ const InputBoxContainer = styled.div`
   display: flex;
   flex-direction: column;
   position: relative;
-  margin-bottom: 25px;
+  margin-bottom: 20px;
+  padding-right: 3%;
+  padding-left: 8%;
 `;
 
 const InputLabel = styled.label`
   font-size: 14px;
   margin-bottom: 5px;
+  font-weight: bold;
+  color: #93939;
 `;
 
 const InputField = styled.input`
@@ -32,8 +36,8 @@ const InputField = styled.input`
   border: none;
   padding: 10px;
   font-size: 14px;
-  width: 100%;  /* 입력 필드의 너비를 전체로 설정 */
-  height: 10px; /* 인풋 필드의 높이 */
+  width: 85%;  /* 입력 필드의 너비를 전체로 설정 */
+  height: 13px; /* 인풋 필드의 높이 */
   outline: none;
 
   &:focus {
@@ -43,8 +47,8 @@ const InputField = styled.input`
 
 const ErrorMessage = styled.p`
   position: absolute; /* 오류 메시지를 입력 필드 아래에 겹쳐 띄움 */
-  bottom: -60%; /* 인풋 필드 바로 아래에 위치하도록 */
-  left: 0;
+  bottom: -52%; /* 인풋 필드 바로 아래에 위치하도록 */
+  left: 9%;
   color: red;
   font-size: 12px;
   z-index: 1; /* z-index로 겹침 우선순위 설정 */

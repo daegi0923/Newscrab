@@ -7,10 +7,10 @@ import close from "@assets/common/close.png";
 import { logout } from "@store/user/loginLogout";
 import ErrorModal from "./Error";
 import { useAuth } from "./PrivateRoute";
-import folder from '@assets/common/folder1.png'
-import voca from '@assets/common/dic2.png'
-import home from '@assets/common/home1.png'
-import news from '@assets/all.png'
+import folder from "@assets/common/folder1.png";
+import voca from "@assets/common/dic2.png";
+import home from "@assets/common/home1.png";
+import news from "@assets/all.png";
 // import { RootState, AppDispatch } from "@store/index";
 
 const SidebarContainer = styled.nav`
@@ -159,14 +159,14 @@ const Nav: React.FC = () => {
             </NavLink>
           </NavItem>
           <NavItem>
-            <NavLink onClick={() => navigate("/news")}>
-              <Image src={news} alt="news" />
+            <NavLink onClick={() => navigate("/mainNews")}>
+              <Image src={news} alt="mainNews" />
               <NavText>전체 뉴스</NavText>
             </NavLink>
           </NavItem>
           <NavItem>
             <NavLink onClick={() => navigate("/scrap")}>
-            <Image src={folder} alt="Folder" />
+              <Image src={folder} alt="Folder" />
               <NavText>스크랩</NavText>
             </NavLink>
           </NavItem>

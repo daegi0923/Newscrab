@@ -10,9 +10,9 @@ const formatDate = (dateString: string) => {
 // 스타일 정의
 const PopupContainer = styled.div<{ $show: boolean }>`
   position: fixed;
-  bottom: 100px;
-  right: 50px;
-  background-color: white;
+  bottom: 32%;
+  left: 17%;
+  background-color: #212121;
   border-radius: 8px;
   box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
   padding: 10px;
@@ -28,30 +28,46 @@ const PopupContainer = styled.div<{ $show: boolean }>`
 
 const PopupButton = styled.button`
   position: fixed;
-  bottom: 30px;
-  right: 30px;
+  bottom: 6%;
+  left: 62%;
   background-color: green;
   border: none;
-  border-radius: 50%;
-  width: 50px;
+  border-radius: 50%; /* 완전한 원형으로 만들기 */
+  width: 50px; /* 가로와 세로 크기를 동일하게 설정 */
   height: 50px;
   color: white;
-  font-size: 24px;
+  font-size: 12px; /* 텍스트 크기 조정 */
   cursor: pointer;
   z-index: 99;
+  display: flex;
+  align-items: center; /* 텍스트를 중앙에 위치시키기 */
+  justify-content: center; /* 텍스트를 중앙에 위치시키기 */
+  line-height: 1.2;
+  text-align: center;
+`;
+
+const CloseButton = styled.button`
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 30px;
+  cursor: pointer;
+  z-index: 100;
 `;
 
 const ImageWrapper = styled.div`
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 15px;
-  margin-top: 10px;
 `;
 
 const NewsContainer = styled.div`
   position: relative;
-  width: 300px;
-  height: 150px;
+  width: 200px;
+  height: 300px;
   cursor: pointer; /* 클릭 가능하게 커서 스타일 추가 */
 `;
 
@@ -73,7 +89,7 @@ const NewsTitle = styled.p`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 280px;
+  max-width: 180px;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 `;
 
@@ -140,8 +156,13 @@ const NewsDetailRcmd: React.FC<NewsDetailRcmdProps> = ({ newsId }) => {
 
   return (
     <>
-      <PopupButton onClick={togglePopup}>+</PopupButton>
+      <PopupButton onClick={togglePopup}>
+        연관
+        <br />
+        뉴스
+      </PopupButton>
       <PopupContainer $show={showPopup}>
+        <CloseButton onClick={togglePopup}>×</CloseButton>
         <ImageWrapper>
           {relatedNews.map((item, index) => (
             <NewsContainer

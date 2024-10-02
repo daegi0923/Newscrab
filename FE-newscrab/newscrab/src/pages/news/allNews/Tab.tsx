@@ -87,7 +87,9 @@ interface TabProps {
 
 const Tab: React.FC<TabProps> = ({ onIndustrySelect, onOptionSelect }) => {
   const [selectedTopTab, setSelectedTopTab] = useState<number>(1); // 상단 탭 상태
-  const [selectedTabIds, setSelectedTabIds] = useState<number[]>([]); // 하단 필터 상태
+  const [selectedBottomTab, setSelectedBottomTab] = useState<number | null>(
+    null
+  ); // 하단 필터 상태, 하나만 선택 가능하도록 수정
 
   // 상단 탭 선택 시 상태 업데이트 및 option 전달
   const handleTopTabSelect = (tabId: number, option: string) => {
@@ -102,18 +104,10 @@ const Tab: React.FC<TabProps> = ({ onIndustrySelect, onOptionSelect }) => {
   };
 
   // 하단 필터 버튼 선택 시 상태 업데이트
-  const handleTabSelect = (tabId: number) => {
-    setSelectedTabIds((prevSelected) => {
-      const isSelected = prevSelected.includes(tabId);
-      const updatedSelectedIds = isSelected
-        ? prevSelected.filter((id) => id !== tabId)
-        : [...prevSelected, tabId];
-
-      const selectedId = updatedSelectedIds.length > 0 ? tabId : null;
-      onIndustrySelect(selectedId);
-
-      return updatedSelectedIds;
-    });
+  const handleBottomTabSelect = (tabId: number) => {
+    const newSelectedId = selectedBottomTab === tabId ? null : tabId; // 이미 선택된 탭 클릭 시 선택 해제
+    setSelectedBottomTab(newSelectedId); // 선택된 탭 업데이트
+    onIndustrySelect(newSelectedId); // 선택된 ID 전달
   };
 
   return (
@@ -139,8 +133,8 @@ const Tab: React.FC<TabProps> = ({ onIndustrySelect, onOptionSelect }) => {
         {bottomTabOptions.map((tab) => (
           <FilterButton
             key={tab.id}
-            selected={selectedTabIds.includes(tab.id)}
-            onClick={() => handleTabSelect(tab.id)}
+            selected={selectedBottomTab === tab.id} // 하나만 선택되도록 수정
+            onClick={() => handleBottomTabSelect(tab.id)}
           >
             {tab.label}
           </FilterButton>

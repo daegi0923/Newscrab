@@ -8,7 +8,7 @@ export const getLike = async (newsId: number): Promise<boolean> => {
     );
 
     const { data } = response.data; // API 응답에서 'data' 부분만 추출
-    console.log(`News ID: ${newsId}에 대한 찜 여부 조회 성공:`, data);
+    // console.log(`News ID: ${newsId}에 대한 찜 여부 조회 성공:`, data);
     return data; // 찜 여부 반환 (true or false)
   } catch (error: any) {
     if (error.response && error.response.status === 401) {
