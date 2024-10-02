@@ -44,6 +44,7 @@ public enum ErrorCode {
 
     VOCA_NOT_MATCH_USER(HttpStatus.FORBIDDEN, "해당 단어는 사용자의 단어가 아닙니다."),
     NEWS_NOT_FOUND_BY_KEYWORD(HttpStatus.NOT_FOUND, "해당 키워드로 관련된 뉴스를 찾을 수 없습니다."),
+    INDUSTRY_NULL(HttpStatus.NOT_FOUND, "산업을 선택해주세요."),
 
 
     // Scrap
