@@ -37,7 +37,7 @@ public class ScrapService {
 
     // 1. 스크랩 목록 조회
     @Transactional(readOnly = true)
-    public ScrapListResponseDto getAllScraps(int userId, int page, int size) {
+    public ScrapListResponseDto getAllScraps(int userId) {
         // 페이징 안 함
 
         return ScrapListResponseDto.builder()

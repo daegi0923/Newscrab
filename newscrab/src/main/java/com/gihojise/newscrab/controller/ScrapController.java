@@ -29,11 +29,9 @@ public class ScrapController {
     @Operation(summary = "스크랩 목록 조회", description = "사용자가 스크랩한 모든 뉴스 목록을 조회합니다.")
     @GetMapping
     public ResponseEntity<ApiResponse<ScrapListResponseDto>> getAllScraps(
-            @AuthenticationPrincipal CustomUserDetails userDetails,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
         int userId = userDetails.getUserId();
-        ScrapListResponseDto response = scrapService.getAllScraps(userId, page, size);
+        ScrapListResponseDto response = scrapService.getAllScraps(userId);
         return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "스크랩 목록 조회 성공", response));
     }
 
