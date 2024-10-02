@@ -7,8 +7,11 @@ import Layout from "@components/common/Layout";
 import LandingPage from "@pages/LandingPage";
 // auth
 import LoginPage from "@pages/auth/LoginPage";
+import LoginPage1 from "@pages/auth/LoginPage1";
 import SignUpPage1 from "@pages/auth/SignUpPage1";
+import SignUpPage1_1 from "@pages/auth/SignUpPage1_1";
 import SignUpPage2 from "@pages/auth/SignUpPage2";
+import SignUpPage2_1 from "@pages/auth/SignUpPage2_1";
 //뉴스
 import MainNewsPage from "@pages/news/MainNewsPage";
 import RcmdNewsPage from "@pages/news/rcmdNews/RcmdNewsPage";
@@ -16,7 +19,7 @@ import AllNewsPage from "@pages/news/allNews/AllNewsPage";
 import NewsDetailPage from "@pages/news/detail/NewsDetailPage";
 // 스크랩
 import ScrapListPage from "@pages/scrap/ScrapListPage";
-import ScrapDetailPage from "@pages/scrap/ScrapDetailPage";
+import ScrapDetailPage from "@pages/scrap/detail/ScrapDetailPage";
 // 단어장
 import MainVoca from "@pages/voca/VocaPage";
 import VocaDetail from "@pages/voca/VocaDetailPage";
@@ -59,8 +62,11 @@ const AppRouter: React.FC = () => {
           <>
             {/* <Route path="/" element={<LandingPage />} /> */}
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/login1" element={<LoginPage1 />} />
             <Route path="/signup1" element={<SignUpPage1 />} />
             <Route path="/signup2" element={<SignUpPage2 />} />
+            <Route path="/signup11" element={<SignUpPage1_1 />} />
+            <Route path="/signup21" element={<SignUpPage2_1 />} />
             
             {/* 로그인하지 않았을 때 보호된 경로로 접근 시 오류 처리 */}
             <Route
@@ -133,7 +139,14 @@ const AppRouter: React.FC = () => {
                 </Layout>
               }
             />
-            <Route path="/scrap/:scrapId" element={<ScrapDetailPage />} />
+            <Route
+              path="/scrap/:scrapId"
+              element={
+                <Layout>
+                  <ScrapDetailPage />
+                </Layout>
+              }
+            />
 
             {/* 단어장 */}
             <Route

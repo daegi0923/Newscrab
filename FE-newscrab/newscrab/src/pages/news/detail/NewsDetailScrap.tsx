@@ -141,35 +141,10 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [industryId, setIndustryId] = useState<number | null>(null);
 
-  // 형광펜 정보 저장하는 ref (리렌더링 없이 데이터 유지)
-  const highlightsRef = useRef<
-    { startPos: number; endPos: number; color: string }[]
-  >([]);
-
   // Redux에서 하이라이트(highlight) 정보 가져오기
   const highlights = useSelector(
     (state: RootState) => state.highlight.highlights
   );
-
-  // useEffect를 통해 Redux에서 가져온 하이라이트 정보를 ref에 저장
-  useEffect(() => {
-    highlightsRef.current = highlights;
-  }, [highlights]);
-
-  // const handleHighlightChange = (startPos: number, endPos: number, color: string) => {
-  //   // 같은 위치의 형광펜이 있는지 확인하여 수정
-  //   const existingHighlightIndex = highlightsRef.current.findIndex(
-  //     (highlight) => highlight.startPos === startPos && highlight.endPos === endPos
-  //   );
-
-  //   if (existingHighlightIndex !== -1) {
-  //     // 이미 존재하는 형광펜은 색상을 변경
-  //     highlightsRef.current[existingHighlightIndex].color = color;
-  //   } else {
-  //     // 새 형광펜 추가
-  //     highlightsRef.current.push({ startPos, endPos, color });
-  //   }
-  // };
 
   const summaryTextareaRef = useRef<HTMLTextAreaElement>(null);
   const opinionTextareaRef = useRef<HTMLTextAreaElement>(null);
@@ -188,16 +163,23 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
     const fetchScrapData = async () => {
       try {
         const data = await getScrapData(); // 필요한 경우, page와 size를 인자로 전달
+        console.log("Fetched data:", data);
+
         const selectedScrap = data.data.data.find(
           (item) => item.newsId === newsId
         );
 
         if (selectedScrap) {
+          console.log("Selected Scrap:", selectedScrap); // selectedScrap 확인
+          console.log("News ID:", selectedScrap.newsId); // 찾은 뉴스 ID 확인
+          console.log("Scrap ID:", selectedScrap.scrapId); // 찾은 scrapId 확인
+
           setScrapId(selectedScrap.scrapId || null); // scrapId 설정
           setSummaryText(selectedScrap.scrapSummary || "");
           setOpinionText(selectedScrap.comment || "");
           setWordListText(selectedScrap.vocalist?.join(", ") || ""); // vocalist 배열을 문자열로 변환
-          highlightsRef.current = selectedScrap.highlightList || [];
+        } else {
+          console.log("No scrap data found for this newsId:", newsId);
         }
       } catch (error) {
         console.error("Error fetching scrap data:", error);
@@ -212,24 +194,6 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
     adjustHeight(opinionTextareaRef.current);
     adjustHeight(wordListTextareaRef.current);
   }, [summaryText, opinionText, wordListText, activeTab]);
-
-  // const handleSave = async () => {
-  //   const scrapData = {
-  //     newsId: newsId,
-  //     comment: opinionText,
-  //     scrapSummary: summaryText,
-  //     // vocalist: wordListText.split(",").map((item) => item.trim()),
-  //     highlights: [],
-  //   };
-
-  //   try {
-  //     await postScrap(scrapData); // postScrap API 호출
-  //     alert("저장되었습니다!");
-  //   } catch (error) {
-  //     console.error("Error saving scrap:", error);
-  //     alert("저장에 실패했습니다.");
-  //   }
-  // };
 
   const handleSave = async () => {
     if (activeTab === "wordlist") {
@@ -256,22 +220,32 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
         alert("단어 추가에 실패했습니다.");
       }
     } else {
-      const scrapData = {
+      const postscrapData = {
         newsId: newsId,
         comment: opinionText,
         scrapSummary: summaryText,
-        highlights: highlightsRef.current,
+        highlights: highlights,
       };
-      console.log(scrapData);
+
+      const putscrapData = {
+        newsId: newsId,
+        comment: opinionText,
+        scrapSummary: summaryText,
+      };
+      console.log("Scrap ID:", scrapId); // scrapId 확인용
 
       try {
         if (scrapId) {
           // scrapId가 있으면 put 요청 (업데이트)
-          await putScrap(scrapId, scrapData);
+          await putScrap(scrapId, putscrapData);
+          console.log("putscrapData :",putscrapData)
+          console.log("put요청 완료");
           alert("업데이트되었습니다!");
         } else {
           // scrapId가 없으면 post 요청 (새로 생성)
-          await postScrap(scrapData);
+          await postScrap(postscrapData);
+          console.log("postscrapData :", postscrapData)
+          console.log("post요청 완료");
           alert("저장되었습니다!");
         }
       } catch (error) {
@@ -286,7 +260,7 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
     setIsDropdownOpen(false); // 드롭다운 닫기
   };
 
-  const summaryPlaceholder = `<서론>\n\n<본론>\n\n<결론>`;
+  // const summaryPlaceholder = `<서론>\n\n<본론>\n\n<결론>`;
 
   return (
     <Sidebar>
@@ -314,9 +288,8 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
       {activeTab === "summary" && (
         <StyledTextarea
           ref={summaryTextareaRef}
-          value={summaryText}
+          value={summaryText || "<서론>\n\n<본론>\n\n<결론>"}
           onChange={(e) => setSummaryText(e.target.value)}
-          placeholder={summaryPlaceholder}
           $isOverflowing={isOverflowing}
         />
       )}

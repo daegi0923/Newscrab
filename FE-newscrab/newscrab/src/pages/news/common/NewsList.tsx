@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { NewsItem } from "../../../types/newsTypes";
-import viewIcon from "@assets/view.png";
-import scrapCntIcon from "@assets/scrapCnt.png";
+import viewIcon from "@assets/hot.png";
+import scrapCntIcon from "@assets/scrap.png";
 import { industry } from "@common/Industry";
 
 const formatDate = (dateString: string) => {
@@ -74,16 +74,24 @@ const StatsRow = styled.div`
 `;
 
 const ViewIcon = styled.img`
-  width: 16px;
+  width: 12.45px;
   height: 16px;
   margin-right: 5px;
 `;
 
 const ScrapCntIcon = styled.img`
-  width: 13px;
+  width: 16px;
   height: 16px;
   margin-right: 5px;
 `;
+
+// 제목 자르기 함수 - 30자 이상이면 '...'으로 자름
+const truncateTitle = (title: string) => {
+  const maxLength = 40; // 최대 글자 수를 30으로 고정
+  return title.length > maxLength
+    ? title.substring(0, maxLength) + "..."
+    : title;
+};
 
 const NewsList: React.FC<{
   newsList: NewsItem[];
@@ -109,7 +117,7 @@ const NewsList: React.FC<{
             )}
             <TextContainer>
               <IndustryId>{getIndustryName(news.industryId)}</IndustryId>
-              <NewsTitle>{news.newsTitle}</NewsTitle>
+              <NewsTitle>{truncateTitle(news.newsTitle)}</NewsTitle>
               <InfoRow>
                 <span>{news.newsCompany}</span>
                 <span>{formatDate(news.newsPublishedAt)}</span>

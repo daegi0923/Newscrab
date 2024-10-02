@@ -1,5 +1,5 @@
-import React from 'react';
-import styled from 'styled-components';
+import React from "react";
+import styled from "styled-components";
 
 const Container = styled.div`
   display: flex;
@@ -17,7 +17,7 @@ const SearchBarContainer = styled.div`
   border-radius: 20px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   position: relative;
-  margin-top: 2%;
+  margin-top: 18px;
 `;
 
 const SearchInput = styled.input`
@@ -48,7 +48,7 @@ const ClearButton = styled.span<ClearButtonProps>`
   font-size: 16px;
   color: #888;
   cursor: pointer;
-  display: ${({ isVisible }) => (isVisible ? 'block' : 'none')};
+  display: ${({ isVisible }) => (isVisible ? "block" : "none")};
 `;
 
 interface SearchBarProps {
@@ -56,9 +56,12 @@ interface SearchBarProps {
   onSearchChange: (searchValue: string) => void;
 }
 
-const SearchBar: React.FC<SearchBarProps> = ({ searchText, onSearchChange }) => {
+const SearchBar: React.FC<SearchBarProps> = ({
+  searchText,
+  onSearchChange,
+}) => {
   const handleClear = () => {
-    onSearchChange(''); // Clear the input when the clear button is clicked
+    onSearchChange(""); // Clear the input when the clear button is clicked
   };
 
   return (

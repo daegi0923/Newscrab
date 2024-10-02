@@ -40,6 +40,12 @@ export const updateUserProfileThunk = createAsyncThunk(
 //   }
 // );
 
+interface Industry {
+  industryId: number;
+  industryName: string;
+  preRank: number;
+}
+
 // 초기 상태 정의
 const initialState = {
   userInfo: {
@@ -53,6 +59,7 @@ const initialState = {
       vocaCount: "",
       newsLikeCount: "",
       createdAt: "",
+      userIndustry: [] as Industry[],
       loginId: ""
     }
   },

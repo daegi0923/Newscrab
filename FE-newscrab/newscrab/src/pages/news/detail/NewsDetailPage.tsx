@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 // 재사용 components
-import GlobalStyle from "@components/GlobalStyle";
 import Header from "@common/Header";
 import NewsDetailArticle from "./NewsDetailArticle";
 import NewsDetailScrap from "./NewsDetailScrap";
@@ -73,10 +72,9 @@ const NewsDetailPage: React.FC = () => {
 
   return (
     <div>
-      <GlobalStyle />
       <NewsDetailContainer>
         <Header />
-        <BackButton onClick={handleBackClick}>돌아가기</BackButton>
+        <BackButton onClick={handleBackClick}>뉴스 목록</BackButton>
         <NewsWrapper>
           {isLoading ? (
             <p>Loading news...</p>
