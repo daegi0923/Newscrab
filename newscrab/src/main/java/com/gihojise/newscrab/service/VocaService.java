@@ -77,6 +77,10 @@ public class VocaService {
         // 단어 리스트를 순회하면서 각각의 단어 처리
         for (VocaAddRequestDto vocaAddRequestDto : vocaListAddRequestDto.getVocaAddList()) {
 
+            if (vocaAddRequestDto.getIndustryId() == null) {
+                throw new NewscrabException(ErrorCode.INDUSTRY_NULL);
+            }
+
             // News 객체를 newsId로 조회
             News news = newsRepository.findById(vocaAddRequestDto.getNewsId())
                     .orElseThrow(() -> new NewscrabException(ErrorCode.NEWS_NOT_FOUND));
