@@ -12,7 +12,7 @@ const Sidebar = styled.div`
   border-radius: 8px;
   padding-right: 5px;
   background-color: #fdfaf8;
-  height: 680px; /* 스크롤을 위한 고정 높이 */
+  height: 710px; /* 스크롤을 위한 고정 높이 */
   position: relative;
   ${scrollbar}
   user-select: text;
@@ -26,6 +26,10 @@ const Wrapper = styled.div`
   margin-bottom: 20px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 부드러운 그림자 */
   background-color: #fff; /* 카드 스타일을 위한 흰색 배경 */
+
+  &:last-child {
+    margin-bottom: 0; /* 마지막 요소의 margin-bottom 제거 */
+  }
 `;
 
 const VocaItem = styled.div`
