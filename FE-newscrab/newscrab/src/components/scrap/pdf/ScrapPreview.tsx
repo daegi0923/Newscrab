@@ -1,40 +1,69 @@
 import React, { useRef } from 'react';
 import ScrapPdfTemplate from './ScrapPdfTemplate';
+import { useSelector } from 'react-redux';
+import { RootState } from '@store/index';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import styled from 'styled-components';
-import { ScrapData } from '../../../types/scrapTypes';
+
+type handleChangePage = {
+  funcChangePage : () => void;
+}
 
 
-// 모달 스타일 적용
-const ModalBody = styled.section`
-  padding: 24px 0;
-  overflow-y: auto;
-  max-height: 60vh;
-`;
+const ScrapPreview: React.FC<handleChangePage> = ({funcChangePage}) => {
+  const contentRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const { scrapList, isSelectedPdf } = useSelector((state: RootState) => state.scrap);
+  const handleDownloadPdf = async () => {
+    const pdf = new jsPDF();
+    for (let i = 0; i < scrapList.length; i++) {
+      const content = contentRefs.current[i];
+      if (content) {
+        const canvas = await html2canvas(content);
+        const imgData = canvas.toDataURL('image/png');
 
-const ModalHeader = styled.header`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-bottom: 16px;
-  border-bottom: 1px solid #ddd;
-`;
+        // 첫 페이지가 아니면 새로운 페이지 추가
+        if (i > 0) {
+          pdf.addPage();
+        }
 
-const ModalTitle = styled.h1`
-  font-size: 1.5rem;
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-`;
+        pdf.addImage(imgData, 'PNG', 0, 0, canvas.width / 5, canvas.height / 5);
+      }
+    }
 
-const ModalFooter = styled.footer`
-  display: flex;
-  justify-content: center;
-  padding-top: 16px;
-  border-top: 1px solid #ddd;
-  background-color: #f7f7f7;
-`;
+    pdf.save('scrap_list.pdf');
+  };
+
+  return (
+    <>
+      <div style={styles.body}>
+        {scrapList.map((scrap, idx) => {
+          return isSelectedPdf[scrap.scrapId] ? (
+            <div
+              ref={(el) => {
+                contentRefs.current[idx] = el;
+              }}
+            >
+              <ScrapPdfTemplate key={scrap.scrapId} scrap={scrap} />
+            </div>
+          ) : null;
+        })}
+      </div>
+      <ModalFooter>
+        <Button onClick={funcChangePage}>이전</Button>
+        <Button onClick={handleDownloadPdf}>PDF 다운로드</Button>
+      </ModalFooter>
+    </>
+  );
+};
+const styles = {
+  body: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width:'1000px',
+    paddingTop:'100px',
+  },
+};
 
 const Button = styled.button`
   padding: 10px 20px;
@@ -52,55 +81,10 @@ const Button = styled.button`
   }
 `;
 
-interface PreviewProps {
-  selectedScraps: number[]; // 선택된 스크랩 ID 리스트
-  scrapList: ScrapData[]; // 전체 스크랩 리스트
-}
-
-const ScrapPreview: React.FC<PreviewProps> = ({ selectedScraps, scrapList }) => {
-  const templateRef = useRef<HTMLDivElement>(null); // PDF로 만들 요소 참조
-
-  const handleDownloadPdf = async () => {
-    const pdf = new jsPDF();
-    const element = templateRef.current;
-
-    if (element) {
-      for (let i = 0; i < selectedScraps.length; i++) {
-        const scrapId = selectedScraps[i];
-        const scrap = scrapList.find((item) => item.scrapId === scrapId);
-
-        if (scrap) {
-          const canvas = await html2canvas(element);
-          const imgData = canvas.toDataURL('image/png');
-          if (i > 0) {
-            pdf.addPage();
-          }
-          pdf.addImage(imgData, 'PNG', 0, 0, canvas.width / 5, canvas.height / 5);
-        }
-      }
-
-      pdf.save('scrap_list.pdf');
-    }
-  };
-
-  return (
-    <>
-      <ModalHeader>
-        <ModalTitle>PDF 미리보기</ModalTitle>
-      </ModalHeader>
-      <ModalBody>
-        <div ref={templateRef}>
-          {selectedScraps.map((scrapId) => {
-            const scrap = scrapList.find((item) => item.scrapId === scrapId);
-            return scrap ? <ScrapPdfTemplate key={scrap.scrapId} scrap={scrap} /> : null;
-          })}
-        </div>
-      </ModalBody>
-      <ModalFooter>
-        <Button onClick={handleDownloadPdf}>PDF 다운로드</Button>
-      </ModalFooter>
-    </>
-  );
-};
-
+const ModalFooter = styled.footer`
+  display: flex;
+  justify-content: space-between;
+  padding-top: 16px;
+  border-top: 1px solid #ddd;
+`;
 export default ScrapPreview;
