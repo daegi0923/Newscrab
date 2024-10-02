@@ -76,13 +76,29 @@ const Pagination: React.FC<PaginationProps> = ({
   };
 
   const handlePrevGroup = () => {
-    const prevGroupPage = (pageGroup - 1) * pagesPerGroup + 1;
+    const prevGroupPage = Math.max((pageGroup - 1) * pagesPerGroup + 1, 1);
+
     onPageChange(prevGroupPage); // 이전 그룹의 첫 번째 페이지로 이동
+    console.log("pageGroup:", pageGroup);
+    console.log("prevGroupPage:", prevGroupPage);
+
+    // 페이지 전환 이후에 스크롤 이동을 위해 비동기 처리
+    setTimeout(() => {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+    }, 0); // 짧은 지연 시간 후에 스크롤 적용
   };
 
   const handleNextGroup = () => {
     const nextGroupPage = (pageGroup + 1) * pagesPerGroup + 1;
     onPageChange(nextGroupPage); // 다음 그룹의 첫 번째 페이지로 이동
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   };
 
   const renderPageNumbers = () => {

@@ -1,9 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
-import styled, { keyframes, css } from 'styled-components';
-import { useNavigate } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchUserViewNewsThunk } from '@store/myPage/userNewsSlice';
-import { RootState, AppDispatch } from '@store/index';
+import React, { useEffect, useRef, useState } from "react";
+import styled, { keyframes, css } from "styled-components";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchUserViewNewsThunk } from "@store/myPage/userNewsSlice";
+import { RootState, AppDispatch } from "@store/index";
 import defaultImage from "@assets/auth/defaultProfile.jpg";
 import arrow from "@assets/common/arrow.png";
 
@@ -115,7 +115,7 @@ const SectionName = styled.div`
   font-weight: bold;
   position: absolute;
   top: 41.5%;
-  left: 39.5%;  
+  left: 39.5%;
 `;
 
 const ArrowButton = styled.button`
@@ -151,9 +151,11 @@ const RightArrow = styled(ArrowButton)`
 const ViewNews: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
-  const { recentNewsList, loading, error } = useSelector((state: RootState) => state.userNews);
+  const { recentNewsList } = useSelector((state: RootState) => state.userNews);
   const [page, setPage] = useState<number>(1); // 현재 페이지 상태
-  const [animatedItems, setAnimatedItems] = useState<{ [newsId: number]: boolean }>({}); // 애니메이션 상태 저장
+  const [animatedItems, setAnimatedItems] = useState<{
+    [newsId: number]: boolean;
+  }>({}); // 애니메이션 상태 저장
   const newsListRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -163,7 +165,8 @@ const ViewNews: React.FC = () => {
 
   // 중복된 newsId 제거
   const uniqueRecentNewsList = recentNewsList.filter(
-    (item, index, self) => index === self.findIndex((t) => t.newsId === item.newsId)
+    (item, index, self) =>
+      index === self.findIndex((t) => t.newsId === item.newsId)
   );
 
   const handleMove = (newsId: number) => {
@@ -185,7 +188,7 @@ const ViewNews: React.FC = () => {
         return acc;
       }, {} as { [newsId: number]: boolean });
 
-      setAnimatedItems(prevState => ({
+      setAnimatedItems((prevState) => ({
         ...prevState,
         ...newAnimatedItems,
       }));
@@ -201,7 +204,10 @@ const ViewNews: React.FC = () => {
   const scrollRight = () => {
     if (newsListRef.current) {
       newsListRef.current.scrollLeft += 200;
-      if (newsListRef.current.scrollLeft + newsListRef.current.clientWidth >= newsListRef.current.scrollWidth) {
+      if (
+        newsListRef.current.scrollLeft + newsListRef.current.clientWidth >=
+        newsListRef.current.scrollWidth
+      ) {
         loadMoreNews();
       }
     }
@@ -221,7 +227,10 @@ const ViewNews: React.FC = () => {
               onClick={() => handleMove(item.newsId)}
               animate={!!animatedItems[item.newsId]} // 개별 아이템 애니메이션 관리
             >
-              <NewsImage src={item.photoUrlList[0] || defaultImage} alt="뉴스 이미지" />
+              <NewsImage
+                src={item.photoUrlList[0] || defaultImage}
+                alt="뉴스 이미지"
+              />
               <Overlay>
                 <NewsContent>
                   <NewsTitle>{item.newsTitle}</NewsTitle>
