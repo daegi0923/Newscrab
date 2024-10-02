@@ -1,35 +1,35 @@
-import React, { useState } from "react";
-import { useAuth } from "@components/common/PrivateRoute";
-import { Navigate } from "react-router-dom";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import ErrorModal from "@components/common/Error";
-import Layout from "@components/common/Layout";
-import LandingPage from "@pages/LandingPage";
+import React, { useState } from 'react';
+import { useAuth } from '@components/common/PrivateRoute';
+import { Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import ErrorModal from '@components/common/Error';
+import Layout from '@components/common/Layout';
+import LandingPage from '@pages/LandingPage';
 // auth
-import LoginPage from "@pages/auth/LoginPage";
-import LoginPage1 from "@pages/auth/LoginPage1";
-import SignUpPage1 from "@pages/auth/SignUpPage1";
-import SignUpPage1_1 from "@pages/auth/SignUpPage1_1";
-import SignUpPage2 from "@pages/auth/SignUpPage2";
-import SignUpPage2_1 from "@pages/auth/SignUpPage2_1";
+import LoginPage from '@pages/auth/LoginPage';
+import LoginPage1 from '@pages/auth/LoginPage1';
+import SignUpPage1 from '@pages/auth/SignUpPage1';
+import SignUpPage1_1 from '@pages/auth/SignUpPage1_1';
+import SignUpPage2 from '@pages/auth/SignUpPage2';
+import SignUpPage2_1 from '@pages/auth/SignUpPage2_1';
 //뉴스
 import MainNewsPage from "@pages/news/mainPage/MainNewsPage";
 import RcmdNewsPage from "@pages/news/rcmdNews/RcmdNewsPage";
 import AllNewsPage from "@pages/news/allNews/AllNewsPage";
 import NewsDetailPage from "@pages/news/detail/NewsDetailPage";
 // 스크랩
-import ScrapListPage from "@pages/scrap/ScrapListPage";
-import ScrapDetailPage from "@pages/scrap/detail/ScrapDetailPage";
+import ScrapListPage from '@pages/scrap/ScrapListPage';
+import ScrapDetailPage from '@pages/scrap/detail/ScrapDetailPage';
 // 단어장
-import MainVoca from "@pages/voca/VocaPage";
-import VocaDetail from "@pages/voca/VocaDetailPage";
+import MainVoca from '@pages/voca/VocaPage';
+import VocaDetail from '@pages/voca/VocaDetailPage';
 // 마이페이지
-import MyPage from "@pages/myPage/MyPage";
-import PasswordChange from "@pages/myPage/PasswordChangePage";
-import ProfileEdit1 from "@pages/myPage/ProfileEditPage1";
-import ProfileEdit2 from "@pages/myPage/ProfileEditPage2";
+import MyPage from '@pages/myPage/MyPage';
+import PasswordChange from '@pages/myPage/PasswordChangePage';
+import ProfileEdit1 from '@pages/myPage/ProfileEditPage1';
+import ProfileEdit2 from '@pages/myPage/ProfileEditPage2';
 
-import FortuneCookie from "@pages/myPage/FortunePage";
+import FortuneCookie from '@pages/myPage/FortunePage';
 
 const AppRouter: React.FC = () => {
   const { isLogedIn } = useAuth();
@@ -47,20 +47,20 @@ const AppRouter: React.FC = () => {
           title="오류 발생"
           message={errorMessage}
           onClose={() => {
-            console.log("Closing modal");
+            console.log('Closing modal');
             setErrorMessage(null); // 모달 닫기 시 오류 메시지 초기화
           }}
         />
       )}
 
       <Routes>
-        <Route path="/" element={<LandingPage />} />
         <Route path="/fortune" element={<FortuneCookie />} />
 
         {/* 비로그인 상태일 때 */}
         {!isLogedIn ? (
           <>
             {/* <Route path="/" element={<LandingPage />} /> */}
+            <Route path="/" element={<LandingPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/login1" element={<LoginPage1 />} />
             <Route path="/signup1" element={<SignUpPage1 />} />
@@ -69,21 +69,11 @@ const AppRouter: React.FC = () => {
             <Route path="/signup21" element={<SignUpPage2_1 />} />
 
             {/* 로그인하지 않았을 때 보호된 경로로 접근 시 오류 처리 */}
-            <Route
-              path="*"
-              element={
-                <Navigate
-                  to="/login"
-                  replace
-                  state={{ error: "로그인이 필요합니다." }}
-                />
-              }
-            />
+            <Route path="*" element={<Navigate to="/login" replace state={{ error: '로그인이 필요합니다.' }} />} />
           </>
         ) : (
           <>
             {/* 마이페이지 */}
-            <Route path="/" element={<LandingPage />} />
             <Route
               path="/mypage"
               element={
@@ -165,7 +155,7 @@ const AppRouter: React.FC = () => {
                 </Layout>
               }
             />
-            <Route path="*" element={<Navigate to="/" />} />
+            <Route path="*" element={<Navigate to="/mainNews" />} />
           </>
         )}
       </Routes>
