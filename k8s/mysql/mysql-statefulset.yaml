@@ -17,6 +17,8 @@ spec:
         - name: mysql
           image: mysql:5.7
           env:
+            - name: TZ
+              value: "Asia/Seoul"  # 타임존 환경 변수 설정
             - name: MYSQL_ROOT_PASSWORD
               value: "1234"  # MySQL root 비밀번호 설정
           ports:
@@ -24,6 +26,11 @@ spec:
           volumeMounts:
             - name: mysql-data
               mountPath: /var/lib/mysql
+      volumes:
+        - name: config-volume
+          configMap:
+            name: mysql-config  # 위에서 생성한 ConfigMap 참조
+
   volumeClaimTemplates:
     - metadata:
         name: mysql-data
