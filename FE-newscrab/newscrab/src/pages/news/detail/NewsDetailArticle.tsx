@@ -9,6 +9,7 @@ import { NewsDetailItem } from "../../../types/newsTypes";
 import LikeButton from "../common/LikeButton"; // LikeButton 컴포넌트 임포트
 import { industry } from "@common/Industry"; // 산업 데이터를 가져오기
 import HighlightComponent from "../../scrap/highlight/HighlightComponent";
+import { getScrapHighlights } from "@apis/highlight/highlightApi";
 
 // 스타일 정의
 const NewsContent = styled.div`
@@ -141,20 +142,39 @@ const getIndustryName = (industryId: number): string => {
 
 
 
-
 const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({ newsDetailItem }) => {
   const dispatch = useDispatch();
   const highlights = useSelector((state: RootState) => state.highlight.highlights);
-
-  // Redux 상태 출력 (디버깅 용도)
-  useEffect(() => {
-    console.log("Current highlights in Redux:", highlights);
-  }, [highlights]); // highlights가 업데이트될 때마다 로그 출력
-
   const [isHighlightPopupVisible, setIsHighlightPopupVisible] = useState(false);
   const [popupPosition, setPopupPosition] = useState<{ top: number; left: number }>({ top: 0, left: 0 });
   const [highlightedElement, setHighlightedElement] = useState<HTMLElement | null>(null);
 
+
+  // scrapId에 따라 하이라이트 처리 방식 결정
+  useEffect(() => {
+    if (newsDetailItem.scrapId !== null && newsDetailItem.scrapId !== undefined) {
+      // scrapId가 있는 경우 서버에서 하이라이트 정보 가져오기
+      const fetchHighlights = async () => {
+        try {
+          const highlightsFromApi = await getScrapHighlights(newsDetailItem.scrapId as number);
+          console.log("형광펜 불러오기 :",highlightsFromApi);
+        } catch (error) {
+          console.error("Failed to fetch highlights from API:", error);
+        }
+      };
+      fetchHighlights();
+    } else {
+      console.log("No scrapId, using Redux highlights.");
+    }
+  }, [newsDetailItem.scrapId, dispatch]);
+  
+  
+  // Redux 상태 출력 (디버깅 용도)
+  useEffect(() => {
+    if (!newsDetailItem.scrapId) {
+      console.log("Current highlights in Redux:", highlights);
+    }
+  }, [highlights, newsDetailItem.scrapId]);
   
   const handleTitleClick = () => {
     window.open(newsDetailItem.newsUrl, "_blank"); // 새 창에서 링크 열기
@@ -181,6 +201,11 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({ newsDetailItem }
 
   // 드래그한 부분에 스타일을 적용하는 함수
   const applyHighlight = (color: string) => {
+    if (newsDetailItem.scrapId) {
+      // scrapId가 있으면 하이라이트 추가를 막음
+      return;
+    }
+
     const selection = window.getSelection();
     if (selection && selection.rangeCount > 0) {
       const range = selection.getRangeAt(0);
@@ -392,6 +417,7 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({ newsDetailItem }
       </MetaInfoContainer>
       <Divider />
       <NewsText dangerouslySetInnerHTML={{ __html: newsDetailItem.newsContent }} />
+      
       {isHighlightPopupVisible && (
         <HighlightComponent
           applyHighlight={applyHighlight}
