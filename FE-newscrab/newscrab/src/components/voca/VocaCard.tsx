@@ -72,7 +72,7 @@ const Industry = styled.div`
   left: 10%;
   z-index: 10;
   color: #333;
-  font-size: 16px;
+  font-size: 17px;
   font-weight: bold;
 `;
 
@@ -86,10 +86,22 @@ const CardContent = styled.div`
   font-weight: bold;
 `;
 
+const CardContent1 = styled.div`
+  position: absolute;
+  top: 14%;
+  left: 7%;
+  z-index: 10;
+  color: #555;
+  font-size: 14px;
+  // font-weight: bold;
+`;
+
 const CardDate = styled.div`
   font-size: 14px;
   font-weight: bold;
   color: #555;
+  position: absolute;
+  top: 80%;
 
   /* 수정: 좌우 반전 방지 */
   transform: rotateY(0);
@@ -108,14 +120,14 @@ const Card: React.FC<CardProps> = ({ img, industryName, vocaName, updatedAt, ori
         {/* 앞면 */}
         <CardFront>
           {img && <CardImage src={img} alt={vocaName} />}
-          <Industry>{industryName}</Industry>
-          <CardContent>{vocaName}</CardContent>
+          <Industry>{vocaName}</Industry>
+          <CardContent>{industryName}</CardContent>
         </CardFront>
 
         {/* 뒷면 */}
         <CardBack>
           <CardDate>{formatDate(updatedAt)}</CardDate>
-          <CardContent>{originNewsTitle}</CardContent>
+          <CardContent1>{originNewsTitle}</CardContent1>
         </CardBack>
       </CardContainer>
     </CardWrapper>

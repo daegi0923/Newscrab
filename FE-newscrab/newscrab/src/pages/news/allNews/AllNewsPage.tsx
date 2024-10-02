@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import GlobalStyle from "@components/GlobalStyle"; // 배경색
 import Header from "@components/common/Header";
 import Tab from "./Tab";
 import Pagination from "@components/common/Pagination"; // 페이지네이션
@@ -67,7 +66,6 @@ const AllNewsPage: React.FC = () => {
 
   return (
     <div>
-      <GlobalStyle /> {/* 글로벌 스타일 적용 */}
       <Header />
       {/* 상단 탭에서 선택한 option 값을 전달 */}
       <Tab

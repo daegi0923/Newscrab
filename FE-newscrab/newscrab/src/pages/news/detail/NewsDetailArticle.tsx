@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { useDispatch, useSelector  } from "react-redux";
 import { RootState } from "@store/index";
-import { addHighlight, removeHighlight, clearHighlights   } from "@store/highlight/highlightSlice";
+import { addHighlight, removeHighlight, clearHighlights} from "@store/highlight/highlightSlice";
 import viewIcon from "@assets/view.png";
 import scrapCntIcon from "@assets/scrapCnt.png";
 import { NewsDetailItem } from "../../../types/newsTypes";
@@ -20,6 +20,7 @@ const NewsContent = styled.div`
   padding: 15px 100px;
   background-color: #fff;
   max-height: 680px;
+  min-height: 680px;
   overflow-y: auto;
   position: relative;
 
@@ -139,6 +140,8 @@ const getIndustryName = (industryId: number): string => {
 };
 
 
+
+
 const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({ newsDetailItem }) => {
   const dispatch = useDispatch();
   const highlights = useSelector((state: RootState) => state.highlight.highlights);
@@ -157,21 +160,41 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({ newsDetailItem }
     window.open(newsDetailItem.newsUrl, "_blank"); // 새 창에서 링크 열기
   };
 
+  // 전체 문서에서의 글로벌 오프셋을 계산하는 함수
+  const getGlobalOffset = (node: Node, offsetInNode: number): number => {
+    let globalOffset = 0;
+    const walker = document.createTreeWalker(
+      document.getElementById("newsContent") as Node, // 전체 뉴스 콘텐츠 영역
+      NodeFilter.SHOW_TEXT, // 텍스트 노드만 순회
+      null,
+    );
+
+    let currentNode;
+    while ((currentNode = walker.nextNode())) {
+      if (currentNode === node) {
+        return globalOffset + offsetInNode;
+      }
+      globalOffset += currentNode.textContent?.length || 0;
+    }
+    return globalOffset;
+  };
 
   // 드래그한 부분에 스타일을 적용하는 함수
   const applyHighlight = (color: string) => {
     const selection = window.getSelection();
     if (selection && selection.rangeCount > 0) {
       const range = selection.getRangeAt(0);
-      const startPos = range.startOffset; // 시작 위치
-      const endPos = range.endOffset; // 종료 위치
+
+      // 전체 문서에서의 시작과 끝 오프셋을 계산
+      const startPos = getGlobalOffset(range.startContainer, range.startOffset);
+      const endPos = getGlobalOffset(range.endContainer, range.endOffset);
+
       const span = document.createElement("span");
 
       // 하이라이트에 startPos와 endPos를 dataset에 저장
       span.dataset.startPos = String(startPos);
       span.dataset.endPos = String(endPos);
-  
-      // 이미 존재하는 하이라이트인지 확인
+
       if (range.startContainer.parentElement?.style.backgroundColor) {
         // 기존 하이라이트의 색상 변경
         range.startContainer.parentElement.style.backgroundColor = color;
@@ -189,16 +212,15 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({ newsDetailItem }
           addHighlight({
             startPos,
             endPos,
-            color: mappedColor, // 색상 매핑
+            color: mappedColor,
           })
         );
       }
-  
+
       selection.removeAllRanges(); // 선택 해제
-      setIsHighlightPopupVisible(false); // 팝업 숨기기
+      setIsHighlightPopupVisible(false);
     }
   };
-
 
   // 페이지를 벗어날 때 store를 비우기
   useEffect(() => {
@@ -210,23 +232,22 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({ newsDetailItem }
   // 하이라이트를 삭제하는 함수
   const removeHighlightHandler = () => {
     if (highlightedElement) {
-      const startPos = highlightedElement.dataset.startPos; // 하이라이트 시작 위치
-      const endPos = highlightedElement.dataset.endPos; // 하이라이트 끝 위치
-  
+      const startPos = highlightedElement.dataset.startPos;
+      const endPos = highlightedElement.dataset.endPos;
+
       if (startPos !== undefined && endPos !== undefined) {
-        // 하이라이트된 부분을 DOM에서 제거
         highlightedElement.replaceWith(...highlightedElement.childNodes);
-        
-        // Redux에서 하이라이트 제거
+
         dispatch(removeHighlight({ startPos: Number(startPos), endPos: Number(endPos) }));
       }
-  
+
       setIsHighlightPopupVisible(false);
       setHighlightedElement(null);
     } else {
       setIsHighlightPopupVisible(false);
     }
   };
+
   
 
 
@@ -277,6 +298,14 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({ newsDetailItem }
 
         // 클릭된 하이라이트된 요소를 저장
         setHighlightedElement(target);
+
+        // 하이라이트된 부분 클릭 시 시작 위치와 끝 위치를 콘솔에 출력
+        const startPos = target.dataset.startPos;
+        const endPos = target.dataset.endPos;
+
+        if (startPos && endPos) {
+          console.log(`Highlight clicked! Start: ${startPos}, End: ${endPos}`);
+        }
 
         // 하이라이트된 부분 클릭 시 팝업을 해당 위치에 표시
         const rect = target.getBoundingClientRect();

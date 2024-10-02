@@ -47,6 +47,7 @@ export interface ScrapListResponse {
   };
 }
 
+// 스크랩 post요청
 export interface PostScrapRequest {
   newsId: number | null;
   comment: string | null;
@@ -54,13 +55,14 @@ export interface PostScrapRequest {
   highlights: Highlight[] | null;
 }
 
+// 스크랩 put요청
 export interface PutScrapRequest {
   newsId: number | null;
   comment: string | null;
   scrapSummary: string | null;
-  highlights: Highlight[] | null;
 }
 
+// 스크랩 디테일
 export interface ScrapDetailResponse {
   scrapId: number;
   newsId: number;
@@ -75,6 +77,22 @@ export interface ScrapDetailResponse {
   scrapSummary: string;
   comment: string;
   photolist: string[];
-  vocalist: string[];
-  highlightList: string[];
+  vocalist: Vocalist[];
+  highlightList: Highlight[];
+}
+
+// 스크랩 디테일 단어장
+export interface ScrapDetailVocaListResponse {
+  vocaId: number;
+  newsId: number;
+  userId: number;
+  vocaName: string;
+  vocaDesc: string;
+  originNewsId: number;
+  sentence: string;
+  createdAt: string;
+  updatedAt: string;
+  relatedNewsId1: number | null;
+  relatedNewsId2: number | null;
+  relatedNewsId3: number | null;
 }

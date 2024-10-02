@@ -57,7 +57,7 @@ API.interceptors.request.use(
 // 응답 인터셉터: 새로운 액세스 토큰이 헤더에 있는지 확인하고 갱신
 API.interceptors.response.use(
   (response: AxiosResponse) => {
-    console.log(response)
+    // console.log(response)
     const newAccessToken = response.headers['authorization']?.substring(7); // 'Bearer ' 이후의 토큰 추출
     if (newAccessToken) {
       setCookie("accessToken", newAccessToken);

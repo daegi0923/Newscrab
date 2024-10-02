@@ -67,7 +67,7 @@ const BackButton = styled.button`
   top: 12%;
   left: 10%;
   padding: 10px 15px;
-  background-color: #FCFAF9;
+  background-color: #fcfaf9;
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -80,7 +80,7 @@ const BackButton = styled.button`
 `;
 
 const EditButton = styled.button`
-text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.9);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.9);
   z-index: 2;
   position: absolute;
   top: 25%;
@@ -99,7 +99,7 @@ text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.9);
 `;
 
 const DelButton = styled.button`
-text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.9);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.9);
   z-index: 2;
   position: absolute;
   top: 25%;
@@ -223,7 +223,7 @@ const VocaDetailPage: React.FC = () => {
     <div>
       <GlobalStyle />
       <VocaCommon />
-      <BackButton onClick={() => navigate("/voca")}>돌아가기</BackButton>
+      <BackButton onClick={() => navigate("/voca")}>단어장 목록</BackButton>
       <EditButton onClick={handleEditClick}>수정</EditButton>
       <DelButton onClick={handleDeleteVoca}>삭제</DelButton>
 
