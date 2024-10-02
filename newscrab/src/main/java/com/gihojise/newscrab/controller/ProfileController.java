@@ -1,8 +1,8 @@
 package com.gihojise.newscrab.controller;
 
 import com.gihojise.newscrab.domain.CustomUserDetails;
-import com.gihojise.newscrab.domain.User;
 import com.gihojise.newscrab.dto.common.ApiResponse;
+import com.gihojise.newscrab.dto.response.GrassPageResponseDto;
 import com.gihojise.newscrab.dto.response.NewsPageResponseDto;
 import com.gihojise.newscrab.dto.response.UserResponseDto;
 import com.gihojise.newscrab.service.ProfileService;
@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.time.LocalDate;
 
 @RestController
 @RequiredArgsConstructor
@@ -58,6 +60,18 @@ public class ProfileController {
 
         return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "좋아요 한 뉴스 조회 성공", response));
     }
+
+    // 잔디 조회 쿼리파라미터로 LocalDate타입의 날짜가 온다
+    @Operation(summary = "잔디 조회", description = "사용자의 잔디를 조회합니다.")
+    @GetMapping("/grass")
+    public ResponseEntity<ApiResponse<GrassPageResponseDto>> getGrass(@AuthenticationPrincipal CustomUserDetails userDetails, @RequestParam("ym") String ym) {
+
+        int userId = userDetails.getUserId();
+        GrassPageResponseDto response = profileService.getGrassByDate(userId, ym);
+
+        return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "잔디 조회 성공", response));
+    }
+
 
 
 }
