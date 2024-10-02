@@ -126,7 +126,7 @@ const LandingPage: React.FC = () => {
 
             <div>
               {/* Styled Components로 만든 버튼 사용 */}
-              <StyledButton to="/login">로그인</StyledButton>
+              <StyledButton to="/login1">로그인</StyledButton>
               <StyledButton1 to="/signup1">회원가입</StyledButton1>
             </div>
           </Section>
