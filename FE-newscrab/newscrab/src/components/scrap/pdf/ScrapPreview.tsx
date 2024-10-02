@@ -11,15 +11,19 @@ type handleChangePage = {
 }
 
 
-const ScrapPreview: React.FC<handleChangePage> = ({funcChangePage}) => {
+const ScrapPreview: React.FC<handleChangePage> = ({ funcChangePage }) => {
   const contentRefs = useRef<(HTMLDivElement | null)[]>([]);
   const { scrapList, isSelectedPdf } = useSelector((state: RootState) => state.scrap);
+  
   const handleDownloadPdf = async () => {
     const pdf = new jsPDF();
+    
     for (let i = 0; i < scrapList.length; i++) {
       const content = contentRefs.current[i];
       if (content) {
-        const canvas = await html2canvas(content);
+        const canvas = await html2canvas(content, {
+          scale: 2,  // 고정된 스케일 값 설정
+        });
         const imgData = canvas.toDataURL('image/png');
 
         // 첫 페이지가 아니면 새로운 페이지 추가
@@ -27,7 +31,10 @@ const ScrapPreview: React.FC<handleChangePage> = ({funcChangePage}) => {
           pdf.addPage();
         }
 
-        pdf.addImage(imgData, 'PNG', 0, 0, canvas.width / 5, canvas.height / 5);
+        // PDF 페이지에 이미지 크기를 조정하여 잘리지 않도록 설정
+        const imgWidth = pdf.internal.pageSize.getWidth();
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
       }
     }
 
