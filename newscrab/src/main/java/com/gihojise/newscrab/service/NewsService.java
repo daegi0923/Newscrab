@@ -36,6 +36,7 @@ public class NewsService {
     private final UserRepository userRepository;
     private final UserNewsReadRepository userNewsReadRepository;
     private final UserNewsLikeRepository userNewsLikeRepository;
+    private final ScrapRepository scrapRepository;
 
     @Value("${FAST_API_HOST}")
     String host;
@@ -146,6 +147,9 @@ public class NewsService {
                 .map(NewsPhoto::getPhotoUrl)
                 .toList();
 
+        // 해당 유저가 해당 뉴스를 스크랩했는지 확인
+        Scrap scrap = scrapRepository.findByUserUserIdAndNewsNewsId(userId, newsId).orElse(null);
+
         // 관련 뉴스 객체 가져오기
         News relatedNews1 = news.getRelatedNews1();
         News relatedNews2 = news.getRelatedNews2();
@@ -175,6 +179,7 @@ public class NewsService {
                 .newsUrl(news.getNewsUrl())
                 .view(news.getView())
                 .scrap(news.getScrapCnt())
+                .scrapId(scrap == null ? null : scrap.getScrapId())
                 .newsPhoto(photoUrls) // 사진 URL 리스트 추가
                 .relatedNews1(relatedNewsDto1) // 관련 뉴스 1 객체
                 .relatedNews2(relatedNewsDto2) // 관련 뉴스 2 객체
