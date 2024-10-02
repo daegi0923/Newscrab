@@ -6,6 +6,8 @@ import DropDown from "@components/common/DropDown";
 import { words } from "@components/voca/VocaList";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@store/index";
+import NewsDetailAISummary from "./NewsDetailAISummary";
+import NewsDetailAIQuestion from "./NewsDetailAIQuestion";
 
 const Sidebar = styled.div`
   width: 30%;
@@ -286,22 +288,30 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
       </TabMenu>
 
       {activeTab === "summary" && (
+        <>
         <StyledTextarea
           ref={summaryTextareaRef}
           value={summaryText || "<서론>\n\n<본론>\n\n<결론>"}
           onChange={(e) => setSummaryText(e.target.value)}
           $isOverflowing={isOverflowing}
         />
+        
+        <NewsDetailAISummary />
+      </>
+        
       )}
 
       {activeTab === "opinion" && (
-        <StyledTextarea
-          ref={opinionTextareaRef}
-          value={opinionText}
-          onChange={(e) => setOpinionText(e.target.value)}
-          placeholder="의견을 작성하세요."
-          $isOverflowing={isOverflowing}
-        />
+        <>
+          <StyledTextarea
+            ref={opinionTextareaRef}
+            value={opinionText}
+            onChange={(e) => setOpinionText(e.target.value)}
+            placeholder="의견을 작성하세요."
+            $isOverflowing={isOverflowing}
+          />
+          <NewsDetailAIQuestion/>
+        </>
       )}
 
       {activeTab === "wordlist" && (
