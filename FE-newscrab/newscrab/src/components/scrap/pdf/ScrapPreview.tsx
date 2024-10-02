@@ -6,8 +6,12 @@ import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import styled from 'styled-components';
 
+type handleChangePage = {
+  funcChangePage : () => void;
+}
 
-const ScrapPreview: React.FC = () => {
+
+const ScrapPreview: React.FC<handleChangePage> = ({funcChangePage}) => {
   const contentRefs = useRef<(HTMLDivElement | null)[]>([]);
   const { scrapList, isSelectedPdf } = useSelector((state: RootState) => state.scrap);
   const handleDownloadPdf = async () => {
@@ -32,7 +36,7 @@ const ScrapPreview: React.FC = () => {
 
   return (
     <>
-      <div>
+      <div style={styles.body}>
         {scrapList.map((scrap, idx) => {
           return isSelectedPdf[scrap.scrapId] ? (
             <div
@@ -45,11 +49,22 @@ const ScrapPreview: React.FC = () => {
           ) : null;
         })}
       </div>
-      <Button onClick={handleDownloadPdf}>PDF 다운로드</Button>
-
+      <ModalFooter>
+        <Button onClick={funcChangePage}>이전</Button>
+        <Button onClick={handleDownloadPdf}>PDF 다운로드</Button>
+      </ModalFooter>
     </>
   );
 };
+const styles = {
+  body: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width:'1000px',
+    paddingTop:'100px',
+  },
+};
+
 const Button = styled.button`
   padding: 10px 20px;
   margin: 10px;
@@ -64,5 +79,12 @@ const Button = styled.button`
   &:hover {
     background-color: #0056b3;
   }
+`;
+
+const ModalFooter = styled.footer`
+  display: flex;
+  justify-content: space-between;
+  padding-top: 16px;
+  border-top: 1px solid #ddd;
 `;
 export default ScrapPreview;

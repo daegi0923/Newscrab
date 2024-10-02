@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@store/index';
 import styled from 'styled-components';
 
+
 const ScrapPdfGenerator: React.FC = () => {
   const [isModalVisible, setModalVisible] = useState(false); // 모달 상태 관리
   const [page, setPage] = useState(1);
@@ -19,7 +20,7 @@ const ScrapPdfGenerator: React.FC = () => {
   const pageInfo: { [key: number]: { title: string; content: any; prevButton: any; nextButton: any } } = {
     1: {
       title: '스크랩 선택',
-      content: <ScrapChecklist></ScrapChecklist>,
+      content: <ScrapChecklist funcChangePage={moveToNext}></ScrapChecklist>,
       prevButton: null,
       nextButton: {
         text: '다음',
@@ -28,7 +29,7 @@ const ScrapPdfGenerator: React.FC = () => {
     },
     2: {
       title: '미리보기',
-      content: <ScrapPreview></ScrapPreview>,
+      content: <ScrapPreview funcChangePage={moveToPrev}></ScrapPreview>,
       prevButton: {
         text: '이전',
         func: moveToPrev,
@@ -52,14 +53,14 @@ const ScrapPdfGenerator: React.FC = () => {
               <ModalTitle>{pageInfo[page].title}</ModalTitle>
             </ModalHeader>
             <ModalContent>{pageInfo[page].content}</ModalContent>
-            <ModalFooter>
+            {/* <ModalFooter>
               {pageInfo[page].prevButton ? (
                 <Button onClick={pageInfo[page].prevButton?.func}>{pageInfo[page].prevButton?.text}</Button>
               ) : <div></div>}
               {pageInfo[page].nextButton ? (
                 <Button onClick={pageInfo[page].nextButton?.func}>{pageInfo[page].nextButton?.text}</Button>
               ) : <></>}
-            </ModalFooter>
+            </ModalFooter> */}
           </ModalBody>
         </ModalOverlay>
       ) : null}
@@ -111,7 +112,6 @@ const ModalBody = styled.section`
   flex-direction: column;
   box-shadow: 0 15px 30px 0 rgba(0, 0, 0, 0.25);
   max-height: 90vh;
-  overflow: hidden;
   position: relative;
 
   @media (max-width: 600px) {
@@ -120,7 +120,9 @@ const ModalBody = styled.section`
 `;
 
 // 모달 컨텐츠 스타일 정의
-const ModalContent = styled.article``;
+const ModalContent = styled.article`
+overflow-y: auto;
+`;
 const ModalHeader = styled.header`
   display: flex;
   justify-content: center;
@@ -143,6 +145,7 @@ const ModalFooter = styled.footer`
   padding-top: 16px;
   border-top: 1px solid #ddd;
 `;
+
 const Button = styled.button`
   padding: 10px 20px;
   margin: 10px;
