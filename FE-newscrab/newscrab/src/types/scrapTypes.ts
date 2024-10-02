@@ -58,7 +58,6 @@ export interface PutScrapRequest {
   newsId: number | null;
   comment: string | null;
   scrapSummary: string | null;
-  highlights: Highlight[] | null;
 }
 
 export interface ScrapDetailResponse {
