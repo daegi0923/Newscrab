@@ -1,4 +1,4 @@
-// 목업 데이터 구조를 정의한 인터페이스 (리스트용)
+// 데이터 구조를 정의한 인터페이스 (리스트용)
 export interface NewsData {
   news: NewsItem[];
   currentPage: number;
@@ -54,4 +54,31 @@ export interface RelatedNewsItem {
   view: number;
   scrapCnt: number;
   photoUrlList: string[] | null;
+}
+
+// 추천 뉴스
+export interface RcmdNewsData {
+  statusCode: number;
+  httpStatus: string;
+  message: string;
+  data: {
+    userBase: RcmdNewsItem[];
+    itemBase: RcmdNewsItem[];
+    latest: RcmdNewsItem[];
+  };
+}
+
+export interface RcmdNewsItem {
+  newsId: number;
+  newsTitle: string;
+  industryId: number;
+  newsContent: string;
+  newsPublishedAt: string;
+  newsCompany: string;
+  createdAt: string;
+  updatedAt: string;
+  newsUrl: string;
+  view: number;
+  scrapCnt: number;
+  photoUrlList: string[];
 }
