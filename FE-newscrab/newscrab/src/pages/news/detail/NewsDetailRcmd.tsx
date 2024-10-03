@@ -129,6 +129,7 @@ const NewsDetailRcmd: React.FC<NewsDetailRcmdProps> = ({ newsId }) => {
   };
 
   const handleNewsClick = (id: number) => {
+    setShowPopup(false); // 팝업 닫기
     navigate(`/news/${id}`); // 클릭 시 해당 뉴스 페이지로 이동
   };
 
