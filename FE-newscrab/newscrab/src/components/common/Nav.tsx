@@ -10,7 +10,7 @@ import { fetchUserProfileThunk } from '@store/myPage/profileSlice';
 import { useAuth } from './PrivateRoute';
 import folder from '@assets/common/folder1.png';
 import voca from '@assets/common/dic2.png';
-import home from '@assets/common/home1.png';
+// import home from '@assets/common/home1.png';
 import news from '@assets/all.png';
 import { RootState, AppDispatch } from '@store/index';
 import profile1 from '@assets/auth/profile1.jpg';
