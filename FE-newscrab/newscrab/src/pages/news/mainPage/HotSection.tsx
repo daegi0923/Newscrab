@@ -94,7 +94,7 @@ const truncateTitle = (title: string) => {
     : title;
 };
 
-const RcmdNewsList: React.FC<{
+const HotSecton: React.FC<{
   newsList: NewsItem[];
   onNewsClick: (newsId: number) => void;
 }> = ({ newsList, onNewsClick }) => {
@@ -141,4 +141,4 @@ const RcmdNewsList: React.FC<{
   );
 };
 
-export default RcmdNewsList;
+export default HotSecton;
