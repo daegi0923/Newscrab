@@ -258,7 +258,7 @@ const ScrapDetailArticle: React.FC<ScrapDetailArticleProps> = ({ scrapId }) => {
                 </IndustryId>
               </Info>
               <Info>{scrapDetail.newsCompany}</Info>
-              <Info>{scrapDetail.createdAt.replace("T", " ")}</Info>{" "}
+              <Info>{scrapDetail.updatedAt.replace("T", " ")}</Info>{" "}
             </InfoGroup>
             {/* 조회수, 스크랩수 아이콘 */}
             <Stats>

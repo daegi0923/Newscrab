@@ -155,7 +155,7 @@ const ScrapList: React.FC<{
               </NewsTitle>
               <InfoRow>
                 <span>{scrap.newsCompany}</span>
-                <span>{formatDate(scrap.createdAt)}</span>
+                <span>{formatDate(scrap.updatedAt)}</span>
               </InfoRow>
               <StatsRow>
                 <ReadMoreButton onClick={() => onScrapClick(scrap.scrapId)}>
