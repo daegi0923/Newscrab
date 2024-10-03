@@ -4,8 +4,8 @@ import { getScrapData, postScrap, putScrap } from "@apis/scrap/scrapApi"; // pos
 import { addVocaThunk } from "@store/voca/vocaSlice";
 import DropDown from "@components/common/DropDown";
 import { words } from "@components/voca/VocaList";
-import { useDispatch, useSelector  } from "react-redux";
-import { AppDispatch, RootState  } from "@store/index";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "@store/index";
 import addIcon from "@assets/common/add.png";
 import removeIcon from "@assets/common/remove.png";
 import NewsDetailAISummary from "./NewsDetailAISummary";
@@ -59,6 +59,7 @@ const TabButton = styled.button<{ $active?: boolean }>`
 `;
 
 const StyledTextarea = styled.textarea<{ $isOverflowing: boolean }>`
+  font-family: "SUIT Variable", sans-serif; /* 폰트 적용 */
   width: 100%;
   height: auto;
   max-height: 570px;
@@ -75,6 +76,7 @@ const StyledTextarea = styled.textarea<{ $isOverflowing: boolean }>`
 
   &::-webkit-scrollbar {
     width: 8px;
+    height: 8px;
   }
 
   &::-webkit-scrollbar-thumb {
@@ -143,6 +145,7 @@ const VocaSection = styled.div`
 `;
 
 const VocaInputWrapper = styled.div`
+  font-family: "SUIT Variable", sans-serif; /* 폰트 적용 */
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -162,6 +165,7 @@ const IndustryDropdownWrapper = styled.div`
 `;
 
 const StyledInput = styled.input`
+  font-family: "SUIT Variable", sans-serif; /* 폰트 적용 */
   width: 100%;
   border: none;
   outline: none;
@@ -380,9 +384,9 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
             $isOverflowing={isOverflowing}
           />
 
-          <NewsDetailAISummary 
-            newsId={newsId} 
-            onTransferText={handleTransferText} 
+          <NewsDetailAISummary
+            newsId={newsId}
+            onTransferText={handleTransferText}
           />
         </>
       )}
@@ -396,10 +400,10 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
             placeholder="의견을 작성하세요."
             $isOverflowing={isOverflowing}
           />
-          <NewsDetailAIQuestion 
-            newsId={newsId} 
-            summaryText={summaryText} 
-            onTransferText={handleTransferOpinionText} 
+          <NewsDetailAIQuestion
+            newsId={newsId}
+            summaryText={summaryText}
+            onTransferText={handleTransferOpinionText}
           />
         </>
       )}
