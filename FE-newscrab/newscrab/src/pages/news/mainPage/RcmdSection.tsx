@@ -121,8 +121,8 @@ const RcmdSection: React.FC = () => {
     const fetchRcmdNews = async () => {
       try {
         const newsData = await getRcmdNews();
-        // 받아온 데이터에서 처음 10개만 사용
-        setRcmdNews(newsData.slice(0, 10));
+        // 받아온 데이터에서 처음 15개만 사용
+        setRcmdNews(newsData.slice(0, 15));
         console.log("Fetched news data:", newsData);
       } catch (error) {
         console.error("Error fetching recommended news:", error);

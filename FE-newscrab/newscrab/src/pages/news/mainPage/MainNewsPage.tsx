@@ -10,7 +10,7 @@ import HotSection from "./HotSection";
 const NewsContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr); /* 3개의 열을 균등하게 배치 */
-  gap: 20px; /* 각 열 사이의 간격 */
+  gap: 5px; /* 각 열 사이의 간격 */
   padding: 20px 50px;
 `;
 

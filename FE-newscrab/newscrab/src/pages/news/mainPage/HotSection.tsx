@@ -16,6 +16,11 @@ const formatDate = (dateString: string) => {
   return `${year}-${month}-${day}`;
 };
 
+const Container = styled.div`
+  padding-right: 5px;
+  border-right: 1px solid #ddd;
+`;
+
 // 스크롤 가능한 컨테이너
 const ScrollableContainer = styled.div`
   padding: 0px 10px;
@@ -28,23 +33,29 @@ const ScrollableContainer = styled.div`
 const RecentItemContainer = styled.div`
   padding: 0px 20px;
   overflow: hidden;
-  // margin-bottom: 10px;
+`;
+
+const Image = styled.img`
+  width: 100px;
+  height: 71px;
+  border-radius: 8px;
 `;
 
 const FlexContainer = styled.div`
   display: flex;
-  align-items: center;
-`;
-
-const Divider = styled.div`
-  width: 100%;
-  height: 1px;
-  background-color: #ddd;
-  margin: 40px 0px; /* 위아래 간격을 줌 */
+  align-items: start;
+  margin-bottom: 40px;
 `;
 
 const TextContainer = styled.div`
   flex: 1;
+`;
+
+// 뉴스 제목과 이미지를 수평 정렬하는 래퍼
+const TitleAndImageWrapper = styled.div`
+  display: flex;
+  align-items: center; /* 수직 정렬을 맞춤 */
+  gap: 16px; /* 제목과 이미지 사이 간격 */
 `;
 
 // IndustryId와 InfoRow를 수평 정렬하기 위한 래퍼
@@ -52,7 +63,6 @@ const HorizontalWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: start;
-  margin-bottom: 10px;
 `;
 
 const IndustryId = styled.div`
@@ -72,8 +82,7 @@ const IndustryId = styled.div`
 const NewsTitle = styled.h2`
   font-size: 18px;
   font-weight: bold;
-  margin-top: 8px;
-  margin-bottom: 15px;
+  margin: 0px;
 `;
 
 const InfoRow = styled.div`
@@ -88,7 +97,7 @@ const ButtonAndStatsWrapper = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: 15px;
+  margin-top: 5px;
 `;
 
 const StatsRow = styled.div`
@@ -121,21 +130,36 @@ const NewsButton = styled.div`
   }
 `;
 
+// 제목 자르기 함수 - 30자 이상이면 '...'으로 자름
+const truncateTitle = (title: string) => {
+  const maxLength = 35; // 최대 글자 수를 30으로 고정
+  return title.length > maxLength
+    ? title.substring(0, maxLength) + "..."
+    : title;
+};
+
 const HotSection: React.FC = () => {
   const [news, setNews] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  // 데이터 가져오기 (30개씩 가져옴)
+  // 데이터 가져오기 (30개씩 가져옴, option 값을 "hot"으로 설정)
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        const newsData = await getNewsData(undefined, 1, 30);
+        const newsData = await getNewsData(
+          undefined,
+          1,
+          30,
+          undefined,
+          undefined,
+          "hot"
+        );
         setNews(newsData.news);
       } catch (error) {
         setError("뉴스를 가져오는 중 오류가 발생했습니다.");
-        console.error("Error fetching recommended news:", error);
+        console.error("Error fetching hot news:", error);
       } finally {
         setLoading(false);
       }
@@ -159,44 +183,56 @@ const HotSection: React.FC = () => {
   };
 
   return (
-    <ScrollableContainer>
-      {news.map((newsItem) => (
-        <RecentItemContainer key={newsItem.newsId}>
-          <FlexContainer>
-            <TextContainer>
-              {/* IndustryId와 InfoRow를 하나의 래퍼로 감쌈 */}
-              <HorizontalWrapper>
-                <IndustryId>{getIndustryName(newsItem.industryId)}</IndustryId>
-                <InfoRow>
-                  <span>{newsItem.newsCompany}</span>
-                  <span>{formatDate(newsItem.newsPublishedAt)}</span>
-                </InfoRow>
-              </HorizontalWrapper>
+    <Container>
+      <ScrollableContainer>
+        {news.map((newsItem) => (
+          <RecentItemContainer key={newsItem.newsId}>
+            <FlexContainer>
+              <TextContainer>
+                {/* IndustryId와 InfoRow를 하나의 래퍼로 감쌈 */}
+                <HorizontalWrapper>
+                  <IndustryId>
+                    {getIndustryName(newsItem.industryId)}
+                  </IndustryId>
+                  <InfoRow>
+                    <span>{newsItem.newsCompany}</span>
+                    <span>{formatDate(newsItem.newsPublishedAt)}</span>
+                  </InfoRow>
+                </HorizontalWrapper>
 
-              <NewsTitle>{newsItem.newsTitle}</NewsTitle>
+                {/* 제목과 이미지를 수평 정렬하는 래퍼 */}
+                <TitleAndImageWrapper>
+                  <NewsTitle>{truncateTitle(newsItem.newsTitle)}</NewsTitle>
+                  {newsItem.photoUrlList && (
+                    <Image
+                      src={newsItem.photoUrlList[0]}
+                      alt="이미지가 없습니다."
+                    />
+                  )}
+                </TitleAndImageWrapper>
 
-              {/* NewsButton과 StatsRow를 수평 정렬하는 래퍼로 감쌈 */}
-              <ButtonAndStatsWrapper>
-                <NewsButton onClick={() => handleNewsClick(newsItem.newsId)}>
-                  뉴스보기
-                </NewsButton>
-                <StatsRow>
-                  <span>
-                    <ViewIcon src={viewIcon} alt="조회수 아이콘" />
-                    {newsItem.view}
-                  </span>
-                  <span>
-                    <ScrapCntIcon src={scrapCntIcon} alt="스크랩수 아이콘" />
-                    {newsItem.scrapCnt}
-                  </span>
-                </StatsRow>
-              </ButtonAndStatsWrapper>
-            </TextContainer>
-          </FlexContainer>
-          <Divider />
-        </RecentItemContainer>
-      ))}
-    </ScrollableContainer>
+                {/* NewsButton과 StatsRow를 수평 정렬하는 래퍼로 감쌈 */}
+                <ButtonAndStatsWrapper>
+                  <NewsButton onClick={() => handleNewsClick(newsItem.newsId)}>
+                    뉴스보기
+                  </NewsButton>
+                  <StatsRow>
+                    <span>
+                      <ViewIcon src={viewIcon} alt="조회수 아이콘" />
+                      {newsItem.view}
+                    </span>
+                    <span>
+                      <ScrapCntIcon src={scrapCntIcon} alt="스크랩수 아이콘" />
+                      {newsItem.scrapCnt}
+                    </span>
+                  </StatsRow>
+                </ButtonAndStatsWrapper>
+              </TextContainer>
+            </FlexContainer>
+          </RecentItemContainer>
+        ))}
+      </ScrollableContainer>
+    </Container>
   );
 };
 
