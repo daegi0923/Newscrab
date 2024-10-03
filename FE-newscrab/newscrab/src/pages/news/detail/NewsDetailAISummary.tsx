@@ -112,9 +112,7 @@ const NewsDetailAISummary: React.FC<NewsDetailAISummaryProps> = ({ newsId, onTra
         setLoading(true); // 로딩 상태 시작
         try {
           const summary = await fetchNewsSummary(newsId); // API 요청
-          // <br/> 태그를 줄바꿈으로 변환
-          const formattedSummary = summary.replace(/<br\s*\/?>/gi, '\n');
-          setSummaryText(formattedSummary); // 받아온 요약 데이터를 저장
+          setSummaryText(summary); // 받아온 요약 데이터를 저장
         } catch (error) {
           console.error("뉴스 요약 요청 실패:", error);
           setSummaryText("요약을 가져오는 데 실패했습니다.");
@@ -147,13 +145,7 @@ const NewsDetailAISummary: React.FC<NewsDetailAISummaryProps> = ({ newsId, onTra
             <>
               <AISummaryText>뉴스 본문을 자동으로 요약한 내용입니다.</AISummaryText>
               <AISummaryTextContainer>
-                {summaryText.split('\n').map((line, index) => (
-                    <React.Fragment key={index}>
-                        {line}
-                        <br />
-                        <br />
-                    </React.Fragment>
-                ))}
+                <AISummaryText>{summaryText}</AISummaryText>
               </AISummaryTextContainer>
               <TextTransferButton onClick={handleTextTransfer}>
                 위의 텍스트로 보내기
