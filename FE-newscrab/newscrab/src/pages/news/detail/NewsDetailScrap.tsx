@@ -4,8 +4,8 @@ import { getScrapData, postScrap, putScrap } from "@apis/scrap/scrapApi"; // pos
 import { addVocaThunk } from "@store/voca/vocaSlice";
 import DropDown from "@components/common/DropDown";
 import { words } from "@components/voca/VocaList";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "@store/index";
+import { useDispatch, useSelector  } from "react-redux";
+import { AppDispatch, RootState  } from "@store/index";
 import addIcon from "@assets/common/add.png";
 import removeIcon from "@assets/common/remove.png";
 import NewsDetailAISummary from "./NewsDetailAISummary";
@@ -231,15 +231,11 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
   //   setVocaSections(newSections);
   // };
 
-  // 형광펜 정보 저장하는 ref (리렌더링 없이 데이터 유지)
-  const highlightsRef = useRef<
-    { startPos: number; endPos: number; color: string }[]
-  >([]);
 
   // Redux에서 하이라이트(highlight) 정보 가져오기
-  // const highlights = useSelector(
-  //   (state: RootState) => state.highlight.highlights
-  // );
+  const highlights = useSelector(
+    (state: RootState) => state.highlight.highlights
+  );
 
   const summaryTextareaRef = useRef<HTMLTextAreaElement>(null);
   const opinionTextareaRef = useRef<HTMLTextAreaElement>(null);
@@ -306,7 +302,7 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
       newsId: newsId,
       comment: opinionText, // 의견 탭의 데이터
       scrapSummary: summaryText, // 요약 탭의 데이터
-      highlights: highlightsRef.current, // 형광펜 정보
+      highlights: highlights, // 형광펜 정보
     };
 
     // wordlist 데이터를 vocaAddList로 변환
