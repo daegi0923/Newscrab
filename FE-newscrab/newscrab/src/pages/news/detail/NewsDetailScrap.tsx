@@ -59,6 +59,7 @@ const TabButton = styled.button<{ $active?: boolean }>`
 `;
 
 const StyledTextarea = styled.textarea<{ $isOverflowing: boolean }>`
+  font-family: "SUIT Variable", sans-serif; /* 폰트 적용 */
   width: 100%;
   height: auto;
   max-height: 570px;
@@ -144,6 +145,7 @@ const VocaSection = styled.div`
 `;
 
 const VocaInputWrapper = styled.div`
+  font-family: "SUIT Variable", sans-serif; /* 폰트 적용 */
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -163,6 +165,7 @@ const IndustryDropdownWrapper = styled.div`
 `;
 
 const StyledInput = styled.input`
+  font-family: "SUIT Variable", sans-serif; /* 폰트 적용 */
   width: 100%;
   border: none;
   outline: none;
