@@ -179,7 +179,7 @@ const HotSection: React.FC = () => {
     const matchedCategory = industry.find(
       (ind) => ind.industryId === industryId
     );
-    return matchedCategory ? matchedCategory.industryName : "알 수 없음";
+    return matchedCategory ? matchedCategory.industryName : "미분류 산업";
   };
 
   return (

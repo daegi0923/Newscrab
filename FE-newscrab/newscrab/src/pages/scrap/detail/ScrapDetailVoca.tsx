@@ -87,15 +87,25 @@ const ScrapDetailVoca: React.FC<{ scrapId: number }> = ({ scrapId }) => {
 
   return (
     <Sidebar>
-      {vocalist.map((voca) => (
-        <Wrapper key={voca.vocaId}>
+      {vocalist.length > 0 ? (
+        vocalist.map((voca) => (
+          <Wrapper key={voca.vocaId}>
+            <VocaItem>
+              <VocaTitle>💡 {voca.vocaName}</VocaTitle>
+              <Divider />
+              <VocaDescription>{voca.vocaDesc}</VocaDescription>
+            </VocaItem>
+          </Wrapper>
+        ))
+      ) : (
+        <Wrapper>
           <VocaItem>
-            <VocaTitle>💡 {voca.vocaName}</VocaTitle>
+            <VocaTitle>💡 단어가 없습니다.</VocaTitle>
             <Divider />
-            <VocaDescription>{voca.vocaDesc}</VocaDescription>
+            <VocaDescription>단어를 등록해 주세요.</VocaDescription>
           </VocaItem>
         </Wrapper>
-      ))}
+      )}
     </Sidebar>
   );
 };

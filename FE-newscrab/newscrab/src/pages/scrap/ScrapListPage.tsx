@@ -59,12 +59,12 @@ const ScrapListPage: React.FC = () => {
       );
     }
 
-    // updatedAt 필드 기준으로 내림차순 정렬
-    filteredData = filteredData.sort((a, b) => {
-      const dateA = new Date(a.updatedAt).getTime();
-      const dateB = new Date(b.updatedAt).getTime();
-      return dateB - dateA; // 최신 순서대로 정렬
-    });
+    // // updatedAt 필드 기준으로 내림차순 정렬
+    // filteredData = filteredData.sort((a, b) => {
+    //   const dateA = new Date(a.updatedAt).getTime();
+    //   const dateB = new Date(b.updatedAt).getTime();
+    //   return dateB - dateA; // 최신 순서대로 정렬
+    // });
 
     setFilteredScrapList(filteredData);
   }, [scrapList, selectedIndustryId, searchText]);
