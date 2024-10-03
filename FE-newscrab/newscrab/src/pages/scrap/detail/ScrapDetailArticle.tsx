@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef  } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import scrollbar from "@components/common/ScrollBar";
 import viewIcon from "@assets/hot.png";
 import scrapCntIcon from "@assets/scrap.png";
 import crab from "@assets/crab.png";
-import { ScrapDetailResponse } from "../../../types/scrapTypes"; // scrap 타입 불러옴
+import { ScrapDetailResponse, Highlight } from "../../../types/scrapTypes"; // scrap 타입 불러옴
 import LikeButton from "@pages/news/common/LikeButton"; // LikeButton 컴포트 임포트
 import { industry } from "@common/Industry"; // 산업 데이터를 가져오기
 import { getScrapDetail } from "@apis/scrap/scrapDetailApi"; // 스크랩 데이터를 가져오기 위한 API 호출
@@ -166,6 +166,63 @@ const CrabIcon = styled.img`
   height: 22px;
 `;
 
+const letterToColorMap = {
+  R: "#fde2e4", // Red
+  Y: "#ffffb5", // Yellow
+  G: "#d1e6d3", // Green
+  B: "#cddafd", // Blue
+} as const;
+
+const applyHighlightsFromApi = (
+  contentElement: HTMLElement, 
+  highlights: Highlight[]
+) => {
+  highlights.forEach(({ startPos, endPos, color }) => {
+    const walker = document.createTreeWalker(
+      contentElement,
+      NodeFilter.SHOW_TEXT,
+      null
+    );
+
+    let currentPos = 0;
+    let startNode: Node | null = null;
+    let endNode: Node | null = null;
+    let startOffset = 0;
+    let endOffset = 0;
+
+    while (walker.nextNode()) {
+      const node = walker.currentNode;
+      const nodeLength = node.textContent?.length || 0;
+
+      if (currentPos <= startPos && currentPos + nodeLength >= startPos) {
+        startNode = node;
+        startOffset = startPos - currentPos;
+      }
+      if (currentPos <= endPos && currentPos + nodeLength >= endPos) {
+        endNode = node;
+        endOffset = endPos - currentPos;
+        break;
+      }
+
+      currentPos += nodeLength;
+    }
+
+    if (startNode && endNode) {
+      const range = document.createRange();
+      range.setStart(startNode, startOffset);
+      range.setEnd(endNode, endOffset);
+
+      const span = document.createElement("span");
+      span.style.backgroundColor = letterToColorMap[color];
+      span.dataset.startPos = String(startPos);
+      span.dataset.endPos = String(endPos);
+      
+      span.appendChild(range.extractContents());
+      range.insertNode(span);
+    }
+  });
+};
+
 const removeImagesFromContent = (htmlContent: string): string => {
   return htmlContent.replace(/<img[^>]*>/g, ""); // <img> 태그 제거
 };
@@ -188,17 +245,40 @@ const ScrapDetailArticle: React.FC<ScrapDetailArticleProps> = ({ scrapId }) => {
   const [, setIsLoading] = useState<boolean>(true); // 로딩 상태
   const navigate = useNavigate(); // useNavigate 훅 사용
 
+  const newsContentRef = useRef<HTMLDivElement | null>(null);
+
   // 스크랩 데이터를 가져오는 함수
   const fetchScrapDetail = async (scrapId: number) => {
     try {
       const scrapDataResponse = await getScrapDetail(scrapId); // scrapId를 인자로 전달
       setScrapDetail(scrapDataResponse); // 데이터를 상태에 저장
+
+      console.log('Scrap detail loaded:', scrapDataResponse);
     } catch (error) {
       console.error("스크랩 데이터를 가져오는 중 오류 발생:", error);
     } finally {
       setIsLoading(false); // 로딩 종료
     }
   };
+
+  useEffect(() => {
+    if (scrapDetail && newsContentRef.current && scrapDetail.highlightList) {
+      const contentElement = newsContentRef.current;
+  
+      // highlightList를 Highlight 형식으로 변환
+      const highlights = scrapDetail.highlightList.map(highlight => ({
+        highlightId: highlight.highlightId, 
+        startPos: highlight.startPos,
+        endPos: highlight.endPos,
+        color: highlight.color, 
+      }));
+  
+      if (contentElement) {
+        console.log('Applying highlights:', highlights);
+        applyHighlightsFromApi(contentElement, highlights); // 변환된 highlights 전달
+      }
+    }
+  }, [scrapDetail, showContent]);
 
   const handleEditClick = () => {
     // 수정 페이지로 이동하거나 수정 모드를 활성화
@@ -235,6 +315,8 @@ const ScrapDetailArticle: React.FC<ScrapDetailArticleProps> = ({ scrapId }) => {
   const convertNewlinesToBr = (text: string): string => {
     return text.replace(/\n/g, "<br />");
   };
+
+  
 
   return (
     <ScrapContent>
@@ -287,6 +369,7 @@ const ScrapDetailArticle: React.FC<ScrapDetailArticleProps> = ({ scrapId }) => {
           </CrabTextWrapper>
           {showContent ? (
             <NewsText
+              ref={newsContentRef} 
               dangerouslySetInnerHTML={{
                 __html: scrapDetail?.newsContent ?? "",
               }}
@@ -294,6 +377,7 @@ const ScrapDetailArticle: React.FC<ScrapDetailArticleProps> = ({ scrapId }) => {
           ) : (
             <NewsTextPreview>
               <div
+                ref={newsContentRef} 
                 dangerouslySetInnerHTML={{
                   __html: removeImagesFromContent(
                     scrapDetail?.newsContent ?? ""
