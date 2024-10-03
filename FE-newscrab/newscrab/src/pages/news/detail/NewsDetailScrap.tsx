@@ -4,8 +4,8 @@ import { getScrapData, postScrap, putScrap } from "@apis/scrap/scrapApi"; // pos
 import { addVocaThunk } from "@store/voca/vocaSlice";
 import DropDown from "@components/common/DropDown";
 import { words } from "@components/voca/VocaList";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "@store/index";
+import { useDispatch, useSelector  } from "react-redux";
+import { AppDispatch, RootState  } from "@store/index";
 import addIcon from "@assets/common/add.png";
 import removeIcon from "@assets/common/remove.png";
 import NewsDetailAISummary from "./NewsDetailAISummary";
@@ -197,10 +197,6 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
   const [opinionText, setOpinionText] = useState("");
   const [wordListText, setWordListText] = useState("");
   const [isOverflowing, setIsOverflowing] = useState(false);
-  // const [wordText, setWordText] = useState("");
-  // const [descriptionText, setDescriptionText] = useState("");
-  // const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  // const [industryId, setIndustryId] = useState<number | null>(null);
 
   // vocaSections 배열에 드롭다운 상태도 포함
   const [vocaSections, setVocaSections] = useState<
@@ -224,22 +220,10 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
     setVocaSections(newSections);
   };
 
-  // Industry 선택 함수
-  // const handleIndustrySelect = (index: number, id: number) => {
-  //   const newSections = [...vocaSections];
-  //   newSections[index].industryId = id;
-  //   setVocaSections(newSections);
-  // };
-
-  // 형광펜 정보 저장하는 ref (리렌더링 없이 데이터 유지)
-  const highlightsRef = useRef<
-    { startPos: number; endPos: number; color: string }[]
-  >([]);
-
   // Redux에서 하이라이트(highlight) 정보 가져오기
-  // const highlights = useSelector(
-  //   (state: RootState) => state.highlight.highlights
-  // );
+  const highlights = useSelector(
+    (state: RootState) => state.highlight.highlights
+  );
 
   const summaryTextareaRef = useRef<HTMLTextAreaElement>(null);
   const opinionTextareaRef = useRef<HTMLTextAreaElement>(null);
@@ -255,12 +239,12 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
 
   // 요약 텍스트를 업데이트하는 함수
   const handleTransferText = (newSummary: string) => {
-    setSummaryText((prevSummary) => prevSummary + "\n" + newSummary); // 기존 요약에 새 텍스트를 추가
+    setSummaryText((prevSummary) => prevSummary + "\n\n" + newSummary); // 기존 요약에 새 텍스트를 추가
   };
 
   // 의견 텍스트를 업데이트하는 함수
   const handleTransferOpinionText = (newOpinion: string) => {
-    setOpinionText((prevOpinion) => prevOpinion + "\n" + newOpinion); // 기존 의견에 새 텍스트를 추가
+    setOpinionText((prevOpinion) => prevOpinion + "\n\n" + newOpinion); // 기존 의견에 새 텍스트를 추가
   };
 
   // getScrapData를 이용해 서버에서 데이터를 불러오기
@@ -306,7 +290,7 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
       newsId: newsId,
       comment: opinionText, // 의견 탭의 데이터
       scrapSummary: summaryText, // 요약 탭의 데이터
-      highlights: highlightsRef.current, // 형광펜 정보
+      highlights: highlights, // 형광펜 정보
     };
 
     // wordlist 데이터를 vocaAddList로 변환
@@ -346,57 +330,6 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
       alert("저장에 실패했습니다.");
     }
   };
-  // const handleSave = async () => {
-  //   if (activeTab === "wordlist") {
-  //     if (industryId === null) {
-  //       alert("산업을 선택해주세요.");
-  //       return;
-  //     }
-
-  //     const VocaData = {
-  //       newsId: newsId,
-  //       vocaName: wordText, // 사용자가 입력 한 단어
-  //       vocaDesc: descriptionText, // 사용자가 입력한 설명
-  //       industryId: industryId, // 선택한 industryId
-  //     };
-
-  //     try {
-  //       // Redux Thunk를 사용하여 단어 추가
-  //       await dispatch(addVocaThunk(VocaData));
-  //       console.log(VocaData);
-  //       alert("단어가 추가되었습니다!");
-  //     } catch (error) {
-  //       console.error("단어 추가 실패:", error);
-  //       alert("단어 추가에 실패했습니다.");
-  //     }
-  //   } else {
-  //     const scrapData = {
-  //       newsId: newsId,
-  //       comment: opinionText,
-  //       scrapSummary: summaryText,
-  //       highlights: highlightsRef.current,
-  //     };
-  //     console.log("Scrap Data:", scrapData);
-  //     console.log("Scrap ID:", scrapId); // scrapId 확인용
-
-  //     try {
-  //       if (scrapId) {
-  //         // scrapId가 있으면 put 요청 (업데이트)
-  //         await putScrap(scrapId, scrapData);
-  //         console.log("put요청 완료");
-  //         alert("업데이트되었습니다!");
-  //       } else {
-  //         // scrapId가 없으면 post 요청 (새로 생성)
-  //         await postScrap(scrapData);
-  //         console.log("post요청 완료");
-  //         alert("저장되었습니다!");
-  //       }
-  //     } catch (error) {
-  //       console.error("Error saving scrap:", error);
-  //       alert("저장에 실패했습니다.");
-  //     }
-  //   }
-  // };
 
   // Industry 선택 함수
   const handleIndustrySelectVoca = (index: number, id: number) => {
@@ -447,7 +380,10 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
             $isOverflowing={isOverflowing}
           />
 
-          <NewsDetailAISummary onTransferText={handleTransferText} />
+          <NewsDetailAISummary 
+            newsId={newsId} 
+            onTransferText={handleTransferText} 
+          />
         </>
       )}
 
@@ -460,46 +396,14 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
             placeholder="의견을 작성하세요."
             $isOverflowing={isOverflowing}
           />
-          <NewsDetailAIQuestion onTransferText={handleTransferOpinionText} />
+          <NewsDetailAIQuestion 
+            newsId={newsId} 
+            summaryText={summaryText} 
+            onTransferText={handleTransferOpinionText} 
+          />
         </>
       )}
 
-      {/* {activeTab === "wordlist" && (
-        <>
-        <VocaSection>
-          <IndustryDropdown>
-              <SelectedIndustry
-                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-              >
-                {industryId
-                  ? words.find((item) => item.industryId === industryId)
-                      ?.industryName || "산업"
-                  : "산업"}
-              </SelectedIndustry>
-              {isDropdownOpen && (
-                <DropDown
-                  dropdownIndustries={words}
-                  handleIndustrySelect={handleIndustrySelect}
-                />
-              )}
-            </IndustryDropdown>
-            <VocaSection1>
-          <StyledTextarea
-            value={wordText}
-            onChange={(e) => setWordText(e.target.value)}
-            placeholder="단어를 입력하세요."
-            $isOverflowing={false}
-          />
-          <StyledTextarea
-            value={descriptionText}
-            onChange={(e) => setDescriptionText(e.target.value)}
-            placeholder="설명을 입력하세요."
-            $isOverflowing={false}
-          />
-          </VocaSection1>
-          </VocaSection>
-        </>
-      )} */}
       {activeTab === "wordlist" && (
         <>
           {vocaSections.map((section, index) => (
@@ -556,7 +460,6 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
           <AddButton src={addIcon} onClick={handleAddSection} />
         </>
       )}
-      {/* 저장 버튼을 이곳에 추가 */}
       <SaveButton onClick={handleSave}>저장</SaveButton>
     </Sidebar>
   );
