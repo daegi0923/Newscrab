@@ -2,7 +2,8 @@ import { css } from "styled-components";
 
 const scrollbar = css`
   &::-webkit-scrollbar {
-    width: 8px;
+    width: 8px; /* 세로 스크롤바의 너비 */
+    height: 8px; /* 가로 스크롤바의 높이 */
   }
 
   &::-webkit-scrollbar-thumb {
@@ -35,6 +36,6 @@ export default scrollbar;
 //   overflow-y: auto;
 //   position: relative;
 
-//   ${customScrollbar}; /* 스크롤바 스타일 적용 */
+//   ${scrollbar}; /* 스크롤바 스타일 적용 */
 //   user-select: text;
 // `;
