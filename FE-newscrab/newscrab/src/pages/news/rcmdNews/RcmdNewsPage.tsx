@@ -80,9 +80,10 @@ const RcmdNewsPage: React.FC = () => {
 
   // 뉴스 데이터를 API에서 가져오는 비동기 함수
   const fetchNewsData = async () => {
-    const mergedRcmdNews: RcmdNewsItem[] = await getRcmdNews(); // API 요청으로 mergedRcmdNews 가져오기
-    setNewsList(mergedRcmdNews); // 전체 뉴스 데이터를 상태에 저장
-    setDisplayedNews(mergedRcmdNews.slice(0, 8)); // 처음에 1~8까지의 뉴스만 표시
+    const uniqueMergedRcmdNews: RcmdNewsItem[] = await getRcmdNews(); // API 요청으로 uniqueMergedRcmdNews 가져오기
+    setNewsList(uniqueMergedRcmdNews); // 전체 뉴스 데이터를 상태에 저장
+    setDisplayedNews(uniqueMergedRcmdNews.slice(0, 8)); // 처음에 1~8까지의 뉴스만 표시
+    console.log(uniqueMergedRcmdNews);
   };
 
   // "다른 추천 받기" 버튼 클릭 시 실행되는 함수

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useDispatch, useSelector  } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@store/index";
 import {
   addHighlight,
@@ -15,8 +15,20 @@ import { industry } from "@common/Industry"; // 산업 데이터를 가져오기
 import HighlightComponent from "../../scrap/highlight/HighlightComponent";
 import { getScrapHighlights } from "@apis/highlight/highlightApi";
 import { HighlightItem } from "../../../types/highlightTypes";
-import { NewsContent, NewsTitle, IndustryId, MetaInfoContainer, InfoGroup, 
-  Info, Stats, IconContainer, ViewIcon, ScrapCntIcon, NewsText, Divider } from "./NewsDetailArticleStyles";
+import {
+  NewsContent,
+  NewsTitle,
+  IndustryId,
+  MetaInfoContainer,
+  InfoGroup,
+  Info,
+  Stats,
+  IconContainer,
+  ViewIcon,
+  ScrapCntIcon,
+  NewsText,
+  Divider,
+} from "./NewsDetailArticleStyles";
 
 const colorToLetterMap = {
   "#fde2e4": "R", // Red
@@ -32,7 +44,6 @@ const letterToColorMap = {
   B: "#cddafd", // Blue
 } as const;
 
-
 type ColorKeys = keyof typeof colorToLetterMap;
 
 type ScrapDetailArticleProps = {
@@ -42,7 +53,7 @@ type ScrapDetailArticleProps = {
 // getIndustryName 함수를 정의하여 industryId를 이용해 산업 이름을 가져오는 함수
 const getIndustryName = (industryId: number): string => {
   const matchedCategory = industry.find((ind) => ind.industryId === industryId);
-  return matchedCategory ? matchedCategory.industryName : "알 수 없음";
+  return matchedCategory ? matchedCategory.industryName : "미분류 산업";
 };
 
 // 전체 문서에서의 글로벌 오프셋을 계산하는 함수
@@ -51,7 +62,7 @@ const getGlobalOffset = (node: Node, offsetInNode: number): number => {
   const walker = document.createTreeWalker(
     document.getElementById("newsContent") as Node, // 전체 뉴스 콘텐츠 영역
     NodeFilter.SHOW_TEXT, // 텍스트 노드만 순회
-    null,
+    null
   );
 
   let currentNode;
@@ -64,12 +75,15 @@ const getGlobalOffset = (node: Node, offsetInNode: number): number => {
   return globalOffset;
 };
 
-const applyHighlightsFromApi = (contentElement: HTMLElement, highlights: HighlightItem[]) => {
+const applyHighlightsFromApi = (
+  contentElement: HTMLElement,
+  highlights: HighlightItem[]
+) => {
   highlights.forEach(({ startPos, endPos, color }) => {
     const walker = document.createTreeWalker(
       contentElement,
       NodeFilter.SHOW_TEXT,
-      null,
+      null
     );
 
     let currentPos = 0;
@@ -108,12 +122,13 @@ const applyHighlightsFromApi = (contentElement: HTMLElement, highlights: Highlig
   });
 };
 
-
-
-
-const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({ newsDetailItem }) => {
+const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({
+  newsDetailItem,
+}) => {
   const dispatch = useDispatch();
-  const highlights = useSelector((state: RootState) => state.highlight.highlights);
+  const highlights = useSelector(
+    (state: RootState) => state.highlight.highlights
+  );
   const [isHighlightPopupVisible, setIsHighlightPopupVisible] = useState(false);
   const [popupPosition, setPopupPosition] = useState<{
     top: number;
@@ -122,15 +137,19 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({ newsDetailItem }
   const [highlightedElement, setHighlightedElement] =
     useState<HTMLElement | null>(null);
 
-
   // scrapId에 따라 하이라이트 처리 방식 결정
   useEffect(() => {
-    if (newsDetailItem.scrapId !== null && newsDetailItem.scrapId !== undefined) {
+    if (
+      newsDetailItem.scrapId !== null &&
+      newsDetailItem.scrapId !== undefined
+    ) {
       // scrapId가 있는 경우 서버에서 하이라이트 정보 가져오기
       const fetchHighlights = async () => {
         try {
-          const highlightsFromApi = await getScrapHighlights(newsDetailItem.scrapId as number);
-          console.log("형광펜 불러오기 :",highlightsFromApi);
+          const highlightsFromApi = await getScrapHighlights(
+            newsDetailItem.scrapId as number
+          );
+          console.log("형광펜 불러오기 :", highlightsFromApi);
           const contentElement = document.getElementById("newsContent");
           if (contentElement) {
             applyHighlightsFromApi(contentElement, highlightsFromApi);
@@ -144,20 +163,17 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({ newsDetailItem }
       console.log("No scrapId, using Redux highlights.");
     }
   }, [newsDetailItem.scrapId, dispatch]);
-  
-  
+
   // Redux 상태 출력 (디버깅 용도)
   useEffect(() => {
     if (!newsDetailItem.scrapId) {
       console.log("Current highlights in Redux:", highlights);
     }
   }, [highlights, newsDetailItem.scrapId]);
-  
+
   const handleTitleClick = () => {
     window.open(newsDetailItem.newsUrl, "_blank"); // 새 창에서 링크 열기
   };
-
-  
 
   // 드래그한 부분에 스타일을 적용하는 함수
   const applyHighlight = (color: string) => {
@@ -391,8 +407,9 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({ newsDetailItem }
         </Stats>
       </MetaInfoContainer>
       <Divider />
-      <NewsText dangerouslySetInnerHTML={{ __html: newsDetailItem.newsContent }} />
-      
+      <NewsText
+        dangerouslySetInnerHTML={{ __html: newsDetailItem.newsContent }}
+      />
       {isHighlightPopupVisible && (
         <HighlightComponent
           applyHighlight={applyHighlight}

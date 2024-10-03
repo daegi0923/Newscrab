@@ -82,4 +82,5 @@ export interface RcmdNewsItem {
   view: number;
   scrapCnt: number;
   photoUrlList: string[];
+  rcmd: string;
 }

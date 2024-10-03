@@ -177,7 +177,7 @@ type ScrapDetailArticleProps = {
 // getIndustryName 함수를 정의하여 industryId를 이용해 산업 이름을 가져오는 함수
 const getIndustryName = (industryId: number): string => {
   const matchedCategory = industry.find((ind) => ind.industryId === industryId);
-  return matchedCategory ? matchedCategory.industryName : "알 수 없음";
+  return matchedCategory ? matchedCategory.industryName : "미분류 산업";
 };
 
 const ScrapDetailArticle: React.FC<ScrapDetailArticleProps> = ({ scrapId }) => {
