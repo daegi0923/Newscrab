@@ -38,7 +38,7 @@ public class ChatGPTService {
                 Map.of("role", "user", "content", inputText)
         ));
         // 응답 길이 설정
-        requestPayload.put("max_tokens", 300);  // 응답의 최대 토큰 수
+        requestPayload.put("max_tokens", 1000);  // 응답의 최대 토큰 수
 
         try {
             // HTTP 요청 생성
@@ -70,19 +70,19 @@ public class ChatGPTService {
     }
 
     // 뉴스 요약본 생성
-    public NewsSummaryResponseDto getSummary(String newsContent) {
+    public NewsSummaryResponseDto getSummary(String prompt,String newsContent) {
         // OpenAI API에 보낼 요청 바디 생성
         Map<String, Object> requestPayload = new HashMap<>();
         // ChatGPT API 요청에 필요한 파라미터 설정
         requestPayload.put("model", "gpt-3.5-turbo");
         requestPayload.put("messages", List.of(
                 // ChatGPT API에 보낼 메시지 - 맥락
-                Map.of("role", "system", "content", "뉴스 내용을 제공할테니 뉴스 요약본을 생성해주세요. 형식은 '1.서론 : 2.본론 : 3.결론 : '으로 한줄씩 띄워서 최대 400자 이내로 해줘. 다른 대답은 없이 요약만 생성해줘."),
+                Map.of("role", "system", "content", prompt),
                 // ChatGPT API에 보낼 메시지 - 사용자 입력
                 Map.of("role", "user", "content", newsContent)
         ));
         // 응답 길이 설정
-        requestPayload.put("max_tokens", 500);  // 응답의 최대 토큰 수
+        requestPayload.put("max_tokens", 1000);  // 응답의 최대 토큰 수
 
         try {
             // HTTP 요청 생성

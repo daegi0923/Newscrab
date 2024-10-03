@@ -15,7 +15,7 @@ spring:
             force: true
 
     datasource:
-        url: jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/${MYSQL_DATABASE}?useUnicode=true&characterEncoding=utf8&characterSetResults=utf8&serverTimezone=UTC
+        url: jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/${MYSQL_DATABASE}?useUnicode=true&characterEncoding=utf8&characterSetResults=utf8&serverTimezone=Asia/Seoul
         username: ${MYSQL_ROOT_USER}  # 환경 변수로 대체
         password: ${MYSQL_ROOT_PASSWORD}  # 환경 변수로 대체
         driver-class-name: com.mysql.cj.jdbc.Driver

@@ -47,7 +47,10 @@ public class ChatGPTController {
     public ResponseEntity<ApiResponse<NewsSummaryResponseDto>> generateSummary(@PathVariable int newsId) {
         News news = newsService.getNewsByNewsId(newsId);
         String newsContent = news.getNewsContent(); // 뉴스 내용
-        NewsSummaryResponseDto response = chatGPTService.getSummary(newsContent); // 뉴스 요약본 생성
+
+        String prompt = "뉴스 내용을 제공할테니 뉴스 요약본을 서론,본론,결론 한문장씩 생성해주세요. 형식은 '1.서론 : 2.본론 : 3.결론 : '으로 한줄씩 띄워서 생성해줘. 다른 대답은 없이 요약만 생성해줘.";
+
+        NewsSummaryResponseDto response = chatGPTService.getSummary(prompt, newsContent); // 뉴스 요약본 생성
 
         // 생성된 뉴스 요약본을 클라이언트에 반환
         return ResponseEntity.ok(ApiResponse.of(HttpStatus.OK.value(), HttpStatus.OK.getReasonPhrase(), "뉴스 요약본 생성 완료", response));

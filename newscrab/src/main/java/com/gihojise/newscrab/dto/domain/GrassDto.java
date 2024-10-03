@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Getter
 @Builder
@@ -14,12 +14,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class GrassDto {
     private int grassId;
-    private LocalDateTime date;
+    private LocalDate date;
     private int count;
 
     public GrassDto(Grass grass) {
         this.grassId = grass.getGrassId();
-        this.date = grass.getCreatedAt();
+        this.date = grass.getCreatedAt().toLocalDate();
         this.count = grass.getCount();
     }
 }
