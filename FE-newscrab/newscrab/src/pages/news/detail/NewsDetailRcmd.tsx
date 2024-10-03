@@ -10,11 +10,11 @@ const formatDate = (dateString: string) => {
 // 스타일 정의
 const PopupContainer = styled.div<{ $show: boolean }>`
   position: fixed;
-  bottom: 32%;
+  bottom: 29%;
   left: 17%;
-  background-color: #212121;
+  background-color: #fdfaf8;
   border-radius: 8px;
-  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 8px 8px 12px rgba(0, 0, 0, 0.5);
   padding: 10px;
   display: flex;
   flex-direction: column;
@@ -52,7 +52,7 @@ const CloseButton = styled.button`
   right: -3px;
   background: none;
   border: none;
-  color: white;
+  color: #808080;
   font-size: 30px;
   cursor: pointer;
   z-index: 100;
@@ -84,13 +84,15 @@ const NewsTitle = styled.p`
   left: 10px;
   font-size: 16px;
   font-weight: bold;
-  color: white;
+  color: white; /* 글자색 흰색 */
+  background-color: rgba(0, 0, 0, 0.7); /* 반투명 검정색 배경 */
+  padding: 5px 0px 5px 5px; /* 배경 안쪽 여백 */
   margin: 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 180px;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  border-radius: 5px; /* 모서리 둥글게 */
 `;
 
 const PublishedAt = styled.p`
@@ -98,9 +100,11 @@ const PublishedAt = styled.p`
   bottom: 10px;
   left: 10px;
   font-size: 12px;
-  color: white;
+  color: white; /* 글자색 흰색 */
+  background-color: rgba(0, 0, 0, 0.7); /* 반투명 검정색 배경 */
+  padding: 3px 8px; /* 배경 안쪽 여백 */
   margin: 0;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  border-radius: 5px; /* 모서리 둥글게 */
 `;
 
 interface NewsDetailRcmdProps {
