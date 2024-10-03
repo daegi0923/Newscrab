@@ -28,7 +28,7 @@ const VocaContainer = styled.div`
 
 const NewsContainer = styled.div`
   // border: solid 1px black;
-  margin-top: 1%;
+  // margin-top: 1%;
   display: flex;
   justify-content: space-between;
   width: 55%;
@@ -83,10 +83,10 @@ const NewsButton = styled.button`
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.9);
   z-index: 2;
   position: absolute;
-  top: 25%;
+  top: 24%;
   left: 60.5%;
   padding: 5px 10px;
-  background-color: rgba(255, 190, 152, 0);
+  background-color: rgba(51, 51, 51, 0.5);
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -101,10 +101,10 @@ const EditButton = styled.button`
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.9);
   z-index: 2;
   position: absolute;
-  top: 25%;
+  top: 24%;
   left: 70%;
   padding: 5px 10px;
-  background-color: rgba(255, 190, 152, 0);
+  background-color: rgba(51, 51, 51, 0.5);
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -120,10 +120,10 @@ const DelButton = styled.button`
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.9);
   z-index: 2;
   position: absolute;
-  top: 25%;
-  left: 73.5%;
+  top: 24%;
+  left: 73.8%;
   padding: 5px 10px;
-  background-color: rgba(255, 190, 152, 0);
+  background-color: rgba(51, 51, 51, 0.5);
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -133,6 +133,16 @@ const DelButton = styled.button`
   &:hover {
     background-color: #ff8f4d;
   }
+`;
+const TextArea = styled.div`
+  font-size:15px;
+  font-weight: bold;
+  margin-top: 2%;
+  margin-bottom: 0.5%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  width: 54%;
 `;
 
 const VocaDetailPage: React.FC = () => {
@@ -271,7 +281,7 @@ const VocaDetailPage: React.FC = () => {
           vocaDesc={selectedVoca.vocaDesc}
           sentence={selectedVoca.sentence}
         />
-
+        <TextArea>🔍 '{selectedVoca.vocaName}' 단어와 연관된 뉴스예요.</TextArea>
         <NewsContainer>
           {selectedVoca.relatedNews1 && (
             <ArticleRcmd relatedNews={selectedVoca.relatedNews1} />

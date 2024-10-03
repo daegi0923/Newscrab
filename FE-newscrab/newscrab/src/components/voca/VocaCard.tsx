@@ -50,7 +50,7 @@ const CardFront = styled(CardFace)`
 `;
 
 const CardBack = styled(CardFace)`
-  background-color: #f0f0f0;
+  // background-color: #f0f0f0;
   transform: rotateY(180deg);
   display: flex;
   justify-content: center;
@@ -64,30 +64,34 @@ const CardImage = styled.img`
   border-radius: 10px;
 `;
 
-const Industry = styled.div`
+const CardContent = styled.div`
   position: absolute;
-  top: 4%;
-  left: 10%;
+  top: 17%;
+  left: 11%;
   z-index: 10;
-  color: #333;
+  color: #555;
   font-size: 17px;
   font-weight: bold;
 `;
 
-const CardContent = styled.div`
+const Industry = styled.div`
   position: absolute;
-  top: 14%;
-  left: 10%;
+  top: 5%;
+  left: 8%;
   z-index: 10;
-  color: #555;
-  font-size: 14px;
-  font-weight: bold;
+  color: #72717;
+  font-size: 12px;
+  // font-weight: bold;
+  border: 0.06rem solid #404040;
+  padding: 2px 7px;
+  border-radius: 55px;
+  // background-color: #727171;
 `;
 
 const CardContent1 = styled.div`
   position: absolute;
-  top: 14%;
-  left: 7%;
+  top: 15%;
+  left: 9%;
   z-index: 10;
   color: #555;
   font-size: 14px;
@@ -116,14 +120,14 @@ const Card: React.FC<CardProps> = ({ img, industryName, vocaName, updatedAt, ori
         {/* 앞면 */}
         <CardFront>
           {img && <CardImage src={img} alt={vocaName} />}
-          <Industry>{vocaName}</Industry>
-          <CardContent>{industryName}</CardContent>
+          <Industry>{industryName}</Industry>
+          <CardContent>{vocaName}</CardContent>
         </CardFront>
 
         {/* 뒷면 */}
         <CardBack>
           <CardDate>{formatDate(updatedAt)}</CardDate>
-          <CardContent1>{originNewsTitle}</CardContent1>
+          {/* <CardContent1>{originNewsTitle}</CardContent1> */}
         </CardBack>
       </CardContainer>
     </CardWrapper>
