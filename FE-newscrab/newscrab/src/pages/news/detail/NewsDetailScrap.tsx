@@ -290,11 +290,17 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
 
   const handleSave = async () => {
     // scrapData 생성: 요약, 의견, 형광펜 데이터를 저장할 객체
-    const scrapData = {
+    const postscrapData = {
       newsId: newsId,
       comment: opinionText, // 의견 탭의 데이터
       scrapSummary: summaryText, // 요약 탭의 데이터
       highlights: highlights, // 형광펜 정보
+    };
+
+    const putscrapData = {
+      newsId: newsId,
+      comment: opinionText, // 의견 탭의 데이터
+      scrapSummary: summaryText, // 요약 탭의 데이터
     };
 
     // wordlist 데이터를 vocaAddList로 변환
@@ -305,18 +311,17 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
       industryId: section.industryId!, // 선택된 industryId 저장
     }));
 
-    console.log("Scrap Data!!:", scrapData);
     console.log("vocaAddList!!:", vocaAddList);
 
     try {
       // 먼저 scrapData 저장 (요약, 의견, 형광펜 정보)
       if (scrapId) {
         // scrapId가 있으면 업데이트 (put 요청)
-        await putScrap(scrapId, scrapData);
+        await putScrap(scrapId, putscrapData);
         console.log("put 요청 완료");
       } else {
         // scrapId가 없으면 새로 생성 (post 요청)
-        await postScrap(scrapData);
+        await postScrap(postscrapData);
         console.log("post 요청 완료");
       }
 
