@@ -55,6 +55,7 @@ export const getScrapData = async (
         totalItems: data.totalItems,
       },
     };
+    console.log(scrapData);
 
     return scrapData; // 정렬된 스크랩 데이터 반환
   } catch (error: any) {
