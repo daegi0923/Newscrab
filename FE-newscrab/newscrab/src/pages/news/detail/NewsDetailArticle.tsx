@@ -64,7 +64,7 @@ const getGlobalOffset = (node: Node, offsetInNode: number): number => {
   return globalOffset;
 };
 
-const applyHighlightsFromApi = (contentElement: HTMLElement, highlights: HighlightItem[]) => {
+const applyHighlightsFromApi = (contentElement: HTMLElement, highlights: HighlightItem[], dispatch: any) => {
   highlights.forEach(({ startPos, endPos, color }) => {
     const walker = document.createTreeWalker(
       contentElement,
@@ -104,6 +104,14 @@ const applyHighlightsFromApi = (contentElement: HTMLElement, highlights: Highlig
       span.style.backgroundColor = letterToColorMap[color];
       span.appendChild(range.extractContents());
       range.insertNode(span);
+
+      dispatch(
+        addHighlight({
+          startPos,
+          endPos,
+          color, // 서버에서 받은 하이라이트의 color (이미 R, Y, G, B로 저장되어 있음)
+        })
+      );
     }
   });
 };
@@ -115,12 +123,8 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({ newsDetailItem }
   const dispatch = useDispatch();
   const highlights = useSelector((state: RootState) => state.highlight.highlights);
   const [isHighlightPopupVisible, setIsHighlightPopupVisible] = useState(false);
-  const [popupPosition, setPopupPosition] = useState<{
-    top: number;
-    left: number;
-  }>({ top: 0, left: 0 });
-  const [highlightedElement, setHighlightedElement] =
-    useState<HTMLElement | null>(null);
+  const [popupPosition, setPopupPosition] = useState<{top: number; left: number;}>({ top: 0, left: 0 });
+  const [highlightedElement, setHighlightedElement] = useState<HTMLElement | null>(null);
 
 
   // scrapId에 따라 하이라이트 처리 방식 결정
@@ -129,11 +133,14 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({ newsDetailItem }
       // scrapId가 있는 경우 서버에서 하이라이트 정보 가져오기
       const fetchHighlights = async () => {
         try {
+          // 기존 Redux에 있는 하이라이트 초기화
+          dispatch(clearHighlights());
+
           const highlightsFromApi = await getScrapHighlights(newsDetailItem.scrapId as number);
           console.log("형광펜 불러오기 :",highlightsFromApi);
           const contentElement = document.getElementById("newsContent");
           if (contentElement) {
-            applyHighlightsFromApi(contentElement, highlightsFromApi);
+            applyHighlightsFromApi(contentElement, highlightsFromApi, dispatch);
           }
         } catch (error) {
           console.error("Failed to fetch highlights from API:", error);
@@ -148,9 +155,7 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({ newsDetailItem }
   
   // Redux 상태 출력 (디버깅 용도)
   useEffect(() => {
-    if (!newsDetailItem.scrapId) {
-      console.log("Current highlights in Redux:", highlights);
-    }
+    console.log("Current highlights in Redux:", highlights);
   }, [highlights, newsDetailItem.scrapId]);
   
   const handleTitleClick = () => {
@@ -161,11 +166,6 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({ newsDetailItem }
 
   // 드래그한 부분에 스타일을 적용하는 함수
   const applyHighlight = (color: string) => {
-    if (newsDetailItem.scrapId) {
-      // scrapId가 있으면 하이라이트 추가를 막음
-      return;
-    }
-
     const selection = window.getSelection();
     if (selection && selection.rangeCount > 0) {
       const range = selection.getRangeAt(0);
