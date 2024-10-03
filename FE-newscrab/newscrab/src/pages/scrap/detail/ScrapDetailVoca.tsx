@@ -59,13 +59,6 @@ const Divider = styled.hr`
   margin: 10px 0;
 `;
 
-const EmptyMessage = styled.div`
-  font-size: 18px;
-  color: #888;
-  text-align: center;
-  margin-top: 20px;
-`;
-
 // ScrapDetailVoca가 scrapId를 props로 받음
 const ScrapDetailVoca: React.FC<{ scrapId: number }> = ({ scrapId }) => {
   const [vocalist, setVocalist] = useState<ScrapDetailVocaListResponse[]>([]);

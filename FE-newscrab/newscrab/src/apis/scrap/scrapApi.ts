@@ -14,41 +14,49 @@ export const getScrapData = async (
   try {
     const response = await API.get("/scrap", {
       params: {
-        page, // 현재 페이지 전달
-        size, // 페이지당 아이템 수 전달
+        page,
+        size,
       },
     });
 
     const { data } = response.data; // API 응답 데이터 추출
-    const scrapList: ScrapData[] = data.data.map((item: ScrapData) => ({
-      scrapId: item.scrapId,
-      newsId: item.newsId,
-      newsTitle: item.newsTitle,
-      photolist: item.photolist,
-      scrapSummary: item.scrapSummary,
-      comment: item.comment,
-      createdAt: item.createdAt,
-      updatedAt: item.updatedAt,
-      vocalist: item.vocalist, // Vocalist 배열 그대로 매핑
-      newsContent: item.newsContent,
-      highlightList: item.highlightList, // Highlight 배열 그대로 매핑
-      industryId: item.industryId,
-      view: item.view,
-      scrapCnt: item.scrapCnt,
-      newsCompany: item.newsCompany,
-    }));
+
+    // 데이터 정렬 (updatedAt 기준으로 내림차순)
+    const sortedScrapList: ScrapData[] = data.data
+      .map((item: ScrapData) => ({
+        scrapId: item.scrapId,
+        newsId: item.newsId,
+        newsTitle: item.newsTitle,
+        photolist: item.photolist,
+        scrapSummary: item.scrapSummary,
+        comment: item.comment,
+        createdAt: item.createdAt,
+        updatedAt: item.updatedAt,
+        vocalist: item.vocalist,
+        newsContent: item.newsContent,
+        highlightList: item.highlightList,
+        industryId: item.industryId,
+        view: item.view,
+        scrapCnt: item.scrapCnt,
+        newsCompany: item.newsCompany,
+      }))
+      .sort((a: ScrapData, b: ScrapData) => {
+        const dateA = new Date(a.updatedAt).getTime();
+        const dateB = new Date(b.updatedAt).getTime();
+        return dateB - dateA; // 최신순으로 정렬
+      });
 
     const scrapData: ScrapListResponse = {
       statusCode: response.data.statusCode,
       httpStatus: response.data.httpStatus,
       message: response.data.message,
       data: {
-        data: scrapList, // 매핑된 스크랩 리스트 데이터
+        data: sortedScrapList, // 정렬된 스크랩 리스트 데이터
         totalItems: data.totalItems,
       },
     };
 
-    return scrapData; // 스크랩 데이터 반환
+    return scrapData; // 정렬된 스크랩 데이터 반환
   } catch (error: any) {
     if (error.response && error.response.status === 401) {
       console.error("인증 실패: 토큰이 유효하지 않거나 만료되었습니다.");
