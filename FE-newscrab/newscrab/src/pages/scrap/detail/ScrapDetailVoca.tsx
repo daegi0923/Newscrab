@@ -59,6 +59,13 @@ const Divider = styled.hr`
   margin: 10px 0;
 `;
 
+const EmptyMessage = styled.div`
+  font-size: 18px;
+  color: #888;
+  text-align: center;
+  margin-top: 20px;
+`;
+
 // ScrapDetailVoca가 scrapId를 props로 받음
 const ScrapDetailVoca: React.FC<{ scrapId: number }> = ({ scrapId }) => {
   const [vocalist, setVocalist] = useState<ScrapDetailVocaListResponse[]>([]);
@@ -87,15 +94,25 @@ const ScrapDetailVoca: React.FC<{ scrapId: number }> = ({ scrapId }) => {
 
   return (
     <Sidebar>
-      {vocalist.map((voca) => (
-        <Wrapper key={voca.vocaId}>
+      {vocalist.length > 0 ? (
+        vocalist.map((voca) => (
+          <Wrapper key={voca.vocaId}>
+            <VocaItem>
+              <VocaTitle>💡 {voca.vocaName}</VocaTitle>
+              <Divider />
+              <VocaDescription>{voca.vocaDesc}</VocaDescription>
+            </VocaItem>
+          </Wrapper>
+        ))
+      ) : (
+        <Wrapper>
           <VocaItem>
-            <VocaTitle>💡 {voca.vocaName}</VocaTitle>
+            <VocaTitle>💡 단어를 등록해 주세요.</VocaTitle>
             <Divider />
-            <VocaDescription>{voca.vocaDesc}</VocaDescription>
+            <VocaDescription>현재 등록된 단어가 없습니다.</VocaDescription>
           </VocaItem>
         </Wrapper>
-      ))}
+      )}
     </Sidebar>
   );
 };

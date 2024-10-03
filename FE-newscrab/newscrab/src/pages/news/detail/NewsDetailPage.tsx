@@ -24,9 +24,9 @@ const NewsWrapper = styled.div`
 
 const BackButton = styled.button`
   z-index: 2;
-  position: absolute;
-  top: 12%;
-  left: 0.1%;
+  position: fixed;
+  top: 11%;
+  left: 10.5%;
   padding: 10px 15px;
   background-color: #ffbe98;
   border: none;
@@ -49,16 +49,15 @@ const NewsDetailPage: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log('called useEffect');
+    console.log("called useEffect");
     if (newsId) {
-      
-      console.log('called useEffect fetch');
+      console.log("called useEffect fetch");
       fetchNewsDetail(parseInt(newsId, 10)); // newsId를 숫자로 변환하여 사용
     }
   }, [newsId]);
 
   const fetchNewsDetail = async (newsId: number) => {
-    console.log('called fetch')
+    console.log("called fetch");
     try {
       setIsLoading(true);
       const newsData = await getNewsDetail(newsId);
