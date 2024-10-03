@@ -217,17 +217,16 @@
 
 // export default UserProfile;
 
-
 import React, { useEffect, useState, useRef } from 'react';
 import styled from 'styled-components';
-import { AppDispatch } from "@store/index";
-import { useDispatch, useSelector } from 'react-redux';
+// import { AppDispatch } from '@store/index';
+import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { fetchUserProfileThunk } from "@store/myPage/profileSlice";
+// import { fetchUserProfileThunk } from '@store/myPage/profileSlice';
 import { RootState } from '@store/index';
-import profile1 from "@assets/auth/profile1.jpg";
-import profile2 from "@assets/auth/profile2.jpg";
-import profile3 from "@assets/auth/profile3.jpg";
+import profile1 from '@assets/auth/profile1.jpg';
+import profile2 from '@assets/auth/profile2.jpg';
+import profile3 from '@assets/auth/profile3.jpg';
 import { words } from '@components/voca/VocaList';
 
 const UserInfoContainer = styled.div`
@@ -280,7 +279,7 @@ const EditButton = styled.button`
   position: relative;
 
   &:hover {
-    background-color: #6A94FF;
+    background-color: #6a94ff;
   }
 `;
 
@@ -345,17 +344,19 @@ const IndustryName = styled.p`
   color: #333;
 `;
 
-const IndustryListContainer: React.FC<{ userIndustries: { industryId: number, industryName: string, preRank: number }[] }> = ({ userIndustries }) => {
+const IndustryListContainer: React.FC<{
+  userIndustries: { industryId: number; industryName: string; preRank: number }[];
+}> = ({ userIndustries }) => {
   const findIndustryImage = (industryId: number) => {
-    const found = words.find(word => word.industryId === industryId);
-    return found ? found.img : ''; 
+    const found = words.find((word) => word.industryId === industryId);
+    return found ? found.img : '';
   };
 
   const sortedIndustries = [...userIndustries].sort((a, b) => a.preRank - b.preRank);
 
   return (
     <IndustryContainer>
-      {sortedIndustries.map(industry => (
+      {sortedIndustries.map((industry) => (
         <IndustryItem key={industry.industryId}>
           <IndustryImage src={findIndustryImage(industry.industryId)} alt={industry.industryName} />
           <IndustryName>{industry.industryName}</IndustryName>
@@ -367,7 +368,7 @@ const IndustryListContainer: React.FC<{ userIndustries: { industryId: number, in
 
 const UserProfile: React.FC = () => {
   const navigate = useNavigate();
-  const dispatch: AppDispatch = useDispatch();
+  // const dispatch: AppDispatch = useDispatch();
   const { userInfo } = useSelector((state: RootState) => state.mypage);
   const [isDropdownOpen, setDropdownOpen] = useState(false);
 
@@ -382,19 +383,21 @@ const UserProfile: React.FC = () => {
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
 
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
 
-  useEffect(() => {
-    dispatch(fetchUserProfileThunk())
-      .unwrap()
-      .then(res => console.log("프로필 데이터 불러옴:", res))
-      .catch(error => console.error("프로필 불러오기 오류:", error));
-  }, [dispatch]);
+  // useEffect(() => {
+  //   if (!userInfo.data.name) {
+  //     dispatch(fetchUserProfileThunk())
+  //       .unwrap()
+  //       .then((res) => console.log('프로필 데이터 불러옴:', res))
+  //       .catch((error) => console.error('프로필 불러오기 오류:', error));
+  //   }
+  // }, [dispatch]);
 
   const handleEdit1 = () => navigate('/edit1');
   const handleEdit2 = () => navigate('/edit2', { state: { selectedIndustries: userInfo.data.userIndustry } });
@@ -404,17 +407,18 @@ const UserProfile: React.FC = () => {
     return <p>Loading...</p>;
   }
 
-  const selectedImage = {
-    A: profile1,
-    B: profile2,
-    C: profile3,
-  }[userInfo.data.profileImg] || profile1;
+  const selectedImage =
+    {
+      A: profile1,
+      B: profile2,
+      C: profile3,
+    }[userInfo.data.profileImg] || profile1;
 
   return (
     <UserInfoContainer>
       <UserImage src={selectedImage} alt="User profile" />
       <UserInfoContent>
-        <UserName>{userInfo.data.name || "이름 없음"}</UserName>
+        <UserName>{userInfo.data.name || '이름 없음'}</UserName>
         <EditButton onClick={toggleDropdown}>수정하기</EditButton>
         <DropdownContainer isOpen={isDropdownOpen} ref={dropdownRef}>
           <DropdownItem onClick={handleEdit1}>회원정보 수정</DropdownItem>
