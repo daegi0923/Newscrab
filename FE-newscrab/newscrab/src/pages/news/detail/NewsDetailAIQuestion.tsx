@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import { fetchPredQuestions } from "@apis/chatgpt/chatgpt";
 
 // AI 예상질문 버튼 스타일 정의
 const AIButtonStyled = styled.button`
@@ -56,6 +57,7 @@ const AIQuestionText = styled.p`
   font-size: 14px;
   color: #555;
   line-height: 1.5;
+  white-space: pre-wrap;
 `;
 
 const TextTransferButton = styled.button`
@@ -80,22 +82,33 @@ const TextTransferButton = styled.button`
 `;
 
 interface NewsDetailAIQuestionProps {
-  onTransferText: (text: string) => void; // opinionText를 업데이트하는 함수
-}
+    newsId: number; // 뉴스 ID 전달
+    summaryText: string; // 요약 텍스트를 전달
+    onTransferText: (text: string) => void; // opinionText를 업데이트하는 함수
+  }
 
-const NewsDetailAIQuestion: React.FC<NewsDetailAIQuestionProps> = ({ onTransferText }) => {
+const NewsDetailAIQuestion: React.FC<NewsDetailAIQuestionProps> = ({ newsId, summaryText, onTransferText }) => {
   const [showQuestion, setShowQuestion] = useState(false);
+  const [questionText, setQuestionText] = useState(""); // 예상 질문 저장
+  const [loading, setLoading] = useState(false); // 로딩 상태 저장
 
-  const handleAIButtonClick = () => {
-    setShowQuestion(!showQuestion); // 버튼을 클릭할 때마다 상태를 토글
+  const handleAIButtonClick = async () => {
+    setShowQuestion(!showQuestion); // 버튼 클릭 시 상태 토글
+
+    // 이미 질문이 있으면 API 요청을 다시 하지 않음
+    if (!showQuestion && questionText === "") {
+      setLoading(true); // 로딩 시작
+      try {
+        const questions = await fetchPredQuestions({ text: summaryText, newsId }); // API 호출
+        setQuestionText(questions); // 질문 저장
+      } catch (error) {
+        console.error("예상 질문 가져오기 실패:", error);
+        setQuestionText("예상 질문을 가져오는 데 실패했습니다.");
+      } finally {
+        setLoading(false); // 로딩 종료
+      }
+    }
   };
-
-  const questionText = `
-  1. 트리콜마트가 납품업체에 대금을 지급하지 않은 이유는 무엇인가요?
-
-  2. 납품업체들이 피해를 해결하기 위해 어떤 조치를 취하고 있나요?
-  
-  3. 이번 사태가 지역 경제에 미치는 영향은 무엇인가요?`;
 
   const handleTextTransfer = () => {
     onTransferText(questionText); // AI 예상 질문을 추가하는 함수 호출
@@ -109,13 +122,19 @@ const NewsDetailAIQuestion: React.FC<NewsDetailAIQuestionProps> = ({ onTransferT
       {showQuestion && (
         <AIQuestionBox>
           <AIQuestionHeader>AI 예상질문</AIQuestionHeader>
-          <AIQuestionText>뉴스 본문을 바탕으로 자동 생성된 질문입니다.</AIQuestionText>
-          <AIQuestionTextContainer>
-            <AIQuestionText>{questionText}</AIQuestionText>
-          </AIQuestionTextContainer>
-          <TextTransferButton onClick={handleTextTransfer}>
-            위의 텍스트로 보내기
-          </TextTransferButton>
+          {loading ? (
+            <AIQuestionText>예상 질문을 가져오는 중...</AIQuestionText>
+          ) : (
+            <>
+              <AIQuestionText>뉴스 본문을 바탕으로 자동 생성된 질문입니다.</AIQuestionText>
+              <AIQuestionTextContainer>
+                <AIQuestionText>{questionText}</AIQuestionText>
+              </AIQuestionTextContainer>
+              <TextTransferButton onClick={handleTextTransfer}>
+                위의 텍스트로 보내기
+              </TextTransferButton>
+            </>
+          )}
         </AIQuestionBox>
       )}
     </div>

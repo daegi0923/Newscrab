@@ -57,6 +57,7 @@ const AISummaryText = styled.p`
   font-size: 14px;
   color: #555;
   line-height: 1.5;
+  white-space: pre-wrap;
 `;
 
 const TextTransferButton = styled.button`
