@@ -38,6 +38,18 @@ const AISummaryBox = styled.div`
   position: relative;
 `;
 
+// Close 버튼 스타일 정의 (우측 상단 X)
+const CloseButtonStyled = styled.button`
+  position: absolute;
+  top: 12px;
+  right: 8px;
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  color: #333;
+`;
+
 // 요약 텍스트를 감싸는 상자 정의
 const AISummaryTextContainer = styled.div`
   background-color: #f0f0f0;
@@ -112,6 +124,10 @@ const NewsDetailAISummary: React.FC<NewsDetailAISummaryProps> = ({ newsId, onTra
       }
   };
 
+  const handleCloseSummary = () => {
+    setShowSummary(false);
+  };
+
   const handleTextTransfer = () => {
     onTransferText(summaryText); // summaryText를 업데이트하는 함수를 호출
   };
@@ -123,6 +139,7 @@ const NewsDetailAISummary: React.FC<NewsDetailAISummaryProps> = ({ newsId, onTra
       </AIButtonStyled>
       {showSummary && (
         <AISummaryBox>
+          <CloseButtonStyled onClick={handleCloseSummary}>X</CloseButtonStyled> 
           <AISummaryHeader>AI 요약</AISummaryHeader>
           {loading ? (
             <AISummaryText>요약을 가져오는 중...</AISummaryText> // 로딩 중 텍스트

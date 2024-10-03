@@ -38,6 +38,18 @@ const AIQuestionBox = styled.div`
   position: relative;
 `;
 
+// Close 버튼 스타일 정의 (우측 상단 X)
+const CloseButtonStyled = styled.button`
+  position: absolute;
+  top: 12px;
+  right: 8px;
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  color: #333;
+`;
+
 // 예상 질문 텍스트를 감싸는 상자 정의
 const AIQuestionTextContainer = styled.div`
   background-color: #f0f0f0;
@@ -110,6 +122,10 @@ const NewsDetailAIQuestion: React.FC<NewsDetailAIQuestionProps> = ({ newsId, sum
     }
   };
 
+  const handleCloseQuestion = () => {
+    setShowQuestion(false);
+  };
+
   const handleTextTransfer = () => {
     onTransferText(questionText); // AI 예상 질문을 추가하는 함수 호출
   };
@@ -121,6 +137,7 @@ const NewsDetailAIQuestion: React.FC<NewsDetailAIQuestionProps> = ({ newsId, sum
       </AIButtonStyled>
       {showQuestion && (
         <AIQuestionBox>
+          <CloseButtonStyled onClick={handleCloseQuestion}>X</CloseButtonStyled> 
           <AIQuestionHeader>AI 예상질문</AIQuestionHeader>
           {loading ? (
             <AIQuestionText>예상 질문을 가져오는 중...</AIQuestionText>
