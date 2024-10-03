@@ -6,6 +6,7 @@ import scrapReducer from "./scrap/scrapSlice";
 import myPageReducer from './myPage/profileSlice';
 import userNewsReducer from "./myPage/userNewsSlice";
 import highlightReducer from "./highlight/highlightSlice";
+import grassReducer from "./myPage/grassSlice";
 
 // 리듀서 import
 // 예시 => import uiSlice from "./ui-slice"
@@ -21,6 +22,7 @@ export const store = configureStore({
     scrap: scrapReducer,
     userNews: userNewsReducer,
     highlight: highlightReducer,
+    grass:grassReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(sagaMiddleware), // 기본 미들웨어에 sagaMiddleware 추가

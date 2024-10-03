@@ -11,3 +11,11 @@ export const fetchUserProfileAPI = async () => {
   const response = await API.get('/profile');
   return response.data;  // 받아온 사용자 정보
 };
+
+// 잔디 정보 정보 가져오기(GET)
+export const fetchGrassInfoAPI = async (yearMonth:string) => {
+  const response = await API.get(`/profile/grass?ym=${yearMonth}`);
+  return response.data.data;  // 받아온 사용자 정보
+};
+
+
