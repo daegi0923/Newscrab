@@ -49,12 +49,16 @@ const NewsDetailPage: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log('called useEffect');
     if (newsId) {
+      
+      console.log('called useEffect fetch');
       fetchNewsDetail(parseInt(newsId, 10)); // newsId를 숫자로 변환하여 사용
     }
   }, [newsId]);
 
   const fetchNewsDetail = async (newsId: number) => {
+    console.log('called fetch')
     try {
       setIsLoading(true);
       const newsData = await getNewsDetail(newsId);
