@@ -1,6 +1,98 @@
 import styled from 'styled-components';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 // import left from '@assets/common/left.png'
+import { fetchGrassInfoThunk } from "@store/myPage/grassSlice";
+import { useDispatch, useSelector } from 'react-redux';
+import { AppDispatch, RootState } from "@store/index";
+
+
+const Calendar: React.FC = () => {
+  const [currentDate, setCurrentDate] = useState(new Date());
+
+  const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+  const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+  const startDayOfWeek = startOfMonth.getDay();
+  const dispatch: AppDispatch = useDispatch();
+  const activityInfo = useSelector((state: RootState) => state.grass.grassInfo);
+  const currentYM = `${currentDate.getFullYear()}-${(currentDate.getMonth() + 1).toString().padStart(2, '0')}`
+
+  useEffect(() => {
+    // 현재 달의 활동정보가 없으면grassInfo API 호출
+    console.log(currentYM)
+    if(!activityInfo[currentYM]){
+      dispatch(fetchGrassInfoThunk(currentYM))
+      .unwrap()
+      .then((res) => {
+        console.log("잔디 데이터 불러옴:", res);
+      })
+      .catch((error) => {
+        console.error("잔디 불러오기 오류:", error);
+      });
+    
+    }
+    console.log(activityInfo[currentYM])
+  }, [currentYM, activityInfo, dispatch]);
+  // const activityData = activityInfo[currentYM].data.data.map(e => e.date)
+  // 날짜 배열 생성
+  const daysInMonth = [];
+  for (let i = 0; i < startDayOfWeek; i++) {
+    daysInMonth.push(null); // 첫 주 빈 칸 채우기
+  }
+  for (let i = 1; i <= endOfMonth.getDate(); i++) {
+    daysInMonth.push(i);
+  }
+
+  const handlePrevMonth = () => {
+    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
+  };
+
+  const handleNextMonth = () => {
+    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
+  };
+
+  const getActivityLevel = (day: number | null) => {
+    if (!day) return 'transparent';
+    // console.log(currentYM);
+    // console.log(day, activityInfo[currentYM])
+    // console.log(day, activityInfo[currentYM]?.[day])
+    const activity = activityInfo[currentYM]?.[day] || 0;
+    const intensity = Math.min(activity / 15, 1); // 최대 15 활동 기준으로 그라데이션
+    return `rgba(30, 144, 255, ${intensity})`; // 녹색 그라데이션
+  };
+
+  const weekDays = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+
+  return (
+    <CalendarContainer>
+      <CalendarHeader>
+        <NavButton onClick={handlePrevMonth}>&lt;</NavButton>
+        <MonthLabel>
+          {currentDate.toLocaleString('default', { month: 'long', year: 'numeric' })}
+        </MonthLabel>
+        {/* <NavButton onClick={handleNextMonth}>&gt;</NavButton> */}
+        <NavButton onClick={handleNextMonth}>&gt;</NavButton>
+      </CalendarHeader>
+      <WeekDaysContainer>
+        {weekDays.map((day, index) => (
+          <WeekDay key={index}>{day}</WeekDay>
+        ))}
+      </WeekDaysContainer>
+      <CalendarGrid>
+        {daysInMonth.map((day, index) => (
+          <CalendarDay
+            key={index}
+            isEmpty={!day}
+            backgroundColor={getActivityLevel(day)}
+          >
+            {day}
+          </CalendarDay>
+        ))}
+      </CalendarGrid>
+    </CalendarContainer>
+  );
+};
+
+export default Calendar;
 
 export const CalendarContainer = styled.div`
   // width: 82%;
@@ -87,71 +179,3 @@ export const CalendarDay = styled.div<{ isEmpty: boolean; backgroundColor: strin
     cursor: ${({ isEmpty }) => (isEmpty ? 'default' : 'pointer')};
   }
 `;
-
-interface CalendarProps {
-  activityData: { [key: number]: number }; // 날짜별 활동 데이터
-}
-const Calendar: React.FC<CalendarProps> = ({ activityData }) => {
-  const [currentDate, setCurrentDate] = useState(new Date());
-
-  const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-  const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
-  const startDayOfWeek = startOfMonth.getDay();
-
-  // 날짜 배열 생성
-  const daysInMonth = [];
-  for (let i = 0; i < startDayOfWeek; i++) {
-    daysInMonth.push(null); // 첫 주 빈 칸 채우기
-  }
-  for (let i = 1; i <= endOfMonth.getDate(); i++) {
-    daysInMonth.push(i);
-  }
-
-  const handlePrevMonth = () => {
-    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
-  };
-
-  const handleNextMonth = () => {
-    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
-  };
-
-  const getActivityLevel = (day: number | null) => {
-    if (!day) return 'transparent';
-    const activity = activityData[day] || 0;
-    const intensity = Math.min(activity / 15, 1); // 최대 15 활동 기준으로 그라데이션
-    return `rgba(30, 144, 255, ${intensity})`; // 녹색 그라데이션
-  };
-
-  const weekDays = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
-
-  return (
-    <CalendarContainer>
-      <CalendarHeader>
-        <NavButton onClick={handlePrevMonth}>&lt;</NavButton>
-        <MonthLabel>
-          {currentDate.toLocaleString('default', { month: 'long', year: 'numeric' })}
-        </MonthLabel>
-        {/* <NavButton onClick={handleNextMonth}>&gt;</NavButton> */}
-        <NavButton onClick={handleNextMonth}>&gt;</NavButton>
-      </CalendarHeader>
-      <WeekDaysContainer>
-        {weekDays.map((day, index) => (
-          <WeekDay key={index}>{day}</WeekDay>
-        ))}
-      </WeekDaysContainer>
-      <CalendarGrid>
-        {daysInMonth.map((day, index) => (
-          <CalendarDay
-            key={index}
-            isEmpty={!day}
-            backgroundColor={getActivityLevel(day)}
-          >
-            {day}
-          </CalendarDay>
-        ))}
-      </CalendarGrid>
-    </CalendarContainer>
-  );
-};
-
-export default Calendar;
