@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef  } from "react";
 import { useDispatch, useSelector  } from "react-redux";
 import { RootState } from "@store/index";
 import {
@@ -135,7 +135,8 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({ newsDetailItem }
   const [isHighlightPopupVisible, setIsHighlightPopupVisible] = useState(false);
   const [popupPosition, setPopupPosition] = useState<{top: number; left: number;}>({ top: 0, left: 0 });
   const [highlightedElement, setHighlightedElement] = useState<HTMLElement | null>(null);
-
+  
+  const newsContentRef = useRef<HTMLDivElement | null>(null);
 
   // scrapId에 따라 하이라이트 처리 방식 결정
   useEffect(() => {
@@ -197,10 +198,6 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({ newsDetailItem }
           range.startContainer.parentElement.dataset.startPos;
         const parentEndPos = range.startContainer.parentElement.dataset.endPos;
 
-        console.log(
-          `Parent element startPos: ${parentStartPos}, endPos: ${parentEndPos}`
-        );
-
         if (parentStartPos && parentEndPos) {
           // 기존 하이라이트가 있을 경우 색상만 업데이트
           dispatch(
@@ -209,9 +206,6 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({ newsDetailItem }
               endPos: Number(parentEndPos),
               color: colorToLetterMap[color as ColorKeys],
             })
-          );
-          console.log(
-            `Updated highlight: startPos: ${parentStartPos}, endPos: ${parentEndPos}`
           );
         }
       } else {
@@ -248,7 +242,6 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({ newsDetailItem }
   // 하이라이트를 삭제하는 함수
   const removeHighlightHandler = () => {
     if (highlightedElement) {
-      console.log('highlightedElement:',highlightedElement);
       const startPos = highlightedElement.dataset.startPos;
       const endPos = highlightedElement.dataset.endPos;
 
@@ -275,10 +268,20 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({ newsDetailItem }
   };
 
   useEffect(() => {
-    const handleMouseUp = () => {
+    const handleMouseUp = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
       const selection = window.getSelection();
       if (selection && selection.rangeCount > 0) {
         const range = selection.getRangeAt(0);
+
+        const selectedTextLength = selection.toString().length;
+
+        // 선택된 텍스트가 한 글자보다 작거나 형광펜 적용된 부분이 아니면 팝업을 숨김
+        if (selectedTextLength < 1 && target.tagName !== 'BUTTON') {
+          setIsHighlightPopupVisible(false);
+          return;
+        }
+
         const rect = range.getBoundingClientRect();
 
         // 뉴스 기사 컨텐츠 내부의 스크롤을 반영하기 위해 offsetTop과 scrollTop 값을 더해줍니다.
@@ -307,9 +310,15 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({ newsDetailItem }
       }
     };
 
-    document.addEventListener("mouseup", handleMouseUp);
+    const newsContentElement = newsContentRef.current;
+    if (newsContentElement) {
+      newsContentElement.addEventListener("mouseup", handleMouseUp);
+    }
+
     return () => {
-      document.removeEventListener("mouseup", handleMouseUp);
+      if (newsContentElement) {
+        newsContentElement.removeEventListener("mouseup", handleMouseUp);
+      }
     };
   }, []);
 
@@ -321,14 +330,6 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({ newsDetailItem }
 
         // 클릭된 하이라이트된 요소를 저장
         setHighlightedElement(target);
-
-        // 하이라이트된 부분 클릭 시 시작 위치와 끝 위치를 콘솔에 출력
-        const startPos = target.dataset.startPos;
-        const endPos = target.dataset.endPos;
-
-        if (startPos && endPos) {
-          console.log(`Highlight clicked! Start: ${startPos}, End: ${endPos}`);
-        }
 
         // 하이라이트된 부분 클릭 시 팝업을 해당 위치에 표시
         const rect = target.getBoundingClientRect();
@@ -357,7 +358,7 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({ newsDetailItem }
           setPopupPosition({ top: adjustedTop, left: adjustedLeft });
           setIsHighlightPopupVisible(true);
         }
-      }
+      } 
     };
 
     document.addEventListener("mouseover", (event) => {
@@ -374,7 +375,7 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({ newsDetailItem }
   }, []);
 
   return (
-    <NewsContent id="newsContent">
+    <NewsContent id="newsContent" ref={newsContentRef}>
       <LikeButton newsId={newsDetailItem.newsId} /> {/* LikeButton 사용 */}
       {/* 뉴스 제목 클릭 시 새 창으로 이동 */}
       <NewsTitle onClick={handleTitleClick}>
