@@ -121,7 +121,7 @@ const NewsButton = styled.div`
   }
 `;
 
-const HotSection: React.FC = () => {
+const RecentSection: React.FC = () => {
   const [news, setNews] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -200,4 +200,4 @@ const HotSection: React.FC = () => {
   );
 };
 
-export default HotSection;
+export default RecentSection;
