@@ -251,12 +251,12 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
 
   // 요약 텍스트를 업데이트하는 함수
   const handleTransferText = (newSummary: string) => {
-    setSummaryText((prevSummary) => prevSummary + "\n" + newSummary); // 기존 요약에 새 텍스트를 추가
+    setSummaryText((prevSummary) => prevSummary + "\n\n" + newSummary); // 기존 요약에 새 텍스트를 추가
   };
 
   // 의견 텍스트를 업데이트하는 함수
   const handleTransferOpinionText = (newOpinion: string) => {
-    setOpinionText((prevOpinion) => prevOpinion + "\n" + newOpinion); // 기존 의견에 새 텍스트를 추가
+    setOpinionText((prevOpinion) => prevOpinion + "\n\n" + newOpinion); // 기존 의견에 새 텍스트를 추가
   };
 
   // getScrapData를 이용해 서버에서 데이터를 불러오기
@@ -443,7 +443,7 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
             $isOverflowing={isOverflowing}
           />
 
-          <NewsDetailAISummary onTransferText={handleTransferText} />
+          <NewsDetailAISummary newsId={newsId} onTransferText={handleTransferText} />
         </>
       )}
 

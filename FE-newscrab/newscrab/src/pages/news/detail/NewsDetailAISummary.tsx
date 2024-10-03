@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import { fetchNewsSummary } from "@apis/chatgpt/chatgpt";
 
 // AI 요약 버튼 스타일 정의
 const AIButtonStyled = styled.button`
@@ -80,22 +81,35 @@ const TextTransferButton = styled.button`
 `;
 
 interface NewsDetailAISummaryProps {
+  newsId: number; // newsId를 받아옴
   onTransferText: (text: string) => void; // summaryText를 업데이트하는 함수
 }
 
-const NewsDetailAISummary: React.FC<NewsDetailAISummaryProps> = ({ onTransferText }) => {
+const NewsDetailAISummary: React.FC<NewsDetailAISummaryProps> = ({ newsId, onTransferText }) => {
   const [showSummary, setShowSummary] = useState(false);
+  const [summaryText, setSummaryText] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleAIButtonClick = () => {
-    setShowSummary(!showSummary); // 버튼을 클릭할 때마다 상태를 토글
-  };
-
-  const summaryText = `
-  <서론> 부산 지역의 트리콜마트가 납품업체에 대금을 지급하지 않아 소규모 업체들이 피해를 호소하고 있습니다.
-
-  <본론> 일부 업체는 6개월 동안 대금을 받지 못했고, 본사는 법적 해결을 요구하며 소극적인 태도를 보였습니다.
   
-  <결론> 영세 납품업체들은 대응 비용이 부담되며 상황이 더욱 악화되고 있습니다.`;
+  const handleAIButtonClick = async () => {
+    setShowSummary(!showSummary); // 버튼을 클릭할 때마다 상태를 토글
+
+    // AI 요약 요청이 이미 있는 경우 다시 요청하지 않음
+    if (!showSummary && summaryText === "") {
+        setLoading(true); // 로딩 상태 시작
+        try {
+          const summary = await fetchNewsSummary(newsId); // API 요청
+          // <br/> 태그를 줄바꿈으로 변환
+          const formattedSummary = summary.replace(/<br\s*\/?>/gi, '\n');
+          setSummaryText(formattedSummary); // 받아온 요약 데이터를 저장
+        } catch (error) {
+          console.error("뉴스 요약 요청 실패:", error);
+          setSummaryText("요약을 가져오는 데 실패했습니다.");
+        } finally {
+          setLoading(false); // 로딩 상태 종료
+        }
+      }
+  };
 
   const handleTextTransfer = () => {
     onTransferText(summaryText); // summaryText를 업데이트하는 함수를 호출
@@ -109,13 +123,25 @@ const NewsDetailAISummary: React.FC<NewsDetailAISummaryProps> = ({ onTransferTex
       {showSummary && (
         <AISummaryBox>
           <AISummaryHeader>AI 요약</AISummaryHeader>
-          <AISummaryText>뉴스 본문을 자동으로 요약한 내용입니다.</AISummaryText>
-          <AISummaryTextContainer>
-            <AISummaryText>{summaryText}</AISummaryText>
-          </AISummaryTextContainer>
-          <TextTransferButton onClick={handleTextTransfer}>
-            위의 텍스트로 보내기
-          </TextTransferButton>
+          {loading ? (
+            <AISummaryText>요약을 가져오는 중...</AISummaryText> // 로딩 중 텍스트
+          ) : (
+            <>
+              <AISummaryText>뉴스 본문을 자동으로 요약한 내용입니다.</AISummaryText>
+              <AISummaryTextContainer>
+                {summaryText.split('\n').map((line, index) => (
+                    <React.Fragment key={index}>
+                        {line}
+                        <br />
+                        <br />
+                    </React.Fragment>
+                ))}
+              </AISummaryTextContainer>
+              <TextTransferButton onClick={handleTextTransfer}>
+                위의 텍스트로 보내기
+              </TextTransferButton>
+            </>
+          )}
         </AISummaryBox>
       )}
     </div>
