@@ -64,7 +64,12 @@ const getGlobalOffset = (node: Node, offsetInNode: number): number => {
   return globalOffset;
 };
 
-const applyHighlightsFromApi = (contentElement: HTMLElement, highlights: HighlightItem[], dispatch: any) => {
+const applyHighlightsFromApi = (
+  contentElement: HTMLElement, 
+  highlights: HighlightItem[], 
+  dispatch: any,
+  setHighlightedElement: (element: HTMLElement | null) => void
+) => {
   highlights.forEach(({ startPos, endPos, color }) => {
     const walker = document.createTreeWalker(
       contentElement,
@@ -102,8 +107,13 @@ const applyHighlightsFromApi = (contentElement: HTMLElement, highlights: Highlig
 
       const span = document.createElement("span");
       span.style.backgroundColor = letterToColorMap[color];
+      span.dataset.startPos = String(startPos);
+      span.dataset.endPos = String(endPos);
+      
       span.appendChild(range.extractContents());
       range.insertNode(span);
+
+      setHighlightedElement(span);
 
       dispatch(
         addHighlight({
@@ -140,7 +150,7 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({ newsDetailItem }
           console.log("형광펜 불러오기 :",highlightsFromApi);
           const contentElement = document.getElementById("newsContent");
           if (contentElement) {
-            applyHighlightsFromApi(contentElement, highlightsFromApi, dispatch);
+            applyHighlightsFromApi(contentElement, highlightsFromApi, dispatch, setHighlightedElement);
           }
         } catch (error) {
           console.error("Failed to fetch highlights from API:", error);
@@ -238,6 +248,7 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({ newsDetailItem }
   // 하이라이트를 삭제하는 함수
   const removeHighlightHandler = () => {
     if (highlightedElement) {
+      console.log('highlightedElement:',highlightedElement);
       const startPos = highlightedElement.dataset.startPos;
       const endPos = highlightedElement.dataset.endPos;
 
