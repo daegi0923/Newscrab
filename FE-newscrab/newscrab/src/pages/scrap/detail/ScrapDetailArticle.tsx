@@ -232,6 +232,10 @@ const ScrapDetailArticle: React.FC<ScrapDetailArticleProps> = ({ scrapId }) => {
     navigate(`/news/${scrapDetail?.newsId}`); // 원문기사로 이동
   };
 
+  const convertNewlinesToBr = (text: string): string => {
+    return text.replace(/\n/g, "<br />");
+  };
+
   return (
     <ScrapContent>
       {scrapDetail ? (
@@ -258,7 +262,7 @@ const ScrapDetailArticle: React.FC<ScrapDetailArticleProps> = ({ scrapId }) => {
                 </IndustryId>
               </Info>
               <Info>{scrapDetail.newsCompany}</Info>
-              <Info>{scrapDetail.createdAt.replace("T", " ")}</Info>{" "}
+              <Info>{scrapDetail.updatedAt.replace("T", " ")}</Info>{" "}
             </InfoGroup>
             {/* 조회수, 스크랩수 아이콘 */}
             <Stats>
@@ -305,11 +309,13 @@ const ScrapDetailArticle: React.FC<ScrapDetailArticleProps> = ({ scrapId }) => {
             <CrabIcon src={crab} alt="게 아이콘" />
             <span style={{ fontWeight: "bold" }}>요약</span>
           </CrabTextWrapper>
-          <NewsText>
-            {scrapDetail.scrapSummary
-              ? scrapDetail.scrapSummary
-              : "요약이 없습니다."}
-          </NewsText>
+          <NewsText
+            dangerouslySetInnerHTML={{
+              __html: scrapDetail.scrapSummary
+                ? convertNewlinesToBr(scrapDetail.scrapSummary)
+                : "요약이 없습니다.",
+            }}
+          />
           <Divider />
 
           {/* 의견 섹션 */}
@@ -317,9 +323,13 @@ const ScrapDetailArticle: React.FC<ScrapDetailArticleProps> = ({ scrapId }) => {
             <CrabIcon src={crab} alt="게 아이콘" />
             <span style={{ fontWeight: "bold" }}>의견</span>
           </CrabTextWrapper>
-          <NewsText>
-            {scrapDetail.comment ? scrapDetail.comment : "의견이 없습니다."}
-          </NewsText>
+          <NewsText
+            dangerouslySetInnerHTML={{
+              __html: scrapDetail.comment
+                ? convertNewlinesToBr(scrapDetail.comment)
+                : "의견이 없습니다.",
+            }}
+          />
           <Divider />
         </>
       ) : (
