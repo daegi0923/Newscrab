@@ -107,9 +107,9 @@ const ScrapDetailVoca: React.FC<{ scrapId: number }> = ({ scrapId }) => {
       ) : (
         <Wrapper>
           <VocaItem>
-            <VocaTitle>💡 단어를 등록해 주세요.</VocaTitle>
+            <VocaTitle>💡 단어가 없습니다.</VocaTitle>
             <Divider />
-            <VocaDescription>현재 등록된 단어가 없습니다.</VocaDescription>
+            <VocaDescription>단어를 등록해 주세요.</VocaDescription>
           </VocaItem>
         </Wrapper>
       )}

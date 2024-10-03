@@ -54,7 +54,7 @@ export const InfoGroup = styled.div`
   gap: 10px;
 `;
 
-export const Info = styled.p`
+export const Info = styled.div`
   color: #888;
   font-size: 14px;
 `;
