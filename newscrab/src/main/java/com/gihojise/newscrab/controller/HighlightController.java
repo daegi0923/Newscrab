@@ -32,6 +32,11 @@ public class HighlightController {
     }
 
     // 형광펜 추가
+    /**
+     * @deprecated Scrap 수정 API를 사용함으로써 형광펜 추가 API는 더 이상 사용되지 않습니다.
+     * @forRemoval true
+     */
+    @Deprecated(since = "1.2", forRemoval = true)
     @Operation(summary = "형광펜 추가", description = "해당 스크랩에 형광펜을 추가합니다.")
     @PostMapping
     public ResponseEntity<ApiResponse<Void>> addHighlight(@PathVariable int scrapId, @RequestBody HighlightDto highlightDto) {
@@ -42,6 +47,11 @@ public class HighlightController {
     }
 
     // 형광펜 삭제
+    /**
+     * @deprecated Scrap 수정 API를 사용함으로써 형광펜 삭제 API는 더 이상 사용되지 않습니다.
+     * @forRemoval true
+     */
+    @Deprecated
     @Operation(summary = "형광펜 삭제", description = "특정 형광펜을 삭제합니다.")
     @DeleteMapping("/{highlightId}")
     public ResponseEntity<ApiResponse<Void>> deleteHighlight(@PathVariable int scrapId, @PathVariable int highlightId) {
@@ -52,6 +62,11 @@ public class HighlightController {
     }
 
     // 형광펜 수정
+    /**
+     * @deprecated Scrap 수정 API를 사용함으로써 형광펜 수정 API는 더 이상 사용되지 않습니다.
+     * @forRemoval true
+     */
+    @Deprecated
     @Operation(summary = "형광펜 색 수정", description = "특정 형광펜의 색을 수정합니다.")
     @PatchMapping("/{highlightId}")
     public ResponseEntity<ApiResponse<Void>> updateHighlight(@PathVariable int scrapId, @PathVariable int highlightId, @RequestBody HighlightUpdateRequestDto highlightUpdateRequestDto) {
