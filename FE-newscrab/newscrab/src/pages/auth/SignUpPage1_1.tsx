@@ -16,7 +16,20 @@ const GlobalStyle = createGlobalStyle`
     height: 100%;
   }
 `;
+const SuccessMessage = styled.p`
+  color: green;
+  font-size: 12px; /* 글자 크기 작게 */
+  margin-top: -8%; /* 위와 약간의 간격 */
+  text-align: left; /* 왼쪽 정렬 */
+  margin-left: 9%; /* 왼쪽에 약간의 패딩 */
+  z-index: 5;
+`;
 
+const InputWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  margin-bottom: 5px; /* Input과 버튼의 간격 */
+`;
 const BackgroundContainer = styled.div`
   background-image: url(${BgImage});
   background-size: cover;
@@ -119,6 +132,7 @@ const SignUpPage1: React.FC = () => {
 
   const [isIdDuplicate, setIsIdDuplicate] = useState<boolean>(false); // ID 중복 여부
   const [isIdChecked, setIsIdChecked] = useState<boolean>(false); // 중복 확인 완료 여부
+  const [successMessage, setSuccessMessage] = useState("");
 
   const [errors, setErrors] = useState({
     loginId: "",
@@ -218,34 +232,37 @@ const SignUpPage1: React.FC = () => {
   }, [signupForm.birthday]);
 
   // ID 중복 확인
-  const handleIdCheck = async () => {
-    try {
-      const response = await axios.post(
-        "https://newscrab.duckdns.org/api/v1/user/nickname",
-        { loginId: signupForm.loginId }
-      );
+const handleIdCheck = async () => {
+  try {
+    const response = await axios.post(
+      "https://newscrab.duckdns.org/api/v1/user/nickname",
+      { loginId: signupForm.loginId }
+    );
 
-      if (response.data.statusCode === 208) {
-        setErrors((prevErrors) => ({
-          ...prevErrors,
-          loginId: "이미 사용중인 아이디입니다.",
-        }));
-        setIsIdDuplicate(true);
-        setIsIdChecked(false); // 중복 확인 실패
-      } else {
-        setErrors((prevErrors) => ({ ...prevErrors, loginId: "" }));
-        setIsIdDuplicate(false);
-        setIsIdChecked(true); // 중복 확인 성공
-      }
-    } catch (error) {
+    if (response.data.statusCode === 208) {
       setErrors((prevErrors) => ({
         ...prevErrors,
-        loginId: "ID 확인 중 오류가 발생했습니다.",
+        loginId: "이미 사용중인 아이디입니다.",
       }));
+      setIsIdDuplicate(true);
+      setIsIdChecked(false); // 중복 확인 실패
+      setSuccessMessage(""); // 성공 메시지를 초기화
+    } else {
+      setErrors((prevErrors) => ({ ...prevErrors, loginId: "" }));
       setIsIdDuplicate(false);
-      setIsIdChecked(false); // 오류 발생 시 확인 실패 상태로
+      setIsIdChecked(true); // 중복 확인 성공
+      setSuccessMessage("사용 가능한 아이디입니다."); // 성공 메시지 설정
     }
-  };
+  } catch (error) {
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      loginId: "ID 확인 중 오류가 발생했습니다.",
+    }));
+    setIsIdDuplicate(false);
+    setIsIdChecked(false); // 오류 발생 시 확인 실패 상태로
+    setSuccessMessage(""); // 성공 메시지를 초기화
+  }
+};
 
   const isFormValid =
     Object.values(errors).every((error) => error === "") &&
@@ -291,13 +308,7 @@ const SignUpPage1: React.FC = () => {
         <Overlay />
         <FormContainer>
           <Title>회원가입</Title>
-          <div
-            style={{
-              position: "relative",
-              display: "flex",
-              alignItems: "center",
-            }}
-          >
+          <InputWrapper>
             <Input
               name="loginId"
               type="text"
@@ -310,7 +321,10 @@ const SignUpPage1: React.FC = () => {
               placeholder="아이디를 입력하세요."
             />
             <DuplicateButton onClick={handleIdCheck}>중복 확인</DuplicateButton>
-          </div>
+          </InputWrapper>
+
+          {/* 성공 메시지를 Input 아래에 표시 */}
+          {successMessage && <SuccessMessage>{successMessage}</SuccessMessage>}
           <Input
             name="name"
             type="text"
