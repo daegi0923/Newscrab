@@ -117,7 +117,7 @@ const NewsButton = styled.div`
   cursor: pointer;
   text-decoration: none;
   &:hover {
-    text-decoration: underline;
+    text-decoration: none;
   }
 `;
 
