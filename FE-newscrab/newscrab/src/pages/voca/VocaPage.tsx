@@ -18,13 +18,13 @@ import { fetchVocaListThunk } from '@store/voca/vocaSlice';
 
 // 스타일 정의
 const SearchContainer = styled.div`
-  margin-top: -1%
+  margin-top: 3%
 `;
 
 const VocaContainer = styled.div`
   width: 80%;
   // margin-right: %;
-  margin-top: 1%;
+  margin-top: 3%;
 `;
 
 const CardContainer = styled.div`
