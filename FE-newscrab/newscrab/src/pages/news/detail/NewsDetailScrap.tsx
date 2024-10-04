@@ -321,13 +321,18 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
       scrapSummary: summaryText,
     };
   
-    const vocaAddList = vocaSections.map((section) => ({
-      newsId: newsId,
-      vocaName: section.word,
-      vocaDesc: section.desc,
-      industryId: section.industryId!,
-    }));
+    // 단어가 입력된 항목만 추가 (빈 단어 제외)
+  const vocaAddList = vocaSections
+  .filter((section) => section.word.trim() !== "") // 단어가 빈 문자열이 아닌 경우만 필터링
+  .map((section) => ({
+    newsId: newsId,
+    vocaName: section.word,
+    vocaDesc: section.desc,
+    industryId: section.industryId!,
+  }));
+
   
+    // 1. 단어가 입력되었는데 산업이 선택되지 않은 경우 오류 처리
     if (hasEmptyIndustry) {
       Swal.fire({
         icon: "warning",
@@ -336,11 +341,36 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
       });
       return;
     }
-
+  
     try {
       Swal.fire({
-        title: "잠시만 기다려 주세요...👩‍💻",
-        html: "연관 뉴스를 함께 추천하는 중입니다.",
+        title: "단어 추가 중...👩‍💻",
+        html: "단어 추가를 확인 중입니다. 잠시만 기다려 주세요.",
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
+      });
+  
+      // 2. 단어 추가 먼저 처리
+      let vocaAdded = false;
+      if (vocaAddList.length > 0) {
+        const result = await dispatch(addVocaThunk({ vocaAddList }));
+  
+        if (addVocaThunk.fulfilled.match(result)) {
+          vocaAdded = true;
+        } else if (addVocaThunk.rejected.match(result)) {
+          const errorMessage = result.payload || "단어 추가 중 문제가 발생했습니다.";
+          throw new Error(errorMessage); // 단어 추가에 문제가 있으면 스크랩 저장을 중단
+        }
+      }
+  
+      Swal.close();
+  
+      // 3. 단어 추가에 성공하면 스크랩 데이터 저장 시작
+      Swal.fire({
+        title: "스크랩 저장 중...👩‍💻",
+        html: "스크랩 데이터를 저장하는 중입니다.",
         allowOutsideClick: false,
         didOpen: () => {
           Swal.showLoading();
@@ -348,8 +378,6 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
       });
   
       let successMessage = '스크랩이 성공적으로 저장되었습니다.';
-      let vocaAdded = false;
-  
       if (scrapId) {
         await putScrap(scrapId, putscrapData);
         successMessage = '수정이 완료되었습니다.';
@@ -357,23 +385,15 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
         await postScrap(postscrapData);
       }
   
-      if (vocaAddList.length > 0) {
-        const result = await dispatch(addVocaThunk({ vocaAddList }));
-        
-        if (addVocaThunk.fulfilled.match(result)) {
-          vocaAdded = true;
-        } else if (addVocaThunk.rejected.match(result)) {
-          throw new Error(result.payload || "단어 추가 중 문제가 발생했습니다.");
-        }
-      }
-  
       Swal.close();
-  
+      
+      // 4. 저장 성공 메시지
       Swal.fire({
         icon: 'success',
         title: '저장 완료',
-        text: successMessage + (vocaAdded),
+        text: successMessage,
       });
+  
     } catch (error: any) {
       Swal.close();
   
@@ -382,14 +402,15 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
       if (error.response) {
         const statusCode = error.response.status;
         if (statusCode === 404) {
-          errorMessage = '리소스를 찾을 수 없습니다(404). 단어 추가에 실패했습니다.';
+          errorMessage = '단어 추가에 실패했습니다.';
         } else {
-          errorMessage = `서버 오류가 발생했습니다. 상태 코드: ${statusCode}`;
+          errorMessage = `서버 오류가 발생했습니다.`;
         }
       } else if (error instanceof Error) {
         errorMessage = error.message;
       }
   
+      // 5. 오류 발생 시 경고
       Swal.fire({
         icon: 'error',
         title: '저장 실패',
@@ -397,6 +418,8 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
       });
     }
   };
+  
+  
 
   // Industry 선택 함수
   const handleIndustrySelectVoca = (index: number, id: number) => {
