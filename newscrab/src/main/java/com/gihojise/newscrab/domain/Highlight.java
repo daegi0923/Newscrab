@@ -36,9 +36,8 @@ public class Highlight{
     @ColumnDefault("'Y'")
     private HighlightColor color;
 
-    //생성자
-    public Highlight(Scrap scrap, Integer startPos, Integer endPos, HighlightColor color) {
-        this.scrap = scrap;
+    public Highlight(Scrap finalScrap, Integer startPos, Integer endPos, HighlightColor color) {
+        this.scrap = finalScrap;
         this.startPos = startPos;
         this.endPos = endPos;
         this.color = color;

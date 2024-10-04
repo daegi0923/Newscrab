@@ -45,14 +45,19 @@ public class Scrap extends BaseTimeEntity {
     private List<Highlight> highlights;
 
     // 업데이트 메서드
-    public void update(String scrapSummary, String comment) {
-        if (scrapSummary != null) {
-            this.scrapSummary = scrapSummary;
-        }
-        if (comment != null) {
-            this.comment = comment;
+    public void update(String scrapSummary, String comment, List<Highlight> newHighlights) {
+        this.scrapSummary = scrapSummary;
+        this.comment = comment;
+
+        // 기존 하이라이트 목록 제거
+        if (this.highlights != null) {
+            this.highlights.clear();  // 기존 컬렉션을 먼저 비워준다.
         }
 
+        // 새로운 하이라이트 목록 설정
+        if (newHighlights != null) {
+            this.highlights.addAll(newHighlights);
+        }
         this.updatedAt = LocalDateTime.now();
     }
 
