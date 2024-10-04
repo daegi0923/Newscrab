@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -200,7 +199,23 @@ public class ScrapService {
             throw new NewscrabException(ErrorCode.USER_NOT_MATCH);
         }
 
-        scrap.update(scrapUpdateRequestDto.getScrapSummary(), scrapUpdateRequestDto.getComment());
+
+        // 새로운 하이라이트를 생성
+        List<Highlight> newHighlights = scrapUpdateRequestDto.getHighlights() != null ?
+        scrapUpdateRequestDto.getHighlights().stream()
+                .map(highlightDto -> new Highlight(
+                        scrap,  // Now that Scrap is persisted, associate it
+                        highlightDto.getStartPos(),
+                        highlightDto.getEndPos(),
+                        highlightDto.getColor()))
+                .collect(Collectors.toList()) : null;
+
+        // 스크랩을 업데이트할 때, 기존 하이라이트를 대체한다.
+        scrap.update(scrapUpdateRequestDto.getScrapSummary(), scrapUpdateRequestDto.getComment(), newHighlights);
+
+        // 변경 사항을 저장
+        scrapRepository.save(scrap);
+
     }
 
     // 5. 스크랩 삭제
