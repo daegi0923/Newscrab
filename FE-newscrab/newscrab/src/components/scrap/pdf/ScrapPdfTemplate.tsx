@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useRef  } from 'react';
 import styled from 'styled-components';
 import { ScrapData, Vocalist, Highlight } from '../../../types/scrapTypes'; // ScrapData 및 Vocalist 타입 import
 
@@ -100,8 +100,30 @@ type ScrapDetailArticleProps = {
 };
 
 const ScrapPdfTemplate: React.FC<{ scrap: ScrapData }> = ({ scrap }) => {
+
+  const newsContentRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (scrap && newsContentRef.current && scrap.highlightList) {
+      const contentElement = newsContentRef.current;
+  
+      // highlightList를 Highlight 형식으로 변환
+      const highlights = scrap.highlightList.map(highlight => ({
+        highlightId: highlight.highlightId, 
+        startPos: highlight.startPos,
+        endPos: highlight.endPos,
+        color: highlight.color, 
+      }));
+  
+      if (contentElement) {
+        console.log('Applying highlights:', highlights);
+        applyHighlightsFromApi(contentElement, highlights); // 변환된 highlights 전달
+      }
+    }
+  },[]);
+
   console.log(scrap.newsContent);
   console.log(scrap.highlightList);
+  console.log(applyHighlightsFromApi(newsContentRef, scrap.highlightList))
   return (
     <ScrapDetail>
       <Table>
