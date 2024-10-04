@@ -27,31 +27,20 @@ export const fetchVocaDetailThunk = createAsyncThunk(
   }
 );
 
-// // Voca 추가 비동기 함수
-// export const addVocaThunk = createAsyncThunk(
-//   "voca/addVoca",
-//   async (vocaData: { newsId: number; vocaName: string; vocaDesc: string; sentence: string; industryId: number }[], { rejectWithValue }) => {
-//     try {
-//       const response = await addVoca(vocaData);  // vocaData를 API에 전달
-//       return response.data;
-//     } catch (error: any) {
-//       return rejectWithValue(error.response?.data || "Voca 추가 실패");
-//     }
-//   }
-// );
-
 // Voca 추가 비동기 함수 (배열 형태로 vocaAddList 받기)
-export const addVocaThunk = createAsyncThunk(
+export const addVocaThunk = createAsyncThunk<
+  any, // 성공 시 반환 타입
+  { vocaAddList: { newsId: number; vocaName: string; vocaDesc: string; industryId: number }[] }, // 인자 타입
+  { rejectValue: string } // 실패 시 반환할 값의 타입을 명시적으로 지정
+>(
   "voca/addVoca",
-  async (
-    vocaAddList: { vocaAddList: { newsId: number; vocaName: string; vocaDesc: string; industryId: number }[] }, 
-    { rejectWithValue }
-  ) => {
+  async (vocaAddList, { rejectWithValue }) => {
     try {
       const response = await addVoca(vocaAddList); // vocaAddList를 배열로 전달
       return response.data;
     } catch (error: any) {
-      return rejectWithValue(error.response?.data || "Voca 추가 실패");
+      // 오류 발생 시 rejectWithValue로 문자열을 반환
+      return rejectWithValue(error.response?.data || "뉴스에 있는 단어를 입력해주세요🦀");
     }
   }
 );
