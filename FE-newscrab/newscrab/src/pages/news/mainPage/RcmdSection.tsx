@@ -17,6 +17,13 @@ const formatDate = (dateString: string) => {
   return `${year}-${month}-${day}`;
 };
 
+// 로딩 메시지 스타일
+const LoadingMessage = styled.div`
+  text-align: center;
+  font-size: 18px;
+  margin-top: 250px;
+`;
+
 // 스크롤 가능한 컨테이너
 const ScrollableContainer = styled.div`
   padding: 0px 10px;
@@ -49,9 +56,9 @@ const TextContainer = styled.div`
 `;
 
 const IndustryRcmdWrapper = styled.div`
-  display: inline-flex; /* 인라인 요소로 만들기 */
-  align-items: center; /* 수직 정렬을 가운데로 */
-  gap: 5px; /* IndustryId와 RcmdText 사이 간격 */
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
   margin-right: 5px;
   margin-bottom: 10px;
 `;
@@ -63,7 +70,6 @@ const IndustryId = styled.div`
   border: 1px solid #666;
   background-color: #666;
   border-radius: 20px;
-  display: inline-block;
   color: white;
   text-align: center;
   font-weight: bold;
@@ -73,12 +79,12 @@ const RcmdText = styled.div<{ rcmdType: string }>`
   font-size: 12px;
   color: ${(props) =>
     props.rcmdType === "userBase"
-      ? "#4CAF50" // 맞춤 추천일 때 초록색
+      ? "#4CAF50"
       : props.rcmdType === "itemBase"
-      ? "#FF9800" // 분류별 추천일 때 주황색
+      ? "#FF9800"
       : props.rcmdType === "latest"
-      ? "#2196F3" // 최신 추천일 때 파란색
-      : "#555"}; // 기본 색상
+      ? "#2196F3"
+      : "#555"};
   padding: 2px 8px;
   border: 1px solid
     ${(props) =>
@@ -96,7 +102,6 @@ const RcmdText = styled.div<{ rcmdType: string }>`
 
 const NewsTitle = styled.h2`
   font-size: 18px;
-  // font-weight: bold;
   margin-top: 8px;
   margin-bottom: 15px;
 `;
@@ -147,17 +152,18 @@ const NewsButton = styled.div`
 
 const RcmdSection: React.FC = () => {
   const [rcmdNews, setRcmdNews] = useState<RcmdNewsItem[]>([]);
+  const [loading, setLoading] = useState(true); // 로딩 상태 추가
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchRcmdNews = async () => {
       try {
         const newsData = await getRcmdNews();
-        // 받아온 데이터에서 처음 15개만 사용
-        setRcmdNews(newsData.slice(0, 15));
-        console.log("Fetched news data:", newsData);
+        setRcmdNews(newsData.slice(0, 15)); // 받아온 데이터에서 처음 15개만 사용
       } catch (error) {
         console.error("Error fetching recommended news:", error);
+      } finally {
+        setLoading(false); // 데이터 로딩 후 로딩 상태를 false로 변경
       }
     };
 
@@ -178,48 +184,53 @@ const RcmdSection: React.FC = () => {
 
   return (
     <ScrollableContainer>
-      {rcmdNews.map((news) => (
-        <RcmdItemContainer key={news.newsId}>
-          {news.photoUrlList && (
-            <Image src={news.photoUrlList[0]} alt="이미지 없음" />
-          )}
-          <FlexContainer>
-            <TextContainer>
-              <NewsTitle>
-                <IndustryRcmdWrapper>
-                  <IndustryId>
-                    {industry.find((ind) => ind.industryId === news.industryId)
-                      ?.industryName || "미분류 산업"}
-                  </IndustryId>
-                  <RcmdText rcmdType={news.rcmd}>
-                    {getRcmdText(news.rcmd)}
-                  </RcmdText>
-                </IndustryRcmdWrapper>
-                <span>{news.newsTitle}</span>
-              </NewsTitle>
-              <WrapperRow>
-                <InfoRow>
-                  <NewsButton onClick={() => handleNewsClick(news.newsId)}>
-                    뉴스보기
-                  </NewsButton>
-                  <span>{news.newsCompany}</span>
-                  <span>{formatDate(news.newsPublishedAt)}</span>
-                </InfoRow>
-                <IconGroup>
-                  <span>
-                    <ViewIcon src={viewIcon} alt="조회수 아이콘" />
-                    {news.view}
-                  </span>
-                  <span>
-                    <ScrapCntIcon src={scrapCntIcon} alt="스크랩수 아이콘" />
-                    {news.scrapCnt}
-                  </span>
-                </IconGroup>
-              </WrapperRow>
-            </TextContainer>
-          </FlexContainer>
-        </RcmdItemContainer>
-      ))}
+      {loading ? (
+        <LoadingMessage>뉴스 데이터를 불러오는 중입니다...</LoadingMessage>
+      ) : (
+        rcmdNews.map((news) => (
+          <RcmdItemContainer key={news.newsId}>
+            {news.photoUrlList && (
+              <Image src={news.photoUrlList[0]} alt="이미지 없음" />
+            )}
+            <FlexContainer>
+              <TextContainer>
+                <NewsTitle>
+                  <IndustryRcmdWrapper>
+                    <IndustryId>
+                      {industry.find(
+                        (ind) => ind.industryId === news.industryId
+                      )?.industryName || "미분류 산업"}
+                    </IndustryId>
+                    <RcmdText rcmdType={news.rcmd}>
+                      {getRcmdText(news.rcmd)}
+                    </RcmdText>
+                  </IndustryRcmdWrapper>
+                  <span>{news.newsTitle}</span>
+                </NewsTitle>
+                <WrapperRow>
+                  <InfoRow>
+                    <NewsButton onClick={() => handleNewsClick(news.newsId)}>
+                      뉴스보기
+                    </NewsButton>
+                    <span>{news.newsCompany}</span>
+                    <span>{formatDate(news.newsPublishedAt)}</span>
+                  </InfoRow>
+                  <IconGroup>
+                    <span>
+                      <ViewIcon src={viewIcon} alt="조회수 아이콘" />
+                      {news.view}
+                    </span>
+                    <span>
+                      <ScrapCntIcon src={scrapCntIcon} alt="스크랩수 아이콘" />
+                      {news.scrapCnt}
+                    </span>
+                  </IconGroup>
+                </WrapperRow>
+              </TextContainer>
+            </FlexContainer>
+          </RcmdItemContainer>
+        ))
+      )}
     </ScrollableContainer>
   );
 };
