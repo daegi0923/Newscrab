@@ -98,6 +98,7 @@ public class ScrapService {
                                 .vocaName(voca.getVocaName())
                                 .vocaDesc(voca.getVocaDesc())
                                 .originNewsId(voca.getNews().getNewsId())
+                                .industryId(voca.getIndustryId())
                                 .sentence(voca.getSentence())
                                 .createdAt(voca.getCreatedAt())
                                 .updatedAt(voca.getUpdatedAt())
