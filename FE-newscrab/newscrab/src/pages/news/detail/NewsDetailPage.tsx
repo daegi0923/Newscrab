@@ -9,6 +9,7 @@ import NewsDetailRcmd from "./NewsDetailRcmd";
 // api
 import { getNewsDetail } from "@apis/news/newsDetailApi";
 import { NewsDetailItem } from "../../../types/newsTypes";
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa"; // 화살표 아이콘 가져오기
 
 const NewsDetailContainer = styled.div`
   margin: 0px 100px;
@@ -37,6 +38,19 @@ const BackButton = styled.button`
   &:hover {
     background-color: #ff8f4d;
   }
+`;
+
+const ArrowButton = styled.button<{ hidden: boolean }>`
+  ${({ hidden }) => (hidden ? "display: none;" : "")};
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  background-color: transparent;
+  border: none;
+  color: #ffbe98;
+  font-size: 40px;
+  padding: 0;
 `;
 
 const NewsDetailPage: React.FC = () => {
@@ -69,11 +83,34 @@ const NewsDetailPage: React.FC = () => {
     navigate("/news");
   };
 
+  const handlePrevClick = () => {
+    if (newsId && parseInt(newsId, 10) > 1) {
+      const prevNewsId = parseInt(newsId, 10) + 1;
+      navigate(`/news/${prevNewsId}`);
+    }
+  };
+
+  const handleNextClick = () => {
+    if (newsId) {
+      const nextNewsId = parseInt(newsId, 10) - 1;
+      navigate(`/news/${nextNewsId}`);
+    }
+  };
+
   return (
     <div>
       <NewsDetailContainer>
         <Header />
         <BackButton onClick={handleBackClick}>뉴스 목록</BackButton>
+
+        <ArrowButton
+          hidden={!newsId || parseInt(newsId, 10) === 1}
+          onClick={handlePrevClick}
+          style={{ left: "-60px" }}
+        >
+          <FaChevronLeft /> {/* 왼쪽 화살표 아이콘 */}
+        </ArrowButton>
+
         <NewsWrapper>
           {isLoading ? (
             <div>Loading news...</div>
@@ -88,6 +125,15 @@ const NewsDetailPage: React.FC = () => {
             )
           )}
         </NewsWrapper>
+
+        <ArrowButton
+          hidden={!newsId}
+          onClick={handleNextClick}
+          style={{ right: "-60px" }}
+        >
+          <FaChevronRight /> {/* 오른쪽 화살표 아이콘 */}
+        </ArrowButton>
+
         {/* newsDetailItem을 NewsDetailRcmd로 넘겨줌 */}
         {newsId && newsDetailItem && (
           <NewsDetailRcmd

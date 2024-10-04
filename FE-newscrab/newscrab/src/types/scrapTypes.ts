@@ -14,11 +14,19 @@ export interface Vocalist {
 }
 
 export interface Highlight {
-  highlightId: number;
+  highlightId: number| null;
   startPos: number;
   endPos: number;
   color: "Y" | "R" | "G" | "B"; // Y, R, G 등의 값으로 색상 표현
 }
+
+export interface PostHighlight {
+  startPos: number;
+  endPos: number;
+  color: string; // Y, R, G 등의 값으로 색상 표현
+}
+
+
 
 export interface ScrapData {
   scrapId: number;
@@ -53,7 +61,7 @@ export interface PostScrapRequest {
   newsId: number | null;
   comment: string | null;
   scrapSummary: string | null;
-  highlights: Highlight[] | null;
+  highlights: PostHighlight[] | null;
 }
 
 // 스크랩 put요청
