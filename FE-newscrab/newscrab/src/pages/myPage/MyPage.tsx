@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
-import { AppDispatch } from "@store/index";
+import { AppDispatch } from '@store/index';
 // import { useDispatch, useSelector } from 'react-redux';
-import { useDispatch,  } from 'react-redux';
+import { useDispatch } from 'react-redux';
 // import { useNavigate } from 'react-router-dom';
-import { fetchUserProfileThunk } from "@store/myPage/profileSlice";
+import { fetchUserProfileThunk } from '@store/myPage/profileSlice';
 // import { RootState } from '@store/index';
 import UserProfile from '@components/myPage/UserProfile';
 import Ping from '@components/myPage/Ping';
@@ -59,34 +59,23 @@ const MyPage: React.FC = () => {
   // const navigate = useNavigate();
   const dispatch: AppDispatch = useDispatch();
   // const { userInfo } = useSelector((state: RootState) => state.mypage);
-  
-  
 
   // 사용자 정보를 불러와서 초기값 설정 (처음 마운트될 때)
   useEffect(() => {
     dispatch(fetchUserProfileThunk())
       .unwrap()
       .then((res) => {
-        console.log("프로필 데이터 불러옴:", res);
+        console.log('프로필 데이터 불러옴:', res);
       })
       .catch((error) => {
-        console.error("프로필 불러오기 오류:", error);
+        console.error('프로필 불러오기 오류:', error);
       });
   }, [dispatch]);
-  const activityData = {
-    1: 5,
-    2: 10,
-    3: 0,
-    4: 2,
-    5: 15,
-    6: 8,
-    7: 12,
-  };
-  
-   // 컴포넌트가 마운트될 때 새로고침 여부 확인 및 새로고침 실행
-   useEffect(() => {
+
+  // 컴포넌트가 마운트될 때 새로고침 여부 확인 및 새로고침 실행
+  useEffect(() => {
     const hasRefreshed = sessionStorage.getItem('hasRefreshed');
-    
+
     if (!hasRefreshed) {
       sessionStorage.setItem('hasRefreshed', 'true'); // 새로고침 방지 위한 값 설정
       window.location.reload(); // 페이지 리로드
@@ -102,7 +91,7 @@ const MyPage: React.FC = () => {
     <PageContainer>
       <LeftSection>
         <UserProfile />
-        <Calendar activityData={activityData} />
+        <Calendar />
       </LeftSection>
 
       <RightSection>
@@ -110,10 +99,10 @@ const MyPage: React.FC = () => {
           <Ping />
           <Fortune />
         </TopSection>
-        
+
         <BottomSection>
-          <ViewNews/>
-          <LikeNews/>
+          <ViewNews />
+          <LikeNews />
         </BottomSection>
       </RightSection>
     </PageContainer>

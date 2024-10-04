@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { NewsItem } from "../../../types/newsTypes";
+import { RcmdNewsItem } from "../../../types/newsTypes";
 import viewIcon from "@assets/hot.png";
 import scrapCntIcon from "@assets/scrap.png";
 import { industry } from "@common/Industry";
@@ -41,6 +41,13 @@ const TextContainer = styled.div`
   flex: 1;
 `;
 
+const IndustryRcmdContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center; /* 수직 가운데 정렬 */
+  gap: 10px; /* 요소 간의 간격 */
+`;
+
 const IndustryId = styled.div`
   font-size: 12px;
   color: #555;
@@ -48,6 +55,31 @@ const IndustryId = styled.div`
   border: 1px solid #555;
   border-radius: 20px;
   display: inline-block;
+  text-align: center;
+  font-weight: bold;
+`;
+
+const RcmdText = styled.div<{ rcmdType: string }>`
+  font-size: 12px;
+  color: ${(props) =>
+    props.rcmdType === "userBase"
+      ? "#4CAF50" // 맞춤 추천일 때 초록색
+      : props.rcmdType === "itemBase"
+      ? "#FF9800" // 분류별 추천일 때 주황색
+      : props.rcmdType === "latest"
+      ? "#2196F3" // 최신 추천일 때 파란색
+      : "#555"}; // 기본 색상
+  padding: 2px 8px;
+  border: 1px solid
+    ${(props) =>
+      props.rcmdType === "userBase"
+        ? "#4CAF50"
+        : props.rcmdType === "itemBase"
+        ? "#FF9800"
+        : props.rcmdType === "latest"
+        ? "#2196F3"
+        : "#555"};
+  border-radius: 20px;
   text-align: center;
   font-weight: bold;
 `;
@@ -94,17 +126,24 @@ const truncateTitle = (title: string) => {
     : title;
 };
 
-const NewsList: React.FC<{
-  newsList: NewsItem[];
+// rcmd 값을 한글로 변환하는 함수
+const getRcmdText = (rcmd: string) => {
+  if (rcmd === "userBase") return "맞춤 추천";
+  if (rcmd === "itemBase") return "분류별 추천";
+  if (rcmd === "latest") return "최근 추천";
+  return "추천";
+};
+
+const RcmdNewsList: React.FC<{
+  newsList: RcmdNewsItem[];
   onNewsClick: (newsId: number) => void;
 }> = ({ newsList, onNewsClick }) => {
   const getIndustryName = (industryId: number): string => {
     const matchedCategory = industry.find(
       (ind) => ind.industryId === industryId
     );
-    return matchedCategory ? matchedCategory.industryName : "알 수 없음";
+    return matchedCategory ? matchedCategory.industryName : "미분류 산업";
   };
-
   return (
     <GridContainer>
       {newsList.map((news) => (
@@ -117,7 +156,12 @@ const NewsList: React.FC<{
               <Image src={news.photoUrlList[0]} alt="이미지가 없습니다." />
             )}
             <TextContainer>
-              <IndustryId>{getIndustryName(news.industryId)}</IndustryId>
+              <IndustryRcmdContainer>
+                <IndustryId>{getIndustryName(news.industryId)}</IndustryId>
+                <RcmdText rcmdType={news.rcmd}>
+                  {getRcmdText(news.rcmd)}
+                </RcmdText>
+              </IndustryRcmdContainer>
               <NewsTitle>{truncateTitle(news.newsTitle)}</NewsTitle>
               <InfoRow>
                 <span>{news.newsCompany}</span>
@@ -141,4 +185,4 @@ const NewsList: React.FC<{
   );
 };
 
-export default NewsList;
+export default RcmdNewsList;

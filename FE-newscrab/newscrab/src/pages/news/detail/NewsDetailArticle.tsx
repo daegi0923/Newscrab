@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
-import styled from "styled-components";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useState, useEffect, useRef  } from "react";
+import { useDispatch, useSelector  } from "react-redux";
 import { RootState } from "@store/index";
 import {
   addHighlight,
@@ -16,115 +15,20 @@ import { industry } from "@common/Industry"; // 산업 데이터를 가져오기
 import HighlightComponent from "../../scrap/highlight/HighlightComponent";
 import { getScrapHighlights } from "@apis/highlight/highlightApi";
 import { HighlightItem } from "../../../types/highlightTypes";
-
-// 스타일 정의
-const NewsContent = styled.div`
-  width: 60%;
-  padding-right: 20px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  padding: 15px 100px;
-  background-color: #fff;
-  max-height: 680px;
-  min-height: 680px;
-  overflow-y: auto;
-  position: relative;
-
-  &::-webkit-scrollbar {
-    width: 8px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background-color: #888;
-    border-radius: 12px;
-    box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
-  }
-
-  &::-webkit-scrollbar-thumb:hover {
-    background-color: #666;
-  }
-
-  &::-webkit-scrollbar-track {
-    background-color: transparent;
-  }
-  user-select: text;
-`;
-
-const NewsTitle = styled.h2`
-  font-size: 24px;
-  font-weight: bold;
-  cursor: pointer; /* 클릭 가능한 요소로 설정 */
-  color: #007bff; /* 링크 스타일처럼 색상 변경 */
-  text-decoration: underline; /* 밑줄 추가 */
-
-  &:hover {
-    color: #0056b3; /* 호버 시 색상 변경 */
-  }
-`;
-
-const IndustryId = styled.div`
-  font-size: 12px;
-  color: #555;
-  padding: 2px 8px;
-  border: 1px solid #555;
-  border-radius: 20px;
-  display: inline-block;
-  text-align: center;
-  font-weight: bold;
-  margin-bottom: 8px;
-`;
-
-const MetaInfoContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-`;
-
-const InfoGroup = styled.div`
-  display: flex;
-  gap: 10px;
-`;
-
-const Info = styled.p`
-  color: #888;
-  font-size: 14px;
-`;
-
-const Stats = styled.div`
-  display: flex;
-  gap: 10px;
-  color: #888;
-  font-size: 14px;
-`;
-
-const IconContainer = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 5px;
-`;
-
-const ViewIcon = styled.img`
-  width: 12.45px;
-  height: 16px;
-`;
-
-const ScrapCntIcon = styled.img`
-  width: 16px;
-  height: 16px;
-`;
-
-const NewsText = styled.div`
-  line-height: 1.6;
-  font-size: 16px;
-`;
-
-const Divider = styled.hr`
-  border: none;
-  border-top: 1px solid #ddd;
-  margin-bottom: 20px;
-`;
+import {
+  NewsContent,
+  NewsTitle,
+  IndustryId,
+  MetaInfoContainer,
+  InfoGroup,
+  Info,
+  Stats,
+  IconContainer,
+  ViewIcon,
+  ScrapCntIcon,
+  NewsText,
+  Divider,
+} from "./NewsDetailArticleStyles";
 
 const colorToLetterMap = {
   "#fde2e4": "R", // Red
@@ -140,7 +44,6 @@ const letterToColorMap = {
   B: "#cddafd", // Blue
 } as const;
 
-
 type ColorKeys = keyof typeof colorToLetterMap;
 
 type ScrapDetailArticleProps = {
@@ -150,7 +53,7 @@ type ScrapDetailArticleProps = {
 // getIndustryName 함수를 정의하여 industryId를 이용해 산업 이름을 가져오는 함수
 const getIndustryName = (industryId: number): string => {
   const matchedCategory = industry.find((ind) => ind.industryId === industryId);
-  return matchedCategory ? matchedCategory.industryName : "알 수 없음";
+  return matchedCategory ? matchedCategory.industryName : "미분류 산업";
 };
 
 // 전체 문서에서의 글로벌 오프셋을 계산하는 함수
@@ -159,7 +62,7 @@ const getGlobalOffset = (node: Node, offsetInNode: number): number => {
   const walker = document.createTreeWalker(
     document.getElementById("newsContent") as Node, // 전체 뉴스 콘텐츠 영역
     NodeFilter.SHOW_TEXT, // 텍스트 노드만 순회
-    null,
+    null
   );
 
   let currentNode;
@@ -172,12 +75,17 @@ const getGlobalOffset = (node: Node, offsetInNode: number): number => {
   return globalOffset;
 };
 
-const applyHighlightsFromApi = (contentElement: HTMLElement, highlights: HighlightItem[]) => {
+const applyHighlightsFromApi = (
+  contentElement: HTMLElement, 
+  highlights: HighlightItem[], 
+  dispatch: any,
+  setHighlightedElement: (element: HTMLElement | null) => void
+) => {
   highlights.forEach(({ startPos, endPos, color }) => {
     const walker = document.createTreeWalker(
       contentElement,
       NodeFilter.SHOW_TEXT,
-      null,
+      null
     );
 
     let currentPos = 0;
@@ -210,38 +118,55 @@ const applyHighlightsFromApi = (contentElement: HTMLElement, highlights: Highlig
 
       const span = document.createElement("span");
       span.style.backgroundColor = letterToColorMap[color];
+      span.dataset.startPos = String(startPos);
+      span.dataset.endPos = String(endPos);
+      
       span.appendChild(range.extractContents());
       range.insertNode(span);
+
+      setHighlightedElement(span);
+
+      dispatch(
+        addHighlight({
+          startPos,
+          endPos,
+          color, // 서버에서 받은 하이라이트의 color (이미 R, Y, G, B로 저장되어 있음)
+        })
+      );
     }
   });
 };
 
-
-
-
-const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({ newsDetailItem }) => {
+const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({
+  newsDetailItem,
+}) => {
   const dispatch = useDispatch();
-  const highlights = useSelector((state: RootState) => state.highlight.highlights);
+  const highlights = useSelector(
+    (state: RootState) => state.highlight.highlights
+  );
   const [isHighlightPopupVisible, setIsHighlightPopupVisible] = useState(false);
-  const [popupPosition, setPopupPosition] = useState<{
-    top: number;
-    left: number;
-  }>({ top: 0, left: 0 });
-  const [highlightedElement, setHighlightedElement] =
-    useState<HTMLElement | null>(null);
-
+  const [popupPosition, setPopupPosition] = useState<{top: number; left: number;}>({ top: 0, left: 0 });
+  const [highlightedElement, setHighlightedElement] = useState<HTMLElement | null>(null);
+  
+  const newsContentRef = useRef<HTMLDivElement | null>(null);
 
   // scrapId에 따라 하이라이트 처리 방식 결정
   useEffect(() => {
-    if (newsDetailItem.scrapId !== null && newsDetailItem.scrapId !== undefined) {
+    if (
+      newsDetailItem.scrapId !== null &&
+      newsDetailItem.scrapId !== undefined
+    ) {
       // scrapId가 있는 경우 서버에서 하이라이트 정보 가져오기
       const fetchHighlights = async () => {
         try {
+          // 기존 Redux에 있는 하이라이트 초기화
+          dispatch(clearHighlights());
+
           const highlightsFromApi = await getScrapHighlights(newsDetailItem.scrapId as number);
           console.log("형광펜 불러오기 :",highlightsFromApi);
           const contentElement = document.getElementById("newsContent");
           if (contentElement) {
-            applyHighlightsFromApi(contentElement, highlightsFromApi);
+            applyHighlightsFromApi(contentElement, highlightsFromApi, dispatch, setHighlightedElement);
           }
         } catch (error) {
           console.error("Failed to fetch highlights from API:", error);
@@ -252,28 +177,18 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({ newsDetailItem }
       console.log("No scrapId, using Redux highlights.");
     }
   }, [newsDetailItem.scrapId, dispatch]);
-  
-  
+
   // Redux 상태 출력 (디버깅 용도)
   useEffect(() => {
-    if (!newsDetailItem.scrapId) {
-      console.log("Current highlights in Redux:", highlights);
-    }
+    console.log("Current highlights in Redux:", highlights);
   }, [highlights, newsDetailItem.scrapId]);
-  
+
   const handleTitleClick = () => {
     window.open(newsDetailItem.newsUrl, "_blank"); // 새 창에서 링크 열기
   };
 
-  
-
   // 드래그한 부분에 스타일을 적용하는 함수
   const applyHighlight = (color: string) => {
-    if (newsDetailItem.scrapId) {
-      // scrapId가 있으면 하이라이트 추가를 막음
-      return;
-    }
-
     const selection = window.getSelection();
     if (selection && selection.rangeCount > 0) {
       const range = selection.getRangeAt(0);
@@ -295,10 +210,6 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({ newsDetailItem }
           range.startContainer.parentElement.dataset.startPos;
         const parentEndPos = range.startContainer.parentElement.dataset.endPos;
 
-        console.log(
-          `Parent element startPos: ${parentStartPos}, endPos: ${parentEndPos}`
-        );
-
         if (parentStartPos && parentEndPos) {
           // 기존 하이라이트가 있을 경우 색상만 업데이트
           dispatch(
@@ -307,9 +218,6 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({ newsDetailItem }
               endPos: Number(parentEndPos),
               color: colorToLetterMap[color as ColorKeys],
             })
-          );
-          console.log(
-            `Updated highlight: startPos: ${parentStartPos}, endPos: ${parentEndPos}`
           );
         }
       } else {
@@ -372,10 +280,20 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({ newsDetailItem }
   };
 
   useEffect(() => {
-    const handleMouseUp = () => {
+    const handleMouseUp = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
       const selection = window.getSelection();
       if (selection && selection.rangeCount > 0) {
         const range = selection.getRangeAt(0);
+
+        const selectedTextLength = selection.toString().length;
+
+        // 선택된 텍스트가 한 글자보다 작거나 형광펜 적용된 부분이 아니면 팝업을 숨김
+        if (selectedTextLength < 1 && target.tagName !== 'BUTTON') {
+          setIsHighlightPopupVisible(false);
+          return;
+        }
+
         const rect = range.getBoundingClientRect();
 
         // 뉴스 기사 컨텐츠 내부의 스크롤을 반영하기 위해 offsetTop과 scrollTop 값을 더해줍니다.
@@ -404,9 +322,15 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({ newsDetailItem }
       }
     };
 
-    document.addEventListener("mouseup", handleMouseUp);
+    const newsContentElement = newsContentRef.current;
+    if (newsContentElement) {
+      newsContentElement.addEventListener("mouseup", handleMouseUp);
+    }
+
     return () => {
-      document.removeEventListener("mouseup", handleMouseUp);
+      if (newsContentElement) {
+        newsContentElement.removeEventListener("mouseup", handleMouseUp);
+      }
     };
   }, []);
 
@@ -418,14 +342,6 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({ newsDetailItem }
 
         // 클릭된 하이라이트된 요소를 저장
         setHighlightedElement(target);
-
-        // 하이라이트된 부분 클릭 시 시작 위치와 끝 위치를 콘솔에 출력
-        const startPos = target.dataset.startPos;
-        const endPos = target.dataset.endPos;
-
-        if (startPos && endPos) {
-          console.log(`Highlight clicked! Start: ${startPos}, End: ${endPos}`);
-        }
 
         // 하이라이트된 부분 클릭 시 팝업을 해당 위치에 표시
         const rect = target.getBoundingClientRect();
@@ -454,7 +370,7 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({ newsDetailItem }
           setPopupPosition({ top: adjustedTop, left: adjustedLeft });
           setIsHighlightPopupVisible(true);
         }
-      }
+      } 
     };
 
     document.addEventListener("mouseover", (event) => {
@@ -471,7 +387,7 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({ newsDetailItem }
   }, []);
 
   return (
-    <NewsContent id="newsContent">
+    <NewsContent id="newsContent" ref={newsContentRef}>
       <LikeButton newsId={newsDetailItem.newsId} /> {/* LikeButton 사용 */}
       {/* 뉴스 제목 클릭 시 새 창으로 이동 */}
       <NewsTitle onClick={handleTitleClick}>
@@ -499,8 +415,9 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({ newsDetailItem }
         </Stats>
       </MetaInfoContainer>
       <Divider />
-      <NewsText dangerouslySetInnerHTML={{ __html: newsDetailItem.newsContent }} />
-      
+      <NewsText
+        dangerouslySetInnerHTML={{ __html: newsDetailItem.newsContent }}
+      />
       {isHighlightPopupVisible && (
         <HighlightComponent
           applyHighlight={applyHighlight}

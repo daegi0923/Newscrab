@@ -144,15 +144,15 @@ const Industry = styled.div`
   // background-color: #727171;
 `;
 
-const CardContent1 = styled.div`
-  position: absolute;
-  top: 15%;
-  left: 9%;
-  z-index: 10;
-  color: #555;
-  font-size: 14px;
-  // font-weight: bold;
-`;
+// const CardContent1 = styled.div`
+//   position: absolute;
+//   top: 15%;
+//   left: 9%;
+//   z-index: 10;
+//   color: #555;
+//   font-size: 14px;
+//   // font-weight: bold;
+// `;
 
 const CardDate = styled.div`
   font-size: 11px;

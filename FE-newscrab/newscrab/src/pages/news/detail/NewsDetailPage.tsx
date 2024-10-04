@@ -24,16 +24,15 @@ const NewsWrapper = styled.div`
 
 const BackButton = styled.button`
   z-index: 2;
-  position: absolute;
-  top: 12%;
-  left: 0.1%;
+  position: fixed;
+  top: 11%;
+  left: 10.5%;
   padding: 10px 15px;
   background-color: #ffbe98;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   font-size: 15px;
-  // font-weight: bold;
   color: white;
   &:hover {
     background-color: #ff8f4d;
@@ -41,7 +40,7 @@ const BackButton = styled.button`
 `;
 
 const NewsDetailPage: React.FC = () => {
-  const { newsId } = useParams<{ newsId: string }>(); // URL에서 newsId를 가져옴
+  const { newsId } = useParams<{ newsId: string }>();
   const [newsDetailItem, setNewsDetailItem] = useState<NewsDetailItem | null>(
     null
   );
@@ -77,20 +76,25 @@ const NewsDetailPage: React.FC = () => {
         <BackButton onClick={handleBackClick}>뉴스 목록</BackButton>
         <NewsWrapper>
           {isLoading ? (
-            <p>Loading news...</p>
-          ) : !newsId ? ( // newsId가 undefined인 경우
-            <p>삭제된 뉴스입니다</p>
+            <div>Loading news...</div>
+          ) : !newsId ? (
+            <div>삭제된 뉴스입니다</div>
           ) : (
             newsDetailItem && (
               <>
                 <NewsDetailArticle newsDetailItem={newsDetailItem} />
-                <NewsDetailScrap newsId={parseInt(newsId, 10)} />{" "}
-                {/* 숫자로 변환하여 전달 */}
+                <NewsDetailScrap newsId={parseInt(newsId, 10)} />
               </>
             )
           )}
         </NewsWrapper>
-        {newsId && <NewsDetailRcmd newsId={parseInt(newsId, 10)} />}
+        {/* newsDetailItem을 NewsDetailRcmd로 넘겨줌 */}
+        {newsId && newsDetailItem && (
+          <NewsDetailRcmd
+            newsId={parseInt(newsId, 10)}
+            newsDetailItem={newsDetailItem}
+          />
+        )}
       </NewsDetailContainer>
     </div>
   );
