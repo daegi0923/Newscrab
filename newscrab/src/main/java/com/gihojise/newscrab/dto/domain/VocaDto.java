@@ -16,6 +16,7 @@ public class VocaDto {
     private String vocaDesc;
     private int originNewsId;
     private String sentence;
+    private int industryId;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Integer relatedNewsId1;
