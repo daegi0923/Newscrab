@@ -330,17 +330,17 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
   
     if (hasEmptyIndustry) {
       Swal.fire({
-        icon: 'warning',
-        title: '저장 오류',
+        icon: "warning",
+        title: "저장 오류",
         html: '<p style="line-height: 1.2;">단어를 입력했을 때는 반드시 산업을 선택해야 합니다.</p>',
       });
       return;
     }
-  
+
     try {
       Swal.fire({
-        title: '잠시만 기다려 주세요...👩‍💻',
-        html: '연관 뉴스를 함께 추천하는 중입니다.',
+        title: "잠시만 기다려 주세요...👩‍💻",
+        html: "연관 뉴스를 함께 추천하는 중입니다.",
         allowOutsideClick: false,
         didOpen: () => {
           Swal.showLoading();
@@ -475,28 +475,28 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
         <>
           {vocaSections.map((section, index) => (
             <VocaSection key={index}>
-               <IndustryDropdownWrapper>
-          <SelectedIndustryWrapper>
-            <SelectedIndustry onClick={() => toggleDropdown(index)}>
-              {section.industryId
-                ? words.find(
-                    (item) => item.industryId === section.industryId
-                  )?.industryName || "산업"
-                : "산업"}
-            </SelectedIndustry>
+              <IndustryDropdownWrapper>
+                <SelectedIndustryWrapper>
+                  <SelectedIndustry onClick={() => toggleDropdown(index)}>
+                    {section.industryId
+                      ? words.find(
+                          (item) => item.industryId === section.industryId
+                        )?.industryName || "산업"
+                      : "산업"}
+                  </SelectedIndustry>
 
-            {section.isDropdownOpen && (
-              <DropdownWrapper>
-                <DropDown
-                  dropdownIndustries={words}
-                  handleIndustrySelect={(id) =>
-                    handleIndustrySelectVoca(index, id)
-                  } // 선택된 값 전달
-                />
-              </DropdownWrapper>
-            )}
-          </SelectedIndustryWrapper>
-        </IndustryDropdownWrapper>
+                  {section.isDropdownOpen && (
+                    <DropdownWrapper>
+                      <DropDown
+                        dropdownIndustries={words}
+                        handleIndustrySelect={(id) =>
+                          handleIndustrySelectVoca(index, id)
+                        } // 선택된 값 전달
+                      />
+                    </DropdownWrapper>
+                  )}
+                </SelectedIndustryWrapper>
+              </IndustryDropdownWrapper>
 
               <VocaInputWrapper>
                 <StyledInput
