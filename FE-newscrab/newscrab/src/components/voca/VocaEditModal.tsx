@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import DropDown from "@components/common/DropDown";
 import { words } from "@components/voca/VocaList";
+import Swal from 'sweetalert2';
 
 interface VocaModalProps {
   isOpen: boolean;
@@ -127,6 +128,15 @@ const VocaEditModal: React.FC<VocaModalProps> = ({
   if (!isOpen) return null;
 
   const handleSave = () => {
+    if (!vocaName || !vocaDesc || !industryId) {
+      Swal.fire({
+        icon: 'warning',
+        title: '입력 오류',
+        text: '모든 필드를 채워주세요!',
+      });
+      return;
+    }
+  
     onUpdate({
       vocaId: word.vocaId,
       vocaName,
@@ -135,6 +145,14 @@ const VocaEditModal: React.FC<VocaModalProps> = ({
       newsId: word.newsId,
       industryId,
     });
+  
+    // SweetAlert2 수정 완료 메시지
+    Swal.fire({
+      icon: 'success',
+      title: '수정 완료',
+      text: '단어 수정이 완료되었습니다!',
+    });
+  
     onClose();
   };
 

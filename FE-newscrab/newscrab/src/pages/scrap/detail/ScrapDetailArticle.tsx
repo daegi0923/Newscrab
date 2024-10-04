@@ -10,6 +10,8 @@ import LikeButton from "@pages/news/common/LikeButton"; // LikeButton 컴포트 
 import { industry } from "@common/Industry"; // 산업 데이터를 가져오기
 import { getScrapDetail } from "@apis/scrap/scrapDetailApi"; // 스크랩 데이터를 가져오기 위한 API 호출
 import { deleteScrap } from "@apis/scrap/scrapApi";
+import Swal from 'sweetalert2';
+
 
 // 스타일 정의
 const ScrapContent = styled.div`
@@ -206,16 +208,39 @@ const ScrapDetailArticle: React.FC<ScrapDetailArticleProps> = ({ scrapId }) => {
   };
 
   const handleDeleteClick = async () => {
-    const confirmed = window.confirm("정말로 이 스크랩을 삭제하시겠습니까?");
-    if (confirmed) {
+    // SweetAlert2로 삭제 확인 메시지 표시
+    const confirmed = await Swal.fire({
+      title: '정말로 삭제하시겠습니까?',
+      text: '삭제 후에는 복구할 수 없습니다!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: '삭제',
+      cancelButtonText: '취소',
+    });
+  
+    // 확인 버튼을 누르면 삭제 진행
+    if (confirmed.isConfirmed) {
       try {
         // 삭제 API 호출
-        await deleteScrap(scrapId); // 삭제 API 함수 호출
-        alert("스크랩이 삭제되었습니다.");
-        navigate("/scrap"); // 삭제 후 목록 페이지로 이동
+        await deleteScrap(scrapId);
+        // 삭제 완료 후 알림
+        await Swal.fire({
+          icon: 'success',
+          title: '삭제 완료',
+          text: '스크랩이 삭제되었습니다.',
+        });
+        // 삭제 후 목록 페이지로 이동
+        navigate('/scrap');
       } catch (error) {
-        console.error("삭제 중 오류 발생:", error);
-        alert("삭제에 실패했습니다.");
+        console.error('삭제 중 오류 발생:', error);
+        // 삭제 실패 시 알림
+        Swal.fire({
+          icon: 'error',
+          title: '삭제 실패',
+          text: '삭제 중 오류가 발생했습니다. 다시 시도해주세요.',
+        });
       }
     }
   };

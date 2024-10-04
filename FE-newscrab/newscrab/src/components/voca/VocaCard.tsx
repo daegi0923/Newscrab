@@ -47,7 +47,7 @@ const CardContainer = styled.div`
   transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-out; // 트랜지션 효과
 
   &:hover {
-    transform: translateY(-10px); // 위로 살짝 이동
+    transform: translateY(-7px); // 위로 살짝 이동
     box-shadow: 3px 8px 7px rgba(0, 5, 5, 0.4); // 그림자 추가
     cursor: pointer;
   }
