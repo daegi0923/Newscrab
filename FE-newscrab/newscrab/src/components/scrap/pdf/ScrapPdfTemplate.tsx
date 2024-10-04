@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { ScrapData, Vocalist } from '../../../types/scrapTypes'; // ScrapData 및 Vocalist 타입 import
+import { ScrapData, Vocalist, Highlight } from '../../../types/scrapTypes'; // ScrapData 및 Vocalist 타입 import
 
 const Table = styled.table`
   width: 80%;
@@ -33,12 +33,75 @@ const TitleRow = styled.tr`
 const ScrapDetail = styled.div`
   display: flex;
   justify-content: center;
-  width : 1000px;
-  height : 300px;
-  padding-top : 30px;
 `;
 
+const letterToColorMap = {
+  R: "#fde2e4", // Red
+  Y: "#ffffb5", // Yellow
+  G: "#d1e6d3", // Green
+  B: "#cddafd", // Blue
+} as const;
+
+const applyHighlightsFromApi = (
+  contentElement: HTMLElement, 
+  highlights: Highlight[]
+) => {
+  highlights.forEach(({ startPos, endPos, color }) => {
+    const walker = document.createTreeWalker(
+      contentElement,
+      NodeFilter.SHOW_TEXT,
+      null
+    );
+
+    let currentPos = 0;
+    let startNode: Node | null = null;
+    let endNode: Node | null = null;
+    let startOffset = 0;
+    let endOffset = 0;
+
+    while (walker.nextNode()) {
+      const node = walker.currentNode;
+      const nodeLength = node.textContent?.length || 0;
+
+      if (currentPos <= startPos && currentPos + nodeLength >= startPos) {
+        startNode = node;
+        startOffset = startPos - currentPos;
+      }
+      if (currentPos <= endPos && currentPos + nodeLength >= endPos) {
+        endNode = node;
+        endOffset = endPos - currentPos;
+        break;
+      }
+
+      currentPos += nodeLength;
+    }
+
+    if (startNode && endNode) {
+      const range = document.createRange();
+      range.setStart(startNode, startOffset);
+      range.setEnd(endNode, endOffset);
+
+      const span = document.createElement("span");
+      span.style.backgroundColor = letterToColorMap[color];
+      span.dataset.startPos = String(startPos);
+      span.dataset.endPos = String(endPos);
+      
+      span.appendChild(range.extractContents());
+      range.insertNode(span);
+    }
+  });
+};
+const removeImagesFromContent = (htmlContent: string): string => {
+  return htmlContent.replace(/<img[^>]*>/g, ""); // <img> 태그 제거
+};
+
+type ScrapDetailArticleProps = {
+  scrapId: number; // scrapId를 prop으로 전달
+};
+
 const ScrapPdfTemplate: React.FC<{ scrap: ScrapData }> = ({ scrap }) => {
+  console.log(scrap.newsContent);
+  console.log(scrap.highlightList);
   return (
     <ScrapDetail>
       <Table>
