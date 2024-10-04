@@ -244,9 +244,9 @@ const SignUpPage2: React.FC = () => {
         Swal.fire({
           icon: 'success',
           title: '회원가입 성공!',
-          text: '메인 뉴스 페이지로 이동합니다.',
+          text: '로그인 페이지로 이동합니다.',
         });
-        navigate('/mainNews');
+        navigate('/login1');
       }
     } catch (error) {
       console.error('회원가입 실패:', error);
