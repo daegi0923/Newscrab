@@ -13,6 +13,7 @@ import { ScrapData, ScrapDetailResponse } from "../../../types/scrapTypes"; // s
 
 const ScrapDetailContainer = styled.div`
   margin: 0px 100px;
+  margin-bottom: 30px;
   position: relative;
 `;
 
