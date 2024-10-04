@@ -17,19 +17,13 @@ spec:
           image: daegi0923/newscrab-back:latest  # Spring 애플리케이션의 Docker 이미지
           ports:
             - containerPort: 8080
-          volumeMounts:
-            - name: env-volume
-              mountPath: /app/.env  # 컨테이너 내에서 마운트할 경로
-              subPath: .env
-            - name: tz-seoul
-              mountPath: /etc/localtime
           envFrom:
             - configMapRef:
                 name: spring-env-config
+          env:
+            - name: TZ
+              value: Asia/Seoul  # KST 시간대로 설정
       volumes:
         - name: env-volume
           configMap:
             name: spring-env-config
-        - name: tz-seoul
-          hostPath:
-            path: /usr/share/zoneinfo/Asia/Seoul
