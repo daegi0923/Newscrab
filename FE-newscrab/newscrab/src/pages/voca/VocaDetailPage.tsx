@@ -15,6 +15,7 @@ import { RootState, AppDispatch } from "@store/index";
 import { useEffect, useState } from "react";
 import VocaEditModal from "@components/voca/VocaEditModal";
 import { words } from "@components/voca/VocaList";
+import Swal from 'sweetalert2';
 
 const VocaContainer = styled.div`
   position: relative;
@@ -137,7 +138,7 @@ const DelButton = styled.button`
 const TextArea = styled.div`
   font-size:15px;
   font-weight: bold;
-  margin-top: 2%;
+  margin-top: 5%;
   margin-bottom: 0.5%;
   display: flex;
   justify-content: flex-start;
@@ -217,11 +218,41 @@ const VocaDetailPage: React.FC = () => {
     await dispatch(fetchVocaDetailThunk(updatedWord.vocaId));
   };
 
-  // 단어 삭제 처리
   const handleDeleteVoca = async () => {
-    if (vocaId) {
-      await dispatch(deleteVocaThunk(parseInt(vocaId))); // DELETE 요청으로 단어 삭제
-      navigate("/voca"); // 삭제 후 단어 리스트 페이지로 이동
+    const confirmed = await Swal.fire({
+      title: '정말로 삭제하시겠습니까?',
+      text: '삭제 후에는 복구할 수 없습니다!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: '삭제',
+      cancelButtonText: '취소',
+    });
+  
+    if (confirmed.isConfirmed) {
+      try {
+        if (vocaId) {
+          // DELETE 요청으로 단어 삭제
+          await dispatch(deleteVocaThunk(parseInt(vocaId)));
+          // 삭제 완료 후 SweetAlert2 성공 메시지 표시
+          await Swal.fire({
+            icon: 'success',
+            title: '삭제 완료',
+            text: '단어가 성공적으로 삭제되었습니다.',
+          });
+          // 삭제 후 단어 리스트 페이지로 이동
+          navigate("/voca");
+        }
+      } catch (error) {
+        console.error("삭제 중 오류 발생:", error);
+        // 오류 발생 시 SweetAlert2 오류 메시지 표시
+        Swal.fire({
+          icon: 'error',
+          title: '삭제 실패',
+          text: '삭제 중 오류가 발생했습니다. 다시 시도해주세요.',
+        });
+      }
     }
   };
 

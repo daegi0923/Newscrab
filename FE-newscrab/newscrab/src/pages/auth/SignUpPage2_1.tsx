@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { words } from "@components/voca/VocaList";
 import axios from 'axios';
 import BgImage from "@assets/landing/bgImage.png";
+import Swal from 'sweetalert2';
 
 const ContentWrapper = styled.div`
   width: 100%;
@@ -207,7 +208,11 @@ const SignUpPage2: React.FC = () => {
     const filteredIndustries = selectedIndustries.filter(Boolean) as { img: string, industryId: number, industryName: string }[];
     
     if (filteredIndustries.length < 1) {
-      alert("최소 1개의 산업군을 선택해야 합니다.");
+      Swal.fire({
+        icon: 'warning',
+        title: '선택 오류',
+        text: '최소 1개의 산업군을 선택해야 합니다.',
+      });
       return;
     }
 
@@ -236,12 +241,20 @@ const SignUpPage2: React.FC = () => {
       });
 
       if (response.status === 200) {
-        alert('회원가입 성공!');
+        Swal.fire({
+          icon: 'success',
+          title: '회원가입 성공!',
+          text: '메인 뉴스 페이지로 이동합니다.',
+        });
         navigate('/mainNews');
       }
     } catch (error) {
       console.error('회원가입 실패:', error);
-      alert('회원가입 중 오류가 발생했습니다.');
+      Swal.fire({
+        icon: 'error',
+        title: '회원가입 실패',
+        text: '회원가입 중 오류가 발생했습니다.',
+      });
     }
   };
 
@@ -251,7 +264,7 @@ const SignUpPage2: React.FC = () => {
       <ContentWrapper>
         <StepIndicator>2단계 2/2</StepIndicator>
         <SignUpContainer>
-          <TitleContainer>✅ 좋아하는 산업군을 3개 선택하세요</TitleContainer>
+          <TitleContainer>✅ 좋아하는 산업군을 1개 이상 선택하세요</TitleContainer>
           <CardContainer>
             <IndustryGrid>
               {availableIndustries.map((industry) => (

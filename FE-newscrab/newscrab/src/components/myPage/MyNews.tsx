@@ -37,6 +37,7 @@ const NewsListContainer = styled.div`
 
 const NewsList = styled.div`
   display: flex;
+  margin-top: 5%;
   gap: 20px;
   overflow-x: scroll;
   padding: 10px;
@@ -109,12 +110,12 @@ const NewsDate = styled.p`
 `;
 
 const SectionName = styled.div`
-  font-size: 13px;
-  margin-bottom: 5px;
+  font-size: 15px;
+  margin-top: 1%;
   color: #93939;
   font-weight: bold;
   position: absolute;
-  top: 41.5%;
+  // top: 41.5%;
   left: 39.5%;
 `;
 
