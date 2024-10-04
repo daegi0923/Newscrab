@@ -11,6 +11,7 @@ import removeIcon from "@assets/common/remove.png";
 import NewsDetailAISummary from "./NewsDetailAISummary";
 import NewsDetailAIQuestion from "./NewsDetailAIQuestion";
 import Swal from 'sweetalert2';
+import { AxiosError } from "axios";
 
 const Sidebar = styled.div`
   width: 30%;
@@ -305,103 +306,94 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
   }, [summaryText, opinionText, wordListText, activeTab]);
 
   const handleSave = async () => {
-    // 선택된 단어들 중 산업이 선택되지 않은 경우 체크
     const hasEmptyIndustry = vocaSections.some((section) => section.industryId === null && section.word !== "");
   
-    // scrapData 생성: 요약, 의견, 형광펜 데이터를 저장할 객체
     const postscrapData = {
       newsId: newsId,
-      comment: opinionText, // 의견 탭의 데이터
-      scrapSummary: summaryText.trim() === "<서론>\n\n<본론>\n\n<결론>" ? "" : summaryText, // 기본값인지 확인하여 저장
-      highlights: highlights, // 형광펜 정보
+      comment: opinionText,
+      scrapSummary: summaryText.trim() === "<서론>\n\n<본론>\n\n<결론>" ? "" : summaryText,
+      highlights: highlights,
     };
-
+  
     const putscrapData = {
       newsId: newsId,
-      comment: opinionText, // 의견 탭의 데이터
-      scrapSummary: summaryText, // 요약 탭의 데이터
+      comment: opinionText,
+      scrapSummary: summaryText,
     };
-
-    // wordlist 데이터를 vocaAddList로 변환
+  
     const vocaAddList = vocaSections.map((section) => ({
       newsId: newsId,
       vocaName: section.word,
       vocaDesc: section.desc,
-      industryId: section.industryId!, // 선택된 industryId 저장
+      industryId: section.industryId!,
     }));
-
-    console.log("vocaAddList!!:", vocaAddList);
   
-    // 1. 스크랩 데이터나 단어 데이터가 모두 없는 경우 경고 메시지 출력
-    if (!scrapData.comment && !scrapData.scrapSummary && vocaAddList.length === 0) {
-      Swal.fire({
-        icon: 'warning',
-        title: '저장 오류',
-        html: '<p style="line-height: 1.2;">스크랩할 데이터를 추가해주세요.</p>',
-      });
-      return; // 저장을 중단
-    }
-  
-    // 2. 단어가 입력되었는데 산업이 선택되지 않은 경우 오류 처리
     if (hasEmptyIndustry) {
       Swal.fire({
         icon: 'warning',
         title: '저장 오류',
         html: '<p style="line-height: 1.2;">단어를 입력했을 때는 반드시 산업을 선택해야 합니다.</p>',
       });
-      return; // 저장을 중단
+      return;
     }
   
     try {
-      // SweetAlert2 로딩 화면 표시
       Swal.fire({
         title: '잠시만 기다려 주세요...👩‍💻',
         html: '연관 뉴스를 함께 추천하는 중입니다.',
         allowOutsideClick: false,
         didOpen: () => {
-          Swal.showLoading(); // 로딩 애니메이션 실행
+          Swal.showLoading();
         }
       });
   
-      let successMessage = '스크랩이 성공적으로 저장되었습니다.'; // 기본 성공 메시지
+      let successMessage = '스크랩이 성공적으로 저장되었습니다.';
+      let vocaAdded = false;
   
-      // 먼저 scrapData 저장 (요약, 의견, 형광펜 정보)
       if (scrapId) {
-        // scrapId가 있으면 업데이트 (put 요청)
         await putScrap(scrapId, putscrapData);
-        console.log("put 요청 완료");
-        successMessage = '수정이 완료되었습니다.'; // 수정 성공 메시지
+        successMessage = '수정이 완료되었습니다.';
       } else {
-        // scrapId가 없으면 새로 생성 (post 요청)
         await postScrap(postscrapData);
-        console.log("post 요청 완료");
       }
   
-      // 3. vocaAddList가 존재할 경우 단어도 저장
       if (vocaAddList.length > 0) {
-        await dispatch(addVocaThunk({ vocaAddList })); // wordlist 데이터 전송
-        console.log("단어 추가 완료!");
+        const result = await dispatch(addVocaThunk({ vocaAddList }));
+        
+        if (addVocaThunk.fulfilled.match(result)) {
+          vocaAdded = true;
+        } else if (addVocaThunk.rejected.match(result)) {
+          throw new Error(result.payload || "단어 추가 중 문제가 발생했습니다.");
+        }
       }
   
-      // 로딩 완료 후 SweetAlert2 닫기
       Swal.close();
   
-      // 4. 성공 시 SweetAlert로 알림 (put 요청 시에는 수정 완료 메시지)
       Swal.fire({
         icon: 'success',
         title: '저장 완료',
-        text: successMessage,
+        text: successMessage + (vocaAdded),
       });
-    } catch (error) {
-      // 로딩 완료 후 SweetAlert2 닫기
+    } catch (error: any) {
       Swal.close();
   
-      // 5. 실패 시 오류 처리
-      console.error("저장 중 오류 발생:", error);
+      let errorMessage = '저장 중 오류가 발생했습니다. 다시 시도해주세요.';
+  
+      if (error.response) {
+        const statusCode = error.response.status;
+        if (statusCode === 404) {
+          errorMessage = '리소스를 찾을 수 없습니다(404). 단어 추가에 실패했습니다.';
+        } else {
+          errorMessage = `서버 오류가 발생했습니다. 상태 코드: ${statusCode}`;
+        }
+      } else if (error instanceof Error) {
+        errorMessage = error.message;
+      }
+  
       Swal.fire({
         icon: 'error',
         title: '저장 실패',
-        text: '저장 중 오류가 발생했습니다. 다시 시도해주세요.',
+        text: errorMessage,
       });
     }
   };
