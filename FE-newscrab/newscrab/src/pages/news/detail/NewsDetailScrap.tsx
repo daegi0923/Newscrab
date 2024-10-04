@@ -318,13 +318,13 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
         summaryText.trim() === "<서론>\n\n<본론>\n\n<결론>" ? "" : summaryText, // 기본값인지 확인하여 저장
       highlights: highlights, // 형광펜 정보
     };
-  
+
     const putscrapData = {
       newsId: newsId,
       comment: opinionText,
       scrapSummary: summaryText,
     };
-  
+
     const vocaAddList = vocaSections.map((section) => ({
       newsId: newsId,
       vocaName: section.word,
@@ -368,11 +368,13 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
       // 3. vocaAddList가 존재할 경우 단어도 저장
       if (vocaAddList.length > 0) {
         const result = await dispatch(addVocaThunk({ vocaAddList }));
-        
+
         if (addVocaThunk.fulfilled.match(result)) {
-          vocaAdded = true;
+          // vocaAdded = true;
         } else if (addVocaThunk.rejected.match(result)) {
-          throw new Error(result.payload || "단어 추가 중 문제가 발생했습니다.");
+          throw new Error(
+            result.payload || "단어 추가 중 문제가 발생했습니다."
+          );
         }
       }
 
