@@ -1,12 +1,11 @@
 import styled from 'styled-components';
-// import Login from '../../assets/auth/login.png';
 import BgImage from "@assets/landing/bgImage.png";
 import Input from '@common/InputBox';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { loginLoading } from '../../store/user/loginLogout';
-import ErrorModal from '@components/common/Error';
 import { useLocation, useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2'; // SweetAlert2 추가
 
 const Overlay = styled.div`
   position: absolute;
@@ -26,8 +25,8 @@ const FormContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 330px; /* 너비를 조정 */
-  position: relative; /* 상대적인 위치를 설정 */
+  width: 330px;
+  position: relative;
   z-index: 2; /* 폼 컨테이너는 오버레이 위로 */
 `;
 
@@ -72,7 +71,7 @@ const BackgroundContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  position: relative; /* 부모 요소도 position 설정 필요 */
+  position: relative;
 `;
 
 const LoginPage: React.FC = () => {
@@ -81,23 +80,57 @@ const LoginPage: React.FC = () => {
     loginId: "",
     password: "",
   });
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const isFormValid = loginForm.loginId !== "" && loginForm.password !== "";
   const location = useLocation();
   const navigate = useNavigate();
   const error = location.state?.error;
 
+  // ID 검증 함수 (5~20자 이내)
+  const validateLoginId = (loginId: string) => {
+    const idPattern = /^[a-zA-Z0-9]{5,20}$/;
+    return idPattern.test(loginId);
+  };
+
+  // 비밀번호 검증 함수 (8~16자, 영어, 숫자, 특수문자 조합)
+  const validatePassword = (password: string) => {
+    const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,16}$/;
+    return passwordPattern.test(password);
+  };
+
   const handleLogin = () => {
-    if (isFormValid) {
-      dispatch(
-        loginLoading({
-          loginId: loginForm.loginId,
-          password: loginForm.password,
-        })
-      );
-    } else {
-      setErrorMessage("아이디와 비밀번호를 모두 입력하세요.");
+    if (!loginForm.loginId || !loginForm.password) {
+      Swal.fire({
+        icon: 'error',
+        title: '입력 오류',
+        text: '아이디와 비밀번호를 모두 입력하세요.',
+      });
+      return;
     }
+
+    if (!validateLoginId(loginForm.loginId)) {
+      Swal.fire({
+        icon: 'error',
+        title: '아이디 오류',
+        text: '아이디는 5~20자 이내의 영문자 또는 숫자여야 합니다.',
+      });
+      return;
+    }
+
+    if (!validatePassword(loginForm.password)) {
+      Swal.fire({
+        icon: 'error',
+        title: '비밀번호 오류',
+        text: '비밀번호는 8~16자 이내의 영어, 숫자, 특수문자를 포함해야 합니다.',
+      });
+      return;
+    }
+
+    // 검증 통과 시 로그인 시도
+    dispatch(
+      loginLoading({
+        loginId: loginForm.loginId,
+        password: loginForm.password,
+      })
+    );
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -110,19 +143,17 @@ const LoginPage: React.FC = () => {
     }
   };
 
-  const handleModalClose = () => {
-    setErrorMessage(null);
-    navigate("/login", { replace: true, state: {} });
-  };
-
   const handleSignUp = () => {
-    setErrorMessage(null);
     navigate("/signup1");
   };
 
   return (
     <>
-      {error && <ErrorModal title="로그인 오류" message={error} onClose={handleModalClose} />}
+      {error && Swal.fire({
+        icon: 'error',
+        title: '로그인 오류',
+        text: error,
+      })}
       <style>
         {`
           html, body {
@@ -142,7 +173,7 @@ const LoginPage: React.FC = () => {
           <Input
             name="loginId"
             type="text"
-            label="아이디" 
+            label="아이디"
             placeholder="아이디를 입력하세요."
             value={loginForm.loginId}
             onChange={handleChange}
@@ -150,15 +181,14 @@ const LoginPage: React.FC = () => {
           <Input
             name="password"
             type="password"
-            label="비밀번호" 
+            label="비밀번호"
             placeholder="비밀번호를 입력하세요."
             value={loginForm.password}
             onChange={handleChange}
           />
-          <LoginButton onClick={handleLogin} disabled={!isFormValid}>
+          <LoginButton onClick={handleLogin}>
             로그인
           </LoginButton>
-          {errorMessage && <p>{errorMessage}</p>}
           <SignupContainer>
             NEWSCRAB이 처음이세요? <SignupLink onClick={handleSignUp}>회원 가입</SignupLink>
           </SignupContainer>
