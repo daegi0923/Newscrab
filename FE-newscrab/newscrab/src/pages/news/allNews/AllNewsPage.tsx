@@ -35,6 +35,7 @@ const AllNewsPage: React.FC = () => {
     ); // API 요청
     setNewsList(resData.news); // 받아온 뉴스 데이터를 상태에 저장
     setTotalPages(resData.totalPages); // API에서 받은 totalPages 값을 상태에 저장
+    console.log(resData.news);
   };
 
   // currentPage, selectedIndustryId 또는 option이 변경될 때마다 데이터 새로 가져오기

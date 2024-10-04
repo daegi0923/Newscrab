@@ -309,24 +309,27 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
     const hasEmptyIndustry = vocaSections.some((section) => section.industryId === null && section.word !== "");
   
     // scrapData 생성: 요약, 의견, 형광펜 데이터를 저장할 객체
-    const scrapData = {
+    const postscrapData = {
       newsId: newsId,
       comment: opinionText, // 의견 탭의 데이터
       scrapSummary: summaryText.trim() === "<서론>\n\n<본론>\n\n<결론>" ? "" : summaryText, // 기본값인지 확인하여 저장
       highlights: highlights, // 형광펜 정보
     };
-  
+
+    const putscrapData = {
+      newsId: newsId,
+      comment: opinionText, // 의견 탭의 데이터
+      scrapSummary: summaryText, // 요약 탭의 데이터
+    };
+
     // wordlist 데이터를 vocaAddList로 변환
-    const vocaAddList = vocaSections
-      .filter(section => section.word !== "") // 빈 단어 제외
-      .map((section) => ({
-        newsId: newsId,
-        vocaName: section.word,
-        vocaDesc: section.desc,
-        industryId: section.industryId!, // 선택된 industryId 저장
-      }));
-  
-    console.log("Scrap Data!!:", scrapData);
+    const vocaAddList = vocaSections.map((section) => ({
+      newsId: newsId,
+      vocaName: section.word,
+      vocaDesc: section.desc,
+      industryId: section.industryId!, // 선택된 industryId 저장
+    }));
+
     console.log("vocaAddList!!:", vocaAddList);
   
     // 1. 스크랩 데이터나 단어 데이터가 모두 없는 경우 경고 메시지 출력
@@ -365,12 +368,12 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
       // 먼저 scrapData 저장 (요약, 의견, 형광펜 정보)
       if (scrapId) {
         // scrapId가 있으면 업데이트 (put 요청)
-        await putScrap(scrapId, scrapData);
+        await putScrap(scrapId, putscrapData);
         console.log("put 요청 완료");
         successMessage = '수정이 완료되었습니다.'; // 수정 성공 메시지
       } else {
         // scrapId가 없으면 새로 생성 (post 요청)
-        await postScrap(scrapData);
+        await postScrap(postscrapData);
         console.log("post 요청 완료");
       }
   
