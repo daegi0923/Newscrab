@@ -10,8 +10,7 @@ import addIcon from "@assets/common/add.png";
 import removeIcon from "@assets/common/remove.png";
 import NewsDetailAISummary from "./NewsDetailAISummary";
 import NewsDetailAIQuestion from "./NewsDetailAIQuestion";
-import Swal from 'sweetalert2';
-import { AxiosError } from "axios";
+import Swal from "sweetalert2";
 
 const Sidebar = styled.div`
   width: 30%;
@@ -306,15 +305,20 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
   }, [summaryText, opinionText, wordListText, activeTab]);
 
   const handleSave = async () => {
-    const hasEmptyIndustry = vocaSections.some((section) => section.industryId === null && section.word !== "");
-  
+    // 선택된 단어들 중 산업이 선택되지 않은 경우 체크
+    const hasEmptyIndustry = vocaSections.some(
+      (section) => section.industryId === null && section.word !== ""
+    );
+
+    // scrapData 생성: 요약, 의견, 형광펜 데이터를 저장할 객체
     const postscrapData = {
       newsId: newsId,
-      comment: opinionText,
-      scrapSummary: summaryText.trim() === "<서론>\n\n<본론>\n\n<결론>" ? "" : summaryText,
-      highlights: highlights,
+      comment: opinionText, // 의견 탭의 데이터
+      scrapSummary:
+        summaryText.trim() === "<서론>\n\n<본론>\n\n<결론>" ? "" : summaryText, // 기본값인지 확인하여 저장
+      highlights: highlights, // 형광펜 정보
     };
-  
+
     const putscrapData = {
       newsId: newsId,
       comment: opinionText,
@@ -373,14 +377,15 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
         html: "스크랩 데이터를 저장하는 중입니다.",
         allowOutsideClick: false,
         didOpen: () => {
-          Swal.showLoading();
-        }
+          Swal.showLoading(); // 로딩 애니메이션 실행
+        },
       });
   
       let successMessage = '스크랩이 성공적으로 저장되었습니다.';
       if (scrapId) {
         await putScrap(scrapId, putscrapData);
-        successMessage = '수정이 완료되었습니다.';
+        console.log("put 요청 완료");
+        successMessage = "수정이 완료되었습니다."; // 수정 성공 메시지
       } else {
         await postScrap(postscrapData);
       }
@@ -412,9 +417,9 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
   
       // 5. 오류 발생 시 경고
       Swal.fire({
-        icon: 'error',
-        title: '저장 실패',
-        text: errorMessage,
+        icon: "error",
+        title: "저장 실패",
+        text: "저장 중 오류가 발생했습니다. 다시 시도해주세요.",
       });
     }
   };
