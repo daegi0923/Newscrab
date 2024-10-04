@@ -98,7 +98,7 @@ const StyledTextarea = styled.textarea<{ $isOverflowing: boolean }>`
 `;
 
 const SaveButton = styled.button`
-  background-color: #f0c36d;
+  background-color: #4caf50;
   border: none;
   border-radius: 12px;
   padding: 8px 16px;
@@ -114,11 +114,11 @@ const SaveButton = styled.button`
   right: 0px; /* 오른쪽에서 10px 띄움 */
 
   &:hover {
-    background-color: #d9a654;
+    background-color: #45a049;
   }
 
   &:active {
-    background-color: #c89640;
+    background-color: #45a049ㄹ;
   }
 `;
 

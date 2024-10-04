@@ -27,7 +27,7 @@ const PopupButton = styled.button`
   position: fixed;
   bottom: 4%;
   left: 62%;
-  background-color: green;
+  background-color: #45a049;
   border: none;
   border-radius: 50%;
   width: 50px;
