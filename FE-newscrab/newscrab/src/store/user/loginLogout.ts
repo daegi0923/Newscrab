@@ -1,6 +1,7 @@
 import { call, put, takeLatest } from "redux-saga/effects"; // 이 부분은 항상 불러올 수 있습니다.
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
+import Swal from 'sweetalert2';
 import { setCookie, removeCookie } from "./cookies";
 
 // 초기 상태 정의
@@ -77,6 +78,13 @@ function* loginSaga(action: PayloadAction<{ loginId: string; password: string }>
     // 메인 페이지로 이동
       window.location.href = "/mainNews";
     } catch (error: any) {
+      if (error.response && error.response.status === 403) {
+        Swal.fire({
+          icon: 'error',
+          title: '로그인 오류',
+          text: '아이디 또는 비밀번호가 잘못되었습니다. 다시 시도하세요.',
+        });
+      }
     console.log(error);
     yield put(loginFail("로그인에 실패했습니다."));
   }

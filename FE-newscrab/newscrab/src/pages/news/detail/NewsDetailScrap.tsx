@@ -10,6 +10,7 @@ import addIcon from "@assets/common/add.png";
 import removeIcon from "@assets/common/remove.png";
 import NewsDetailAISummary from "./NewsDetailAISummary";
 import NewsDetailAIQuestion from "./NewsDetailAIQuestion";
+import Swal from 'sweetalert2';
 
 const Sidebar = styled.div`
   width: 30%;
@@ -192,6 +193,21 @@ const AddButton = styled.img`
   cursor: pointer;
 `;
 
+const SelectedIndustryWrapper = styled.div`
+  position: relative;
+  padding: 5px 10px;
+`;
+
+const DropdownWrapper = styled.div`
+  position: absolute;
+  top: 20%; /* 선택된 산업 바로 아래에 드롭다운을 배치 */
+  right: 50%;
+  width: 100%; /* 드롭다운 너비를 SelectedIndustry와 동일하게 */
+  z-index: 10; /* 다른 요소 위에 표시 */
+  background-color: white; /* 드롭다운이 분명하게 보이도록 배경색 설정 */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 그림자 추가로 시각적인 분리 */
+`;
+
 const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
   const dispatch = useDispatch<AppDispatch>();
 
@@ -289,11 +305,14 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
   }, [summaryText, opinionText, wordListText, activeTab]);
 
   const handleSave = async () => {
+    // 선택된 단어들 중 산업이 선택되지 않은 경우 체크
+    const hasEmptyIndustry = vocaSections.some((section) => section.industryId === null && section.word !== "");
+  
     // scrapData 생성: 요약, 의견, 형광펜 데이터를 저장할 객체
     const postscrapData = {
       newsId: newsId,
       comment: opinionText, // 의견 탭의 데이터
-      scrapSummary: summaryText, // 요약 탭의 데이터
+      scrapSummary: summaryText.trim() === "<서론>\n\n<본론>\n\n<결론>" ? "" : summaryText, // 기본값인지 확인하여 저장
       highlights: highlights, // 형광펜 정보
     };
 
@@ -312,31 +331,78 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
     }));
 
     console.log("vocaAddList!!:", vocaAddList);
-
+  
+    // 1. 스크랩 데이터나 단어 데이터가 모두 없는 경우 경고 메시지 출력
+    if (!scrapData.comment && !scrapData.scrapSummary && vocaAddList.length === 0) {
+      Swal.fire({
+        icon: 'warning',
+        title: '저장 오류',
+        html: '<p style="line-height: 1.2;">스크랩할 데이터를 추가해주세요.</p>',
+      });
+      return; // 저장을 중단
+    }
+  
+    // 2. 단어가 입력되었는데 산업이 선택되지 않은 경우 오류 처리
+    if (hasEmptyIndustry) {
+      Swal.fire({
+        icon: 'warning',
+        title: '저장 오류',
+        html: '<p style="line-height: 1.2;">단어를 입력했을 때는 반드시 산업을 선택해야 합니다.</p>',
+      });
+      return; // 저장을 중단
+    }
+  
     try {
+      // SweetAlert2 로딩 화면 표시
+      Swal.fire({
+        title: '잠시만 기다려 주세요...👩‍💻',
+        html: '연관 뉴스를 함께 추천하는 중입니다.',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading(); // 로딩 애니메이션 실행
+        }
+      });
+  
+      let successMessage = '스크랩이 성공적으로 저장되었습니다.'; // 기본 성공 메시지
+  
       // 먼저 scrapData 저장 (요약, 의견, 형광펜 정보)
       if (scrapId) {
         // scrapId가 있으면 업데이트 (put 요청)
         await putScrap(scrapId, putscrapData);
         console.log("put 요청 완료");
+        successMessage = '수정이 완료되었습니다.'; // 수정 성공 메시지
       } else {
         // scrapId가 없으면 새로 생성 (post 요청)
         await postScrap(postscrapData);
         console.log("post 요청 완료");
       }
-
-      // vocaAddList가 존재할 경우 단어도 저장
+  
+      // 3. vocaAddList가 존재할 경우 단어도 저장
       if (vocaAddList.length > 0) {
         await dispatch(addVocaThunk({ vocaAddList })); // wordlist 데이터 전송
         console.log("단어 추가 완료!");
       }
-
-      // 성공 시 알림
-      alert("저장되었습니다!");
+  
+      // 로딩 완료 후 SweetAlert2 닫기
+      Swal.close();
+  
+      // 4. 성공 시 SweetAlert로 알림 (put 요청 시에는 수정 완료 메시지)
+      Swal.fire({
+        icon: 'success',
+        title: '저장 완료',
+        text: successMessage,
+      });
     } catch (error) {
-      // 실패 시 오류 처리
+      // 로딩 완료 후 SweetAlert2 닫기
+      Swal.close();
+  
+      // 5. 실패 시 오류 처리
       console.error("저장 중 오류 발생:", error);
-      alert("저장에 실패했습니다.");
+      Swal.fire({
+        icon: 'error',
+        title: '저장 실패',
+        text: '저장 중 오류가 발생했습니다. 다시 시도해주세요.',
+      });
     }
   };
 
@@ -417,25 +483,28 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
         <>
           {vocaSections.map((section, index) => (
             <VocaSection key={index}>
-              <IndustryDropdownWrapper>
-                <SelectedIndustry onClick={() => toggleDropdown(index)}>
-                  {section.industryId
-                    ? words.find(
-                        (item) => item.industryId === section.industryId
-                      )?.industryName || "산업"
-                    : "산업"}
-                </SelectedIndustry>
+               <IndustryDropdownWrapper>
+          <SelectedIndustryWrapper>
+            <SelectedIndustry onClick={() => toggleDropdown(index)}>
+              {section.industryId
+                ? words.find(
+                    (item) => item.industryId === section.industryId
+                  )?.industryName || "산업"
+                : "산업"}
+            </SelectedIndustry>
 
-                {/* 드롭다운 상태가 true일 때만 보여줌 */}
-                {section.isDropdownOpen && (
-                  <DropDown
-                    dropdownIndustries={words}
-                    handleIndustrySelect={(id) =>
-                      handleIndustrySelectVoca(index, id)
-                    } // 선택된 값 전달
-                  />
-                )}
-              </IndustryDropdownWrapper>
+            {section.isDropdownOpen && (
+              <DropdownWrapper>
+                <DropDown
+                  dropdownIndustries={words}
+                  handleIndustrySelect={(id) =>
+                    handleIndustrySelectVoca(index, id)
+                  } // 선택된 값 전달
+                />
+              </DropdownWrapper>
+            )}
+          </SelectedIndustryWrapper>
+        </IndustryDropdownWrapper>
 
               <VocaInputWrapper>
                 <StyledInput

@@ -5,6 +5,7 @@ import RadioButton from "@common/RadioButton";
 // import Button from '@common/Button';
 import { useState, useEffect } from "react";
 import axios from "axios";
+import Swal from 'sweetalert2';
 import BgImage from "@assets/landing/bgImage.png";
 
 const GlobalStyle = createGlobalStyle`
@@ -254,15 +255,32 @@ const SignUpPage1: React.FC = () => {
     });
 
   const handleNext = () => {
+    // if (!isIdChecked) {
+    //   window.alert("아이디 중복 확인을 완료해주세요.");
+    //   return;
+    // }
     if (!isIdChecked) {
-      window.alert("아이디 중복 확인을 완료해주세요.");
+      Swal.fire({
+        icon: 'warning', // 경고 아이콘
+        title: '중복 확인 필요',
+        text: '아이디 중복 확인을 완료해주세요.',
+      });
       return;
     }
 
+    // if (isFormValid) {
+    //   navigate("/signup21", { state: { signupForm } });
+    // } else {
+    //   window.alert("모든 정보를 필수로 입력해야 합니다.");
+    // }
     if (isFormValid) {
       navigate("/signup21", { state: { signupForm } });
     } else {
-      window.alert("모든 정보를 필수로 입력해야 합니다.");
+      Swal.fire({
+        icon: 'error', // 에러 아이콘
+        title: '입력 오류',
+        text: '모든 정보를 필수로 입력해야 합니다.',
+      });
     }
   };
 
