@@ -313,7 +313,7 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
       newsId: newsId,
       comment: opinionText, // 의견 탭의 데이터
       scrapSummary: summaryText.trim() === "<서론>\n\n<본론>\n\n<결론>" ? "" : summaryText, // 기본값인지 확인하여 저장
-      highlights: highlightsRef.current, // 형광펜 정보
+      highlights: highlights, // 형광펜 정보
     };
   
     // wordlist 데이터를 vocaAddList로 변환
