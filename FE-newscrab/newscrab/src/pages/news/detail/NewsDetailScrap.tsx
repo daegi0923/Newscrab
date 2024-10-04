@@ -63,7 +63,7 @@ const StyledTextarea = styled.textarea<{ $isOverflowing: boolean }>`
   font-family: "SUIT Variable", sans-serif; /* 폰트 적용 */
   width: 100%;
   height: auto;
-  max-height: 570px;
+  max-height: 300px;
   border: 1px solid #ddd;
   border-radius: 8px;
   padding: 10px;
@@ -98,7 +98,7 @@ const StyledTextarea = styled.textarea<{ $isOverflowing: boolean }>`
 `;
 
 const SaveButton = styled.button`
-  background-color: #f0c36d;
+  background-color: #4caf50;
   border: none;
   border-radius: 12px;
   padding: 8px 16px;
@@ -114,11 +114,11 @@ const SaveButton = styled.button`
   right: 0px; /* 오른쪽에서 10px 띄움 */
 
   &:hover {
-    background-color: #d9a654;
+    background-color: #45a049;
   }
 
   &:active {
-    background-color: #c89640;
+    background-color: #45a049ㄹ;
   }
 `;
 
@@ -253,7 +253,7 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
     if (textarea) {
       textarea.style.height = "auto";
       textarea.style.height = `${textarea.scrollHeight}px`;
-      setIsOverflowing(textarea.scrollHeight > 615);
+      setIsOverflowing(textarea.scrollHeight > 300);
     }
   };
 
