@@ -63,7 +63,7 @@ const StyledTextarea = styled.textarea<{ $isOverflowing: boolean }>`
   font-family: "SUIT Variable", sans-serif; /* 폰트 적용 */
   width: 100%;
   height: auto;
-  max-height: 570px;
+  max-height: 300px;
   border: 1px solid #ddd;
   border-radius: 8px;
   padding: 10px;
@@ -253,7 +253,7 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
     if (textarea) {
       textarea.style.height = "auto";
       textarea.style.height = `${textarea.scrollHeight}px`;
-      setIsOverflowing(textarea.scrollHeight > 615);
+      setIsOverflowing(textarea.scrollHeight > 300);
     }
   };
 

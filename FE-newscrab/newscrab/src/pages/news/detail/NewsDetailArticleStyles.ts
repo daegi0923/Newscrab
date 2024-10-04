@@ -9,10 +9,11 @@ export const NewsContent = styled.div`
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   padding: 15px 100px;
   background-color: #fff;
-  max-height: 680px;
+  max-height: 900px;
   min-height: 680px;
   overflow: auto;
   position: relative;
+  margin-bottom: 20px;
 
   ${scrollbar}
   user-select: text;

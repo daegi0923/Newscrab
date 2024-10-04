@@ -25,7 +25,7 @@ const PopupContainer = styled.div<{ $show: boolean }>`
 
 const PopupButton = styled.button`
   position: fixed;
-  bottom: 6%;
+  bottom: 4%;
   left: 62%;
   background-color: green;
   border: none;
