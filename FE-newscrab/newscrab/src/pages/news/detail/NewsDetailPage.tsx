@@ -104,7 +104,7 @@ const NewsDetailPage: React.FC = () => {
         <BackButton onClick={handleBackClick}>뉴스 목록</BackButton>
 
         <ArrowButton
-          hidden={!newsId || parseInt(newsId, 10) === 1}
+          hidden={isLoading || !newsId || parseInt(newsId, 10) === 1}
           onClick={handlePrevClick}
           style={{ left: "-60px" }}
         >
@@ -125,9 +125,8 @@ const NewsDetailPage: React.FC = () => {
             )
           )}
         </NewsWrapper>
-
         <ArrowButton
-          hidden={!newsId}
+          hidden={isLoading || !newsId}
           onClick={handleNextClick}
           style={{ right: "-60px" }}
         >
