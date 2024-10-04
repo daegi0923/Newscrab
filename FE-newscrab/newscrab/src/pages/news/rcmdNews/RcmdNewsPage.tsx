@@ -10,6 +10,13 @@ import AllImage from "@assets/all.png"; // All 이미지 import
 import { getRcmdNews } from "@apis/news/newsRcmdApi";
 import { RcmdNewsItem } from "../../../types/newsTypes"; // newsTypes.ts에서 타입 import
 
+// 로딩 메시지 스타일
+const LoadingMessage = styled.div`
+  text-align: center;
+  font-size: 18px;
+  margin-top: 250px;
+`;
+
 // 상단 탭과 "모든 뉴스 보러가기"를 묶는 컨테이너 스타일
 const TopContainer = styled.div`
   display: flex;
@@ -75,15 +82,17 @@ const RcmdNewsPage: React.FC = () => {
   const [newsList, setNewsList] = useState<RcmdNewsItem[]>([]); // 전체 뉴스 데이터를 저장하는 상태
   const [displayedNews, setDisplayedNews] = useState<RcmdNewsItem[]>([]); // 현재 보여지는 뉴스 데이터를 저장하는 상태
   const [startIndex, setStartIndex] = useState(0); // 현재 시작 인덱스를 저장하는 상태
+  const [loading, setLoading] = useState(true); // 로딩 상태 추가
 
   const navigate = useNavigate(); // useNavigate 훅 사용
 
   // 뉴스 데이터를 API에서 가져오는 비동기 함수
   const fetchNewsData = async () => {
+    setLoading(true); // 로딩 시작
     const uniqueMergedRcmdNews: RcmdNewsItem[] = await getRcmdNews(); // API 요청으로 uniqueMergedRcmdNews 가져오기
     setNewsList(uniqueMergedRcmdNews); // 전체 뉴스 데이터를 상태에 저장
     setDisplayedNews(uniqueMergedRcmdNews.slice(0, 8)); // 처음에 1~8까지의 뉴스만 표시
-    console.log(uniqueMergedRcmdNews);
+    setLoading(false); // 로딩 완료
   };
 
   // "다른 추천 받기" 버튼 클릭 시 실행되는 함수
@@ -130,7 +139,13 @@ const RcmdNewsPage: React.FC = () => {
           모든 뉴스 보기
         </GoAllNews>
       </TopContainer>
-      <RcmdNewsList newsList={displayedNews} onNewsClick={handleNewsClick} />
+
+      {/* 로딩 중일 때는 로딩 메시지를 표시, 로딩이 완료되면 뉴스 리스트를 표시 */}
+      {loading ? (
+        <LoadingMessage>뉴스 데이터를 불러오는 중입니다...</LoadingMessage>
+      ) : (
+        <RcmdNewsList newsList={displayedNews} onNewsClick={handleNewsClick} />
+      )}
     </div>
   );
 };
