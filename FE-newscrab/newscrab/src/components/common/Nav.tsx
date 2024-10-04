@@ -154,7 +154,7 @@ const Nav: React.FC = () => {
   const handleLogout = () => {
     if (isLogedIn) {
       dispatch(logout());
-      window.location.href = '/login';
+      window.location.href = '/login1';
     } else {
       setErrorMessage('로그인이 필요합니다!'); // 로그인하지 않은 경우
     }
