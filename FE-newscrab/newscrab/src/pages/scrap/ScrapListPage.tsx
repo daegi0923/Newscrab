@@ -6,23 +6,22 @@ import SearchBar from "@common/SearchBar";
 import Tab from "./Tab";
 import ScrapList from "./ScrapList "; // ScrapList 컴포넌트 import
 
-// import { getScrapData } from "@apis/scrap/scrapApi";
 import { ScrapData } from "../../types/scrapTypes"; // scrapApi에서 타입 import
 
 import ScrapPdfGenerator from "@components/scrap/pdf/ScrapPdfGenerator";
 
-//redux 사용해서 scrapList 관리
+// redux 사용해서 scrapList 관리
 import { fetchScrapListThunk } from "@store/scrap/scrapSlice";
 import { AppDispatch, RootState } from "@store/index";
 import { useDispatch, useSelector } from "react-redux";
 
 const ScrapListPage: React.FC = () => {
-  // const [scrapList, setScrapList] = useState<ScrapData[]>([]); // 스크랩 데이터를 저장하는 상태
   const [filteredScrapList, setFilteredScrapList] = useState<ScrapData[]>([]); // 필터링된 스크랩 데이터
   const [selectedIndustryId, setSelectedIndustryId] = useState<number | null>(
     null
-  ); // 선택된 industryId 상태 (초기값 null로 수정)
+  ); // 선택된 industryId 상태
   const [searchText, setSearchText] = useState(""); // 검색 텍스트 상태 추가
+  const [isLoaded, setIsLoaded] = useState<boolean>(false); // 필터 로딩 완료 상태 추가
 
   const navigate = useNavigate(); // useNavigate 훅 사용
 
@@ -33,14 +32,25 @@ const ScrapListPage: React.FC = () => {
 
   // redux 전역상태관리로 scrapList 관리
   const dispatch: AppDispatch = useDispatch();
-
   const { scrapList } = useSelector((state: RootState) => state.scrap);
+
+  // localStorage에서 선택된 industryId를 불러오기
+  useEffect(() => {
+    const savedIndustryId = localStorage.getItem("selectedScrapIndustryId");
+    if (savedIndustryId) {
+      setSelectedIndustryId(parseInt(savedIndustryId, 10));
+    }
+    setIsLoaded(true); // 필터 상태 로딩 완료
+  }, []);
 
   useEffect(() => {
     dispatch(fetchScrapListThunk()); // Scrap 리스트 API 요청
   }, [dispatch]);
 
+  // 필터링 및 검색 로직
   useEffect(() => {
+    if (!isLoaded) return; // 필터 로딩이 완료된 후에만 동작
+
     let filteredData = scrapList.slice(); // scrapList 배열을 복사
 
     // industryId가 선택된 경우 해당 industryId로 필터링
@@ -59,19 +69,16 @@ const ScrapListPage: React.FC = () => {
       );
     }
 
-    // // updatedAt 필드 기준으로 내림차순 정렬
-    // filteredData = filteredData.sort((a, b) => {
-    //   const dateA = new Date(a.updatedAt).getTime();
-    //   const dateB = new Date(b.updatedAt).getTime();
-    //   return dateB - dateA; // 최신 순서대로 정렬
-    // });
-
     setFilteredScrapList(filteredData);
-  }, [scrapList, selectedIndustryId, searchText]);
+  }, [scrapList, selectedIndustryId, searchText, isLoaded]);
 
   // 필터에서 선택한 industryId 처리
   const handleIndustrySelect = (industryId: number | null) => {
     setSelectedIndustryId(industryId); // 선택된 industryId 업데이트
+    localStorage.setItem(
+      "selectedScrapIndustryId",
+      industryId ? industryId.toString() : ""
+    ); // 선택된 필터 상태를 localStorage에 저장
   };
 
   // 스크랩 클릭 시 실행되는 핸들러 (상세 페이지로 이동)
