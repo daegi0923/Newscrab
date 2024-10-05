@@ -42,10 +42,7 @@ const AdContainer = styled.div`
 `;
 
 const TabWrapper = styled.div`
-// position: absolute;
-// right: 10%;
-// padding-left:
-// right: 50%;
+  position: relative; /* 부모 요소에 상대 위치 설정 */
 `;
 
 // 단어와 이미지를 매핑하는 함수
@@ -186,9 +183,9 @@ const VocaPage: React.FC = () => {
         <AdContainer>
           <VocaContainer>
             <TabWrapper><Tab options={tabOptions} onFilterChange={handleFilterChange} activeFilter={filter} /></TabWrapper>
-            {isDropdownOpen && (
+            <div style={{ position: 'absolute', top: '295px', left: '11%', zIndex: 10 }}>
               <DropDown words={words} handleIndustrySelect={handleIndustrySelect} />
-            )}
+            </div>
             <CardContainer>
               {getCurrentPageData().map((word) => (
                 <Card 
