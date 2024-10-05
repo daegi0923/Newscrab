@@ -25,10 +25,10 @@ const NewsWrapper = styled.div`
 
 const BackButton = styled.button`
   z-index: 2;
-  position: fixed;
-  top: 11%;
-  left: 10.5%;
-  padding: 10px 15px;
+  position: absolute;
+  top: 105px;
+  left: 0%;
+  padding: 4px 8px;
   background-color: #ffbe98;
   border: none;
   border-radius: 5px;
