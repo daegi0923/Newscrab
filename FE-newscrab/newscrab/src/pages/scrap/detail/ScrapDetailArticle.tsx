@@ -12,6 +12,18 @@ import { getScrapDetail } from "@apis/scrap/scrapDetailApi"; // 스크랩 데이
 import { deleteScrap } from "@apis/scrap/scrapApi";
 import Swal from "sweetalert2";
 
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString); // 문자열을 Date 객체로 변환
+  const year = date.getFullYear(); // 년도 추출
+  const month = String(date.getMonth() + 1).padStart(2, "0"); // 월 추출 (1월이 0이므로 +1), 두 자리로 맞추기
+  const day = String(date.getDate()).padStart(2, "0"); // 일 추출, 두 자리로 맞추기
+
+  const hours = String(date.getHours()).padStart(2, "0"); // 시 추출, 두 자리로 맞추기
+  const minutes = String(date.getMinutes()).padStart(2, "0"); // 분 추출, 두 자리로 맞추기
+
+  return `${year}-${month}-${day} ${hours}:${minutes}`; // "년-월-일 시:분" 형식으로 반환
+};
+
 // 스타일 정의
 const ScrapContent = styled.div`
   width: 60%;
@@ -367,7 +379,7 @@ const ScrapDetailArticle: React.FC<ScrapDetailArticleProps> = ({ scrapId }) => {
                 </IndustryId>
               </Info>
               <Info>{scrapDetail.newsCompany}</Info>
-              <Info>{scrapDetail.updatedAt.replace("T", " ")}</Info>{" "}
+              <Info>{formatDate(scrapDetail.updatedAt)} (수정 時)</Info>{" "}
             </InfoGroup>
             {/* 조회수, 스크랩수 아이콘 */}
             <Stats>

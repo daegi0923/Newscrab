@@ -4,6 +4,7 @@ import { RcmdNewsItem } from "../../../types/newsTypes";
 import viewIcon from "@assets/hot.png";
 import scrapCntIcon from "@assets/scrap.png";
 import { industry } from "@common/Industry";
+import LikeButton from "../common/LikeButton"; // LikeButton 임포트
 
 const formatDate = (dateString: string) => {
   return dateString.replace("T", " ");
@@ -17,14 +18,20 @@ const GridContainer = styled.div`
 `;
 
 const NewsItemContainer = styled.div`
-  position: relative; /* Tooltip 위치를 조정하기 위해 relative 설정 */
   border: 1px solid #ddd;
   border-radius: 10px;
-  overflow: visible;
+  overflow: hidden;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   padding: 16px;
   cursor: pointer;
   background-color: white;
+  position: relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    transform: translateY(-5px); /* 위로 살짝 올라가는 효과 */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* 호버 시 그림자 강화 */
+  }
 `;
 
 const FlexContainer = styled.div`
@@ -63,6 +70,7 @@ const IndustryId = styled.div`
 
 const RcmdTextContainer = styled.div`
   position: relative;
+  right: 30px;
   display: inline-block;
 
   &:hover .rcmd-text {
@@ -225,6 +233,7 @@ const RcmdNewsList: React.FC<{
                     {getTooltipText(news.rcmd)}
                   </Tooltip>
                 </RcmdTextContainer>
+                <LikeButton newsId={news.newsId} /> {/* LikeButton 추가 */}
               </IndustryRcmdContainer>
 
               <NewsTitle>{truncateTitle(news.newsTitle)}</NewsTitle>
