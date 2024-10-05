@@ -17,14 +17,20 @@ const GridContainer = styled.div`
 `;
 
 const NewsItemContainer = styled.div`
-  position: relative; /* Tooltip 위치를 조정하기 위해 relative 설정 */
   border: 1px solid #ddd;
   border-radius: 10px;
-  overflow: visible;
+  overflow: hidden;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   padding: 16px;
   cursor: pointer;
   background-color: white;
+  position: relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    transform: translateY(-5px); /* 위로 살짝 올라가는 효과 */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* 호버 시 그림자 강화 */
+  }
 `;
 
 const FlexContainer = styled.div`

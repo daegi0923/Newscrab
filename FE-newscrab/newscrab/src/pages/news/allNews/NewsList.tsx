@@ -24,6 +24,13 @@ const NewsItemContainer = styled.div`
   padding: 16px;
   cursor: pointer;
   background-color: white;
+  position: relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    transform: translateY(-5px); /* 위로 살짝 올라가는 효과 */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* 호버 시 그림자 강화 */
+  }
 `;
 
 const FlexContainer = styled.div`
