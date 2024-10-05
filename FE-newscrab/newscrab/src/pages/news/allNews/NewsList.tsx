@@ -3,6 +3,7 @@ import { NewsItem } from "../../../types/newsTypes";
 import viewIcon from "@assets/hot.png";
 import scrapCntIcon from "@assets/scrap.png";
 import { industry } from "@common/Industry";
+import LikeButton from "../common/LikeButton"; // 올바르게 임포트된 LikeButton 사용
 
 const formatDate = (dateString: string) => {
   return dateString.replace("T", " ");
@@ -21,7 +22,7 @@ const NewsItemContainer = styled.div`
   overflow: hidden;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   padding: 16px;
-  cursor: pointer; /* 클릭 가능한 커서 추가 */
+  cursor: pointer;
   background-color: white;
 `;
 
@@ -50,6 +51,7 @@ const IndustryId = styled.div`
   display: inline-block;
   text-align: center;
   font-weight: bold;
+  margin-right: 8px;
 `;
 
 const NewsTitle = styled.h2`
@@ -88,7 +90,7 @@ const ScrapCntIcon = styled.img`
 
 // 제목 자르기 함수 - 30자 이상이면 '...'으로 자름
 const truncateTitle = (title: string) => {
-  const maxLength = 35; // 최대 글자 수를 30으로 고정
+  const maxLength = 35;
   return title.length > maxLength
     ? title.substring(0, maxLength) + "..."
     : title;
@@ -110,14 +112,18 @@ const NewsList: React.FC<{
       {newsList.map((news) => (
         <NewsItemContainer
           key={news.newsId}
-          onClick={() => onNewsClick(news.newsId)} // 클릭 시 onNewsClick 호출
+          onClick={() => onNewsClick(news.newsId)}
         >
           <FlexContainer>
             {news.photoUrlList && (
               <Image src={news.photoUrlList[0]} alt="이미지가 없습니다." />
             )}
             <TextContainer>
-              <IndustryId>{getIndustryName(news.industryId)}</IndustryId>
+              <FlexContainer>
+                <IndustryId>{getIndustryName(news.industryId)}</IndustryId>
+                {/* 올바르게 불러온 LikeButton */}
+                <LikeButton newsId={news.newsId} />{" "}
+              </FlexContainer>
               <NewsTitle>{truncateTitle(news.newsTitle)}</NewsTitle>
               <InfoRow>
                 <span>{news.newsCompany}</span>
