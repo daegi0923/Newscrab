@@ -13,8 +13,14 @@ const FilterButton = styled.button<{ selected: boolean }>`
   color: ${(props) => (props.selected ? "#4370e3" : "#000")};
   font-weight: bold;
   cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.15s ease,
+    box-shadow 0.15s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 기본 상태에서 약한 그림자 */
+
   &:hover {
     background-color: #f0f0f0;
+    transform: translateY(-3px); /* 위로 살짝 떠오르는 효과 */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* 호버 시 더 깊은 그림자 */
   }
 `;
 

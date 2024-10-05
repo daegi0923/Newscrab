@@ -25,8 +25,15 @@ const ScrapItemContainer = styled.div`
   overflow: hidden;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   padding: 16px;
-  min-height: 150px; /* 최소 높이 줄임 */
+  cursor: pointer;
   background-color: white;
+  position: relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    transform: translateY(-5px); /* 위로 살짝 올라가는 효과 */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* 호버 시 그림자 강화 */
+  }
 `;
 
 const FlexContainer = styled.div`
