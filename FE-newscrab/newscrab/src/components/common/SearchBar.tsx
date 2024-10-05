@@ -19,6 +19,7 @@ const SearchBarContainer = styled.div`
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   position: relative;
   margin-top: 18px;
+  border: solid 1px #666;
 `;
 
 const SearchInput = styled.input`
