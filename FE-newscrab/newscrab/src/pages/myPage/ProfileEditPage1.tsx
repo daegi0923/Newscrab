@@ -199,6 +199,10 @@ const ProfileEdit1: React.FC = () => {
     }
   };
 
+  const handleBack = () => {
+    navigate('/mypage');
+  }
+
   return (
     <>
       <GlobalStyle />
@@ -257,6 +261,7 @@ const ProfileEdit1: React.FC = () => {
           </FormContainer1>
           <ButtonWrapper>
             <Button onClick={handleSave}>저장</Button>
+            <Button onClick={handleBack}>돌아가기</Button>
           </ButtonWrapper>
         </FormContainer>
         <SignUpImage src={NewsImage} alt="SignUpImage" />

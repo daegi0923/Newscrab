@@ -162,7 +162,7 @@ const Nav: React.FC = () => {
 
   const handleModalClose = () => {
     setErrorMessage(null);
-    navigate('/login');
+    navigate('/login1');
   };
   const selectedImage =
     {

@@ -253,6 +253,7 @@ const VocaDetail: React.FC<VocaDetailProps> = ({ img, industryName, vocaName, vo
 
       <VocaSection1>
       <VocaDesc>
+        {/* 뜻 정의 예문 */}
         <h3>{vocaDesc}</h3>
         <h4>{sentence}</h4>
       {/* <p>{newsImage}</p> */}

@@ -41,6 +41,13 @@ const AdContainer = styled.div`
   width: 100%;
 `;
 
+const TabWrapper = styled.div`
+// position: absolute;
+// right: 10%;
+// padding-left:
+// right: 50%;
+`;
+
 // 단어와 이미지를 매핑하는 함수
 const mapWordsWithImages = (vocaList: VocaResponseDto[], wordsMap: Record<number, Word>): VocaWithImages[] => {
   return vocaList.map((vocaItem) => {
@@ -178,7 +185,7 @@ const VocaPage: React.FC = () => {
         <SearchBar searchText={searchText} onSearchChange={setSearchText} />
         <AdContainer>
           <VocaContainer>
-            <Tab options={tabOptions} onFilterChange={handleFilterChange} activeFilter={filter} />
+            <TabWrapper><Tab options={tabOptions} onFilterChange={handleFilterChange} activeFilter={filter} /></TabWrapper>
             {isDropdownOpen && (
               <DropDown words={words} handleIndustrySelect={handleIndustrySelect} />
             )}

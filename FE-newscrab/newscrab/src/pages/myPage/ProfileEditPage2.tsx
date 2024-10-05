@@ -348,17 +348,39 @@ const SaveButton = styled.button`
   border: none;
   font-size: 14px;
   border-radius: 10px;
+  margin-right: 10px;
   height: 40px;
   width: 80px;
   cursor: pointer;
   position: absolute;
   bottom: 20px;
-  left: 50%;
+  left: 45%;
   transform: translateX(-50%);
   &:hover {
     background-color: #e09520;
   }
 `;
+const BackButton = styled.button`
+  background-color: #ffbe98;
+  border: none;
+  font-size: 14px;
+  border-radius: 10px;
+  margin-right: 10px;
+  height: 40px;
+  width: 80px;
+  cursor: pointer;
+  position: absolute;
+  bottom: 20px;
+  left: 55%;
+  transform: translateX(-50%);
+  &:hover {
+    background-color: #e09520;
+  }
+`;
+// const ButtonWrapper = styled.div`
+//   display: flex;
+//   justify-content: center;
+// `;
 
 interface Industry {
   img: string;
@@ -396,6 +418,11 @@ const ProfileEdit2: React.FC = () => {
       )
     )
   );
+
+  const handleBack = () => {
+    navigate('/mypage');
+  }
+
 
   const handleDragStart = (
     event: React.DragEvent<HTMLDivElement>,
@@ -519,7 +546,10 @@ const ProfileEdit2: React.FC = () => {
             </DropArea>
           ))}
         </DropContainer>
+        {/* <ButtonWrapper> */}
         <SaveButton onClick={handleSave}>저장</SaveButton>
+        <BackButton onClick={handleBack}>돌아가기</BackButton>
+        {/* </ButtonWrapper> */}
       </CardContainer>
     </SignUpContainer>
   );
