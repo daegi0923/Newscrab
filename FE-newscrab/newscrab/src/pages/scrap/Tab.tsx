@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { tabOptions } from "./TabOptions";
 
@@ -33,28 +33,38 @@ interface TabProps {
 const Tab: React.FC<TabProps> = ({ onIndustrySelect }) => {
   const [selectedTabId, setSelectedTabId] = useState<number | null>(null); // 선택된 탭의 ID 상태
 
-  // 필터 버튼 선택 시 상태 업데이트
+  // 컴포넌트가 로드될 때, localStorage에서 필터 상태 불러오기
+  useEffect(() => {
+    const savedTabId = localStorage.getItem("selectedScrapIndustryId");
+    if (savedTabId) {
+      setSelectedTabId(parseInt(savedTabId, 10)); // localStorage에서 불러온 값을 설정
+      onIndustrySelect(parseInt(savedTabId, 10)); // 부모 컴포넌트로 값 전달
+    }
+  }, [onIndustrySelect]);
+
+  // 필터 버튼 선택 시 상태 업데이트 및 localStorage 저장
   const handleTabSelect = (tabId: number) => {
     const newSelectedId = selectedTabId === tabId ? null : tabId; // 이미 선택된 탭 클릭 시 선택 해제
     setSelectedTabId(newSelectedId); // 선택된 탭 업데이트
     onIndustrySelect(newSelectedId); // 부모 컴포넌트에 선택된 탭 ID 전달
+    localStorage.setItem(
+      "selectedScrapIndustryId",
+      newSelectedId ? newSelectedId.toString() : ""
+    ); // localStorage에 선택된 탭 저장
   };
 
   return (
-    <>
-      {/* 필터 버튼 */}
-      <FilterContainer>
-        {tabOptions.map((tab) => (
-          <FilterButton
-            key={tab.id}
-            selected={selectedTabId === tab.id} // 현재 선택된 탭과 비교
-            onClick={() => handleTabSelect(tab.id)}
-          >
-            {tab.label}
-          </FilterButton>
-        ))}
-      </FilterContainer>
-    </>
+    <FilterContainer>
+      {tabOptions.map((tab) => (
+        <FilterButton
+          key={tab.id}
+          selected={selectedTabId === tab.id} // 현재 선택된 탭과 비교
+          onClick={() => handleTabSelect(tab.id)}
+        >
+          {tab.label}
+        </FilterButton>
+      ))}
+    </FilterContainer>
   );
 };
 

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { topTabOptions, bottomTabOptions } from "./TabOptions";
@@ -102,19 +102,31 @@ const FilterButton = styled.button<{ selected: boolean }>`
 
 interface TabProps {
   onIndustrySelect: (industryId: number | null) => void;
-  onOptionSelect: (option: string) => void; // 상단 탭 선택 시 호출될 함수 추가
+  onOptionSelect: (option: string) => void;
+  selectedTopTab: number; // 상단 탭 상태
+  selectedBottomTab: number | null; // 하단 필터 상태
 }
 
-const Tab: React.FC<TabProps> = ({ onIndustrySelect, onOptionSelect }) => {
-  const [selectedTopTab, setSelectedTopTab] = useState<number>(1); // 상단 탭 상태
-  const [selectedBottomTab, setSelectedBottomTab] = useState<number | null>(
-    null
-  ); // 하단 필터 상태, 하나만 선택 가능하도록 수정
+const Tab: React.FC<TabProps> = ({
+  onIndustrySelect,
+  onOptionSelect,
+  selectedTopTab,
+  selectedBottomTab,
+}) => {
+  const [topTab, setTopTab] = useState<number>(selectedTopTab); // 상단 탭 상태
+  const [bottomTab, setBottomTab] = useState<number | null>(selectedBottomTab); // 하단 필터 상태
+
+  useEffect(() => {
+    // AllNewsPage에서 받은 selectedTopTab과 selectedBottomTab으로 초기화
+    setTopTab(selectedTopTab);
+    setBottomTab(selectedBottomTab);
+  }, [selectedTopTab, selectedBottomTab]);
 
   // 상단 탭 선택 시 상태 업데이트 및 option 전달
   const handleTopTabSelect = (tabId: number, option: string) => {
-    setSelectedTopTab(tabId);
-    onOptionSelect(option); // 선택된 option 값을 상위 컴포넌트로 전달
+    setTopTab(tabId);
+    onOptionSelect(option);
+    localStorage.setItem("selectedTopTab", tabId.toString()); // 상단 탭 상태 저장
   };
 
   const getTabImage = (tabName: string) => {
@@ -127,9 +139,13 @@ const Tab: React.FC<TabProps> = ({ onIndustrySelect, onOptionSelect }) => {
 
   // 하단 필터 버튼 선택 시 상태 업데이트
   const handleBottomTabSelect = (tabId: number) => {
-    const newSelectedId = selectedBottomTab === tabId ? null : tabId; // 이미 선택된 탭 클릭 시 선택 해제
-    setSelectedBottomTab(newSelectedId); // 선택된 탭 업데이트
-    onIndustrySelect(newSelectedId); // 선택된 ID 전달
+    const newSelectedId = bottomTab === tabId ? null : tabId;
+    setBottomTab(newSelectedId);
+    onIndustrySelect(newSelectedId);
+    localStorage.setItem(
+      "selectedBottomTab",
+      newSelectedId ? newSelectedId.toString() : ""
+    ); // 하단 탭 상태 저장
   };
 
   const handleGoRcmdNews = () => {
@@ -144,7 +160,7 @@ const Tab: React.FC<TabProps> = ({ onIndustrySelect, onOptionSelect }) => {
           {topTabOptions.map((tab) => (
             <TopTabButton
               key={tab.id}
-              selected={selectedTopTab === tab.id}
+              selected={topTab === tab.id}
               onClick={() => handleTopTabSelect(tab.id, tab.label)}
             >
               {getTabImage(tab.name) && (
@@ -156,12 +172,13 @@ const Tab: React.FC<TabProps> = ({ onIndustrySelect, onOptionSelect }) => {
         </TabContainer>
         <GoRcmdNews onClick={handleGoRcmdNews}>🔍 추천 뉴스 보기</GoRcmdNews>
       </TopWrapper>
+
       {/* 하단 필터 버튼 */}
       <FilterContainer>
         {bottomTabOptions.map((tab) => (
           <FilterButton
             key={tab.id}
-            selected={selectedBottomTab === tab.id} // 하나만 선택되도록 수정
+            selected={bottomTab === tab.id}
             onClick={() => handleBottomTabSelect(tab.id)}
           >
             {tab.label}

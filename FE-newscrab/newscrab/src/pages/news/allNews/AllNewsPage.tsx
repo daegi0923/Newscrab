@@ -4,6 +4,7 @@ import Header from "@components/common/Header";
 import Tab from "./Tab";
 import Pagination from "@components/common/Pagination"; // 페이지네이션
 import NewsList from "./NewsList"; // 뉴스 리스트
+import { topTabOptions } from "./TabOptions";
 
 import { getNewsData } from "@apis/news/newsApi";
 import { NewsItem, NewsData } from "../../../types/newsTypes"; // newsTypes.ts에서 타입 import
@@ -16,8 +17,35 @@ const AllNewsPage: React.FC = () => {
     -1
   ); // 선택된 industryId 상태
   const [option, setOption] = useState<string>("total"); // 선택된 option 상태 ('total', 'hot', 'scrap')
+  const [selectedTopTab, setSelectedTopTab] = useState<number>(1); // 상단 탭 상태 저장
+  const [selectedBottomTab, setSelectedBottomTab] = useState<number | null>(
+    null
+  ); // 하단 필터 상태 저장
+  const [isLoaded, setIsLoaded] = useState<boolean>(false); // 초기 로딩 상태
 
   const navigate = useNavigate(); // useNavigate 훅 사용
+
+  // 컴포넌트가 로드될 때, localStorage에서 상단/하단 탭 상태를 불러오기
+  useEffect(() => {
+    const savedTopTab = localStorage.getItem("selectedTopTab");
+    const savedBottomTab = localStorage.getItem("selectedBottomTab");
+
+    if (savedTopTab) {
+      const topTabId = parseInt(savedTopTab, 10);
+      setSelectedTopTab(topTabId); // 상단 탭 상태 복구
+      setOption(
+        topTabOptions.find((tab) => tab.id === topTabId)?.label || "total"
+      ); // 옵션 복구
+    }
+
+    if (savedBottomTab) {
+      const bottomTabId = parseInt(savedBottomTab, 10);
+      setSelectedBottomTab(bottomTabId); // 하단 필터 상태 복구
+      setSelectedIndustryId(bottomTabId); // industryId 복구
+    }
+
+    setIsLoaded(true); // localStorage에서 값을 불러오면 로딩 완료
+  }, []);
 
   // 뉴스 데이터를 API에서 가져오는 비동기 함수
   const fetchNewsData = async (
@@ -25,23 +53,26 @@ const AllNewsPage: React.FC = () => {
     industryId: number | null,
     option: string
   ) => {
+    console.log("Fetching news with option:", option); // option 값 출력하여 확인
     const resData: NewsData = await getNewsData(
       industryId ?? -1,
       page,
       20,
       undefined,
       undefined,
-      option
-    ); // API 요청
+      option // 이 값이 API로 전달되는지 확인
+    );
     setNewsList(resData.news); // 받아온 뉴스 데이터를 상태에 저장
     setTotalPages(resData.totalPages); // API에서 받은 totalPages 값을 상태에 저장
-    console.log(resData.news);
   };
 
   // currentPage, selectedIndustryId 또는 option이 변경될 때마다 데이터 새로 가져오기
   useEffect(() => {
-    fetchNewsData(currentPage, selectedIndustryId, option);
-  }, [currentPage, selectedIndustryId, option]);
+    if (isLoaded) {
+      // 로딩이 완료된 후에만 데이터를 가져옴
+      fetchNewsData(currentPage, selectedIndustryId, option);
+    }
+  }, [currentPage, selectedIndustryId, option, isLoaded]); // option이 변경될 때마다 호출
 
   // 페이지네이션을 위한 페이지 변경 핸들러
   const handlePageChange = (page: number) => {
@@ -50,6 +81,7 @@ const AllNewsPage: React.FC = () => {
 
   // 상단 탭에서 선택한 option 값 처리
   const handleOptionSelect = (selectedOption: string) => {
+    console.log("Option selected:", selectedOption); // 선택된 option 확인
     setOption(selectedOption); // 선택된 option 업데이트
     setCurrentPage(1); // 탭 변경 시 페이지를 1로 초기화
   };
@@ -68,10 +100,12 @@ const AllNewsPage: React.FC = () => {
   return (
     <div>
       <Header />
-      {/* 상단 탭에서 선택한 option 값을 전달 */}
+      {/* 상단 탭과 하단 필터 상태 전달 */}
       <Tab
         onIndustrySelect={handleIndustrySelect}
         onOptionSelect={handleOptionSelect}
+        selectedTopTab={selectedTopTab} // 상단 탭 상태 전달
+        selectedBottomTab={selectedBottomTab} // 하단 필터 상태 전달
       />
       {/* 뉴스 리스트 컴포넌트 */}
       <NewsList newsList={newsList} onNewsClick={handleNewsClick} />
