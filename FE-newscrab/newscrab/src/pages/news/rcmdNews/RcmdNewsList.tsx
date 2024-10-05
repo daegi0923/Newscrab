@@ -4,6 +4,7 @@ import { RcmdNewsItem } from "../../../types/newsTypes";
 import viewIcon from "@assets/hot.png";
 import scrapCntIcon from "@assets/scrap.png";
 import { industry } from "@common/Industry";
+import LikeButton from "../common/LikeButton"; // LikeButton 임포트
 
 const formatDate = (dateString: string) => {
   return dateString.replace("T", " ");
@@ -69,6 +70,7 @@ const IndustryId = styled.div`
 
 const RcmdTextContainer = styled.div`
   position: relative;
+  right: 30px;
   display: inline-block;
 
   &:hover .rcmd-text {
@@ -231,6 +233,7 @@ const RcmdNewsList: React.FC<{
                     {getTooltipText(news.rcmd)}
                   </Tooltip>
                 </RcmdTextContainer>
+                <LikeButton newsId={news.newsId} /> {/* LikeButton 추가 */}
               </IndustryRcmdContainer>
 
               <NewsTitle>{truncateTitle(news.newsTitle)}</NewsTitle>
