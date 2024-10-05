@@ -30,12 +30,13 @@ const ScrollableContainer = styled.div`
   max-height: 650px;
   overflow-y: auto;
   border-left: 1px solid #ddd;
-  ${scrollbar}/* 커스텀 스크롤바 스타일 적용 */
+  ${scrollbar} /* 커스텀 스크롤바 스타일 적용 */
+  position: relative; /* 툴팁이 부모 요소를 기준으로 위치하도록 설정 */
 `;
 
 // 뉴스 항목 컨테이너 스타일
 const RcmdItemContainer = styled.div`
-  overflow: hidden;
+  position: relative; /* 툴팁이 절대 위치로 설정될 때 기준이 되도록 설정 */
   padding: 16px;
   margin-bottom: 10px;
 `;
@@ -98,8 +99,30 @@ const RcmdText = styled.div<{ rcmdType: string }>`
   border-radius: 20px;
   text-align: center;
   font-weight: bold;
+  position: relative;
+  &:hover .tooltip {
+    display: block;
+  }
 `;
 
+const Tooltip = styled.div`
+  display: none;
+  position: absolute;
+  bottom: 35px; /* RcmdItemContainer 상단에 위치하도록 조정 */
+  left: -50px; /* 컨테이너의 우측 상단에 맞추기 */
+  background-color: #666;
+  color: white;
+  padding: 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 9999;
+  max-width: 300px;
+  text-align: right;
+  overflow: visible; /* 툴팁이 잘리지 않도록 설정 */
+`;
+
+// 뉴스 제목 스타일
 const NewsTitle = styled.h2`
   font-size: 18px;
   margin-top: 8px;
@@ -177,9 +200,19 @@ const RcmdSection: React.FC = () => {
   // rcmd 값을 한글로 변환하는 함수
   const getRcmdText = (rcmd: string) => {
     if (rcmd === "userBase") return "맞춤 추천";
-    if (rcmd === "itemBase") return "분류별 추천";
-    if (rcmd === "latest") return "최근 추천";
+    if (rcmd === "itemBase") return "연관 추천";
+    if (rcmd === "latest") return "최신 추천";
     return "추천";
+  };
+
+  const getTooltipText = (rcmd: string) => {
+    if (rcmd === "userBase")
+      return "❗ 사용자의 스크랩, 좋아요 데이터를 기반으로 맞춤 추천합니다.";
+    if (rcmd === "itemBase")
+      return "❗ 맞춤 추천된 뉴스와 관련된 뉴스를 추가로 추천합니다.";
+    if (rcmd === "latest")
+      return "❗ 사용자가 선호하는 산업의 최신 뉴스를 추천합니다.";
+    return "";
   };
 
   return (
@@ -203,6 +236,9 @@ const RcmdSection: React.FC = () => {
                     </IndustryId>
                     <RcmdText rcmdType={news.rcmd}>
                       {getRcmdText(news.rcmd)}
+                      <Tooltip className="tooltip">
+                        {getTooltipText(news.rcmd)}
+                      </Tooltip>
                     </RcmdText>
                   </IndustryRcmdWrapper>
                   <span>{news.newsTitle}</span>
