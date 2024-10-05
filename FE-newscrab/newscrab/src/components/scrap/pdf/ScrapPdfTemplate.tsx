@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef  } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { ScrapData, Vocalist, Highlight } from '../../../types/scrapTypes'; // ScrapData 및 Vocalist 타입 import
 
@@ -36,124 +36,95 @@ const ScrapDetail = styled.div`
 `;
 
 const letterToColorMap = {
-  R: "#fde2e4", // Red
-  Y: "#ffffb5", // Yellow
-  G: "#d1e6d3", // Green
-  B: "#cddafd", // Blue
+  R: '#fde2e4', // Red
+  Y: '#ffffb5', // Yellow
+  G: '#d1e6d3', // Green
+  B: '#cddafd', // Blue
 } as const;
 
-const applyHighlightsFromApi = (
-  contentElement: HTMLElement, 
-  highlights: Highlight[]
-) => {
-  highlights.forEach(({ startPos, endPos, color }) => {
-    const walker = document.createTreeWalker(
-      contentElement,
-      NodeFilter.SHOW_TEXT,
-      null
-    );
+const applyHighlightsToContent = (content: string, highlights: Highlight[] | null | undefined): string => {
+  if (!highlights || highlights.length === 0) {
+    // 하이라이트 목록이 비어 있으면 메시지 반환
+    return "형광펜 친 문장이 없습니다.";
+  }
 
-    let currentPos = 0;
-    let startNode: Node | null = null;
-    let endNode: Node | null = null;
-    let startOffset = 0;
-    let endOffset = 0;
+  // <br/> 태그로 문단 나누기
+  const paragraphs = content.split(/<br\s*\/?>/);
 
-    while (walker.nextNode()) {
-      const node = walker.currentNode;
-      const nodeLength = node.textContent?.length || 0;
+  // 각 문단에 하이라이트 적용
+  const highlightedParagraphs = paragraphs.map(paragraph => {
+    let modifiedParagraph = paragraph;
 
-      if (currentPos <= startPos && currentPos + nodeLength >= startPos) {
-        startNode = node;
-        startOffset = startPos - currentPos;
+    highlights.forEach(({ startPos, endPos, color }) => {
+      const highlightStart = Math.max(startPos, 0);
+      const highlightEnd = Math.min(endPos, paragraph.length);
+
+      if (highlightStart < highlightEnd) {
+        // 하이라이트 적용
+        modifiedParagraph =
+          modifiedParagraph.slice(0, highlightStart) +
+          `<span style="background-color:${letterToColorMap[color]};">` +
+          modifiedParagraph.slice(highlightStart, highlightEnd) +
+          `</span>` +
+          modifiedParagraph.slice(highlightEnd);
       }
-      if (currentPos <= endPos && currentPos + nodeLength >= endPos) {
-        endNode = node;
-        endOffset = endPos - currentPos;
-        break;
-      }
+    });
 
-      currentPos += nodeLength;
-    }
-
-    if (startNode && endNode) {
-      const range = document.createRange();
-      range.setStart(startNode, startOffset);
-      range.setEnd(endNode, endOffset);
-
-      const span = document.createElement("span");
-      span.style.backgroundColor = letterToColorMap[color];
-      span.dataset.startPos = String(startPos);
-      span.dataset.endPos = String(endPos);
-      
-      span.appendChild(range.extractContents());
-      range.insertNode(span);
-    }
+    return modifiedParagraph;
   });
-};
-const removeImagesFromContent = (htmlContent: string): string => {
-  return htmlContent.replace(/<img[^>]*>/g, ""); // <img> 태그 제거
+
+  // 하이라이트가 포함된 문단만 필터링
+  const filteredParagraphs = highlightedParagraphs.filter(paragraph => {
+    return paragraph.includes("<span");
+  });
+
+  // 필터링된 문단을 합쳐서 반환
+  return filteredParagraphs.join("<br/>");
 };
 
-type ScrapDetailArticleProps = {
-  scrapId: number; // scrapId를 prop으로 전달
-};
+
 
 const ScrapPdfTemplate: React.FC<{ scrap: ScrapData }> = ({ scrap }) => {
-
   const newsContentRef = useRef<HTMLDivElement | null>(null);
+
   useEffect(() => {
-    if (scrap && newsContentRef.current && scrap.highlightList) {
-      const contentElement = newsContentRef.current;
-  
-      // highlightList를 Highlight 형식으로 변환
-      const highlights = scrap.highlightList.map(highlight => ({
-        highlightId: highlight.highlightId, 
-        startPos: highlight.startPos,
-        endPos: highlight.endPos,
-        color: highlight.color, 
-      }));
-  
-      if (contentElement) {
-        console.log('Applying highlights:', highlights);
-        applyHighlightsFromApi(contentElement, highlights); // 변환된 highlights 전달
+    if (scrap && scrap.newsContent && scrap.highlightList) {
+      const highlightedContent = applyHighlightsToContent(scrap.newsContent, scrap.highlightList);
+      if (newsContentRef.current) {
+        newsContentRef.current.innerHTML = highlightedContent;
       }
     }
-  },[]);
+  }, [scrap]);
 
-  console.log(scrap.newsContent);
-  console.log(scrap.highlightList);
-  console.log(applyHighlightsFromApi(newsContentRef, scrap.highlightList))
   return (
     <ScrapDetail>
       <Table>
-        {/* 맨 위칸: 기사 제목과 날짜 */}
         <thead>
           <TitleRow>
             <Th colSpan={3}>
-              {scrap.newsTitle} - {new Date(scrap.createdAt).toLocaleDateString()}{/* 날짜 표시 */}
+              {scrap.newsTitle} - {new Date(scrap.createdAt).toLocaleDateString()}
             </Th>
           </TitleRow>
         </thead>
         <tbody>
-          {/* 기사 내용 */}
           <tr>
             <Td colSpan={2}>기사내용</Td>
-            <Td>형광펜칠한문단만 넣어!!!!</Td>
-            {/* <Td dangerouslySetInnerHTML={{ __html: scrap.newsContent }} /> */}
-            
+            <Td>
+              <div
+                ref={newsContentRef}
+                dangerouslySetInnerHTML={{ __html: applyHighlightsToContent(scrap.newsContent, scrap.highlightList) }}
+              ></div>{' '}
+              {/* 하이라이트가 적용된 기사 내용 표시 */}
+            </Td>
           </tr>
-          {/* 요약 */}
           <tr>
             <Td colSpan={2}>요약</Td>
             <Td>{scrap.scrapSummary}</Td>
           </tr>
-          {/* 의견 */}
           <tr>
             <Td colSpan={2}>의견</Td>
             <Td>{scrap.comment}</Td>
           </tr>
-          {/* 단어 정리 */}
           {scrap.vocalist && scrap.vocalist.length > 0 ? (
             <>
               <tr>
@@ -168,7 +139,7 @@ const ScrapPdfTemplate: React.FC<{ scrap: ScrapData }> = ({ scrap }) => {
                 </tr>
               ))}
             </>
-          ) : null}{/* vocalist가 비어있을 때는 null을 반환 */}
+          ) : null}
         </tbody>
       </Table>
     </ScrapDetail>
