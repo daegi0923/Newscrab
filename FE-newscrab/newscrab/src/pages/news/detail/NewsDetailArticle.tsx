@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef  } from "react";
-import { useDispatch, useSelector  } from "react-redux";
+import React, { useState, useEffect, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@store/index";
 import {
   addHighlight,
@@ -29,6 +29,18 @@ import {
   NewsText,
   Divider,
 } from "./NewsDetailArticleStyles";
+
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString); // 문자열을 Date 객체로 변환
+  const year = date.getFullYear(); // 년도 추출
+  const month = String(date.getMonth() + 1).padStart(2, "0"); // 월 추출 (1월이 0이므로 +1), 두 자리로 맞추기
+  const day = String(date.getDate()).padStart(2, "0"); // 일 추출, 두 자리로 맞추기
+
+  const hours = String(date.getHours()).padStart(2, "0"); // 시 추출, 두 자리로 맞추기
+  const minutes = String(date.getMinutes()).padStart(2, "0"); // 분 추출, 두 자리로 맞추기
+
+  return `${year}-${month}-${day} ${hours}:${minutes}`; // "년-월-일 시:분" 형식으로 반환
+};
 
 const colorToLetterMap = {
   "#fde2e4": "R", // Red
@@ -76,8 +88,8 @@ const getGlobalOffset = (node: Node, offsetInNode: number): number => {
 };
 
 const applyHighlightsFromApi = (
-  contentElement: HTMLElement, 
-  highlights: HighlightItem[], 
+  contentElement: HTMLElement,
+  highlights: HighlightItem[],
   dispatch: any,
   setHighlightedElement: (element: HTMLElement | null) => void
 ) => {
@@ -120,7 +132,7 @@ const applyHighlightsFromApi = (
       span.style.backgroundColor = letterToColorMap[color];
       span.dataset.startPos = String(startPos);
       span.dataset.endPos = String(endPos);
-      
+
       span.appendChild(range.extractContents());
       range.insertNode(span);
 
@@ -145,9 +157,13 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({
     (state: RootState) => state.highlight.highlights
   );
   const [isHighlightPopupVisible, setIsHighlightPopupVisible] = useState(false);
-  const [popupPosition, setPopupPosition] = useState<{top: number; left: number;}>({ top: 0, left: 0 });
-  const [highlightedElement, setHighlightedElement] = useState<HTMLElement | null>(null);
-  
+  const [popupPosition, setPopupPosition] = useState<{
+    top: number;
+    left: number;
+  }>({ top: 0, left: 0 });
+  const [highlightedElement, setHighlightedElement] =
+    useState<HTMLElement | null>(null);
+
   const newsContentRef = useRef<HTMLDivElement | null>(null);
 
   // scrapId에 따라 하이라이트 처리 방식 결정
@@ -162,11 +178,18 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({
           // 기존 Redux에 있는 하이라이트 초기화
           dispatch(clearHighlights());
 
-          const highlightsFromApi = await getScrapHighlights(newsDetailItem.scrapId as number);
-          console.log("형광펜 불러오기 :",highlightsFromApi);
+          const highlightsFromApi = await getScrapHighlights(
+            newsDetailItem.scrapId as number
+          );
+          console.log("형광펜 불러오기 :", highlightsFromApi);
           const contentElement = document.getElementById("newsContent");
           if (contentElement) {
-            applyHighlightsFromApi(contentElement, highlightsFromApi, dispatch, setHighlightedElement);
+            applyHighlightsFromApi(
+              contentElement,
+              highlightsFromApi,
+              dispatch,
+              setHighlightedElement
+            );
           }
         } catch (error) {
           console.error("Failed to fetch highlights from API:", error);
@@ -289,7 +312,7 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({
         const selectedTextLength = selection.toString().length;
 
         // 선택된 텍스트가 한 글자보다 작거나 형광펜 적용된 부분이 아니면 팝업을 숨김
-        if (selectedTextLength < 1 && target.tagName !== 'BUTTON') {
+        if (selectedTextLength < 1 && target.tagName !== "BUTTON") {
           setIsHighlightPopupVisible(false);
           return;
         }
@@ -370,7 +393,7 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({
           setPopupPosition({ top: adjustedTop, left: adjustedLeft });
           setIsHighlightPopupVisible(true);
         }
-      } 
+      }
     };
 
     document.addEventListener("mouseover", (event) => {
@@ -401,7 +424,7 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({
             </IndustryId>
           </Info>
           <Info>{newsDetailItem.newsCompany}</Info>
-          <Info>{newsDetailItem.newsPublishedAt.replace("T", " ")}</Info>
+          <Info>{formatDate(newsDetailItem.newsPublishedAt)}</Info>
         </InfoGroup>
         <Stats>
           <IconContainer>
