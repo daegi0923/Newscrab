@@ -42,7 +42,8 @@ const letterToColorMap = {
   B: '#cddafd', // Blue
 } as const;
 
-const applyHighlightsFromApi = (contentElement: HTMLElement, highlights: Highlight[]) => {
+const applyHighlightsFromApi = (contentElement: HTMLElement, highlights: Highlight[]): string[] => {
+  const highlightedTexts: string[] = [];
   highlights.forEach(({ startPos, endPos, color }) => {
     const walker = document.createTreeWalker(contentElement, NodeFilter.SHOW_TEXT, null);
     let currentPos = 0;
@@ -55,11 +56,11 @@ const applyHighlightsFromApi = (contentElement: HTMLElement, highlights: Highlig
       const node = walker.currentNode;
       const nodeLength = node.textContent?.length || 0;
 
-      if (currentPos <= startPos && currentPos + nodeLength >= startPos) {
+      if (currentPos <= startPos && currentPos + nodeLength > startPos) {
         startNode = node;
         startOffset = startPos - currentPos;
       }
-      if (currentPos <= endPos && currentPos + nodeLength >= endPos) {
+      if (currentPos < endPos && currentPos + nodeLength >= endPos) {
         endNode = node;
         endOffset = endPos - currentPos;
         break;
@@ -72,27 +73,28 @@ const applyHighlightsFromApi = (contentElement: HTMLElement, highlights: Highlig
       range.setStart(startNode, startOffset);
       range.setEnd(endNode, endOffset);
 
+      // span 태그 생성 및 스타일 적용
       const span = document.createElement('span');
       span.style.backgroundColor = letterToColorMap[color];
-      span.dataset.startPos = String(startPos);
-      span.dataset.endPos = String(endPos);
+      span.textContent = range.toString(); // range에서 추출된 텍스트를 사용
 
-      span.appendChild(range.extractContents());
-      range.insertNode(span);
+      highlightedTexts.push(span.outerHTML); // span 요소의 외부 HTML을 배열에 추가
     }
   });
+
+  return highlightedTexts;
 };
 
 const ScrapPdfTemplate: React.FC<{ scrap: ScrapData }> = ({ scrap }) => {
-  const newsContentRef = useRef<HTMLDivElement | null>(null);
+  const [highlightedContent, setHighlightedContent] = React.useState<string[]>([]);
 
   useEffect(() => {
     if (scrap && scrap.newsContent && scrap.highlightList) {
-      const contentElement = newsContentRef.current;
-      if (contentElement) {
-        contentElement.innerHTML = scrap.newsContent;
-        applyHighlightsFromApi(contentElement, scrap.highlightList);
-      }
+      const contentElement = document.createElement('div');
+      contentElement.innerHTML = scrap.newsContent;
+
+      const highlightedParagraphs = applyHighlightsFromApi(contentElement, scrap.highlightList);
+      setHighlightedContent(highlightedParagraphs);
     }
   }, [scrap]);
 
@@ -110,7 +112,13 @@ const ScrapPdfTemplate: React.FC<{ scrap: ScrapData }> = ({ scrap }) => {
           <tr>
             <Td colSpan={2}>기사내용</Td>
             <Td>
-              <div ref={newsContentRef} />
+              {highlightedContent.length > 0 ? (
+                highlightedContent.map((content, idx) => (
+                  <div key={idx} dangerouslySetInnerHTML={{ __html: content }} />
+                ))
+              ) : (
+                <div>형광펜이 적용된 문장이 없습니다.</div>
+              )}
             </Td>
           </tr>
           <tr>

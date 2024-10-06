@@ -15,19 +15,23 @@ const ScrapPreview: React.FC<handleChangePage> = ({ funcChangePage }) => {
   const { scrapList, isSelectedPdf } = useSelector((state: RootState) => state.scrap);
 
   const handleDownloadPdf = async () => {
-    const pdf = new jsPDF();
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'px',
+      format: 'a4', // A4 크기로 설정
+    });
 
     for (let i = 0; i < scrapList.length; i++) {
       const content = contentRefs.current[i];
       if (content) {
         const canvas = await html2canvas(content, {
-          scale: 1, // 스케일을 고정
+          scale: 2, // 해상도를 높이기 위해 스케일 조정
           useCORS: true, // 크로스 도메인 이미지 처리를 위한 옵션
-          logging: true, // 디버깅을 위한 로깅 활성화
         });
 
-        // 고정된 배율로 캔버스를 다시 조정
         const imgData = canvas.toDataURL('image/png');
+        const imgWidth = pdf.internal.pageSize.getWidth();
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
         // 첫 페이지가 아니면 새로운 페이지 추가
         if (i > 0) {
@@ -35,8 +39,6 @@ const ScrapPreview: React.FC<handleChangePage> = ({ funcChangePage }) => {
         }
 
         // PDF 페이지에 이미지 크기를 조정하여 잘리지 않도록 설정
-        const imgWidth = pdf.internal.pageSize.getWidth();
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
         pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
       }
     }
@@ -67,6 +69,7 @@ const ScrapPreview: React.FC<handleChangePage> = ({ funcChangePage }) => {
     </>
   );
 };
+
 const styles = {
   body: {
     justifyContent: 'center',
@@ -98,4 +101,5 @@ const ModalFooter = styled.footer`
   border-top: 1px solid #ddd;
   padding: 15px;
 `;
+
 export default ScrapPreview;
