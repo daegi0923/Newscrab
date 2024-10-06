@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
-import { ScrapData, Vocalist, Highlight } from '../../../types/scrapTypes'; // ScrapData 및 Vocalist 타입 import
+import { ScrapData, Vocalist } from '../../../types/scrapTypes'; // ScrapData 및 Vocalist 타입 import
 
 const Table = styled.table`
   width: 80%;
@@ -33,6 +33,9 @@ const TitleRow = styled.tr`
 const ScrapDetail = styled.div`
   display: flex;
   justify-content: center;
+  width : 1000px;
+  height : 300px;
+  padding-top : 30px;
 `;
 
 const letterToColorMap = {

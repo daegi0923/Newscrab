@@ -100,15 +100,21 @@ const ModalOverlay = styled.div`
   z-index: 1000;
 `;
 const ModalBody = styled.section`
+  overflow-y: auto;
   width: 80vw;
   background-color: white;
+  padding: 24px;
   border-radius: 16px;
   max-width: 90%;
   display: flex;
   flex-direction: column;
   box-shadow: 0 15px 30px 0 rgba(0, 0, 0, 0.25);
+  max-height: 90vh;
   position: relative;
 
+  @media (max-width: 600px) {
+    width: 90%;
+  }
 `;
 
 // 모달 컨텐츠 스타일 정의
@@ -119,9 +125,8 @@ const ModalHeader = styled.header`
   display: flex;
   justify-content: center;
   align-items: center;
-  height : 8vh;
-  border-bottom : 1px solid #ddd;
-  margin-bottom : 5px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #ddd;
 `;
 
 const ModalTitle = styled.h1`

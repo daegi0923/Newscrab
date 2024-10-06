@@ -81,6 +81,7 @@ const styles = {
 
 const Button = styled.button`
   padding: 10px 20px;
+  margin: 10px;
   background-color: #007bff;
   color: white;
   border: none;

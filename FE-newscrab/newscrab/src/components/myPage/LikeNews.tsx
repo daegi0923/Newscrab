@@ -270,6 +270,7 @@ const NewsList = styled.div`
   // border: 1px solid red;
   display: flex;
   gap: 20px;
+  margin-top: 5%;
   overflow-x: scroll;
   padding: 10px;
   width: 100%;
@@ -332,7 +333,8 @@ const NewsDate = styled.p`
 
 const SectionName = styled.div`
   position: absolute;
-  font-size: 13px;
+  font-size: 15px;
+  margin-top:1%;
   // margin-bottom: 10px;
   top: 70%;
   left: 39.5%;
