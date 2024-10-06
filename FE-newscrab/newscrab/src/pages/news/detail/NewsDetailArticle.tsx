@@ -19,6 +19,7 @@ import {
   NewsContent,
   NewsTitle,
   IndustryId,
+  OriginalNews,
   MetaInfoContainer,
   InfoGroup,
   Info,
@@ -413,9 +414,7 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({
     <NewsContent id="newsContent" ref={newsContentRef}>
       <LikeButton newsId={newsDetailItem.newsId} /> {/* LikeButton 사용 */}
       {/* 뉴스 제목 클릭 시 새 창으로 이동 */}
-      <NewsTitle onClick={handleTitleClick}>
-        {newsDetailItem.newsTitle}
-      </NewsTitle>
+      <NewsTitle>{newsDetailItem.newsTitle}</NewsTitle>
       <MetaInfoContainer>
         <InfoGroup>
           <Info>
@@ -425,6 +424,9 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({
           </Info>
           <Info>{newsDetailItem.newsCompany}</Info>
           <Info>{formatDate(newsDetailItem.newsPublishedAt)}</Info>
+          <Info>
+            <OriginalNews onClick={handleTitleClick}>뉴스원문</OriginalNews>
+          </Info>
         </InfoGroup>
         <Stats>
           <IconContainer>
