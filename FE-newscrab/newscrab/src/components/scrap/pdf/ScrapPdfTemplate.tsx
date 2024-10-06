@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { ScrapData, Vocalist } from '../../../types/scrapTypes'; // ScrapData 및 Vocalist 타입 import
+import { Highlight } from "../../../types/scrapTypes";
 
 const Table = styled.table`
   width: 80%;
