@@ -323,6 +323,7 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
       newsId: newsId,
       comment: opinionText,
       scrapSummary: summaryText,
+      highlights: highlights,
     };
 
     // 단어가 입력된 항목만 추가 (빈 단어 제외)
@@ -383,7 +384,7 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
       let successMessage = "스크랩이 성공적으로 저장되었습니다.";
       if (scrapId) {
         await putScrap(scrapId, putscrapData);
-        console.log("put 요청 완료");
+        console.log("put 요청 완료", putscrapData);
         successMessage = "수정이 완료되었습니다."; // 수정 성공 메시지
       } else {
         await postScrap(postscrapData);
