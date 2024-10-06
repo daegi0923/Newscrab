@@ -15,13 +15,13 @@ const LikeButtonContainer = styled.button`
   right: 10px;
 `;
 
-const LikeIcon = styled.img<{ isAnimating: boolean }>`
+const LikeIcon = styled.img<{ $isAnimating: boolean }>`
   width: 25px;
   height: 22px;
   transition: transform 0.3s ease-in-out;
 
   ${(props) =>
-    props.isAnimating &&
+    props.$isAnimating &&
     `
     transform: scale(1.5);
     animation: pop 0.5s ease-in-out;
@@ -95,7 +95,7 @@ const LikeButton: React.FC<LikeButtonProps> = ({ newsId }) => {
       <LikeIcon
         src={isLiked ? likeIcon : unlikeIcon}
         alt="좋아요 아이콘"
-        isAnimating={isAnimating} // 애니메이션 상태 전달
+        $isAnimating={isAnimating} // 애니메이션 상태 전달
       />
     </LikeButtonContainer>
   );
