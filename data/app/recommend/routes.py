@@ -9,6 +9,7 @@ import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 from .schemas import NewsResponse
 from datetime import datetime, timedelta
+from apscheduler.schedulers.background import BackgroundScheduler
 
 router = APIRouter()
 
@@ -196,12 +197,12 @@ def get_related_news(news_list, scores, user_id, db: Session):
         # 산업군 매칭 가중치 계산
         industry_weight = 1.0
         if user_industry and news.industry in user_industry:
-            industry_weight = 1.5
+            industry_weight = 3
 
         # 최신 뉴스 가중치 계산
         latest_news_weight = 1.0
-        if news.created_at >= one_week_ago:  # 일주일 이내
-            latest_news_weight = 1.5
+        if news.news_published_at >= one_week_ago:  # 일주일 이내
+            latest_news_weight = 2
 
         # 최종 점수 계산
         final_score = original_score * latest_news_weight * industry_weight
@@ -264,7 +265,7 @@ def read_item(user_id: int, db: Session = Depends(get_db)):
     # 아래 주석 풀면, 상호작용 데이터가 없을 때만 조회해서 갱신
     # if not scrap_like_df or not user_news_matrix:
     #     get_scrap_like_dataframe(db)
-    get_scrap_like_dataframe(db)
+    # get_scrap_like_dataframe(db)
     user_based_recommend_news_list, ub_scores = collaborative_filtering(user_id, db)
     # print(ub_scores)
     ib_news_list = get_related_news(user_based_recommend_news_list, ub_scores, user_id, db)
@@ -289,11 +290,19 @@ def read_item(user_id: int, db: Session = Depends(get_db)):
     # print("industry_latest_news", industry_latest_news)
     industry_latest_news_list = list(set(industry_latest_news) - interacted_news_ids)
     return {
-        "user_base" : user_based_recommend_news_list,
+        "user_base" : user_based_recommend_news_list[:30],
         "item_base" : list(item_based_recommend_news_list)[:30],
         "latest" : industry_latest_news_list
     }
 
+def update_interaction_matrix(db: Session):
+    global scrap_like_df, user_news_matrix
+    get_scrap_like_dataframe(db)
+
+# 10분마다 상호작용 행렬 갱신
+scheduler = BackgroundScheduler()
+scheduler.add_job(update_interaction_matrix, 'interval', minutes=10, args=[next(get_db())])
+scheduler.start()
 
 # 일정 시간이 되면 업데이트할 데이터들
 scrap_like_df = None
