@@ -41,9 +41,13 @@ const RcmdItemContainer = styled.div`
   margin-bottom: 10px;
 `;
 
-const FlexContainer = styled.div`
-  display: flex;
-  align-items: flex-start;
+const ImageContainer = styled.div`
+  position: relative; /* 툴팁이 이미지의 상대적인 위치에 따라 위치하도록 설정 */
+  display: inline-block;
+
+  &:hover .tooltip {
+    display: block;
+  }
 `;
 
 const Image = styled.img`
@@ -52,8 +56,36 @@ const Image = styled.img`
   border-radius: 8px;
 `;
 
+const Tooltip = styled.div`
+  display: none;
+  position: absolute;
+  bottom: 5px; /* 이미지의 좌측 하단에 위치하도록 설정 */
+  left: 0; /* 이미지의 좌측 끝에 맞추기 */
+  background-color: #666;
+  color: white;
+  padding: 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 9999;
+  max-width: 300px;
+  text-align: right;
+  overflow: visible; /* 툴팁이 잘리지 않도록 설정 */
+`;
+
+const FlexContainer = styled.div`
+  display: flex;
+  align-items: flex-start;
+`;
+
 const TextContainer = styled.div`
   flex: 1;
+`;
+
+const NewsTitle = styled.h2`
+  font-size: 18px;
+  margin-top: 8px;
+  margin-bottom: 15px;
 `;
 
 const IndustryRcmdWrapper = styled.div`
@@ -76,24 +108,24 @@ const IndustryId = styled.div`
   font-weight: bold;
 `;
 
-const RcmdText = styled.div<{ rcmdType: string }>`
+const RcmdText = styled.div<{ $rcmdType: string }>`
   font-size: 12px;
   color: ${(props) =>
-    props.rcmdType === "userBase"
+    props.$rcmdType === "userBase"
       ? "#4CAF50"
-      : props.rcmdType === "itemBase"
+      : props.$rcmdType === "itemBase"
       ? "#FF9800"
-      : props.rcmdType === "latest"
+      : props.$rcmdType === "latest"
       ? "#2196F3"
       : "#555"};
   padding: 2px 8px;
   border: 1px solid
     ${(props) =>
-      props.rcmdType === "userBase"
+      props.$rcmdType === "userBase"
         ? "#4CAF50"
-        : props.rcmdType === "itemBase"
+        : props.$rcmdType === "itemBase"
         ? "#FF9800"
-        : props.rcmdType === "latest"
+        : props.$rcmdType === "latest"
         ? "#2196F3"
         : "#555"};
   border-radius: 20px;
@@ -103,30 +135,6 @@ const RcmdText = styled.div<{ rcmdType: string }>`
   &:hover .tooltip {
     display: block;
   }
-`;
-
-const Tooltip = styled.div`
-  display: none;
-  position: absolute;
-  bottom: 35px; /* RcmdItemContainer 상단에 위치하도록 조정 */
-  left: -50px; /* 컨테이너의 우측 상단에 맞추기 */
-  background-color: #666;
-  color: white;
-  padding: 8px;
-  border-radius: 4px;
-  font-size: 12px;
-  white-space: nowrap;
-  z-index: 9999;
-  max-width: 300px;
-  text-align: right;
-  overflow: visible; /* 툴팁이 잘리지 않도록 설정 */
-`;
-
-// 뉴스 제목 스타일
-const NewsTitle = styled.h2`
-  font-size: 18px;
-  margin-top: 8px;
-  margin-bottom: 15px;
 `;
 
 const WrapperRow = styled.div`
@@ -141,6 +149,16 @@ const InfoRow = styled.div`
   font-size: 14px;
   color: #777;
   gap: 10px;
+`;
+
+const NewsButton = styled.div`
+  font-size: 14px;
+  color: #007bff;
+  cursor: pointer;
+  text-decoration: none;
+  &:hover {
+    text-decoration: none;
+  }
 `;
 
 const IconGroup = styled.div`
@@ -161,16 +179,6 @@ const ScrapCntIcon = styled.img`
   width: 16px;
   height: 16px;
   margin-right: 5px;
-`;
-
-const NewsButton = styled.div`
-  font-size: 14px;
-  color: #007bff;
-  cursor: pointer;
-  text-decoration: none;
-  &:hover {
-    text-decoration: none;
-  }
 `;
 
 const RcmdSection: React.FC = () => {
@@ -222,9 +230,12 @@ const RcmdSection: React.FC = () => {
       ) : (
         rcmdNews.map((news) => (
           <RcmdItemContainer key={news.newsId}>
-            {news.photoUrlList && (
-              <Image src={news.photoUrlList[0]} alt="이미지 없음" />
-            )}
+            <ImageContainer>
+              {news.photoUrlList && (
+                <Image src={news.photoUrlList[0]} alt="이미지 없음" />
+              )}
+              <Tooltip className="tooltip">{getTooltipText(news.rcmd)}</Tooltip>
+            </ImageContainer>
             <FlexContainer>
               <TextContainer>
                 <NewsTitle>
@@ -234,11 +245,8 @@ const RcmdSection: React.FC = () => {
                         (ind) => ind.industryId === news.industryId
                       )?.industryName || "미분류 산업"}
                     </IndustryId>
-                    <RcmdText rcmdType={news.rcmd}>
+                    <RcmdText $rcmdType={news.rcmd}>
                       {getRcmdText(news.rcmd)}
-                      <Tooltip className="tooltip">
-                        {getTooltipText(news.rcmd)}
-                      </Tooltip>
                     </RcmdText>
                   </IndustryRcmdWrapper>
                   <span>{news.newsTitle}</span>
