@@ -73,7 +73,7 @@ const getIndustryName = (industryId: number): string => {
 const getGlobalOffset = (node: Node, offsetInNode: number): number => {
   let globalOffset = 0;
   const walker = document.createTreeWalker(
-    document.getElementById("newsContent") as Node, // 전체 뉴스 콘텐츠 영역
+    document.getElementById("newsText") as Node, // 전체 뉴스 콘텐츠 영역
     NodeFilter.SHOW_TEXT, // 텍스트 노드만 순회
     null
   );
@@ -165,7 +165,7 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({
   const [highlightedElement, setHighlightedElement] =
     useState<HTMLElement | null>(null);
 
-  const newsContentRef = useRef<HTMLDivElement | null>(null);
+  const newsTextRef = useRef<HTMLDivElement | null>(null);
 
   // scrapId에 따라 하이라이트 처리 방식 결정
   useEffect(() => {
@@ -183,7 +183,7 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({
             newsDetailItem.scrapId as number
           );
           console.log("형광펜 불러오기 :", highlightsFromApi);
-          const contentElement = document.getElementById("newsContent");
+          const contentElement = document.getElementById("newsText");
           if (contentElement) {
             applyHighlightsFromApi(
               contentElement,
@@ -346,7 +346,7 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({
       }
     };
 
-    const newsContentElement = newsContentRef.current;
+    const newsContentElement = newsTextRef.current;
     if (newsContentElement) {
       newsContentElement.addEventListener("mouseup", handleMouseUp);
     }
@@ -411,7 +411,7 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({
   }, []);
 
   return (
-    <NewsContent id="newsContent" ref={newsContentRef}>
+    <NewsContent id="newsContent">
       <LikeButton newsId={newsDetailItem.newsId} /> {/* LikeButton 사용 */}
       {/* 뉴스 제목 클릭 시 새 창으로 이동 */}
       <NewsTitle>{newsDetailItem.newsTitle}</NewsTitle>
@@ -441,6 +441,7 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({
       </MetaInfoContainer>
       <Divider />
       <NewsText
+        id="newsText" ref={newsTextRef}
         dangerouslySetInnerHTML={{ __html: newsDetailItem.newsContent }}
       />
       {isHighlightPopupVisible && (
