@@ -17,29 +17,38 @@ const ScrapPreview: React.FC<handleChangePage> = ({ funcChangePage }) => {
   const handleDownloadPdf = async () => {
     const pdf = new jsPDF({
       orientation: 'portrait',
-      unit: 'px',
-      format: 'a4', // A4 크기로 설정
+      unit: 'pt',
+      format: 'a4',
     });
 
     for (let i = 0; i < scrapList.length; i++) {
       const content = contentRefs.current[i];
       if (content) {
         const canvas = await html2canvas(content, {
-          scale: 2, // 해상도를 높이기 위해 스케일 조정
-          useCORS: true, // 크로스 도메인 이미지 처리를 위한 옵션
+          scale: 1.5, // 적절한 스케일 값 설정
+          width: content.offsetWidth,
+          height: content.offsetHeight,
+          useCORS: true,
         });
 
         const imgData = canvas.toDataURL('image/png');
-        const imgWidth = pdf.internal.pageSize.getWidth();
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
+        const imgWidth = pageWidth;
         const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-        // 첫 페이지가 아니면 새로운 페이지 추가
-        if (i > 0) {
-          pdf.addPage();
-        }
+        let heightLeft = imgHeight;
 
-        // PDF 페이지에 이미지 크기를 조정하여 잘리지 않도록 설정
-        pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
+        let position = 0; // 페이지 상단부터 시작
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+
+        while (heightLeft >= 0) {
+          position = heightLeft - imgHeight; // 다음 페이지의 이미지 시작 위치 조정
+          pdf.addPage();
+          pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+          heightLeft -= pageHeight;
+        }
       }
     }
 
