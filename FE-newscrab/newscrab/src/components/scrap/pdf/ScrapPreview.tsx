@@ -7,24 +7,31 @@ import jsPDF from 'jspdf';
 import styled from 'styled-components';
 
 type handleChangePage = {
-  funcChangePage : () => void;
-}
-
+  funcChangePage: () => void;
+};
 
 const ScrapPreview: React.FC<handleChangePage> = ({ funcChangePage }) => {
   const contentRefs = useRef<(HTMLDivElement | null)[]>([]);
   const { scrapList, isSelectedPdf } = useSelector((state: RootState) => state.scrap);
-  
+
   const handleDownloadPdf = async () => {
-    const pdf = new jsPDF();
-    
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'px',
+      format: 'a4', // A4 크기로 설정
+    });
+
     for (let i = 0; i < scrapList.length; i++) {
       const content = contentRefs.current[i];
       if (content) {
         const canvas = await html2canvas(content, {
-          scale: 2,  // 고정된 스케일 값 설정
+          scale: 2, // 해상도를 높이기 위해 스케일 조정
+          useCORS: true, // 크로스 도메인 이미지 처리를 위한 옵션
         });
+
         const imgData = canvas.toDataURL('image/png');
+        const imgWidth = pdf.internal.pageSize.getWidth();
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
         // 첫 페이지가 아니면 새로운 페이지 추가
         if (i > 0) {
@@ -32,8 +39,6 @@ const ScrapPreview: React.FC<handleChangePage> = ({ funcChangePage }) => {
         }
 
         // PDF 페이지에 이미지 크기를 조정하여 잘리지 않도록 설정
-        const imgWidth = pdf.internal.pageSize.getWidth();
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
         pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
       }
     }
@@ -47,6 +52,7 @@ const ScrapPreview: React.FC<handleChangePage> = ({ funcChangePage }) => {
         {scrapList.map((scrap, idx) => {
           return isSelectedPdf[scrap.scrapId] ? (
             <div
+              key={scrap.scrapId} // 고유한 key 값 추가
               ref={(el) => {
                 contentRefs.current[idx] = el;
               }}
@@ -63,13 +69,14 @@ const ScrapPreview: React.FC<handleChangePage> = ({ funcChangePage }) => {
     </>
   );
 };
+
 const styles = {
   body: {
     justifyContent: 'center',
     alignItems: 'center',
-    width:'1000px',
-    paddingTop:'100px',
-  },
+    height: '64vh',
+    overflowY: 'scroll', // overflowY 속성을 'scroll'로 명시적으로 지정
+  } as const,
 };
 
 const Button = styled.button`
@@ -91,7 +98,9 @@ const Button = styled.button`
 const ModalFooter = styled.footer`
   display: flex;
   justify-content: space-between;
-  padding-top: 16px;
+  bottom: 0;
   border-top: 1px solid #ddd;
+  padding: 15px;
 `;
+
 export default ScrapPreview;
