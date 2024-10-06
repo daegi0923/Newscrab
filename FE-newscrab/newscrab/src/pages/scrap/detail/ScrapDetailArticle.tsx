@@ -77,6 +77,23 @@ const IndustryId = styled.div`
   margin-bottom: 8px;
 `;
 
+// const OriginalNews = styled.div`
+//   font-size: 12px;
+//   color: #007bff; /* 링크 스타일처럼 색상 변경 */
+//   padding: 2px 8px;
+//   border: 1px solid #007bff;
+//   border-radius: 20px;
+//   display: inline-block;
+//   text-align: center;
+//   font-weight: bold;
+//   margin-bottom: 8px;
+//   cursor: pointer; /* 클릭 가능한 요소로 설정 */
+
+//   &:hover {
+//     color: #0056b3; /* 호버 시 색상 변경 */
+//   }
+// `;
+
 const MetaInfoContainer = styled.div`
   display: flex;
   justify-content: space-between;
@@ -346,9 +363,9 @@ const ScrapDetailArticle: React.FC<ScrapDetailArticleProps> = ({ scrapId }) => {
     setShowContent(!showContent);
   };
 
-  const handleTitleClick = () => {
-    navigate(`/news/${scrapDetail?.newsId}`); // 원문기사로 이동
-  };
+  // const handleOriginNewsClick = () => {
+  //   window.open(newsDetailItem.newsUrl, "_blank"); // 수정페이지로 이동
+  // };
 
   const convertNewlinesToBr = (text: string): string => {
     return text.replace(/\n/g, "<br />");
@@ -365,9 +382,7 @@ const ScrapDetailArticle: React.FC<ScrapDetailArticleProps> = ({ scrapId }) => {
             <ToggleButton onClick={handleToggleClick}>
               {showContent ? "▼" : "▶"}
             </ToggleButton>
-            <NewsTitle onClick={handleTitleClick}>
-              {scrapDetail.newsTitle}
-            </NewsTitle>
+            <NewsTitle>{scrapDetail.newsTitle}</NewsTitle>
           </NewsTitleWrapper>
 
           {/* 스크랩 상단 섹션 */}
@@ -381,6 +396,11 @@ const ScrapDetailArticle: React.FC<ScrapDetailArticleProps> = ({ scrapId }) => {
               </Info>
               <Info>{scrapDetail.newsCompany}</Info>
               <Info>{formatDate(scrapDetail.updatedAt)} (수정 時)</Info>{" "}
+              {/* <Info>
+                <OriginalNews onClick={handleOriginNewsClick}>
+                  뉴스원문
+                </OriginalNews>
+              </Info> */}
             </InfoGroup>
             {/* 조회수, 스크랩수 아이콘 */}
             <Stats>
