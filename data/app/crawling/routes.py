@@ -27,8 +27,8 @@ router = APIRouter()
 
 # 전역적으로 okt와 tfidf vectorizer 선언
 okt = Okt()
-classifier_path = os.path.join(os.path.dirname(__file__), 'random_forest_model_ssafy_5year.pkl')
-vectorizer_path = os.path.join(os.path.dirname(__file__), 'tfidf_vectorizer_ssafy_5year.pkl')
+classifier_path = os.path.join(os.path.dirname(__file__), 'random_forest_model_ssafy_5year_1.pkl')
+vectorizer_path = os.path.join(os.path.dirname(__file__), 'tfidf_vectorizer_ssafy_5year_1.pkl')
 classifier = joblib.load(classifier_path)
 vectorizer = joblib.load(vectorizer_path)
 
