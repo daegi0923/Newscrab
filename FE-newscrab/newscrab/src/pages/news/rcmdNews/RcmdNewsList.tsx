@@ -82,24 +82,24 @@ const RcmdTextContainer = styled.div`
   }
 `;
 
-const RcmdText = styled.div<{ rcmdType: string }>`
+const RcmdText = styled.div<{ $rcmdType: string }>`
   font-size: 12px;
   color: ${(props) =>
-    props.rcmdType === "userBase"
+    props.$rcmdType === "userBase"
       ? "#4CAF50"
-      : props.rcmdType === "itemBase"
+      : props.$rcmdType === "itemBase"
       ? "#FF9800"
-      : props.rcmdType === "latest"
+      : props.$rcmdType === "latest"
       ? "#2196F3"
       : "#555"};
   padding: 2px 8px;
   border: 1px solid
     ${(props) =>
-      props.rcmdType === "userBase"
+      props.$rcmdType === "userBase"
         ? "#4CAF50"
-        : props.rcmdType === "itemBase"
+        : props.$rcmdType === "itemBase"
         ? "#FF9800"
-        : props.rcmdType === "latest"
+        : props.$rcmdType === "latest"
         ? "#2196F3"
         : "#555"};
   border-radius: 20px;
@@ -109,27 +109,27 @@ const RcmdText = styled.div<{ rcmdType: string }>`
   transition: opacity 0.3s ease-in-out; /* 부드러운 전환 효과 */
 `;
 
-const Tooltip = styled.div<{ rcmdType: string }>`
+const Tooltip = styled.div<{ $rcmdType: string }>`
   opacity: 0; /* 기본적으로 툴팁을 숨김 */
   position: absolute;
   bottom: 0px;
   right: 0px;
   color: ${(props) =>
-    props.rcmdType === "userBase"
+    props.$rcmdType === "userBase"
       ? "#4CAF50"
-      : props.rcmdType === "itemBase"
+      : props.$rcmdType === "itemBase"
       ? "#FF9800"
-      : props.rcmdType === "latest"
+      : props.$rcmdType === "latest"
       ? "#2196F3"
       : "#555"};
   padding: 2px 8px;
   border: 1px solid
     ${(props) =>
-      props.rcmdType === "userBase"
+      props.$rcmdType === "userBase"
         ? "#4CAF50"
-        : props.rcmdType === "itemBase"
+        : props.$rcmdType === "itemBase"
         ? "#FF9800"
-        : props.rcmdType === "latest"
+        : props.$rcmdType === "latest"
         ? "#2196F3"
         : "#555"};
   border-radius: 20px;
@@ -226,10 +226,10 @@ const RcmdNewsList: React.FC<{
               <IndustryRcmdContainer>
                 <IndustryId>{getIndustryName(news.industryId)}</IndustryId>
                 <RcmdTextContainer>
-                  <RcmdText className="rcmd-text" rcmdType={news.rcmd}>
+                  <RcmdText className="rcmd-text" $rcmdType={news.rcmd}>
                     {getRcmdText(news.rcmd)}
                   </RcmdText>
-                  <Tooltip className="tooltip" rcmdType={news.rcmd}>
+                  <Tooltip className="tooltip" $rcmdType={news.rcmd}>
                     {getTooltipText(news.rcmd)}
                   </Tooltip>
                 </RcmdTextContainer>
