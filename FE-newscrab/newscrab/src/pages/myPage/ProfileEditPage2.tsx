@@ -134,7 +134,33 @@ const SaveButton = styled.button`
   cursor: pointer;
   position: absolute;
   top: 90.5%; 
-  right: 48%;
+  right: 45%;
+  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.15);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    background: linear-gradient(90deg, #4e54c8, #2a72e5);
+    box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.25);
+  }
+
+  &:active {
+    background: linear-gradient(90deg, #354b99, #1f60c4);
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  }
+`;
+const BackButton = styled.button`
+  background-color: #2d9cdb;
+  border: none;
+  font-size: 14px;
+  font-weight: bold;
+  color: white;
+  border-radius: 50px;
+  height: 34px;
+  width: 70px;
+  cursor: pointer;
+  position: absolute;
+  top: 90.5%; 
+  right: 52%;
   box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.15);
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
 
@@ -240,6 +266,10 @@ const SignUpPage2: React.FC = () => {
     setSelectedIndustries(newSelectedIndustries);
   };
 
+  const handleBack = async () => {
+    navigate('/mypage')
+  };
+
   // 저장 버튼 클릭 처리
   const handleSave = async () => {
     const filteredIndustries = selectedIndustries.filter(Boolean) as { img: string, industryId: number, industryName: string }[];
@@ -273,7 +303,7 @@ const SignUpPage2: React.FC = () => {
           title: '성공!',
           text: '정보가 업데이트되었습니다.',
         });
-        navigate('/mainNews');
+        navigate('/mypage');
       }
     } catch (error: any) {
       if (error.response && error.response.status === 400) {
@@ -344,6 +374,7 @@ const SignUpPage2: React.FC = () => {
                 </DropArea>
               ))}
             </DropContainer>
+            <BackButton onClick={handleBack}>돌아가기</BackButton>
             <SaveButton onClick={handleSave}>저장</SaveButton>
           </CardContainer>
         </SignUpContainer>

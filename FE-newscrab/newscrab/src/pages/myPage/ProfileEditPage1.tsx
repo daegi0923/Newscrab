@@ -1,7 +1,4 @@
-// import { useNavigate } from "react-router-dom";
 import styled, { createGlobalStyle } from "styled-components";
-import NewsImage from "../../assets/auth/newsImage.png";
-import BackgroundImage from "../../assets/auth/bg.png";
 import Input from "@common/InputBox";
 import RadioButton from "@common/RadioButton";
 import Button from "@common/Button";
@@ -20,6 +17,7 @@ import profile1 from "@assets/auth/profile1.jpg";
 import profile2 from "@assets/auth/profile2.jpg";
 import profile3 from "@assets/auth/profile3.jpg";
 import Swal from 'sweetalert2';
+import BgImage from "@assets/landing/bgImage.png";
 
 const GlobalStyle = createGlobalStyle`
   body, html {
@@ -27,6 +25,7 @@ const GlobalStyle = createGlobalStyle`
     padding: 0;
     overflow: hidden; /* 배경화면 넘쳐서 스크롤 방지 */
     height: 100%;
+  }
 `;
 
 const SignUpContainer = styled.div`
@@ -34,43 +33,62 @@ const SignUpContainer = styled.div`
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-image: url(${BackgroundImage});
+  background-image: url(${BgImage});
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  position: relative;
 `;
 
-const SignUpImage = styled.img`
-  width: 65%;
+const WhiteBackground = styled.div`
+  width: 45%;
+  background-color: rgba(255, 255, 255, 0.95); /* Set background opacity to 95% */
+  padding: 20px 0px 30px 10px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* Optional: Add shadow for some depth */
+  border-radius: 10px;
+  z-index: 1; /* Ensures the white div is on top */
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center content horizontally */
 `;
+
+const Title = styled.h2`
+  text-align: center; /* Ensure the title is centered */
+  margin-bottom: 20px;
+`;
+
 
 const FormContainer = styled.div`
-  position: absolute;
-  top: 35%;
-  left: 23%;
   display: grid;
   gap: 0 20%;
   margin: 0 10%;
-  width: 35%;
+  width: 100%;
   align-items: center;
 `;
 
 const FormContainer1 = styled.div`
   justify-content: center;
-  width: 55%;
+  width: 50%;
 `;
 
-const FormContainer2 = styled.div``;
+const FormContainer2 = styled.div`
+padding-left: 40px;
+margin-right: -20px;
+`;
 
 const Label = styled.label`
   font-size: 14px;
+  font-weight: bold;
+  margin-left: 20px;
 `;
 
 const ButtonWrapper = styled.div`
   grid-column: span 2;
   display: flex;
-  justify-content: center;
-`;
+  // justify-content: center;
+  margin-left: 38%;
+  gap: 20px;
+  `;
 
 interface UserProfile {
   userInfo: {
@@ -177,7 +195,7 @@ const ProfileEdit1: React.FC = () => {
     }
 
     try {
-      const response = await dispatch(updateUserProfileThunk(editForm)).unwrap();
+      await dispatch(updateUserProfileThunk(editForm)).unwrap();
       Swal.fire({
         icon: 'success',
         title: '저장 성공',
@@ -208,62 +226,64 @@ const ProfileEdit1: React.FC = () => {
     <>
       <GlobalStyle />
       <SignUpContainer>
-        <FormContainer>
-          <FormContainer2>
-            <Input
-              name="name"
-              type="text"
-              label="닉네임"
-              placeholder="닉네임을 입력하세요"
-              value={editForm.name}
-              onChange={handleChange}
-            />
-            <Input
-              name="email"
-              type="email"
-              label="이메일"
-              placeholder="이메일을 입력하세요"
-              value={editForm.email}
-              onChange={handleChange}
-            />
-            <Input
-              name="birthday"
-              type="date"
-              label="생년월일"
-              placeholder="생년월일을 입력하세요"
-              value={editForm.birthday}
-              onChange={handleChange}
-            />
+        <WhiteBackground>
+        <Title>회원 정보 수정</Title>
+          <FormContainer>
+            <FormContainer2>
+              <Input
+                name="name"
+                type="text"
+                label="닉네임"
+                placeholder="닉네임을 입력하세요"
+                value={editForm.name}
+                onChange={handleChange}
+              />
+              <Input
+                name="email"
+                type="email"
+                label="이메일"
+                placeholder="이메일을 입력하세요"
+                value={editForm.email}
+                onChange={handleChange}
+              />
+              <Input
+                name="birthday"
+                type="date"
+                label="생년월일"
+                placeholder="생년월일을 입력하세요"
+                value={editForm.birthday}
+                onChange={handleChange}
+              />
 
-            <Label>성별</Label>
-            <RadioButton
-              name="gender"
-              options={[
-                { value: "MALE", label: "남성" },
-                { value: "FEMALE", label: "여성" },
-                { value: "OTHER", label: "그 외" },
-              ]}
-              value={editForm.gender}
-              onChange={handleGenderChange}
-            />
-          </FormContainer2>
-          <FormContainer1>
-            <ProfileImageDisplay
-              src={selectedImage}
-              onEdit={() => setModalOpen(true)}
-            />
-            <ProfileImageModal
-              isOpen={isModalOpen}
-              onClose={() => setModalOpen(false)}
-              onSelectImage={handleSelectImage}
-            />
-          </FormContainer1>
-          <ButtonWrapper>
-            <Button onClick={handleSave}>저장</Button>
-            <Button onClick={handleBack}>돌아가기</Button>
-          </ButtonWrapper>
-        </FormContainer>
-        <SignUpImage src={NewsImage} alt="SignUpImage" />
+              <Label>성별</Label>
+              <RadioButton
+                name="gender"
+                options={[
+                  { value: "MALE", label: "남성" },
+                  { value: "FEMALE", label: "여성" },
+                  { value: "OTHER", label: "그 외" },
+                ]}
+                value={editForm.gender}
+                onChange={handleGenderChange}
+              />
+            </FormContainer2>
+            <FormContainer1>
+              <ProfileImageDisplay
+                src={selectedImage}
+                onEdit={() => setModalOpen(true)}
+              />
+              <ProfileImageModal
+                isOpen={isModalOpen}
+                onClose={() => setModalOpen(false)}
+                onSelectImage={handleSelectImage}
+              />
+            </FormContainer1>
+            <ButtonWrapper>
+              <Button onClick={handleSave}>저장</Button>
+              <Button onClick={handleBack}>돌아가기</Button>
+            </ButtonWrapper>
+          </FormContainer>
+        </WhiteBackground>
       </SignUpContainer>
     </>
   );
