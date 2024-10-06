@@ -293,8 +293,8 @@ def read_item(user_id: int, db: Session = Depends(get_db)):
     # print("industry_latest_news", industry_latest_news)
     industry_latest_news_list = list(set(industry_latest_news) - interacted_news_ids)
     return {
-        "user_base" : user_based_recommend_news_list[:30],
-        "item_base" : list(item_based_recommend_news_list)[:30],
+        "user_base" : user_based_recommend_news_list[:10],
+        "item_base" : list(item_based_recommend_news_list)[:10],
         "latest" : industry_latest_news_list
     }
 
