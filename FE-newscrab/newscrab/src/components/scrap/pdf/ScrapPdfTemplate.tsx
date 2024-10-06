@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { ScrapData, Vocalist, Highlight } from '../../../types/scrapTypes'; // ScrapData 및 Vocalist 타입 import
 
