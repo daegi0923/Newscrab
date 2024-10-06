@@ -266,6 +266,9 @@ def read_item(user_id: int, db: Session = Depends(get_db)):
     # if not scrap_like_df or not user_news_matrix:
     #     get_scrap_like_dataframe(db)
     # get_scrap_like_dataframe(db)
+    if scrap_like_df is None:
+        get_scrap_like_dataframe(db)
+
     user_based_recommend_news_list, ub_scores = collaborative_filtering(user_id, db)
     # print(ub_scores)
     ib_news_list = get_related_news(user_based_recommend_news_list, ub_scores, user_id, db)
