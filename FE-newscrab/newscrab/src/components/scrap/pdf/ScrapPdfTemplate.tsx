@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { ScrapData, Vocalist, Highlight } from '../../../types/scrapTypes'; // ScrapData 및 Vocalist 타입 import
 
@@ -42,56 +42,56 @@ const letterToColorMap = {
   B: '#cddafd', // Blue
 } as const;
 
-const applyHighlightsToContent = (content: string, highlights: Highlight[] | null | undefined): string => {
-  if (!highlights || highlights.length === 0) {
-    // 하이라이트 목록이 비어 있으면 메시지 반환
-    return "형광펜 친 문장이 없습니다.";
-  }
+const applyHighlightsFromApi = (contentElement: HTMLElement, highlights: Highlight[]) => {
+  highlights.forEach(({ startPos, endPos, color }) => {
+    const walker = document.createTreeWalker(contentElement, NodeFilter.SHOW_TEXT, null);
+    let currentPos = 0;
+    let startNode: Node | null = null;
+    let endNode: Node | null = null;
+    let startOffset = 0;
+    let endOffset = 0;
 
-  // <br/> 태그로 문단 나누기
-  const paragraphs = content.split(/<br\s*\/?>/);
+    while (walker.nextNode()) {
+      const node = walker.currentNode;
+      const nodeLength = node.textContent?.length || 0;
 
-  // 각 문단에 하이라이트 적용
-  const highlightedParagraphs = paragraphs.map(paragraph => {
-    let modifiedParagraph = paragraph;
-
-    highlights.forEach(({ startPos, endPos, color }) => {
-      const highlightStart = Math.max(startPos, 0);
-      const highlightEnd = Math.min(endPos, paragraph.length);
-
-      if (highlightStart < highlightEnd) {
-        // 하이라이트 적용
-        modifiedParagraph =
-          modifiedParagraph.slice(0, highlightStart) +
-          `<span style="background-color:${letterToColorMap[color]};">` +
-          modifiedParagraph.slice(highlightStart, highlightEnd) +
-          `</span>` +
-          modifiedParagraph.slice(highlightEnd);
+      if (currentPos <= startPos && currentPos + nodeLength >= startPos) {
+        startNode = node;
+        startOffset = startPos - currentPos;
       }
-    });
+      if (currentPos <= endPos && currentPos + nodeLength >= endPos) {
+        endNode = node;
+        endOffset = endPos - currentPos;
+        break;
+      }
+      currentPos += nodeLength;
+    }
 
-    return modifiedParagraph;
+    if (startNode && endNode) {
+      const range = document.createRange();
+      range.setStart(startNode, startOffset);
+      range.setEnd(endNode, endOffset);
+
+      const span = document.createElement('span');
+      span.style.backgroundColor = letterToColorMap[color];
+      span.dataset.startPos = String(startPos);
+      span.dataset.endPos = String(endPos);
+
+      span.appendChild(range.extractContents());
+      range.insertNode(span);
+    }
   });
-
-  // 하이라이트가 포함된 문단만 필터링
-  const filteredParagraphs = highlightedParagraphs.filter(paragraph => {
-    return paragraph.includes("<span");
-  });
-
-  // 필터링된 문단을 합쳐서 반환
-  return filteredParagraphs.join("<br/>");
 };
-
-
 
 const ScrapPdfTemplate: React.FC<{ scrap: ScrapData }> = ({ scrap }) => {
   const newsContentRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (scrap && scrap.newsContent && scrap.highlightList) {
-      const highlightedContent = applyHighlightsToContent(scrap.newsContent, scrap.highlightList);
-      if (newsContentRef.current) {
-        newsContentRef.current.innerHTML = highlightedContent;
+      const contentElement = newsContentRef.current;
+      if (contentElement) {
+        contentElement.innerHTML = scrap.newsContent;
+        applyHighlightsFromApi(contentElement, scrap.highlightList);
       }
     }
   }, [scrap]);
@@ -110,11 +110,7 @@ const ScrapPdfTemplate: React.FC<{ scrap: ScrapData }> = ({ scrap }) => {
           <tr>
             <Td colSpan={2}>기사내용</Td>
             <Td>
-              <div
-                ref={newsContentRef}
-                dangerouslySetInnerHTML={{ __html: applyHighlightsToContent(scrap.newsContent, scrap.highlightList) }}
-              ></div>{' '}
-              {/* 하이라이트가 적용된 기사 내용 표시 */}
+              <div ref={newsContentRef} />
             </Td>
           </tr>
           <tr>
