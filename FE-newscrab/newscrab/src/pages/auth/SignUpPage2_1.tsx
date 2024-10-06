@@ -50,14 +50,14 @@ const CardContainer = styled.div`
   align-items: flex-start;
 `;
 
-const Card = styled.div<{ isHidden: boolean }>`
+const Card = styled.div<{ $isHidden: boolean }>`
   width: 120px;
   background-color: #f9f9f9;
   border-radius: 10px;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
   cursor: grab;
   position: relative;
-  visibility: ${({ isHidden }) => (isHidden ? 'hidden' : 'visible')};
+  visibility: ${({ $isHidden }) => ($isHidden ? 'hidden' : 'visible')};
   img {
     width: 100%;
     height: 100%;
@@ -291,7 +291,7 @@ const SignUpPage2: React.FC = () => {
                   key={industry.industryId}
                   draggable
                   onDragStart={(event) => handleDragStart(event, industry)}
-                  isHidden={selectedIds.has(industry.industryId)}  // 선택된 카드가 숨겨지는지 여부 결정
+                  $isHidden={selectedIds.has(industry.industryId)}  // 선택된 카드가 숨겨지는지 여부 결정
                   style={{
                     opacity: selectedIds.has(industry.industryId) ? 0.2 : 1,  // 선택된 카드는 투명하게 처리
                   }}

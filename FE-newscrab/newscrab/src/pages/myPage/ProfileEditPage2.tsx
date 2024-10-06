@@ -60,15 +60,15 @@ const CardContainer = styled.div`
   align-items: flex-start;
 `;
 
-const Card = styled.div<{ isHidden: boolean, isTransparent: boolean }>`
+const Card = styled.div<{ $isHidden: boolean, $isTransparent: boolean }>`
   width: 120px;
   background-color: #f9f9f9;
   border-radius: 10px;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
   cursor: grab;
   position: relative;
-  visibility: ${({ isHidden }) => (isHidden ? 'hidden' : 'visible')};
-  opacity: ${({ isTransparent }) => (isTransparent ? 0.3 : 1)};  /* 선택된 카드를 투명하게 */
+  visibility: ${({ $isHidden }) => ($isHidden ? 'hidden' : 'visible')};
+  opacity: ${({ $isTransparent }) => ($isTransparent ? 0.3 : 1)};  /* 선택된 카드를 투명하게 */
   img {
     width: 100%;
     height: 100%;
@@ -305,8 +305,8 @@ const SignUpPage2: React.FC = () => {
                   key={industry.industryId}
                   draggable={!selectedIds.has(industry.industryId)}  // 이미 선택된 카드라면 드래그 불가
                   onDragStart={(event) => handleDragStart(event, industry)}
-                  isHidden={false}
-                  isTransparent={selectedIds.has(industry.industryId)}  // 선택된 카드는 투명하게
+                  $isHidden={false}
+                  $isTransparent={selectedIds.has(industry.industryId)}  // 선택된 카드는 투명하게
                 >
                   <h4>{industry.industryName}</h4>
                   <img src={industry.img} alt={industry.industryName} />

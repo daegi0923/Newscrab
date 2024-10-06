@@ -19,6 +19,7 @@ import {
 import profile1 from "@assets/auth/profile1.jpg";
 import profile2 from "@assets/auth/profile2.jpg";
 import profile3 from "@assets/auth/profile3.jpg";
+import Swal from 'sweetalert2';
 
 const GlobalStyle = createGlobalStyle`
   body, html {
@@ -87,71 +88,53 @@ interface RootState {
   mypage: UserProfile;
 }
 
+// 이미지 경로를 A, B, C로 매핑하는 함수 수정
+const mapEnumToImage = (imageEnum: string) => {
+  if (imageEnum === "A") return profile1;
+  if (imageEnum === "B") return profile2;
+  if (imageEnum === "C") return profile3;
+  return defaultProfile;
+};
+const mapImageToEnum = (imageSrc: string) => {
+  if (imageSrc === profile1) return "A";
+  if (imageSrc === profile2) return "B";
+  if (imageSrc === profile3) return "C";
+  return "";
+};
+
 const ProfileEdit1: React.FC = () => {
   const navigate = useNavigate();
   const dispatch: AppDispatch = useDispatch();
-
-  // Redux 상태에서 사용자 정보 가져오기
+  
   const { userInfo } = useSelector((state: RootState) => state.mypage);
-
-  // 로딩 상태 관리
+  
   const [loading, setLoading] = useState(true);
-
-  // 사용자 정보 상태 관리 (초기값을 사용자 정보로 설정)
   const [editForm, setEditForm] = useState({
     name: "",
     email: "",
     birthday: "",
-    gender: "", // 성별 기본값은 빈 문자열
+    gender: "",
     profileImg: "",
   });
 
-  const [errors] = useState({
-    name: "",
-    email: "",
-    birthday: "",
-  });
-  // const [errors, setErrors] = useState({
-  //   name: "",
-  //   email: "",
-  //   birthday: "",
-  // });
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string>(defaultProfile);
 
-  const [isModalOpen, setModalOpen] = useState(false); // 모달 열기/닫기 상태
-  const [selectedImage, setSelectedImage] = useState<string>(profile1);
-
-  // 이미지 경로를 A, B, C로 매핑하는 함수
-  const mapImageToEnum = (imageSrc: string) => {
-    if (imageSrc === profile1) return "A";
-    if (imageSrc === profile2) return "B";
-    if (imageSrc === profile3) return "C";
-    return "";
-  };
-
-  const mapEnumToImage = (imageEnum: string) => {
-    if (imageEnum === "A") return profile1;
-    if (imageEnum === "B") return profile2;
-    if (imageEnum === "C") return profile3;
-    return defaultProfile;
-  };
-
-  // 사용자 정보를 불러와서 초기값 설정 (처음 마운트될 때 실행)
+  // 사용자 정보 불러오기
   useEffect(() => {
     dispatch(fetchUserProfileThunk())
       .unwrap()
       .then((res) => {
-        console.log("프로필 데이터 불러옴!!:", res);
-        setLoading(false); // 데이터가 불러와지면 로딩 해제
+        setLoading(false);
       })
       .catch((error) => {
+        setLoading(false);
         console.error("프로필 불러오기 오류:", error);
-        setLoading(false); // 에러 발생 시에도 로딩 해제
       });
   }, [dispatch]);
 
   useEffect(() => {
     if (userInfo && userInfo.data) {
-      console.log("업데이트된 사용자 정보:", userInfo);
       setEditForm({
         name: userInfo.data.name,
         email: userInfo.data.email,
@@ -162,10 +145,6 @@ const ProfileEdit1: React.FC = () => {
       setSelectedImage(mapEnumToImage(userInfo.data.profileImg || "A"));
     }
   }, [userInfo]);
-
-  if (loading) {
-    return <p>Loading...</p>; // 로딩 중일 때 표시할 UI
-  }
 
   // 입력 필드 변경 핸들러
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -178,29 +157,51 @@ const ProfileEdit1: React.FC = () => {
     setEditForm({ ...editForm, gender: e.target.value });
   };
 
+  // 이미지 선택 핸들러
   const handleSelectImage = (imageSrc: string) => {
     const imageEnum = mapImageToEnum(imageSrc);
     setSelectedImage(imageSrc);
-    setEditForm({ ...editForm, profileImg: imageEnum }); // A, B, C로 설정
+    setEditForm({ ...editForm, profileImg: imageEnum });
   };
 
+  // 저장 핸들러
   const handleSave = async () => {
+    if (!editForm.name || !editForm.email || !editForm.birthday || !editForm.gender) {
+      Swal.fire({
+        icon: 'warning',
+        title: '입력 오류',
+        text: '모든 필드를 올바르게 입력해 주세요.',
+        confirmButtonText: '확인'
+      });
+      return;
+    }
+
     try {
-      console.log("수정된 사용자 데이터:", editForm);
-      // 모든 필드를 포함한 데이터를 PUT 요청으로 전송
-      const response = await dispatch(
-        updateUserProfileThunk(editForm)
-      ).unwrap();
-      console.log("수정 완료:", response);
-      navigate('/mypage');  // 성공 시 이동
+      const response = await dispatch(updateUserProfileThunk(editForm)).unwrap();
+      Swal.fire({
+        icon: 'success',
+        title: '저장 성공',
+        text: '회원 정보가 성공적으로 저장되었습니다.',
+        confirmButtonText: '확인'
+      }).then(() => {
+        navigate('/mypage');
+      });
     } catch (error) {
-      console.error("회원 정보 업데이트 실패:", error);
-      alert("정보를 업데이트하는 중 오류가 발생했습니다.");
+      Swal.fire({
+        icon: 'error',
+        title: '저장 실패',
+        text: '회원 정보를 저장하는 중 오류가 발생했습니다. 다시 시도해 주세요.',
+        confirmButtonText: '확인'
+      });
     }
   };
 
   const handleBack = () => {
     navigate('/mypage');
+  };
+
+  if (loading) {
+    return <p>Loading...</p>;
   }
 
   return (
@@ -224,7 +225,6 @@ const ProfileEdit1: React.FC = () => {
               placeholder="이메일을 입력하세요"
               value={editForm.email}
               onChange={handleChange}
-              error={errors.email}
             />
             <Input
               name="birthday"
@@ -246,7 +246,6 @@ const ProfileEdit1: React.FC = () => {
               value={editForm.gender}
               onChange={handleGenderChange}
             />
-            {errors.name && <p style={{ color: "red" }}>{errors.name}</p>}
           </FormContainer2>
           <FormContainer1>
             <ProfileImageDisplay
