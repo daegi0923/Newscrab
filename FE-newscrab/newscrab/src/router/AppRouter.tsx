@@ -57,7 +57,6 @@ const AppRouter: React.FC = () => {
       )}
 
       <Routes>
-        <Route path="/fortune" element={<FortuneCookie />} />
 
         {/* 비로그인 상태일 때 */}
         {!isLogedIn ? (
@@ -91,6 +90,14 @@ const AppRouter: React.FC = () => {
               element={
                 <Layout>
                   <MyPage />
+                </Layout>
+              }
+            />
+            <Route
+              path="/fortune"
+              element={
+                <Layout>
+                  <FortuneCookie />
                 </Layout>
               }
             />
