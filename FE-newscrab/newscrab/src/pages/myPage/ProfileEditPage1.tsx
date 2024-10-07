@@ -1,7 +1,4 @@
-// import { useNavigate } from "react-router-dom";
 import styled, { createGlobalStyle } from "styled-components";
-import NewsImage from "../../assets/auth/newsImage.png";
-import BackgroundImage from "../../assets/auth/bg.png";
 import Input from "@common/InputBox";
 import RadioButton from "@common/RadioButton";
 import Button from "@common/Button";
@@ -19,6 +16,8 @@ import {
 import profile1 from "@assets/auth/profile1.jpg";
 import profile2 from "@assets/auth/profile2.jpg";
 import profile3 from "@assets/auth/profile3.jpg";
+import Swal from 'sweetalert2';
+import BgImage from "@assets/landing/bgImage.png";
 
 const GlobalStyle = createGlobalStyle`
   body, html {
@@ -26,6 +25,7 @@ const GlobalStyle = createGlobalStyle`
     padding: 0;
     overflow: hidden; /* 배경화면 넘쳐서 스크롤 방지 */
     height: 100%;
+  }
 `;
 
 const SignUpContainer = styled.div`
@@ -33,43 +33,62 @@ const SignUpContainer = styled.div`
   justify-content: center;
   align-items: center;
   height: 100vh;
-  background-image: url(${BackgroundImage});
+  background-image: url(${BgImage});
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  position: relative;
 `;
 
-const SignUpImage = styled.img`
-  width: 65%;
+const WhiteBackground = styled.div`
+  width: 45%;
+  background-color: rgba(255, 255, 255, 0.95); /* Set background opacity to 95% */
+  padding: 20px 0px 30px 10px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* Optional: Add shadow for some depth */
+  border-radius: 10px;
+  z-index: 1; /* Ensures the white div is on top */
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center content horizontally */
 `;
+
+const Title = styled.h2`
+  text-align: center; /* Ensure the title is centered */
+  margin-bottom: 20px;
+`;
+
 
 const FormContainer = styled.div`
-  position: absolute;
-  top: 35%;
-  left: 23%;
   display: grid;
   gap: 0 20%;
   margin: 0 10%;
-  width: 35%;
+  width: 100%;
   align-items: center;
 `;
 
 const FormContainer1 = styled.div`
   justify-content: center;
-  width: 55%;
+  width: 50%;
 `;
 
-const FormContainer2 = styled.div``;
+const FormContainer2 = styled.div`
+padding-left: 40px;
+margin-right: -20px;
+`;
 
 const Label = styled.label`
   font-size: 14px;
+  font-weight: bold;
+  margin-left: 20px;
 `;
 
 const ButtonWrapper = styled.div`
   grid-column: span 2;
   display: flex;
-  justify-content: center;
-`;
+  // justify-content: center;
+  margin-left: 38%;
+  gap: 20px;
+  `;
 
 interface UserProfile {
   userInfo: {
@@ -87,71 +106,53 @@ interface RootState {
   mypage: UserProfile;
 }
 
+// 이미지 경로를 A, B, C로 매핑하는 함수 수정
+const mapEnumToImage = (imageEnum: string) => {
+  if (imageEnum === "A") return profile1;
+  if (imageEnum === "B") return profile2;
+  if (imageEnum === "C") return profile3;
+  return defaultProfile;
+};
+const mapImageToEnum = (imageSrc: string) => {
+  if (imageSrc === profile1) return "A";
+  if (imageSrc === profile2) return "B";
+  if (imageSrc === profile3) return "C";
+  return "";
+};
+
 const ProfileEdit1: React.FC = () => {
   const navigate = useNavigate();
   const dispatch: AppDispatch = useDispatch();
-
-  // Redux 상태에서 사용자 정보 가져오기
+  
   const { userInfo } = useSelector((state: RootState) => state.mypage);
-
-  // 로딩 상태 관리
+  
   const [loading, setLoading] = useState(true);
-
-  // 사용자 정보 상태 관리 (초기값을 사용자 정보로 설정)
   const [editForm, setEditForm] = useState({
     name: "",
     email: "",
     birthday: "",
-    gender: "", // 성별 기본값은 빈 문자열
+    gender: "",
     profileImg: "",
   });
 
-  const [errors] = useState({
-    name: "",
-    email: "",
-    birthday: "",
-  });
-  // const [errors, setErrors] = useState({
-  //   name: "",
-  //   email: "",
-  //   birthday: "",
-  // });
+  const [isModalOpen, setModalOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string>(defaultProfile);
 
-  const [isModalOpen, setModalOpen] = useState(false); // 모달 열기/닫기 상태
-  const [selectedImage, setSelectedImage] = useState<string>(profile1);
-
-  // 이미지 경로를 A, B, C로 매핑하는 함수
-  const mapImageToEnum = (imageSrc: string) => {
-    if (imageSrc === profile1) return "A";
-    if (imageSrc === profile2) return "B";
-    if (imageSrc === profile3) return "C";
-    return "";
-  };
-
-  const mapEnumToImage = (imageEnum: string) => {
-    if (imageEnum === "A") return profile1;
-    if (imageEnum === "B") return profile2;
-    if (imageEnum === "C") return profile3;
-    return defaultProfile;
-  };
-
-  // 사용자 정보를 불러와서 초기값 설정 (처음 마운트될 때 실행)
+  // 사용자 정보 불러오기
   useEffect(() => {
     dispatch(fetchUserProfileThunk())
       .unwrap()
-      .then((res) => {
-        console.log("프로필 데이터 불러옴!!:", res);
-        setLoading(false); // 데이터가 불러와지면 로딩 해제
-      })
+      // .then((res) => {
+      //   setLoading(false);
+      // })
       .catch((error) => {
+        setLoading(false);
         console.error("프로필 불러오기 오류:", error);
-        setLoading(false); // 에러 발생 시에도 로딩 해제
       });
   }, [dispatch]);
 
   useEffect(() => {
     if (userInfo && userInfo.data) {
-      console.log("업데이트된 사용자 정보:", userInfo);
       setEditForm({
         name: userInfo.data.name,
         email: userInfo.data.email,
@@ -162,10 +163,6 @@ const ProfileEdit1: React.FC = () => {
       setSelectedImage(mapEnumToImage(userInfo.data.profileImg || "A"));
     }
   }, [userInfo]);
-
-  if (loading) {
-    return <p>Loading...</p>; // 로딩 중일 때 표시할 UI
-  }
 
   // 입력 필드 변경 핸들러
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -178,88 +175,115 @@ const ProfileEdit1: React.FC = () => {
     setEditForm({ ...editForm, gender: e.target.value });
   };
 
+  // 이미지 선택 핸들러
   const handleSelectImage = (imageSrc: string) => {
     const imageEnum = mapImageToEnum(imageSrc);
     setSelectedImage(imageSrc);
-    setEditForm({ ...editForm, profileImg: imageEnum }); // A, B, C로 설정
+    setEditForm({ ...editForm, profileImg: imageEnum });
   };
 
+  // 저장 핸들러
   const handleSave = async () => {
+    if (!editForm.name || !editForm.email || !editForm.birthday || !editForm.gender) {
+      Swal.fire({
+        icon: 'warning',
+        title: '입력 오류',
+        text: '모든 필드를 올바르게 입력해 주세요.',
+        confirmButtonText: '확인'
+      });
+      return;
+    }
+
     try {
-      console.log("수정된 사용자 데이터:", editForm);
-      // 모든 필드를 포함한 데이터를 PUT 요청으로 전송
-      const response = await dispatch(
-        updateUserProfileThunk(editForm)
-      ).unwrap();
-      console.log("수정 완료:", response);
-      navigate('/mypage');  // 성공 시 이동
+      await dispatch(updateUserProfileThunk(editForm)).unwrap();
+      Swal.fire({
+        icon: 'success',
+        title: '저장 성공',
+        text: '회원 정보가 성공적으로 저장되었습니다.',
+        confirmButtonText: '확인'
+      }).then(() => {
+        navigate('/mypage');
+      });
     } catch (error) {
-      console.error("회원 정보 업데이트 실패:", error);
-      alert("정보를 업데이트하는 중 오류가 발생했습니다.");
+      Swal.fire({
+        icon: 'error',
+        title: '저장 실패',
+        text: '회원 정보를 저장하는 중 오류가 발생했습니다. 다시 시도해 주세요.',
+        confirmButtonText: '확인'
+      });
     }
   };
+
+  const handleBack = () => {
+    navigate('/mypage');
+  };
+
+  if (loading) {
+    return <p>Loading...</p>;
+  }
 
   return (
     <>
       <GlobalStyle />
       <SignUpContainer>
-        <FormContainer>
-          <FormContainer2>
-            <Input
-              name="name"
-              type="text"
-              label="닉네임"
-              placeholder="닉네임을 입력하세요"
-              value={editForm.name}
-              onChange={handleChange}
-            />
-            <Input
-              name="email"
-              type="email"
-              label="이메일"
-              placeholder="이메일을 입력하세요"
-              value={editForm.email}
-              onChange={handleChange}
-              error={errors.email}
-            />
-            <Input
-              name="birthday"
-              type="date"
-              label="생년월일"
-              placeholder="생년월일을 입력하세요"
-              value={editForm.birthday}
-              onChange={handleChange}
-            />
+        <WhiteBackground>
+        <Title>회원 정보 수정</Title>
+          <FormContainer>
+            <FormContainer2>
+              <Input
+                name="name"
+                type="text"
+                label="닉네임"
+                placeholder="닉네임을 입력하세요"
+                value={editForm.name}
+                onChange={handleChange}
+              />
+              <Input
+                name="email"
+                type="email"
+                label="이메일"
+                placeholder="이메일을 입력하세요"
+                value={editForm.email}
+                onChange={handleChange}
+              />
+              <Input
+                name="birthday"
+                type="date"
+                label="생년월일"
+                placeholder="생년월일을 입력하세요"
+                value={editForm.birthday}
+                onChange={handleChange}
+              />
 
-            <Label>성별</Label>
-            <RadioButton
-              name="gender"
-              options={[
-                { value: "MALE", label: "남성" },
-                { value: "FEMALE", label: "여성" },
-                { value: "OTHER", label: "그 외" },
-              ]}
-              value={editForm.gender}
-              onChange={handleGenderChange}
-            />
-            {errors.name && <p style={{ color: "red" }}>{errors.name}</p>}
-          </FormContainer2>
-          <FormContainer1>
-            <ProfileImageDisplay
-              src={selectedImage}
-              onEdit={() => setModalOpen(true)}
-            />
-            <ProfileImageModal
-              isOpen={isModalOpen}
-              onClose={() => setModalOpen(false)}
-              onSelectImage={handleSelectImage}
-            />
-          </FormContainer1>
-          <ButtonWrapper>
-            <Button onClick={handleSave}>저장</Button>
-          </ButtonWrapper>
-        </FormContainer>
-        <SignUpImage src={NewsImage} alt="SignUpImage" />
+              <Label>성별</Label>
+              <RadioButton
+                name="gender"
+                options={[
+                  { value: "MALE", label: "남성" },
+                  { value: "FEMALE", label: "여성" },
+                  { value: "OTHER", label: "그 외" },
+                ]}
+                value={editForm.gender}
+                onChange={handleGenderChange}
+              />
+            </FormContainer2>
+            <FormContainer1>
+              <ProfileImageDisplay
+                src={selectedImage}
+                onEdit={() => setModalOpen(true)}
+              />
+              <ProfileImageModal
+                isOpen={isModalOpen}
+                onClose={() => setModalOpen(false)}
+                onSelectImage={handleSelectImage}
+              />
+            </FormContainer1>
+            <ButtonWrapper>
+              <Button onClick={handleSave}>저장</Button>
+              <Button onClick={handleBack}>돌아가기</Button>
+            </ButtonWrapper>
+          </FormContainer>
+        </WhiteBackground>
       </SignUpContainer>
     </>
   );

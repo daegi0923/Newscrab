@@ -5,6 +5,7 @@ import {
   ScrapData,
   PostScrapRequest,
   PutScrapRequest,
+  
 } from "../../types/scrapTypes";
 
 export const getScrapData = async (
@@ -55,7 +56,7 @@ export const getScrapData = async (
         totalItems: data.totalItems,
       },
     };
-    console.log(scrapData);
+    console.log('스크랩데이터:', scrapData);
 
     return scrapData; // 정렬된 스크랩 데이터 반환
   } catch (error: any) {
@@ -85,6 +86,20 @@ export const postScrap = async (scrapData: PostScrapRequest): Promise<void> => {
   }
 };
 
+export const getScrap = async (
+  scrapId: number
+): Promise<ScrapData> => {
+  try {
+    const response = await API.get(`/scrap/${scrapId}`);
+    
+    console.log("Scrap fetched successfully?:", response.data);
+    return response.data.data; // 반환 타입에 맞게 데이터 반환
+  } catch (error: any) {
+    console.error("Error fetching scrap:", error);
+    throw error;
+  }
+};
+
 export const putScrap = async (
   scrapId: number,
   scrapData: PutScrapRequest
@@ -94,6 +109,7 @@ export const putScrap = async (
       newsId: scrapData.newsId,
       comment: scrapData.comment,
       scrapSummary: scrapData.scrapSummary,
+      highlights: scrapData.highlights,
     });
 
     console.log("Scrap updated successfully:", response.data);

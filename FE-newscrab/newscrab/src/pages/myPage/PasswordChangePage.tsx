@@ -1,63 +1,47 @@
 import { useNavigate } from 'react-router-dom';
-import styled, { createGlobalStyle } from 'styled-components';
-import NewsImage from '../../assets/auth/newsImage.png';
-import BackgroundImage from '../../assets/auth/bg.png';
+import styled from 'styled-components';
+import BgImage from '@assets/landing/bgImage.png';
 import Input from '@common/InputBox';
 import Button from '@common/Button';
 import { useState, useEffect } from 'react';
 import API from '@apis/apiClient';
+import Swal from 'sweetalert2';
 
-const GlobalStyle = createGlobalStyle`
-  body, html {
-    margin: 0;
-    padding: 0;
-    overflow: hidden; /* 배경화면 넘쳐서 스크롤 방지 */
-    height: 100%;
-  }
-`;
-
-const SignUpContainer = styled.div`
+const BackgroundContainer = styled.div`
+  background-image: url(${BgImage});
+  background-size: cover;
+  background-position: center;
+  min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  background-image: url(${BackgroundImage});
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-`;
-
-const SignUpImage = styled.img`
-  width: 65%;
 `;
 
 const FormContainer = styled.div`
-  position: absolute;
-  top: 37%;
-  left: 33%;
-  // display: grid;
-  // grid-template-columns: 1fr 1fr;
-  grid-gap: 20px;
-  gap: 0 20%;
-  margin: 0 10%;
-  // width: 30%;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 40px;
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  max-width: 280px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
 `;
 
 const ButtonWrapper = styled.div`
-  grid-column: span 2;
   display: flex;
+  gap: 20px;
   justify-content: center;
+  margin-top: 20px;
 `;
-
 
 const PasswordChange: React.FC = () => {
   const navigate = useNavigate();
 
-  // Form 상태 관리
   const [editForm, setEditForm] = useState({
-    currentPassword: "",  // 현재 비밀번호
-    newPassword: "",      // 새 비밀번호
-    passwordConfirm: "",  // 새 비밀번호 확인
+    currentPassword: "",
+    newPassword: "",
+    passwordConfirm: "",
   });
 
   const [errors, setErrors] = useState({
@@ -66,24 +50,20 @@ const PasswordChange: React.FC = () => {
     passwordConfirm: "",
   });
 
-  // 입력 필드 변경 핸들러
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setEditForm({ ...editForm, [name]: value });
   };
 
-  // 비밀번호 유효성 검사
   useEffect(() => {
     const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,16}$/;
     
-    // 새 비밀번호 유효성 검사
     if (editForm.newPassword && !passwordRegex.test(editForm.newPassword)) {
       setErrors((prevErrors) => ({ ...prevErrors, newPassword: "8~16자, 영어, 숫자, 특수문자 조합이어야 합니다." }));
     } else {
       setErrors((prevErrors) => ({ ...prevErrors, newPassword: "" }));
     }
 
-    // 새 비밀번호와 확인 비밀번호가 일치하는지 확인
     if (editForm.passwordConfirm && editForm.newPassword !== editForm.passwordConfirm) {
       setErrors((prevErrors) => ({ ...prevErrors, passwordConfirm: "비밀번호가 일치하지 않습니다." }));
     } else {
@@ -97,55 +77,76 @@ const PasswordChange: React.FC = () => {
     editForm.passwordConfirm !== "";
 
   const handlePasswordChange = async () => {
-    console.log("변경할 비밀번호 정보:", editForm); // 콘솔에 비밀번호 정보 출력
-
     if (isFormValid) {
       try {
         const response = await API.put('/user/password', {
-          // currentPassword: editForm.currentPassword,
           password: editForm.newPassword,
         });
 
         if (response.status === 200) {
-          console.log("비밀번호 변경 성공:", response.data);
-          alert("비밀번호가 성공적으로 변경되었습니다.");
-          navigate("/mypage"); // 예시: 프로필 페이지로 이동
+          Swal.fire({
+            icon: 'success',
+            title: '비밀번호 변경 완료',
+            text: '비밀번호가 성공적으로 변경되었습니다.',
+            confirmButtonText: '확인'
+          }).then(() => {
+            navigate("/mypage");
+          });
         }
       } catch (error: any) {
-        if (error.response.status === 400) {
-          // 서버에서 동일한 비밀번호일 때 400번대를 반환하는 경우
-          if (error.response.data.message === "새 비밀번호가 이전 비밀번호와 같습니다.") {
-            alert("새 비밀번호는 이전 비밀번호와 같을 수 없습니다.");
-          } else {
-            alert("새 비밀번호는 이전 비밀번호와 같을 수 없습니다.");
-          }
-        } else {
-          // 다른 오류 처리
-          console.error("비밀번호 변경 실패:", error);
-          alert("비밀번호 변경 중 오류가 발생했습니다.");
-        }
+        Swal.fire({
+          icon: 'error',
+          title: '비밀번호 변경 실패',
+          text: '문제가 발생했습니다.',
+          confirmButtonText: '확인'
+        });
       }
     } else {
-      window.alert("모든 필드를 올바르게 입력해 주세요.");
+      Swal.fire({
+        icon: 'warning',
+        title: '입력 오류',
+        text: '모든 필드를 올바르게 입력해 주세요.',
+        confirmButtonText: '확인'
+      });
     }
   };
 
   return (
-    <>
-      <GlobalStyle />
-      <SignUpContainer>
-        <FormContainer>          
-          <Input name="currentPassword" type="password" label="현재 비밀번호" placeholder="현재 비밀번호를 입력하세요" value={editForm.currentPassword} onChange={handleChange} error={errors.currentPassword} />
-          <Input name="newPassword" type="password" label="비밀번호" placeholder="새 비밀번호를 입력하세요" value={editForm.newPassword} onChange={handleChange} error={errors.newPassword}/>
-          <Input name="passwordConfirm" type="password" label="비밀번호 확인" placeholder="비밀번호를 입력하세요" value={editForm.passwordConfirm} onChange={handleChange} error={errors.passwordConfirm}/>
-          {errors.passwordConfirm  && <p style={{ color: "red" }}>{errors.passwordConfirm}</p>}
-          <ButtonWrapper>
-          <Button onClick={handlePasswordChange}>다음</Button>
-          </ButtonWrapper>
-        </FormContainer>
-        <SignUpImage src={NewsImage} alt="SignUpImage" />
-      </SignUpContainer>
-    </>
+    <BackgroundContainer>
+      <FormContainer>
+        <Input
+          name="currentPassword"
+          type="password"
+          label="현재 비밀번호"
+          placeholder="현재 비밀번호를 입력하세요"
+          value={editForm.currentPassword}
+          onChange={handleChange}
+          error={errors.currentPassword}
+        />
+        <Input
+          name="newPassword"
+          type="password"
+          label="새 비밀번호"
+          placeholder="새 비밀번호를 입력하세요"
+          value={editForm.newPassword}
+          onChange={handleChange}
+          error={errors.newPassword}
+        />
+        <Input
+          name="passwordConfirm"
+          type="password"
+          label="비밀번호 확인"
+          placeholder="비밀번호를 다시 입력하세요"
+          value={editForm.passwordConfirm}
+          onChange={handleChange}
+          error={errors.passwordConfirm}
+        />
+        <ButtonWrapper>
+          <Button onClick={() => navigate("/mypage")}>돌아가기</Button>
+          <Button onClick={handlePasswordChange}>저장</Button>
+        </ButtonWrapper>
+      </FormContainer>
+    </BackgroundContainer>
   );
 };
 

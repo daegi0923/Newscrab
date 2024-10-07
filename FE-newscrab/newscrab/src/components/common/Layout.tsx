@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
 import styled from 'styled-components';
-import Nav from './Nav';
+import Nav from './Nav.tsx';
 
 const LayoutContainer = styled.div`
   display: flex;

@@ -169,7 +169,7 @@ const VocaTitle = styled.h2`
   left: 34%; /* 가로 중앙 정렬 */
   // transform: translate(-50%, -50%); /* 중앙에 위치하도록 조정 */
   text-align: center;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 1.5);
+  text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.8);
   white-space: nowrap; /* 텍스트가 한 줄로 나오게 설정 */
 
   // /* 배경을 추가하는 부분 */
@@ -196,6 +196,10 @@ const VocaDesc = styled.div`
   left:34%;
   width: 65%;
   margin-top: -1%;
+  span{
+  color: navy;
+  font-weight: 800;
+  }
 `;
 
 
@@ -253,8 +257,9 @@ const VocaDetail: React.FC<VocaDetailProps> = ({ img, industryName, vocaName, vo
 
       <VocaSection1>
       <VocaDesc>
-        <h3>{vocaDesc}</h3>
-        <h4>{sentence}</h4>
+        {/* 뜻 정의 예문 */}
+        <h3><span>정의)</span> {vocaDesc}</h3>
+        <h4><span>예문)</span> {sentence}</h4>
       {/* <p>{newsImage}</p> */}
       </VocaDesc>
       </VocaSection1>

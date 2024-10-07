@@ -11,6 +11,7 @@ export interface Vocalist {
   relatedNewsId1: number;
   relatedNewsId2: number;
   relatedNewsId3: number;
+  industryId : number;
 }
 
 export interface Highlight {
@@ -21,6 +22,12 @@ export interface Highlight {
 }
 
 export interface PostHighlight {
+  startPos: number;
+  endPos: number;
+  color: string; // Y, R, G 등의 값으로 색상 표현
+}
+
+export interface PutHighlight {
   startPos: number;
   endPos: number;
   color: string; // Y, R, G 등의 값으로 색상 표현
@@ -69,6 +76,7 @@ export interface PutScrapRequest {
   newsId: number | null;
   comment: string | null;
   scrapSummary: string | null;
+  highlights: PutHighlight[] | null;
 }
 
 // 스크랩 디테일
