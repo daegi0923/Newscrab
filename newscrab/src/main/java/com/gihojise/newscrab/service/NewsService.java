@@ -150,11 +150,6 @@ public class NewsService {
         // 해당 유저가 해당 뉴스를 스크랩했는지 확인
         Scrap scrap = scrapRepository.findByUserUserIdAndNewsNewsId(userId, newsId).orElse(null);
 
-        // 뉴스의 키워드 정보를 조회합니다.
-        List<String> keywords = news.getNewsKeywords().stream()
-                .map(NewsKeyword::getNewsKeywordName)
-                .toList();
-
         // 관련 뉴스 객체 가져오기
         News relatedNews1 = news.getRelatedNews1();
         News relatedNews2 = news.getRelatedNews2();
