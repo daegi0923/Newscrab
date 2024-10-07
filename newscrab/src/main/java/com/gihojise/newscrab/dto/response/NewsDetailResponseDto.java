@@ -22,6 +22,7 @@ public class NewsDetailResponseDto {
     private String newsUrl;
     private int view;
     private int scrap;
+    private List<String> keywords;
     private Integer scrapId;
     private List<String> newsPhoto;
     private NewsResponseDto relatedNews1;
