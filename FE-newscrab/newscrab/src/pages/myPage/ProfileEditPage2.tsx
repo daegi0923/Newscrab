@@ -27,13 +27,6 @@ const ContentWrapper = styled.div`
   z-index: 2;
 `;
 
-const StepIndicator = styled.div`
-  width: 100%;
-  text-align: left;  
-  font-size: 1.5rem;
-  font-weight: bold;
-`;
-
 const TitleContainer = styled.div`
   width: 100%;
   text-align: center;  
@@ -175,12 +168,6 @@ const BackButton = styled.button`
   }
 `;
 
-interface Industry {
-  img: string;
-  industryId: number;
-  industryName: string;
-}
-
 const SignUpPage2: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -207,15 +194,6 @@ const SignUpPage2: React.FC = () => {
 
   // 선택된 산업군 상태 관리 (최대 3개를 유지)
   const [selectedIndustries, setSelectedIndustries] = useState<Array<{ img: string, industryId: number, industryName: string } | null>>(sortedIndustries);
-
-  // 선택 가능한 산업군 리스트
-  const [availableIndustries, setAvailableIndustries] = useState(
-    words.filter(
-      (industry) =>
-        industry.industryId !== 16 && // 특정 id 제외
-        !selectedIndustriesFromProfile.some((selected: any) => selected.industryId === industry.industryId)  // 이미 선택된 산업군 제외
-    )
-  );
 
   const [selectedIds, setSelectedIds] = useState<Set<number>>(
     new Set(selectedIndustriesFromProfile.map((industry: any) => industry.industryId))  // 이미 선택된 항목의 ID 설정

@@ -11,7 +11,6 @@ import removeIcon from "@assets/common/remove.png";
 import NewsDetailAISummary from "./NewsDetailAISummary";
 import NewsDetailAIQuestion from "./NewsDetailAIQuestion";
 import Swal from "sweetalert2";
-import { Vocalist } from "../../../types/scrapTypes";
 
 const Sidebar = styled.div`
   width: 30%;
@@ -218,8 +217,6 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
   const [opinionText, setOpinionText] = useState("");
   const [wordListText, setWordListText] = useState("");
   const [isOverflowing, setIsOverflowing] = useState(false);
-  // const [vocaList, setVocaList] = useState<{ vocaName: string; vocaDesc: string, industryId: number }[]>([]);
-  const [vocaList, setVocaList] = useState<{ vocaName: string; vocaDesc: string }[]>([]);
 
   // vocaSections 배열에 드롭다운 상태도 포함
   const [vocaSections, setVocaSections] = useState<
