@@ -49,7 +49,7 @@ def recommend_related_news(input_word, final_df):
 
     return related_news_ids
 
-# 키워드가 포함된 가장 중요한 문장을 TF-IDF 기반으로 추출하는 함수
+# 키워드가 포함된 문장을 추출하는 함수
 def extract_important_sentence(news_content_text, keyword):
     # 뉴스 본문을 문장 단위로 분리 (정규 표현식을 사용)
     sentences = re.split(r'(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s', news_content_text)
