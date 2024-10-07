@@ -81,8 +81,8 @@ const Calendar: React.FC = () => {
         {daysInMonth.map((day, index) => (
           <CalendarDay
             key={index}
-            isEmpty={!day}
-            backgroundColor={getActivityLevel(day)}
+            $isEmpty={!day}
+            $backgroundColor={getActivityLevel(day)}
           >
             {day}
           </CalendarDay>
@@ -161,8 +161,8 @@ export const CalendarGrid = styled.div`
 `;
 
 // 개별 날짜
-export const CalendarDay = styled.div<{ isEmpty: boolean; backgroundColor: string }>`
-  background-color: ${({ backgroundColor }) => backgroundColor};
+export const CalendarDay = styled.div<{ $isEmpty: boolean; $backgroundColor: string }>`
+  background-color: ${({ $backgroundColor }) => $backgroundColor};
   // border: 1px solid #ddd;
   // padding: 0px 0;
   text-align: center;
@@ -171,11 +171,11 @@ export const CalendarDay = styled.div<{ isEmpty: boolean; backgroundColor: strin
   justify-content: center;
   align-items: center;
   font-size: 0.8rem;
-  color: ${({ isEmpty }) => (isEmpty ? 'transparent' : '#000')};
+  color: ${({ $isEmpty }) => ($isEmpty ? 'transparent' : '#000')};
   border-radius: 4px;
 
   &:hover {
-    background-color: ${({ isEmpty }) => (isEmpty ? 'transparent' : '#e0f7e9')};
-    cursor: ${({ isEmpty }) => (isEmpty ? 'default' : 'pointer')};
+    background-color: ${({ $isEmpty }) => ($isEmpty ? 'transparent' : '#e0f7e9')};
+    cursor: ${({ $isEmpty }) => ($isEmpty ? 'default' : 'pointer')};
   }
 `;

@@ -11,6 +11,7 @@ export interface Vocalist {
   relatedNewsId1: number;
   relatedNewsId2: number;
   relatedNewsId3: number;
+  industryId : number;
 }
 
 export interface Highlight {

@@ -48,7 +48,7 @@ const NewsList = styled.div`
   }
 `;
 
-const NewsItem = styled.div<{ animate: boolean }>`
+const NewsItem = styled.div<{ $animate: boolean }>`
   cursor: pointer;
   position: relative;
   background-color: white;
@@ -58,8 +58,8 @@ const NewsItem = styled.div<{ animate: boolean }>`
   height: 180px;
   flex-shrink: 0;
   overflow: hidden;
-  ${({ animate }) =>
-    animate &&
+  ${({ $animate }) =>
+    $animate &&
     css`
       animation: ${fadeIn} 0.5s ease-out; /* 애니메이션 적용 */
     `}
@@ -226,7 +226,7 @@ const ViewNews: React.FC = () => {
             <NewsItem
               key={item.newsId}
               onClick={() => handleMove(item.newsId)}
-              animate={!!animatedItems[item.newsId]} // 개별 아이템 애니메이션 관리
+              $animate={!!animatedItems[item.newsId]} // 개별 아이템 애니메이션 관리
             >
               <NewsImage
                 src={item.photoUrlList[0] || defaultImage}
