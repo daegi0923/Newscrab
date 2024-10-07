@@ -211,6 +211,7 @@ const DropdownWrapper = styled.div`
 
 interface VocaUpdate {
   vocaId: number;
+  newsId: number;
   vocaName: string;
   vocaDesc: string;
   industryId: number;
@@ -423,12 +424,18 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
 
         if (existingWord) {
           // 이미 존재하는 단어는 수정 리스트에 추가
-          vocaUpdateList.push({
-            vocaId: existingWord.vocaId, // 기존 단어의 ID로 수정 요청
-            vocaName: section.word,
-            vocaDesc: section.desc,
-            industryId: section.industryId ?? -1,
+          if (
+            existingWord.vocaDesc !== section.desc || 
+            existingWord.industryId !== section.industryId
+          ) {
+            vocaUpdateList.push({
+              vocaId: existingWord.vocaId,
+              newsId: newsId, // newsId 포함
+              vocaName: section.word,
+              vocaDesc: section.desc, // 변경된 설명 반영
+              industryId: section.industryId ?? 0,
           });
+        }
         } else if (section.word.trim() !== "") {
           // 새로운 단어는 추가 리스트에 포함
           vocaAddList.push({
@@ -442,8 +449,17 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
 
       // 1. 이미 있는 단어는 업데이트
       for (const voca of vocaUpdateList) {
+        console.log('수정합시다', voca)
         if (scrapId) {
-          await dispatch(updateVocaThunk({ vocaId: voca.vocaId, updatedData: voca }));
+          await dispatch(updateVocaThunk({
+            vocaId: voca.vocaId,  // URL 파라미터로 사용
+            updatedData: {
+              newsId: voca.newsId,  // vocaId 제외, 필요한 데이터만 보냄
+              vocaName: voca.vocaName,
+              vocaDesc: voca.vocaDesc,
+              industryId: voca.industryId
+            }
+          }));
         }
       }
 
