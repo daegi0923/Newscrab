@@ -45,7 +45,7 @@ def recommend_related_news(input_word, final_df):
     sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)[:3]  # 상위 3개 기사
 
     # 상위 3개 뉴스의 news_id 추출 (numpy 타입을 파이썬 기본 타입으로 변환)
-    related_news_ids = [int(final_df.iloc[idx]['news_id']) for idx, score in sim_scores]
+    related_news_ids = [int(final_df.iloc[idx]['news_id']) for idx, score in sim_scores ]
 
     return related_news_ids
 
@@ -54,28 +54,13 @@ def extract_important_sentence(news_content_text, keyword):
     # 뉴스 본문을 문장 단위로 분리 (정규 표현식을 사용)
     sentences = re.split(r'(?<!\w\.\w.)(?<![A-Z][a-z]\.)(?<=\.|\?)\s', news_content_text)
 
-    # 키워드가 포함된 문장들 추출
-    keyword_sentences = [sentence for sentence in sentences if keyword in sentence]
+    # 키워드가 포함된 문장을 찾으면 바로 반환
+    for sentence in sentences:
+        if keyword in sentence:
+            return sentence
 
     # 키워드가 포함된 문장이 없으면 None 반환
-    if not keyword_sentences:
-        return None
-
-    # 각 문장을 TF-IDF로 벡터화
-    tfidf_vectorizer = TfidfVectorizer()
-    tfidf_matrix = tfidf_vectorizer.fit_transform(keyword_sentences)
-
-    # 입력된 키워드를 벡터화
-    keyword_tfidf = tfidf_vectorizer.transform([keyword])
-
-    # 입력된 키워드와 각 문장 간의 코사인 유사도 계산
-    cosine_sim = cosine_similarity(keyword_tfidf, tfidf_matrix)
-
-    # 가장 높은 유사도를 가진 문장을 선택
-    best_sentence_idx = cosine_sim.argmax()  # 유사도가 가장 높은 문장의 인덱스
-    important_sentence = keyword_sentences[best_sentence_idx]
-
-    return important_sentence
+    return None
 
 # 뉴스 검색 엔드포인트
 @router.get("/search_related_news/")
