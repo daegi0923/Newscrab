@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import styled from "styled-components";
 import { getScrapData, postScrap, putScrap, getScrap } from "@apis/scrap/scrapApi"; // postScrap 함수 import
-import { addVocaThunk, updateVocaThunk } from "@store/voca/vocaSlice";
+import { addVocaThunk, updateVocaThunk, deleteVocaThunk } from "@store/voca/vocaSlice";
 import DropDown from "@components/common/DropDown";
 import { words } from "@components/voca/VocaList";
 import { useDispatch, useSelector } from "react-redux";
@@ -259,11 +259,45 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
       { word: "", desc: "", industryId: null, isDropdownOpen: false },
     ]);
   };
-  // Voca 섹션 삭제 함수
-  const handleRemoveSection = (index: number) => {
+
+  const handleRemoveSection = async (index: number) => {
     const newSections = vocaSections.filter((_, i) => i !== index);
-    setVocaSections(newSections);
+      setVocaSections(newSections);
+
+    const section = vocaSections[index];
+  
+    if (section.word && scrapId) {
+      try {
+        // Scrap 데이터를 가져와서 existingWords로 설정
+        const existingWords = await getScrap(scrapId);
+  
+        const existingVoca = existingWords.vocalist.find(
+          (voca: Voca) => voca.vocaName === section.word
+        );
+  
+        if (existingVoca && existingVoca.vocaId) {
+          await dispatch(deleteVocaThunk(existingVoca.vocaId));
+          Swal.fire({
+            icon: "success",
+            title: "삭제 완료",
+            text: "단어가 성공적으로 삭제되었습니다.",
+          });
+        }
+      } catch (error) {
+        Swal.fire({
+          icon: "error",
+          title: "삭제 실패",
+          text: "단어 삭제 중 오류가 발생했습니다.",
+        });
+      }
+    }
   };
+
+  // Voca 섹션 삭제 함수
+  // const handleRemoveSection = (index: number) => {
+  //   const newSections = vocaSections.filter((_, i) => i !== index);
+  //   setVocaSections(newSections);
+  // };
 
   // Redux에서 하이라이트(highlight) 정보 가져오기
   const highlights = useSelector(
@@ -653,7 +687,7 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
                   placeholder="설명을 입력하세요."
                 />
               </VocaInputWrapper>
-              {index > 0 && (
+              {index >= 0 && (
                 <RemoveButton
                   src={removeIcon}
                   onClick={() => handleRemoveSection(index)}
