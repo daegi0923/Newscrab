@@ -53,7 +53,7 @@ public class News extends BaseTimeEntity {
     private List<NewsPhoto> newsPhotos;
 
     @OneToMany(mappedBy = "news", cascade = CascadeType.ALL)
-    private List<NewsKeyword> newsKeywords;
+    private Set<NewsKeyword> newsKeywords;
 
     // Voca와의 양방향 관계 추가
     @OneToMany(mappedBy = "news", cascade = CascadeType.ALL, orphanRemoval = true)
