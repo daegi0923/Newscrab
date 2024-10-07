@@ -1,6 +1,14 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { fetchNewsSummary } from "@apis/chatgpt/chatgpt";
+import gifImage from "@assets/galaxy.gif";
+
+// 버튼과 GIF를 묶는 div 스타일 정의 (가로로 정렬)
+const AIButtonContainer = styled.div`
+  display: flex;
+  align-items: center;
+
+`;
 
 // AI 요약 버튼 스타일 정의
 const AIButtonStyled = styled.button`
@@ -23,6 +31,14 @@ const AIButtonStyled = styled.button`
   &:active {
     background-color: #d9a654;
   }
+`;
+
+// GIF 이미지 스타일 정의
+const GIFImage = styled.img`
+  width: 30px;
+  height: 30px;
+  margin-top: 10px;
+  margin-left: 8px; /* 버튼과의 간격 */
 `;
 
 // AI 요약 상자 스타일 정의
@@ -132,9 +148,12 @@ const NewsDetailAISummary: React.FC<NewsDetailAISummaryProps> = ({ newsId, onTra
 
   return (
     <div>
-      <AIButtonStyled onClick={handleAIButtonClick}>
-        AI 요약
-      </AIButtonStyled>
+      <AIButtonContainer>
+        <AIButtonStyled onClick={handleAIButtonClick}>
+          AI 요약
+        </AIButtonStyled>
+        <GIFImage src={gifImage} alt="loading" /> {/* GIF 추가 */}
+      </AIButtonContainer>
       {showSummary && (
         <AISummaryBox>
           <CloseButtonStyled onClick={handleCloseSummary}>X</CloseButtonStyled> 
