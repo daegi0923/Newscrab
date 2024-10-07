@@ -7,51 +7,34 @@ import jsPDF from 'jspdf';
 import styled from 'styled-components';
 
 type handleChangePage = {
-  funcChangePage: () => void;
-};
+  funcChangePage : () => void;
+}
+
 
 const ScrapPreview: React.FC<handleChangePage> = ({ funcChangePage }) => {
   const contentRefs = useRef<(HTMLDivElement | null)[]>([]);
   const { scrapList, isSelectedPdf } = useSelector((state: RootState) => state.scrap);
-
+  
   const handleDownloadPdf = async () => {
-    const pdf = new jsPDF({
-      orientation: 'portrait',
-      unit: 'pt',
-      format: 'a4',
-    });
-
+    const pdf = new jsPDF();
+    
     for (let i = 0; i < scrapList.length; i++) {
       const content = contentRefs.current[i];
       if (content) {
         const canvas = await html2canvas(content, {
-          scale: 1.5, // 적절한 스케일 값 설정
-          width: content.offsetWidth,
-          height: content.offsetHeight,
-          useCORS: true,
+          scale: 2,  // 고정된 스케일 값 설정
         });
-
         const imgData = canvas.toDataURL('image/png');
+
+        // 첫 페이지가 아니면 새로운 페이지 추가
         if (i > 0) {
           pdf.addPage();
         }
-        const pageWidth = pdf.internal.pageSize.getWidth();
-        const pageHeight = pdf.internal.pageSize.getHeight();
-        const imgWidth = pageWidth;
+
+        // PDF 페이지에 이미지 크기를 조정하여 잘리지 않도록 설정
+        const imgWidth = pdf.internal.pageSize.getWidth();
         const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-        let heightLeft = imgHeight;
-
-        let position = 0; // 페이지 상단부터 시작
-        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
-
-        while (heightLeft >= 0) {
-          position = heightLeft - imgHeight; // 다음 페이지의 이미지 시작 위치 조정
-          pdf.addPage();
-          pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-          heightLeft -= pageHeight;
-        }
+        pdf.addImage(imgData, 'PNG', 0, 0, imgWidth, imgHeight);
       }
     }
 
@@ -64,7 +47,6 @@ const ScrapPreview: React.FC<handleChangePage> = ({ funcChangePage }) => {
         {scrapList.map((scrap, idx) => {
           return isSelectedPdf[scrap.scrapId] ? (
             <div
-              key={scrap.scrapId} // 고유한 key 값 추가
               ref={(el) => {
                 contentRefs.current[idx] = el;
               }}
@@ -81,14 +63,13 @@ const ScrapPreview: React.FC<handleChangePage> = ({ funcChangePage }) => {
     </>
   );
 };
-
 const styles = {
   body: {
     justifyContent: 'center',
     alignItems: 'center',
-    height: '64vh',
-    overflowY: 'scroll', // overflowY 속성을 'scroll'로 명시적으로 지정
-  } as const,
+    width:'1000px',
+    paddingTop:'100px',
+  },
 };
 
 const Button = styled.button`
@@ -110,9 +91,7 @@ const Button = styled.button`
 const ModalFooter = styled.footer`
   display: flex;
   justify-content: space-between;
-  bottom: 0;
+  padding-top: 16px;
   border-top: 1px solid #ddd;
-  padding: 15px;
 `;
-
 export default ScrapPreview;
