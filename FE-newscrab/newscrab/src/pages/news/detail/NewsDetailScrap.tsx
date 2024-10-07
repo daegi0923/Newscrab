@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import styled from "styled-components";
-import { getScrapData, postScrap, putScrap } from "@apis/scrap/scrapApi"; // postScrap 함수 import
+import { getScrapData, postScrap, putScrap, getScrap } from "@apis/scrap/scrapApi"; // postScrap 함수 import
 import { addVocaThunk } from "@store/voca/vocaSlice";
 import DropDown from "@components/common/DropDown";
 import { words } from "@components/voca/VocaList";
@@ -11,6 +11,7 @@ import removeIcon from "@assets/common/remove.png";
 import NewsDetailAISummary from "./NewsDetailAISummary";
 import NewsDetailAIQuestion from "./NewsDetailAIQuestion";
 import Swal from "sweetalert2";
+import { Vocalist } from "../../../types/scrapTypes";
 
 const Sidebar = styled.div`
   width: 30%;
@@ -217,6 +218,8 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
   const [opinionText, setOpinionText] = useState("");
   const [wordListText, setWordListText] = useState("");
   const [isOverflowing, setIsOverflowing] = useState(false);
+  // const [vocaList, setVocaList] = useState<{ vocaName: string; vocaDesc: string, industryId: number }[]>([]);
+  const [vocaList, setVocaList] = useState<{ vocaName: string; vocaDesc: string }[]>([]);
 
   // vocaSections 배열에 드롭다운 상태도 포함
   const [vocaSections, setVocaSections] = useState<
@@ -272,32 +275,104 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
     const fetchScrapData = async () => {
       try {
         const data = await getScrapData(); // 필요한 경우, page와 size를 인자로 전달
-        console.log("Fetched data:", data);
+        // console.log("Fetched data!:", data);
 
         const selectedScrap = data.data.data.find(
           (item) => item.newsId === newsId
         );
 
         if (selectedScrap) {
-          console.log("Selected Scrap:", selectedScrap); // selectedScrap 확인
-          console.log("News ID:", selectedScrap.newsId); // 찾은 뉴스 ID 확인
-          console.log("Scrap ID:", selectedScrap.scrapId); // 찾은 scrapId 확인
+          // console.log("Selected Scrap:", selectedScrap); // selectedScrap 확인
+          // console.log("News ID:", selectedScrap.newsId); // 찾은 뉴스 ID 확인
+          // console.log("Scrap ID:", selectedScrap.scrapId); // 찾은 scrapId 확인
 
           setScrapId(selectedScrap.scrapId || null); // scrapId 설정
           setSummaryText(selectedScrap.scrapSummary || "");
           setOpinionText(selectedScrap.comment || "");
           setWordListText(selectedScrap.vocalist?.join(", ") || ""); // vocalist 배열을 문자열로 변환
         } else {
-          console.log("No scrap data found for this newsId:", newsId);
+          // console.log("No scrap data found for this newsId:", newsId);
         }
       } catch (error) {
-        console.error("Error fetching scrap data:", error);
+        // console.error("Error fetching scrap data:", error);
       }
     };
 
     fetchScrapData();
   }, [newsId]);
 
+  // useEffect(() => {
+  //   const fetchGetScrapData = async () => {
+  //     if (scrapId !== null) {
+  //     try {
+  //       const data = await getScrap(scrapId);
+  //       console.log("Fetched data!!!:", data);
+  
+  //       if (data) {
+  //         console.log("Selected Scrap11:", data); // 스크랩 데이터 확인
+  //         console.log("Scrap ID11:", data.scrapId); // 찾은 scrapId 확인
+  //         console.log('확인췤', data.vocalist[0])
+  //         // console.log("보카보카:", data.vocalist.map(vocaItem => vocaItem.vocaName).join(", "));
+  //         if (data.vocalist && Array.isArray(data.vocalist) && data.vocalist.length > 0) {
+  //           const vocaListData = data.vocalist.map((vocaItem: Vocalist) => ({
+  //             vocaName: vocaItem.vocaName,
+  //             vocaDesc: vocaItem.vocaDesc,
+  //           }));
+  //           setVocaList(vocaListData);
+  //           console.log("보카보카:", data.vocalist.map(vocaItem => vocaItem.vocaName).join(", "));
+  //         } else {
+  //           console.log("보카보카가 없습니다.");
+  //         }
+
+  //         setScrapId(data.scrapId || null); // scrapId 설정
+  //         setSummaryText(data.scrapSummary || "");
+  //         setOpinionText(data.comment || "");
+  
+  //         console.log('단어 데이터 오나요?', data.vocalist);
+  
+  //       } else {
+  //         console.log("No scrap data found for this scrapId:", scrapId);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching scrap data:", error);
+  //     }
+  //   }
+  // };
+  
+  //   if (scrapId !== null) {
+  //     fetchGetScrapData(); // scrapId가 null이 아닐 때만 호출
+  //   }
+  // }, [scrapId, newsId]); // scrapId와 newsId를 의존성 배열에 추가
+  
+  useEffect(() => {
+    const fetchGetScrapData = async () => {
+      if (scrapId !== null) {
+        try {
+          const data = await getScrap(scrapId);
+          console.log("Fetched data!!!:", data);
+  
+          if (data && data.vocalist) {
+            console.log("Selected Scrap:", data); // 스크랩 데이터 확인
+  
+            // vocalist 배열을 사용해 기본 단어 섹션 값을 설정
+            const VocaList = data.vocalist.map((vocaItem) => ({
+              industryId: vocaItem.industryId || null, // industryId를 사용 (필요 시)
+              word: vocaItem.vocaName || "", // 기본 단어 값 설정
+              desc: vocaItem.vocaDesc || "", // 기본 설명 값 설정
+              isDropdownOpen: false, // 드롭다운 기본값
+            }));
+  
+            setVocaSections(VocaList); // vocaSections 상태를 업데이트하여 기본값 설정
+          }
+        } catch (error) {
+          console.error("Error fetching scrap data:", error);
+        }
+      }
+    };
+  
+    fetchGetScrapData();
+  }, [scrapId]); // scrapId가 변경될 때마다 호출
+    
   useEffect(() => {
     adjustHeight(summaryTextareaRef.current);
     adjustHeight(opinionTextareaRef.current);
@@ -418,7 +493,7 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
       Swal.fire({
         icon: "error",
         title: "저장 실패",
-        text: "저장 중 오류가 발생했습니다. 다시 시도해주세요.",
+        html: '저장 중 오류가 발생했습니다.<br>뉴스 안의 단어를 작성해주세요.', 
       });
     }
   };
@@ -498,7 +573,7 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
 
       {activeTab === "wordlist" && (
         <>
-          {vocaSections.map((section, index) => (
+          {/* {vocaSections.map((section, index) => (
             <VocaSection key={index}>
               <IndustryDropdownWrapper>
                 <SelectedIndustryWrapper>
@@ -550,7 +625,61 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
                   onClick={() => handleRemoveSection(index)}
                 />
               )}
+            </VocaSection> */}
+            {vocaSections.map((section, index) => (
+            <VocaSection key={index}>
+              <IndustryDropdownWrapper>
+                <SelectedIndustryWrapper>
+                  <SelectedIndustry onClick={() => toggleDropdown(index)}>
+                    {section.industryId
+                      ? words.find(
+                          (item) => item.industryId === section.industryId
+                        )?.industryName || "산업"
+                      : "산업"}
+                  </SelectedIndustry>
+
+                  {section.isDropdownOpen && (
+                    <DropdownWrapper>
+                      <DropDown
+                        dropdownIndustries={words}
+                        handleIndustrySelect={(id) =>
+                          handleIndustrySelectVoca(index, id)
+                        } // 선택된 값 전달
+                      />
+                    </DropdownWrapper>
+                  )}
+                </SelectedIndustryWrapper>
+              </IndustryDropdownWrapper>
+
+              <VocaInputWrapper>
+                <StyledInput
+                  value={section.word} // vocaName 값을 불러와서 입력 필드에 적용
+                  onChange={(e) => {
+                    const newSections = [...vocaSections];
+                    newSections[index].word = e.target.value;
+                    setVocaSections(newSections);
+                  }}
+                  placeholder="💡 단어를 입력하세요."
+                />
+                <Divider />
+                <StyledInput
+                  value={section.desc} // vocaDesc 값을 불러와서 입력 필드에 적용
+                  onChange={(e) => {
+                    const newSections = [...vocaSections];
+                    newSections[index].desc = e.target.value;
+                    setVocaSections(newSections);
+                  }}
+                  placeholder="설명을 입력하세요."
+                />
+              </VocaInputWrapper>
+              {index > 0 && (
+                <RemoveButton
+                  src={removeIcon}
+                  onClick={() => handleRemoveSection(index)}
+                />
+              )}
             </VocaSection>
+
           ))}
           <AddButton src={addIcon} onClick={handleAddSection} />
         </>

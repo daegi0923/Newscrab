@@ -134,9 +134,18 @@ const Nav: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null); // 에러 메시지 상태
   const userInfo = useSelector((state: RootState) => state.mypage.userInfo);
 
+  // 프로필 이미지 선택 (선택된 값이 없을 경우 기본값을 사용)
+  const selectedImage =
+    userInfo?.data?.profileImg &&
+    {
+      A: profile1,
+      B: profile2,
+      C: profile3,
+    }[userInfo.data.profileImg] || profile1;
+
   // 컴포넌트가 마운트되었을 때 userInfo가 비어있다면 API 호출
   useEffect(() => {
-    if (userInfo && !userInfo.data.name) {
+    if (userInfo && !userInfo.data?.name) {
       dispatch(fetchUserProfileThunk())
         .unwrap()
         .then((res: any) => {
@@ -145,10 +154,6 @@ const Nav: React.FC = () => {
         .catch((error: any) => {
           console.error("프로필 불러오기 오류:", error);
         });
-    }
-    if (userInfo && "name" in userInfo) {
-      // userInfo가 객체임을 확인
-      console.log(userInfo.name);
     }
   }, [userInfo, dispatch]); // userInfo가 변경될 때만 호출
 
@@ -163,14 +168,8 @@ const Nav: React.FC = () => {
 
   const handleModalClose = () => {
     setErrorMessage(null);
-    navigate("/login");
+    navigate('/login1');
   };
-  const selectedImage =
-    {
-      A: profile1,
-      B: profile2,
-      C: profile3,
-    }[userInfo.data.profileImg] || profile1;
 
   return (
     <>
@@ -184,7 +183,7 @@ const Nav: React.FC = () => {
       )}
       <SidebarContainer>
         {/* 좌측 상단에 프로필 이미지 */}
-        <ImageTop src={logo} alt="Profile 1" onClick={() => navigate("/")} />
+        <ImageTop src={logo} alt="Logo" onClick={() => navigate('/')} />
 
         <NavList>
           <NavItem>
@@ -215,8 +214,12 @@ const Nav: React.FC = () => {
 
         {/* 좌측 하단에 로그아웃 버튼 */}
         <LogoutItem>
-          <NavLink onClick={() => navigate("/mypage")}>
-            <UserImage src={selectedImage} alt="User profile" />
+          <NavLink onClick={() => navigate('/mypage')}>
+            {userInfo?.data ? (
+              <UserImage src={selectedImage} alt="User profile" />
+            ) : (
+              <UserImage src={profile1} alt="Default profile" />
+            )}
             <NavText>마이페이지</NavText>
           </NavLink>
           <NavLink onClick={handleLogout}>

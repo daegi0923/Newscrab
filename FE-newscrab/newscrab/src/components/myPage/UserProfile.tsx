@@ -283,7 +283,7 @@ const EditButton = styled.button`
   }
 `;
 
-const DropdownContainer = styled.div<{ isOpen: boolean }>`
+const DropdownContainer = styled.div<{ $isOpen: boolean }>`
   position: absolute;
   top: 43%;
   left: 36%;
@@ -292,7 +292,7 @@ const DropdownContainer = styled.div<{ isOpen: boolean }>`
   border-radius: 8px;
   box-shadow: 0 3px 5px rgba(0, 0, 0, 0.4);
   z-index: 100;
-  display: ${({ isOpen }) => (isOpen ? 'block' : 'none')};
+  display: ${({ $isOpen }) => ($isOpen ? 'block' : 'none')};
   margin-top: 10px;
   padding: 8px 0;
 `;
@@ -317,8 +317,8 @@ const DropdownItem = styled.div`
   }
 `;
 
-const IndustryContainer = styled.div`
-  display: flex;
+const IndustryContainer = styled.div<{ $isEmpty: boolean }>`
+  display: ${({ $isEmpty }) => ($isEmpty ? 'none' : 'flex')};
   justify-content: center;
   align-items: center;
   margin-top: 20px;
@@ -347,6 +347,7 @@ const IndustryName = styled.p`
 const IndustryListContainer: React.FC<{
   userIndustries: { industryId: number; industryName: string; preRank: number }[];
 }> = ({ userIndustries }) => {
+  const isEmpty = userIndustries.length === 0;
   const findIndustryImage = (industryId: number) => {
     const found = words.find((word) => word.industryId === industryId);
     return found ? found.img : '';
@@ -355,7 +356,7 @@ const IndustryListContainer: React.FC<{
   const sortedIndustries = [...userIndustries].sort((a, b) => a.preRank - b.preRank);
 
   return (
-    <IndustryContainer>
+    <IndustryContainer $isEmpty={isEmpty}>
       {sortedIndustries.map((industry) => (
         <IndustryItem key={industry.industryId}>
           <IndustryImage src={findIndustryImage(industry.industryId)} alt={industry.industryName} />
@@ -420,7 +421,7 @@ const UserProfile: React.FC = () => {
       <UserInfoContent>
         <UserName>{userInfo.data.name || '이름 없음'}</UserName>
         <EditButton onClick={toggleDropdown}>수정하기</EditButton>
-        <DropdownContainer isOpen={isDropdownOpen} ref={dropdownRef}>
+        <DropdownContainer $isOpen={isDropdownOpen} ref={dropdownRef}>
           <DropdownItem onClick={handleEdit1}>회원정보 수정</DropdownItem>
           <DropdownItem onClick={handleEdit2}>산업군 수정</DropdownItem>
           <DropdownItem onClick={handlePassword}>비밀번호 수정</DropdownItem>

@@ -50,14 +50,14 @@ const CardContainer = styled.div`
   align-items: flex-start;
 `;
 
-const Card = styled.div<{ isHidden: boolean }>`
+const Card = styled.div<{ $isHidden: boolean }>`
   width: 120px;
   background-color: #f9f9f9;
   border-radius: 10px;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
   cursor: grab;
   position: relative;
-  visibility: ${({ isHidden }) => (isHidden ? 'hidden' : 'visible')};
+  visibility: ${({ $isHidden }) => ($isHidden ? 'hidden' : 'visible')};
   img {
     width: 100%;
     height: 100%;
@@ -162,7 +162,6 @@ const Overlay = styled.div`
 const SignUpPage2: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  // const { signupForm } = location.state; // 앞에서 전달 받은 form
   const signupForm = location.state?.signupForm || {
     loginId: "",
     password: "",
@@ -171,42 +170,61 @@ const SignUpPage2: React.FC = () => {
     birthday: "",
     gender: ""
   };
+
   const [selectedIndustries, setSelectedIndustries] = useState<Array<{ img: string, industryId: number, industryName: string } | null>>([null, null, null]);
   const [availableIndustries, setAvailableIndustries] = useState(words.filter((industry) => industry.industryId !== 16));
 
+  // 선택된 카드들의 ID를 추적하여 투명하게 처리
+  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+
+  // 드래그 시작 시 카드 정보 저장
   const handleDragStart = (event: React.DragEvent<HTMLDivElement>, industry: { img: string, industryId: number, industryName: string }) => {
     event.dataTransfer.setData('industry', JSON.stringify(industry));
-    const dragImg = new Image();
-    dragImg.src = industry.img;
-    dragImg.onload = () => {
-      event.dataTransfer.setDragImage(dragImg, dragImg.width / 2, dragImg.height / 2);
-    };
   };
 
+  // 카드 드롭 시 해당 자리에 카드 배치 및 투명하게 처리
   const handleDrop = (event: React.DragEvent<HTMLDivElement>, index: number) => {
+    event.preventDefault();
     const industry = JSON.parse(event.dataTransfer.getData('industry'));
     const newSelectedIndustries = [...selectedIndustries];
+    const existingIndustry = newSelectedIndustries[index];  // 기존에 있던 카드
+
+    // 기존 카드가 있으면, 선택 취소로 간주하고 투명도 복구
+    if (existingIndustry) {
+      setSelectedIds((prev) => {
+        const updated = new Set(prev);
+        updated.delete(existingIndustry.industryId);  // 기존 카드의 투명도 복구
+        return updated;
+      });
+    }
+
+    // 새로운 카드 드롭 시 배치
     newSelectedIndustries[index] = industry;
     setSelectedIndustries(newSelectedIndustries);
-
-    setAvailableIndustries(availableIndustries.filter((item) => item.industryId !== industry.industryId));
+    setSelectedIds((prev) => new Set(prev).add(industry.industryId));  // 선택된 카드 투명하게 만들기
   };
 
+  // 카드 선택 취소 (클릭으로 우선순위에서 제거)
   const handleRemoveIndustry = (index: number) => {
     const newSelectedIndustries = [...selectedIndustries];
     const removedIndustry = newSelectedIndustries[index];
+
+    if (removedIndustry) {
+      // 카드 선택 취소 시 투명도 복구
+      setSelectedIds((prev) => {
+        const updated = new Set(prev);
+        updated.delete(removedIndustry.industryId);  // 선택 취소로 투명도 복구
+        return updated;
+      });
+    }
+
     newSelectedIndustries[index] = null;
     setSelectedIndustries(newSelectedIndustries);
-
-    const removedIndustryObj = words.find((item) => item.img === removedIndustry?.img);
-    if (removedIndustryObj) {
-      setAvailableIndustries([...availableIndustries, removedIndustryObj]);
-    }
   };
 
   const handleSave = async () => {
     const filteredIndustries = selectedIndustries.filter(Boolean) as { img: string, industryId: number, industryName: string }[];
-    
+
     if (filteredIndustries.length < 1) {
       Swal.fire({
         icon: 'warning',
@@ -224,7 +242,7 @@ const SignUpPage2: React.FC = () => {
         preRank: index + 1,
       })),
     };
-    
+
     try {
       const response = await axios.post('https://newscrab.duckdns.org/api/v1/user/join', {
         loginId: updatedSignupForm.loginId,
@@ -260,19 +278,23 @@ const SignUpPage2: React.FC = () => {
 
   return (
     <BackgroundContainer>
-      <Overlay/>
+      <Overlay />
       <ContentWrapper>
         <StepIndicator>2단계 2/2</StepIndicator>
         <SignUpContainer>
           <TitleContainer>✅ 좋아하는 산업군을 1개 이상 선택하세요</TitleContainer>
           <CardContainer>
             <IndustryGrid>
+              {/* 선택 가능한 산업군 리스트 */}
               {availableIndustries.map((industry) => (
                 <Card
                   key={industry.industryId}
                   draggable
                   onDragStart={(event) => handleDragStart(event, industry)}
-                  isHidden={selectedIndustries.some(selected => selected?.img === industry.img)}
+                  $isHidden={selectedIds.has(industry.industryId)}  // 선택된 카드가 숨겨지는지 여부 결정
+                  style={{
+                    opacity: selectedIds.has(industry.industryId) ? 0.2 : 1,  // 선택된 카드는 투명하게 처리
+                  }}
                 >
                   <h4>{industry.industryName}</h4>
                   <img src={industry.img} alt={industry.industryName} />
@@ -281,18 +303,31 @@ const SignUpPage2: React.FC = () => {
             </IndustryGrid>
 
             <DropContainer>
+              {/* 선택된 산업군 (최대 3개) */}
               {selectedIndustries.map((industry, index) => (
-                <DropArea key={index}
-                  onDrop={(event) => handleDrop(event, index)} 
+                <DropArea
+                  key={index}
+                  onDrop={(event) => handleDrop(event, index)}
                   onDragOver={(event) => event.preventDefault()}
-                  onClick={() => handleRemoveIndustry(index)}>
+                  onClick={() => handleRemoveIndustry(index)}
+                  style={{
+                    backgroundColor: '#fff',  // 배경색을 흰색으로 설정
+                    border: '2px dashed #ccc',  // 회색 테두리
+                    borderRadius: '10px',
+                    height: '160px',
+                    width: '120px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',  // 텍스트를 정중앙에 위치
+                  }}
+                >
                   {industry ? (
                     <>
                       <img src={industry.img} alt={`순위 ${index + 1}`} />
                       <h4>{industry.industryName}</h4>
                     </>
                   ) : (
-                    <p>{index + 1}순위</p>
+                    <p>{index + 1}순위</p>  // 텍스트를 정중앙에 배치
                   )}
                 </DropArea>
               ))}
