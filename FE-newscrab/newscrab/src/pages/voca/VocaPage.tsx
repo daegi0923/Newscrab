@@ -139,12 +139,21 @@ const VocaPage: React.FC = () => {
     return sortedAndFilteredWords.slice(startIndex, endIndex);
   };
 
+  // const handleFilterChange = (newFilter: string) => {
+  //   setFilter(newFilter);
+  //   if (newFilter === 'filterVoca') {
+  //     setDropdownOpen(!isDropdownOpen);
+  //   } else {
+  //     setDropdownOpen(false);
+  //   }
+  // };
+
   const handleFilterChange = (newFilter: string) => {
-    setFilter(newFilter);
-    if (newFilter === 'filterVoca') {
-      setDropdownOpen(!isDropdownOpen);
+    if (filter === newFilter) {
+      setDropdownOpen(!isDropdownOpen);  // Toggle the dropdown if the same filter is clicked
     } else {
-      setDropdownOpen(false);
+      setFilter(newFilter);
+      setDropdownOpen(newFilter === 'filterVoca');  // Open the dropdown only for 'filterVoca'
     }
   };
 
@@ -164,10 +173,11 @@ const VocaPage: React.FC = () => {
       setCurrentPage(currentPage - 1);
     }
   };
-
+  
   const handleCardClick = (word: VocaWithImages) => {
     navigate(`/voca/${word.vocaId}`, { state: { word } });
   };
+  
 
   // 로딩 중인 경우 로딩 메시지 표시
   if (loading) {
@@ -182,10 +192,14 @@ const VocaPage: React.FC = () => {
         <SearchBar searchText={searchText} onSearchChange={setSearchText} />
         <AdContainer>
           <VocaContainer>
-            <TabWrapper><Tab options={tabOptions} onFilterChange={handleFilterChange} activeFilter={filter} /></TabWrapper>
-            <div style={{ position: 'absolute', top: '295px', left: '11%', zIndex: 10 }}>
-              <DropDown words={words} handleIndustrySelect={handleIndustrySelect} />
-            </div>
+            {/* <TabWrapper> */}
+              <Tab options={tabOptions} onFilterChange={handleFilterChange} activeFilter={filter} />
+              {/* </TabWrapper> */}
+              {isDropdownOpen && (
+              <div style={{ position: 'absolute', top: '295px', left: '11%', zIndex: 10 }} className="dropdown">
+                <DropDown words={words} handleIndustrySelect={handleIndustrySelect} />
+              </div>
+            )}
             <CardContainer>
               {getCurrentPageData().map((word) => (
                 <Card 
