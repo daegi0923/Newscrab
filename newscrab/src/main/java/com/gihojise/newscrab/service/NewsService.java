@@ -184,7 +184,6 @@ public class NewsService {
                 .newsUrl(news.getNewsUrl())
                 .view(news.getView())
                 .scrap(news.getScrapCnt())
-                .keywords(keywords)
                 .scrapId(scrap == null ? null : scrap.getScrapId())
                 .newsPhoto(photoUrls) // 사진 URL 리스트 추가
                 .relatedNews1(relatedNewsDto1) // 관련 뉴스 1 객체
