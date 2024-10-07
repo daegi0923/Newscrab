@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from "react";
 import Header from "@common/Header";
-import SearchBar from "./SearchBar"; // SearchBar 컴포넌트 불러오기
-import ArticleList from "./ArticleList"; // 수정된 ArticleList 컴포넌트
+import SearchBar from "./SearchBar";
+import ArticleList from "./ArticleList"; // ArticleList 컴포넌트는 articles 배열을 props로 받음
 import { dummyData, Article } from "./dummyData";
 import styled from "styled-components";
 
-// 중앙 정렬을 위한 Styled Component
 const CenteredSearchBar = styled.div`
   display: flex;
-  justify-content: center; /* 가로 중앙 정렬 */
-  margin: 20px 0; /* 위아래 간격 */
+  justify-content: center;
+  margin: 20px 0;
 `;
 
 const ArticlePage: React.FC = () => {
@@ -17,8 +16,8 @@ const ArticlePage: React.FC = () => {
   const [filteredArticles, setFilteredArticles] = useState<Article[]>([]);
 
   useEffect(() => {
-    setArticles(dummyData); // 처음에 더미 데이터를 불러옴
-    setFilteredArticles(dummyData); // 필터링된 데이터를 전체 데이터로 설정
+    setArticles(dummyData); // 초기 데이터 설정
+    setFilteredArticles(dummyData); // 필터링된 데이터를 초기에는 전체 데이터로 설정
   }, []);
 
   const handleSearch = (searchType: string, searchTerm: string) => {
@@ -30,7 +29,8 @@ const ArticlePage: React.FC = () => {
           return (
             article.newsTitle.includes(searchTerm) ||
             article.newsId.includes(searchTerm) ||
-            article.name.includes(searchTerm)
+            article.name.includes(searchTerm) ||
+            article.industryId.includes(searchTerm)
           );
         } else if (searchType === "뉴스제목") {
           return article.newsTitle.includes(searchTerm);
@@ -38,6 +38,8 @@ const ArticlePage: React.FC = () => {
           return article.newsId.includes(searchTerm);
         } else if (searchType === "작성자") {
           return article.name.includes(searchTerm);
+        } else if (searchType === "산업군") {
+          return article.industryId.includes(searchTerm);
         }
         return false;
       });
@@ -49,9 +51,10 @@ const ArticlePage: React.FC = () => {
     <>
       <Header />
       <CenteredSearchBar>
-        <SearchBar onSearch={handleSearch} /> {/* 검색바가 가운데로 정렬 */}
+        <SearchBar onSearch={handleSearch} />
       </CenteredSearchBar>
-      <ArticleList articles={filteredArticles} /> {/* 필터링된 데이터 전달 */}
+      <ArticleList articles={filteredArticles} />{" "}
+      {/* 필터링된 기사 목록 전달 */}
     </>
   );
 };

@@ -86,6 +86,10 @@ const NewsTitle = styled.h2`
   font-size: 18px;
   margin-top: 8px;
   margin-bottom: 15px;
+  cursor: pointer;
+  &:hover {
+    color: #007bff;
+  }
 `;
 
 const IndustryRcmdWrapper = styled.div`
@@ -238,7 +242,7 @@ const RcmdSection: React.FC = () => {
             </ImageContainer>
             <FlexContainer>
               <TextContainer>
-                <NewsTitle>
+                <NewsTitle onClick={() => handleNewsClick(news.newsId)}>
                   <IndustryRcmdWrapper>
                     <IndustryId>
                       {industry.find(

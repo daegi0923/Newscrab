@@ -74,6 +74,10 @@ const NewsTitle = styled.h2`
   font-weight: bold;
   margin-top: 8px;
   margin-bottom: 15px;
+  cursor: pointer;
+  &:hover {
+    color: #007bff;
+  }
 `;
 
 const InfoRow = styled.div`
@@ -173,7 +177,9 @@ const RecentSection: React.FC = () => {
                 </InfoRow>
               </HorizontalWrapper>
 
-              <NewsTitle>{newsItem.newsTitle}</NewsTitle>
+              <NewsTitle onClick={() => handleNewsClick(newsItem.newsId)}>
+                {newsItem.newsTitle}
+              </NewsTitle>
 
               {/* NewsButton과 StatsRow를 수평 정렬하는 래퍼로 감쌈 */}
               <ButtonAndStatsWrapper>
