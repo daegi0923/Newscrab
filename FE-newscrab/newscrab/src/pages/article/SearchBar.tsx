@@ -28,6 +28,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch }) => {
         <option value="전체">전체</option>
         <option value="뉴스제목">뉴스제목</option>
         <option value="뉴스번호">뉴스번호</option>
+        <option value="산업군">산업군</option>
         <option value="작성자">작성자</option>
       </select>
       <input
