@@ -86,10 +86,10 @@ const Confetti = styled.div<{
   --y: ${(props) => props.y}px;
 `;
 
-const LikeCount = styled.span`
-  font-size: 18px;
-  margin-left: 10px;
-`;
+// const LikeCount = styled.span`
+//   font-size: 18px;
+//   margin-left: 10px;
+// `;
 
 interface ArticleScrapLikeProps {
   onLike: () => void;
@@ -101,7 +101,9 @@ const ArticleScrapLike: React.FC<ArticleScrapLikeProps> = ({ onLike }) => {
     { x: number; y: number; color: string; shape: string }[]
   >([]);
 
-  const handleLikeClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+  // const handleLikeClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+  //   setLiked(!liked);
+  const handleLikeClick = () => {
     setLiked(!liked);
 
     // 콘페티 효과 추가
