@@ -29,7 +29,7 @@ const isTokenExpired = (token: string, bufferTime = 120) => {
 
 // Axios 인스턴스 생성
 const API = axios.create({
-  baseURL: "http://spring-service/api/v1/",
+  baseURL: "https://newscrab.duckdns.org/api/v1/",
   withCredentials: true,
 });
 
