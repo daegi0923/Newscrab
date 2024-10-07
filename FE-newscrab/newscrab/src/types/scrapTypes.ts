@@ -27,6 +27,12 @@ export interface PostHighlight {
   color: string; // Y, R, G 등의 값으로 색상 표현
 }
 
+export interface PutHighlight {
+  startPos: number;
+  endPos: number;
+  color: string; // Y, R, G 등의 값으로 색상 표현
+}
+
 
 
 export interface ScrapData {
@@ -70,6 +76,7 @@ export interface PutScrapRequest {
   newsId: number | null;
   comment: string | null;
   scrapSummary: string | null;
+  highlights: PutHighlight[] | null;
 }
 
 // 스크랩 디테일

@@ -109,6 +109,7 @@ export const putScrap = async (
       newsId: scrapData.newsId,
       comment: scrapData.comment,
       scrapSummary: scrapData.scrapSummary,
+      highlights: scrapData.highlights,
     });
 
     console.log("Scrap updated successfully:", response.data);
