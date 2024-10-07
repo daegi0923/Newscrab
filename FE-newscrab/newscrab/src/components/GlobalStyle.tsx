@@ -20,9 +20,9 @@ const GlobalStyle = createGlobalStyle`
     ${scrollbar}
   }
 
-  // h1, h2 {
-  //   font-family: 'Pretendard', sans-serif; /* h1, h2에 Pretendard 폰트 적용 */
-  // }
+  h1, h2 {
+    font-family: 'Pretendard', sans-serif;
+  }
 `;
 
 const GlobalStylesWithHelmet: React.FC = () => (
