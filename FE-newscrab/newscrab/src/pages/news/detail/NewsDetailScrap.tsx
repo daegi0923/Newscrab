@@ -64,7 +64,7 @@ const StyledTextarea = styled.textarea<{ $isOverflowing: boolean }>`
   font-family: "SUIT Variable", sans-serif; /* 폰트 적용 */
   width: 100%;
   height: auto;
-  max-height: 570px;
+  max-height: 300px;
   border: 1px solid #ddd;
   border-radius: 8px;
   padding: 10px;
@@ -99,7 +99,7 @@ const StyledTextarea = styled.textarea<{ $isOverflowing: boolean }>`
 `;
 
 const SaveButton = styled.button`
-  background-color: #f0c36d;
+  background-color: #4caf50;
   border: none;
   border-radius: 12px;
   padding: 8px 16px;
@@ -115,11 +115,11 @@ const SaveButton = styled.button`
   right: 0px; /* 오른쪽에서 10px 띄움 */
 
   &:hover {
-    background-color: #d9a654;
+    background-color: #45a049;
   }
 
   &:active {
-    background-color: #c89640;
+    background-color: #45a049ㄹ;
   }
 `;
 
@@ -256,7 +256,7 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
     if (textarea) {
       textarea.style.height = "auto";
       textarea.style.height = `${textarea.scrollHeight}px`;
-      setIsOverflowing(textarea.scrollHeight > 615);
+      setIsOverflowing(textarea.scrollHeight > 300);
     }
   };
 
@@ -398,19 +398,19 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
       newsId: newsId,
       comment: opinionText,
       scrapSummary: summaryText,
+      highlights: highlights,
     };
-  
-    // 단어가 입력된 항목만 추가 (빈 단어 제외)
-  const vocaAddList = vocaSections
-  .filter((section) => section.word.trim() !== "") // 단어가 빈 문자열이 아닌 경우만 필터링
-  .map((section) => ({
-    newsId: newsId,
-    vocaName: section.word,
-    vocaDesc: section.desc,
-    industryId: section.industryId!,
-  }));
 
-  
+    // 단어가 입력된 항목만 추가 (빈 단어 제외)
+    const vocaAddList = vocaSections
+      .filter((section) => section.word.trim() !== "") // 단어가 빈 문자열이 아닌 경우만 필터링
+      .map((section) => ({
+        newsId: newsId,
+        vocaName: section.word,
+        vocaDesc: section.desc,
+        industryId: section.industryId!,
+      }));
+
     // 1. 단어가 입력되었는데 산업이 선택되지 않은 경우 오류 처리
     if (hasEmptyIndustry) {
       Swal.fire({
@@ -420,7 +420,7 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
       });
       return;
     }
-  
+
     try {
       Swal.fire({
         title: "단어 추가 중...👩‍💻",
@@ -428,24 +428,24 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
         allowOutsideClick: false,
         didOpen: () => {
           Swal.showLoading();
-        }
+        },
       });
-  
+
       // 2. 단어 추가 먼저 처리
-      // let vocaAdded = false;
       if (vocaAddList.length > 0) {
         const result = await dispatch(addVocaThunk({ vocaAddList }));
-  
+
         if (addVocaThunk.fulfilled.match(result)) {
-          // vocaAdded = true;
+          console.log(addVocaThunk);
         } else if (addVocaThunk.rejected.match(result)) {
-          const errorMessage = result.payload || "단어 추가 중 문제가 발생했습니다.";
+          const errorMessage =
+            result.payload || "단어 추가 중 문제가 발생했습니다.";
           throw new Error(errorMessage); // 단어 추가에 문제가 있으면 스크랩 저장을 중단
         }
       }
-  
+
       Swal.close();
-  
+
       // 3. 단어 추가에 성공하면 스크랩 데이터 저장 시작
       Swal.fire({
         title: "스크랩 저장 중...👩‍💻",
@@ -455,41 +455,40 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
           Swal.showLoading(); // 로딩 애니메이션 실행
         },
       });
-  
-      let successMessage = '스크랩이 성공적으로 저장되었습니다.';
+
+      let successMessage = "스크랩이 성공적으로 저장되었습니다.";
       if (scrapId) {
         await putScrap(scrapId, putscrapData);
-        console.log("put 요청 완료");
+        console.log("put 요청 완료", putscrapData);
         successMessage = "수정이 완료되었습니다."; // 수정 성공 메시지
       } else {
         await postScrap(postscrapData);
       }
-  
+
       Swal.close();
-      
+
       // 4. 저장 성공 메시지
       Swal.fire({
-        icon: 'success',
-        title: '저장 완료',
+        icon: "success",
+        title: "저장 완료",
         text: successMessage,
       });
-  
     } catch (error: any) {
       Swal.close();
-  
-      let errorMessage = '저장 중 오류가 발생했습니다. 다시 시도해주세요.';
-  
+
+      let errorMessage = "저장 중 오류가 발생했습니다. 다시 시도해주세요.";
+
       if (error.response) {
         const statusCode = error.response.status;
         if (statusCode === 404) {
-          errorMessage = '단어 추가에 실패했습니다.';
+          errorMessage = "단어 추가에 실패했습니다.";
         } else {
           errorMessage = `서버 오류가 발생했습니다.`;
         }
       } else if (error instanceof Error) {
-        errorMessage = error.message;
+        console.log(errorMessage);
       }
-  
+
       // 5. 오류 발생 시 경고
       Swal.fire({
         icon: "error",
@@ -498,8 +497,6 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
       });
     }
   };
-  
-  
 
   // Industry 선택 함수
   const handleIndustrySelectVoca = (index: number, id: number) => {

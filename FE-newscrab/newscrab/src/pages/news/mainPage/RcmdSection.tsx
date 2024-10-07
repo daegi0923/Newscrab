@@ -17,25 +17,37 @@ const formatDate = (dateString: string) => {
   return `${year}-${month}-${day}`;
 };
 
+// 로딩 메시지 스타일
+const LoadingMessage = styled.div`
+  text-align: center;
+  font-size: 18px;
+  margin-top: 250px;
+`;
+
 // 스크롤 가능한 컨테이너
 const ScrollableContainer = styled.div`
   padding: 0px 10px;
   max-height: 650px;
   overflow-y: auto;
   border-left: 1px solid #ddd;
-  ${scrollbar}/* 커스텀 스크롤바 스타일 적용 */
+  ${scrollbar} /* 커스텀 스크롤바 스타일 적용 */
+  position: relative; /* 툴팁이 부모 요소를 기준으로 위치하도록 설정 */
 `;
 
 // 뉴스 항목 컨테이너 스타일
 const RcmdItemContainer = styled.div`
-  overflow: hidden;
+  position: relative; /* 툴팁이 절대 위치로 설정될 때 기준이 되도록 설정 */
   padding: 16px;
   margin-bottom: 10px;
 `;
 
-const FlexContainer = styled.div`
-  display: flex;
-  align-items: flex-start;
+const ImageContainer = styled.div`
+  position: relative; /* 툴팁이 이미지의 상대적인 위치에 따라 위치하도록 설정 */
+  display: inline-block;
+
+  &:hover .tooltip {
+    display: block;
+  }
 `;
 
 const Image = styled.img`
@@ -44,14 +56,42 @@ const Image = styled.img`
   border-radius: 8px;
 `;
 
+const Tooltip = styled.div`
+  display: none;
+  position: absolute;
+  bottom: 5px; /* 이미지의 좌측 하단에 위치하도록 설정 */
+  left: 0; /* 이미지의 좌측 끝에 맞추기 */
+  background-color: #666;
+  color: white;
+  padding: 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 9999;
+  max-width: 300px;
+  text-align: right;
+  overflow: visible; /* 툴팁이 잘리지 않도록 설정 */
+`;
+
+const FlexContainer = styled.div`
+  display: flex;
+  align-items: flex-start;
+`;
+
 const TextContainer = styled.div`
   flex: 1;
 `;
 
+const NewsTitle = styled.h2`
+  font-size: 18px;
+  margin-top: 8px;
+  margin-bottom: 15px;
+`;
+
 const IndustryRcmdWrapper = styled.div`
-  display: inline-flex; /* 인라인 요소로 만들기 */
-  align-items: center; /* 수직 정렬을 가운데로 */
-  gap: 5px; /* IndustryId와 RcmdText 사이 간격 */
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
   margin-right: 5px;
   margin-bottom: 10px;
 `;
@@ -63,42 +103,38 @@ const IndustryId = styled.div`
   border: 1px solid #666;
   background-color: #666;
   border-radius: 20px;
-  display: inline-block;
   color: white;
   text-align: center;
   font-weight: bold;
 `;
 
-const RcmdText = styled.div<{ rcmdType: string }>`
+const RcmdText = styled.div<{ $rcmdType: string }>`
   font-size: 12px;
   color: ${(props) =>
-    props.rcmdType === "userBase"
-      ? "#4CAF50" // 맞춤 추천일 때 초록색
-      : props.rcmdType === "itemBase"
-      ? "#FF9800" // 분류별 추천일 때 주황색
-      : props.rcmdType === "latest"
-      ? "#2196F3" // 최신 추천일 때 파란색
-      : "#555"}; // 기본 색상
+    props.$rcmdType === "userBase"
+      ? "#4CAF50"
+      : props.$rcmdType === "itemBase"
+      ? "#FF9800"
+      : props.$rcmdType === "latest"
+      ? "#2196F3"
+      : "#555"};
   padding: 2px 8px;
   border: 1px solid
     ${(props) =>
-      props.rcmdType === "userBase"
+      props.$rcmdType === "userBase"
         ? "#4CAF50"
-        : props.rcmdType === "itemBase"
+        : props.$rcmdType === "itemBase"
         ? "#FF9800"
-        : props.rcmdType === "latest"
+        : props.$rcmdType === "latest"
         ? "#2196F3"
         : "#555"};
   border-radius: 20px;
   text-align: center;
   font-weight: bold;
-`;
-
-const NewsTitle = styled.h2`
-  font-size: 18px;
-  // font-weight: bold;
-  margin-top: 8px;
-  margin-bottom: 15px;
+  position: relative;
+  &:hover .tooltip {
+    display: block;
+  }
 `;
 
 const WrapperRow = styled.div`
@@ -113,6 +149,16 @@ const InfoRow = styled.div`
   font-size: 14px;
   color: #777;
   gap: 10px;
+`;
+
+const NewsButton = styled.div`
+  font-size: 14px;
+  color: #007bff;
+  cursor: pointer;
+  text-decoration: none;
+  &:hover {
+    text-decoration: none;
+  }
 `;
 
 const IconGroup = styled.div`
@@ -135,29 +181,20 @@ const ScrapCntIcon = styled.img`
   margin-right: 5px;
 `;
 
-const NewsButton = styled.div`
-  font-size: 14px;
-  color: #007bff;
-  cursor: pointer;
-  text-decoration: none;
-  &:hover {
-    text-decoration: none;
-  }
-`;
-
 const RcmdSection: React.FC = () => {
   const [rcmdNews, setRcmdNews] = useState<RcmdNewsItem[]>([]);
+  const [loading, setLoading] = useState(true); // 로딩 상태 추가
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchRcmdNews = async () => {
       try {
         const newsData = await getRcmdNews();
-        // 받아온 데이터에서 처음 15개만 사용
-        setRcmdNews(newsData.slice(0, 15));
-        console.log("Fetched news data:", newsData);
+        setRcmdNews(newsData.slice(0, 15)); // 받아온 데이터에서 처음 15개만 사용
       } catch (error) {
         console.error("Error fetching recommended news:", error);
+      } finally {
+        setLoading(false); // 데이터 로딩 후 로딩 상태를 false로 변경
       }
     };
 
@@ -171,55 +208,73 @@ const RcmdSection: React.FC = () => {
   // rcmd 값을 한글로 변환하는 함수
   const getRcmdText = (rcmd: string) => {
     if (rcmd === "userBase") return "맞춤 추천";
-    if (rcmd === "itemBase") return "분류별 추천";
-    if (rcmd === "latest") return "최근 추천";
+    if (rcmd === "itemBase") return "연관 추천";
+    if (rcmd === "latest") return "최신 추천";
     return "추천";
+  };
+
+  const getTooltipText = (rcmd: string) => {
+    if (rcmd === "userBase")
+      return "❗ 사용자의 스크랩, 좋아요 데이터를 기반으로 맞춤 추천합니다.";
+    if (rcmd === "itemBase")
+      return "❗ 맞춤 추천된 뉴스와 관련된 뉴스를 추가로 추천합니다.";
+    if (rcmd === "latest")
+      return "❗ 사용자가 선호하는 산업의 최신 뉴스를 추천합니다.";
+    return "";
   };
 
   return (
     <ScrollableContainer>
-      {rcmdNews.map((news) => (
-        <RcmdItemContainer key={news.newsId}>
-          {news.photoUrlList && (
-            <Image src={news.photoUrlList[0]} alt="이미지 없음" />
-          )}
-          <FlexContainer>
-            <TextContainer>
-              <NewsTitle>
-                <IndustryRcmdWrapper>
-                  <IndustryId>
-                    {industry.find((ind) => ind.industryId === news.industryId)
-                      ?.industryName || "미분류 산업"}
-                  </IndustryId>
-                  <RcmdText rcmdType={news.rcmd}>
-                    {getRcmdText(news.rcmd)}
-                  </RcmdText>
-                </IndustryRcmdWrapper>
-                <span>{news.newsTitle}</span>
-              </NewsTitle>
-              <WrapperRow>
-                <InfoRow>
-                  <NewsButton onClick={() => handleNewsClick(news.newsId)}>
-                    뉴스보기
-                  </NewsButton>
-                  <span>{news.newsCompany}</span>
-                  <span>{formatDate(news.newsPublishedAt)}</span>
-                </InfoRow>
-                <IconGroup>
-                  <span>
-                    <ViewIcon src={viewIcon} alt="조회수 아이콘" />
-                    {news.view}
-                  </span>
-                  <span>
-                    <ScrapCntIcon src={scrapCntIcon} alt="스크랩수 아이콘" />
-                    {news.scrapCnt}
-                  </span>
-                </IconGroup>
-              </WrapperRow>
-            </TextContainer>
-          </FlexContainer>
-        </RcmdItemContainer>
-      ))}
+      {loading ? (
+        <LoadingMessage>뉴스 데이터를 불러오는 중입니다...</LoadingMessage>
+      ) : (
+        rcmdNews.map((news) => (
+          <RcmdItemContainer key={news.newsId}>
+            <ImageContainer>
+              {news.photoUrlList && (
+                <Image src={news.photoUrlList[0]} alt="이미지 없음" />
+              )}
+              <Tooltip className="tooltip">{getTooltipText(news.rcmd)}</Tooltip>
+            </ImageContainer>
+            <FlexContainer>
+              <TextContainer>
+                <NewsTitle>
+                  <IndustryRcmdWrapper>
+                    <IndustryId>
+                      {industry.find(
+                        (ind) => ind.industryId === news.industryId
+                      )?.industryName || "미분류 산업"}
+                    </IndustryId>
+                    <RcmdText $rcmdType={news.rcmd}>
+                      {getRcmdText(news.rcmd)}
+                    </RcmdText>
+                  </IndustryRcmdWrapper>
+                  <span>{news.newsTitle}</span>
+                </NewsTitle>
+                <WrapperRow>
+                  <InfoRow>
+                    <NewsButton onClick={() => handleNewsClick(news.newsId)}>
+                      뉴스보기
+                    </NewsButton>
+                    <span>{news.newsCompany}</span>
+                    <span>{formatDate(news.newsPublishedAt)}</span>
+                  </InfoRow>
+                  <IconGroup>
+                    <span>
+                      <ViewIcon src={viewIcon} alt="조회수 아이콘" />
+                      {news.view}
+                    </span>
+                    <span>
+                      <ScrapCntIcon src={scrapCntIcon} alt="스크랩수 아이콘" />
+                      {news.scrapCnt}
+                    </span>
+                  </IconGroup>
+                </WrapperRow>
+              </TextContainer>
+            </FlexContainer>
+          </RcmdItemContainer>
+        ))
+      )}
     </ScrollableContainer>
   );
 };

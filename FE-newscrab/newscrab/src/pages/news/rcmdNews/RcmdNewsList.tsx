@@ -1,8 +1,10 @@
+import React from "react";
 import styled from "styled-components";
 import { RcmdNewsItem } from "../../../types/newsTypes";
 import viewIcon from "@assets/hot.png";
 import scrapCntIcon from "@assets/scrap.png";
 import { industry } from "@common/Industry";
+import LikeButton from "../common/LikeButton"; // LikeButton 임포트
 
 const formatDate = (dateString: string) => {
   return dateString.replace("T", " ");
@@ -21,8 +23,15 @@ const NewsItemContainer = styled.div`
   overflow: hidden;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   padding: 16px;
-  cursor: pointer; /* 클릭 가능한 커서 추가 */
+  cursor: pointer;
   background-color: white;
+  position: relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    transform: translateY(-5px); /* 위로 살짝 올라가는 효과 */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* 호버 시 그림자 강화 */
+  }
 `;
 
 const FlexContainer = styled.div`
@@ -44,8 +53,8 @@ const TextContainer = styled.div`
 const IndustryRcmdContainer = styled.div`
   display: flex;
   justify-content: space-between;
-  align-items: center; /* 수직 가운데 정렬 */
-  gap: 10px; /* 요소 간의 간격 */
+  align-items: center;
+  gap: 10px;
 `;
 
 const IndustryId = styled.div`
@@ -59,29 +68,78 @@ const IndustryId = styled.div`
   font-weight: bold;
 `;
 
-const RcmdText = styled.div<{ rcmdType: string }>`
+const RcmdTextContainer = styled.div`
+  position: relative;
+  right: 30px;
+  display: inline-block;
+
+  &:hover .rcmd-text {
+    opacity: 0; /* 마우스 호버 시 투명하게 만듦 */
+  }
+
+  &:hover .tooltip {
+    opacity: 1; /* 마우스 호버 시 툴팁이 나타남 */
+  }
+`;
+
+const RcmdText = styled.div<{ $rcmdType: string }>`
   font-size: 12px;
   color: ${(props) =>
-    props.rcmdType === "userBase"
-      ? "#4CAF50" // 맞춤 추천일 때 초록색
-      : props.rcmdType === "itemBase"
-      ? "#FF9800" // 분류별 추천일 때 주황색
-      : props.rcmdType === "latest"
-      ? "#2196F3" // 최신 추천일 때 파란색
-      : "#555"}; // 기본 색상
+    props.$rcmdType === "userBase"
+      ? "#4CAF50"
+      : props.$rcmdType === "itemBase"
+      ? "#FF9800"
+      : props.$rcmdType === "latest"
+      ? "#2196F3"
+      : "#555"};
   padding: 2px 8px;
   border: 1px solid
     ${(props) =>
-      props.rcmdType === "userBase"
+      props.$rcmdType === "userBase"
         ? "#4CAF50"
-        : props.rcmdType === "itemBase"
+        : props.$rcmdType === "itemBase"
         ? "#FF9800"
-        : props.rcmdType === "latest"
+        : props.$rcmdType === "latest"
         ? "#2196F3"
         : "#555"};
   border-radius: 20px;
   text-align: center;
   font-weight: bold;
+  opacity: 1; /* 기본 상태에서는 완전히 보임 */
+  transition: opacity 0.3s ease-in-out; /* 부드러운 전환 효과 */
+`;
+
+const Tooltip = styled.div<{ $rcmdType: string }>`
+  opacity: 0; /* 기본적으로 툴팁을 숨김 */
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+  color: ${(props) =>
+    props.$rcmdType === "userBase"
+      ? "#4CAF50"
+      : props.$rcmdType === "itemBase"
+      ? "#FF9800"
+      : props.$rcmdType === "latest"
+      ? "#2196F3"
+      : "#555"};
+  padding: 2px 8px;
+  border: 1px solid
+    ${(props) =>
+      props.$rcmdType === "userBase"
+        ? "#4CAF50"
+        : props.$rcmdType === "itemBase"
+        ? "#FF9800"
+        : props.$rcmdType === "latest"
+        ? "#2196F3"
+        : "#555"};
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+  white-space: nowrap;
+  z-index: 9999;
+  max-width: 300px;
+  text-align: right;
+  transition: opacity 0.3s ease-in-out; /* 부드러운 전환 효과 */
 `;
 
 const NewsTitle = styled.h2`
@@ -118,20 +176,28 @@ const ScrapCntIcon = styled.img`
   margin-right: 5px;
 `;
 
-// 제목 자르기 함수 - 30자 이상이면 '...'으로 자름
 const truncateTitle = (title: string) => {
-  const maxLength = 30; // 최대 글자 수를 30으로 고정
+  const maxLength = 30;
   return title.length > maxLength
     ? title.substring(0, maxLength) + "..."
     : title;
 };
 
-// rcmd 값을 한글로 변환하는 함수
 const getRcmdText = (rcmd: string) => {
   if (rcmd === "userBase") return "맞춤 추천";
-  if (rcmd === "itemBase") return "분류별 추천";
-  if (rcmd === "latest") return "최근 추천";
+  if (rcmd === "itemBase") return "연관 추천";
+  if (rcmd === "latest") return "최신 추천";
   return "추천";
+};
+
+const getTooltipText = (rcmd: string) => {
+  if (rcmd === "userBase")
+    return "사용자의 스크랩 및 좋아요 데이터를 기반으로 맞춤 추천합니다.";
+  if (rcmd === "itemBase")
+    return "맞춤 추천된 뉴스와 관련된 뉴스를 추가로 추천합니다.";
+  if (rcmd === "latest")
+    return "사용자가 선호하는 산업의 최신 뉴스를 추천합니다.";
+  return "";
 };
 
 const RcmdNewsList: React.FC<{
@@ -144,12 +210,13 @@ const RcmdNewsList: React.FC<{
     );
     return matchedCategory ? matchedCategory.industryName : "미분류 산업";
   };
+
   return (
     <GridContainer>
       {newsList.map((news) => (
         <NewsItemContainer
           key={news.newsId}
-          onClick={() => onNewsClick(news.newsId)} // 클릭 시 onNewsClick 호출
+          onClick={() => onNewsClick(news.newsId)}
         >
           <FlexContainer>
             {news.photoUrlList && (
@@ -158,10 +225,17 @@ const RcmdNewsList: React.FC<{
             <TextContainer>
               <IndustryRcmdContainer>
                 <IndustryId>{getIndustryName(news.industryId)}</IndustryId>
-                <RcmdText rcmdType={news.rcmd}>
-                  {getRcmdText(news.rcmd)}
-                </RcmdText>
+                <RcmdTextContainer>
+                  <RcmdText className="rcmd-text" $rcmdType={news.rcmd}>
+                    {getRcmdText(news.rcmd)}
+                  </RcmdText>
+                  <Tooltip className="tooltip" $rcmdType={news.rcmd}>
+                    {getTooltipText(news.rcmd)}
+                  </Tooltip>
+                </RcmdTextContainer>
+                <LikeButton newsId={news.newsId} /> {/* LikeButton 추가 */}
               </IndustryRcmdContainer>
+
               <NewsTitle>{truncateTitle(news.newsTitle)}</NewsTitle>
               <InfoRow>
                 <span>{news.newsCompany}</span>

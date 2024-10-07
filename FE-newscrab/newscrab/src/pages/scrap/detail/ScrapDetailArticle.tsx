@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef  } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import scrollbar from "@components/common/ScrollBar";
@@ -10,8 +10,19 @@ import LikeButton from "@pages/news/common/LikeButton"; // LikeButton 컴포트 
 import { industry } from "@common/Industry"; // 산업 데이터를 가져오기
 import { getScrapDetail } from "@apis/scrap/scrapDetailApi"; // 스크랩 데이터를 가져오기 위한 API 호출
 import { deleteScrap } from "@apis/scrap/scrapApi";
-import Swal from 'sweetalert2';
+import Swal from "sweetalert2";
 
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString); // 문자열을 Date 객체로 변환
+  const year = date.getFullYear(); // 년도 추출
+  const month = String(date.getMonth() + 1).padStart(2, "0"); // 월 추출 (1월이 0이므로 +1), 두 자리로 맞추기
+  const day = String(date.getDate()).padStart(2, "0"); // 일 추출, 두 자리로 맞추기
+
+  const hours = String(date.getHours()).padStart(2, "0"); // 시 추출, 두 자리로 맞추기
+  const minutes = String(date.getMinutes()).padStart(2, "0"); // 분 추출, 두 자리로 맞추기
+
+  return `${year}-${month}-${day} ${hours}:${minutes}`; // "년-월-일 시:분" 형식으로 반환
+};
 
 // 스타일 정의
 const ScrapContent = styled.div`
@@ -23,6 +34,7 @@ const ScrapContent = styled.div`
   padding: 15px 100px;
   background-color: #fff;
   max-height: 680px;
+  min-height: 680px;
   overflow-y: auto;
   position: relative;
   ${scrollbar}
@@ -46,6 +58,7 @@ const ToggleButton = styled.button`
   border: none;
   cursor: pointer;
   font-size: 24px;
+  color: #666;
   position: absolute;
   left: -40px;
   top: 195%;
@@ -63,6 +76,23 @@ const IndustryId = styled.div`
   font-weight: bold;
   margin-bottom: 8px;
 `;
+
+// const OriginalNews = styled.div`
+//   font-size: 12px;
+//   color: #007bff; /* 링크 스타일처럼 색상 변경 */
+//   padding: 2px 8px;
+//   border: 1px solid #007bff;
+//   border-radius: 20px;
+//   display: inline-block;
+//   text-align: center;
+//   font-weight: bold;
+//   margin-bottom: 8px;
+//   cursor: pointer; /* 클릭 가능한 요소로 설정 */
+
+//   &:hover {
+//     color: #0056b3; /* 호버 시 색상 변경 */
+//   }
+// `;
 
 const MetaInfoContainer = styled.div`
   display: flex;
@@ -176,7 +206,7 @@ const letterToColorMap = {
 } as const;
 
 const applyHighlightsFromApi = (
-  contentElement: HTMLElement, 
+  contentElement: HTMLElement,
   highlights: Highlight[]
 ) => {
   highlights.forEach(({ startPos, endPos, color }) => {
@@ -218,7 +248,7 @@ const applyHighlightsFromApi = (
       span.style.backgroundColor = letterToColorMap[color];
       span.dataset.startPos = String(startPos);
       span.dataset.endPos = String(endPos);
-      
+
       span.appendChild(range.extractContents());
       range.insertNode(span);
     }
@@ -255,7 +285,7 @@ const ScrapDetailArticle: React.FC<ScrapDetailArticleProps> = ({ scrapId }) => {
       const scrapDataResponse = await getScrapDetail(scrapId); // scrapId를 인자로 전달
       setScrapDetail(scrapDataResponse); // 데이터를 상태에 저장
 
-      console.log('Scrap detail loaded:', scrapDataResponse);
+      console.log("Scrap detail loaded:", scrapDataResponse);
     } catch (error) {
       console.error("스크랩 데이터를 가져오는 중 오류 발생:", error);
     } finally {
@@ -266,17 +296,17 @@ const ScrapDetailArticle: React.FC<ScrapDetailArticleProps> = ({ scrapId }) => {
   useEffect(() => {
     if (scrapDetail && newsContentRef.current && scrapDetail.highlightList) {
       const contentElement = newsContentRef.current;
-  
+
       // highlightList를 Highlight 형식으로 변환
-      const highlights = scrapDetail.highlightList.map(highlight => ({
-        highlightId: highlight.highlightId, 
+      const highlights = scrapDetail.highlightList.map((highlight) => ({
+        highlightId: highlight.highlightId,
         startPos: highlight.startPos,
         endPos: highlight.endPos,
-        color: highlight.color, 
+        color: highlight.color,
       }));
-  
+
       if (contentElement) {
-        console.log('Applying highlights:', highlights);
+        console.log("Applying highlights:", highlights);
         applyHighlightsFromApi(contentElement, highlights); // 변환된 highlights 전달
       }
     }
@@ -290,16 +320,16 @@ const ScrapDetailArticle: React.FC<ScrapDetailArticleProps> = ({ scrapId }) => {
   const handleDeleteClick = async () => {
     // SweetAlert2로 삭제 확인 메시지 표시
     const confirmed = await Swal.fire({
-      title: '정말로 삭제하시겠습니까?',
-      text: '삭제 후에는 복구할 수 없습니다!',
-      icon: 'warning',
+      title: "정말로 삭제하시겠습니까?",
+      text: "삭제 후에는 복구할 수 없습니다!",
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
-      confirmButtonText: '삭제',
-      cancelButtonText: '취소',
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "삭제",
+      cancelButtonText: "취소",
     });
-  
+
     // 확인 버튼을 누르면 삭제 진행
     if (confirmed.isConfirmed) {
       try {
@@ -307,19 +337,19 @@ const ScrapDetailArticle: React.FC<ScrapDetailArticleProps> = ({ scrapId }) => {
         await deleteScrap(scrapId);
         // 삭제 완료 후 알림
         await Swal.fire({
-          icon: 'success',
-          title: '삭제 완료',
-          text: '스크랩이 삭제되었습니다.',
+          icon: "success",
+          title: "삭제 완료",
+          text: "스크랩이 삭제되었습니다.",
         });
         // 삭제 후 목록 페이지로 이동
-        navigate('/scrap');
+        navigate("/scrap");
       } catch (error) {
-        console.error('삭제 중 오류 발생:', error);
+        console.error("삭제 중 오류 발생:", error);
         // 삭제 실패 시 알림
         Swal.fire({
-          icon: 'error',
-          title: '삭제 실패',
-          text: '삭제 중 오류가 발생했습니다. 다시 시도해주세요.',
+          icon: "error",
+          title: "삭제 실패",
+          text: "삭제 중 오류가 발생했습니다. 다시 시도해주세요.",
         });
       }
     }
@@ -333,15 +363,13 @@ const ScrapDetailArticle: React.FC<ScrapDetailArticleProps> = ({ scrapId }) => {
     setShowContent(!showContent);
   };
 
-  const handleTitleClick = () => {
-    navigate(`/news/${scrapDetail?.newsId}`); // 원문기사로 이동
-  };
+  // const handleOriginNewsClick = () => {
+  //   window.open(newsDetailItem.newsUrl, "_blank"); // 수정페이지로 이동
+  // };
 
   const convertNewlinesToBr = (text: string): string => {
     return text.replace(/\n/g, "<br />");
   };
-
-  
 
   return (
     <ScrapContent>
@@ -354,9 +382,7 @@ const ScrapDetailArticle: React.FC<ScrapDetailArticleProps> = ({ scrapId }) => {
             <ToggleButton onClick={handleToggleClick}>
               {showContent ? "▼" : "▶"}
             </ToggleButton>
-            <NewsTitle onClick={handleTitleClick}>
-              {scrapDetail.newsTitle}
-            </NewsTitle>
+            <NewsTitle>{scrapDetail.newsTitle}</NewsTitle>
           </NewsTitleWrapper>
 
           {/* 스크랩 상단 섹션 */}
@@ -369,7 +395,12 @@ const ScrapDetailArticle: React.FC<ScrapDetailArticleProps> = ({ scrapId }) => {
                 </IndustryId>
               </Info>
               <Info>{scrapDetail.newsCompany}</Info>
-              <Info>{scrapDetail.updatedAt.replace("T", " ")}</Info>{" "}
+              <Info>{formatDate(scrapDetail.updatedAt)} (수정 時)</Info>{" "}
+              {/* <Info>
+                <OriginalNews onClick={handleOriginNewsClick}>
+                  뉴스원문
+                </OriginalNews>
+              </Info> */}
             </InfoGroup>
             {/* 조회수, 스크랩수 아이콘 */}
             <Stats>
@@ -394,7 +425,7 @@ const ScrapDetailArticle: React.FC<ScrapDetailArticleProps> = ({ scrapId }) => {
           </CrabTextWrapper>
           {showContent ? (
             <NewsText
-              ref={newsContentRef} 
+              ref={newsContentRef}
               dangerouslySetInnerHTML={{
                 __html: scrapDetail?.newsContent ?? "",
               }}
@@ -402,7 +433,7 @@ const ScrapDetailArticle: React.FC<ScrapDetailArticleProps> = ({ scrapId }) => {
           ) : (
             <NewsTextPreview>
               <div
-                ref={newsContentRef} 
+                ref={newsContentRef}
                 dangerouslySetInnerHTML={{
                   __html: removeImagesFromContent(
                     scrapDetail?.newsContent ?? ""
