@@ -32,6 +32,9 @@ const ScrapPreview: React.FC<handleChangePage> = ({ funcChangePage }) => {
         });
 
         const imgData = canvas.toDataURL('image/png');
+        if (i > 0) {
+          pdf.addPage();
+        }
         const pageWidth = pdf.internal.pageSize.getWidth();
         const pageHeight = pdf.internal.pageSize.getHeight();
         const imgWidth = pageWidth;
