@@ -1,6 +1,14 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { fetchNewsSummary } from "@apis/chatgpt/chatgpt";
+import gifImage from "@assets/galaxy.gif";
+
+// 버튼과 GIF를 묶는 div 스타일 정의 (가로로 정렬)
+const AIButtonContainer = styled.div`
+  display: flex;
+  align-items: center;
+
+`;
 
 // AI 요약 버튼 스타일 정의
 const AIButtonStyled = styled.button`
@@ -23,6 +31,14 @@ const AIButtonStyled = styled.button`
   &:active {
     background-color: #d9a654;
   }
+`;
+
+// GIF 이미지 스타일 정의
+const GIFImage = styled.img`
+  width: 30px;
+  height: 30px;
+  margin-top: 10px;
+  margin-left: 8px; /* 버튼과의 간격 */
 `;
 
 // AI 요약 상자 스타일 정의
@@ -63,6 +79,33 @@ const AISummaryHeader = styled.h4`
   font-weight: bold;
   color: #666;
 `;
+
+
+const AISummaryLoadingText = styled.p`
+  margin-top: 8px;
+  font-size: 14px;
+  color: #555;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  display: inline-block;
+  width: 100%; // 부모 요소 크기에 맞춤
+  
+  animation: blinkAnimation 1s step-start infinite;
+
+  @keyframes blinkAnimation {
+    0% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+`;
+
+
 
 const AISummaryText = styled.p`
   margin-top: 8px;
@@ -132,15 +175,18 @@ const NewsDetailAISummary: React.FC<NewsDetailAISummaryProps> = ({ newsId, onTra
 
   return (
     <div>
-      <AIButtonStyled onClick={handleAIButtonClick}>
-        AI 요약
-      </AIButtonStyled>
+      <AIButtonContainer>
+        <AIButtonStyled onClick={handleAIButtonClick}>
+          AI 요약
+        </AIButtonStyled>
+        <GIFImage src={gifImage} alt="loading" /> {/* GIF 추가 */}
+      </AIButtonContainer>
       {showSummary && (
         <AISummaryBox>
           <CloseButtonStyled onClick={handleCloseSummary}>X</CloseButtonStyled> 
           <AISummaryHeader>AI 요약</AISummaryHeader>
           {loading ? (
-            <AISummaryText>요약을 가져오는 중...</AISummaryText> // 로딩 중 텍스트
+            <AISummaryLoadingText>요약을 가져오는 중...</AISummaryLoadingText> // 로딩 중 텍스트
           ) : (
             <>
               <AISummaryText>뉴스 본문을 자동으로 요약한 내용입니다.</AISummaryText>

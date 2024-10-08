@@ -25,6 +25,7 @@ import MainVoca from "@pages/voca/VocaPage";
 import VocaDetail from "@pages/voca/VocaDetailPage";
 // 게시글
 import ArticlePage from "@pages/article/ArticlePage";
+import ArticleScrapDetailPage from "@pages/article/scrapDetail/ArticleScrapDetailPage";
 // 마이페이지
 import MyPage from "@pages/myPage/MyPage";
 import PasswordChange from "@pages/myPage/PasswordChangePage";
@@ -155,6 +156,14 @@ const AppRouter: React.FC = () => {
               element={
                 <Layout>
                   <ArticlePage />
+                </Layout>
+              }
+            />
+            <Route
+              path="/article/scrap"
+              element={
+                <Layout>
+                  <ArticleScrapDetailPage />
                 </Layout>
               }
             />

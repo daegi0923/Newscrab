@@ -1,6 +1,14 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { fetchPredQuestions } from "@apis/chatgpt/chatgpt";
+import gifImage from "@assets/galaxy.gif";
+
+// 버튼과 GIF를 묶는 div 스타일 정의 (가로로 정렬)
+const AIButtonContainer = styled.div`
+  display: flex;
+  align-items: center;
+
+`;
 
 // AI 예상질문 버튼 스타일 정의
 const AIButtonStyled = styled.button`
@@ -23,6 +31,14 @@ const AIButtonStyled = styled.button`
   &:active {
     background-color: #d9a654;
   }
+`;
+
+// GIF 이미지 스타일 정의
+const GIFImage = styled.img`
+  width: 30px;
+  height: 30px;
+  margin-top: 10px;
+  margin-left: 8px; /* 버튼과의 간격 */
 `;
 
 // AI 예상질문 상자 스타일 정의
@@ -62,6 +78,30 @@ const AIQuestionHeader = styled.h4`
   margin: 0;
   font-weight: bold;
   color: #666;
+`;
+
+const AIQuestionLoadingText = styled.p`
+  margin-top: 8px;
+  font-size: 14px;
+  color: #555;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  display: inline-block;
+  width: 100%; // 부모 요소 크기에 맞춤
+  
+  animation: blinkAnimation 1s step-start infinite;
+
+  @keyframes blinkAnimation {
+    0% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
 `;
 
 const AIQuestionText = styled.p`
@@ -132,15 +172,18 @@ const NewsDetailAIQuestion: React.FC<NewsDetailAIQuestionProps> = ({ newsId, sum
 
   return (
     <div>
-      <AIButtonStyled onClick={handleAIButtonClick}>
-        AI 예상질문
-      </AIButtonStyled>
+      <AIButtonContainer>
+        <AIButtonStyled onClick={handleAIButtonClick}>
+          AI 예상질문
+        </AIButtonStyled>
+         <GIFImage src={gifImage} alt="loading" /> {/* GIF 추가 */}
+      </AIButtonContainer>
       {showQuestion && (
         <AIQuestionBox>
           <CloseButtonStyled onClick={handleCloseQuestion}>X</CloseButtonStyled> 
           <AIQuestionHeader>AI 예상질문</AIQuestionHeader>
           {loading ? (
-            <AIQuestionText>예상 질문을 가져오는 중...</AIQuestionText>
+            <AIQuestionLoadingText>예상 질문을 가져오는 중...</AIQuestionLoadingText>
           ) : (
             <>
               <AIQuestionText>뉴스 본문을 바탕으로 자동 생성된 질문입니다.</AIQuestionText>

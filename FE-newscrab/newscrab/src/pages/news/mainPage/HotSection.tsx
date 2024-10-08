@@ -83,6 +83,10 @@ const NewsTitle = styled.h2`
   font-size: 18px;
   font-weight: bold;
   margin: 0px;
+  cursor: pointer;
+  &:hover {
+    color: #007bff;
+  }
 `;
 
 const InfoRow = styled.div`
@@ -202,7 +206,9 @@ const HotSection: React.FC = () => {
 
                 {/* 제목과 이미지를 수평 정렬하는 래퍼 */}
                 <TitleAndImageWrapper>
-                  <NewsTitle>{truncateTitle(newsItem.newsTitle)}</NewsTitle>
+                  <NewsTitle onClick={() => handleNewsClick(newsItem.newsId)}>
+                    {truncateTitle(newsItem.newsTitle)}
+                  </NewsTitle>
                   {newsItem.photoUrlList && (
                     <Image
                       src={newsItem.photoUrlList[0]}

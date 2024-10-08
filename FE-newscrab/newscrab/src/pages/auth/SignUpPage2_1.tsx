@@ -172,7 +172,7 @@ const SignUpPage2: React.FC = () => {
   };
 
   const [selectedIndustries, setSelectedIndustries] = useState<Array<{ img: string, industryId: number, industryName: string } | null>>([null, null, null]);
-  const [availableIndustries, setAvailableIndustries] = useState(words.filter((industry) => industry.industryId !== 16));
+  const [availableIndustries] = useState(words.filter((industry) => industry.industryId !== 16));
 
   // 선택된 카드들의 ID를 추적하여 투명하게 처리
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());

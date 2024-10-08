@@ -136,12 +136,13 @@ const Nav: React.FC = () => {
 
   // 프로필 이미지 선택 (선택된 값이 없을 경우 기본값을 사용)
   const selectedImage =
-    userInfo?.data?.profileImg &&
-    {
-      A: profile1,
-      B: profile2,
-      C: profile3,
-    }[userInfo.data.profileImg] || profile1;
+    (userInfo?.data?.profileImg &&
+      {
+        A: profile1,
+        B: profile2,
+        C: profile3,
+      }[userInfo.data.profileImg]) ||
+    profile1;
 
   // 컴포넌트가 마운트되었을 때 userInfo가 비어있다면 API 호출
   useEffect(() => {
@@ -168,7 +169,7 @@ const Nav: React.FC = () => {
 
   const handleModalClose = () => {
     setErrorMessage(null);
-    navigate('/login1');
+    navigate("/login1");
   };
 
   return (
@@ -183,15 +184,9 @@ const Nav: React.FC = () => {
       )}
       <SidebarContainer>
         {/* 좌측 상단에 프로필 이미지 */}
-        <ImageTop src={logo} alt="Logo" onClick={() => navigate('/')} />
+        <ImageTop src={logo} alt="Logo" onClick={() => navigate("/")} />
 
         <NavList>
-          <NavItem>
-            <NavLink onClick={() => navigate("/voca")}>
-              <Image src={voca} alt="voca" />
-              <NavText>단어장</NavText>
-            </NavLink>
-          </NavItem>
           <NavItem>
             <NavLink onClick={() => navigate("/mainNews")}>
               <Image src={news} alt="mainNews" />
@@ -210,11 +205,17 @@ const Nav: React.FC = () => {
               <NavText>게시글</NavText>
             </NavLink>
           </NavItem>
+          <NavItem>
+            <NavLink onClick={() => navigate("/voca")}>
+              <Image src={voca} alt="voca" />
+              <NavText>단어장</NavText>
+            </NavLink>
+          </NavItem>
         </NavList>
 
         {/* 좌측 하단에 로그아웃 버튼 */}
         <LogoutItem>
-          <NavLink onClick={() => navigate('/mypage')}>
+          <NavLink onClick={() => navigate("/mypage")}>
             {userInfo?.data ? (
               <UserImage src={selectedImage} alt="User profile" />
             ) : (
