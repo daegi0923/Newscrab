@@ -5,6 +5,7 @@ import closedCookie from '@assets/common/forcoo.png';
 import openCookieImage from '@assets/common/forkie.png';
 import quotes from '../../../public/quotes.json'; // 파일 경로에 맞게 수정
 import { darken } from 'polished';
+import { useNavigate } from "react-router-dom";
 
 // 빛나는 효과
 const shine = keyframes`
@@ -167,6 +168,7 @@ const FortuneCookieContent: React.FC = () => {
   const [isShaking, setIsShaking] = useState(false); // 흔들림 상태 관리
   const [animateCount, setAnimateCount] = useState(false); // 숫자 애니메이션 상태 관리
   const [isSelected, setIsSelected] = useState(false); //
+  const navigate = useNavigate();
 
   const openCookie = async () => {
     const idx = Math.floor(Math.random() * quotes.length);
@@ -229,6 +231,11 @@ const FortuneCookieContent: React.FC = () => {
     transform: isOpened ? 'scale(1)' : 'scale(0)',
   });
 
+  const handleClickBackButton = () => {
+    navigate('/mypage');
+
+
+  }
   return (
     <PageContainer>
       {!isOpened ? (
@@ -269,8 +276,8 @@ const FortuneCookieContent: React.FC = () => {
                 <ResetButton $bgColor={'#4CAF50'} onClick={handleClickReset}>
                   새 포춘쿠키 열기
                 </ResetButton>
-                <ResetButton $bgColor={'#888'} onClick={handleClickReset}>
-                  뒤로가기
+                <ResetButton $bgColor={'#888'} onClick={handleClickBackButton}>
+                  돌아가기
                 </ResetButton>
               </div>
             </>
