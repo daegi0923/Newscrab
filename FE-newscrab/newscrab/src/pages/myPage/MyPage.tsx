@@ -54,6 +54,28 @@ const BottomSection = styled.div`
   background-color: #fff;
   border-radius: 10px;
 `;
+const Overlay = styled.div`
+  position: absolute;
+  z-index: 10;
+  top: 0; /* 오버레이가 카드에 완전히 겹치도록 */
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    105deg,
+    transparent 30%,
+    rgba(255, 219, 112, 0.8) 45%,
+    rgba(132, 50, 255, 0.6) 50%,
+    transparent 54%
+  );
+  filter: brightness(1.2) opacity(0.8);
+  mix-blend-mode: screen;
+  background-size: 150% 150%;
+  background-position: 100%;
+  transition: all 0.1s ease;
+  // border: 3px solid red;
+`;
+
 
 const MyPage: React.FC = () => {
   // const navigate = useNavigate();

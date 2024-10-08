@@ -38,7 +38,6 @@ const CardContainer = styled.div`
   perspective: 1000px;
   transition: transform 0.1s ease;
   z-index: 5;
-  
 `;
 
 const Overlay = styled.div`
