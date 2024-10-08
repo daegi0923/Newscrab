@@ -34,7 +34,7 @@ export const addVocaThunk = createAsyncThunk<
   { rejectValue: string } // 실패 시 반환할 값의 타입을 명시적으로 지정
 >(
   "voca/addVoca",
-  async (vocaAddList, { rejectWithValue }) => {
+  async (vocaAddList) => {
     // try {
       const response = await addVoca(vocaAddList); // vocaAddList를 배열로 전달
       return response.data;
