@@ -11,6 +11,7 @@ import removeIcon from "@assets/common/remove.png";
 import NewsDetailAISummary from "./NewsDetailAISummary";
 import NewsDetailAIQuestion from "./NewsDetailAIQuestion";
 import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 import { Vocalist } from "../../../types/scrapTypes";
 
 const Sidebar = styled.div`
@@ -234,6 +235,7 @@ interface Voca {
 
 const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
 
   const [scrapId, setScrapId] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState("summary");
@@ -495,7 +497,7 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
               // 새로운 단어를 바로 추가
               const result = await dispatch(addVocaThunk({ vocaAddList: [newWordData] }));
               if (addVocaThunk.rejected.match(result)) {
-                throw new Error(result.payload || "단어 추가 중 문제가 발생했습니다.");
+                throw new Error(result.payload || `"${section.word}" 단어 추가 중 문제가 발생했습니다.`);
               }
               console.log("새 단어 추가 성공!");
             } catch (error) {
@@ -522,6 +524,7 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
         title: "저장 완료",
         text: scrapId ? "수정이 완료되었습니다." : "스크랩이 성공적으로 저장되었습니다.",
       });
+      navigate('/scrap/${scrapId}');
     } catch (error: any) {
       Swal.close();
       Swal.fire({

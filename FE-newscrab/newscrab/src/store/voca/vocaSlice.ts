@@ -35,13 +35,13 @@ export const addVocaThunk = createAsyncThunk<
 >(
   "voca/addVoca",
   async (vocaAddList, { rejectWithValue }) => {
-    try {
+    // try {
       const response = await addVoca(vocaAddList); // vocaAddList를 배열로 전달
       return response.data;
-    } catch (error: any) {
-      // 오류 발생 시 rejectWithValue로 문자열을 반환
-      return rejectWithValue(error.response?.data || "뉴스에 있는 단어를 입력해주세요🦀");
-    }
+  //   } catch (error: any) {
+  //     // 오류 발생 시 rejectWithValue로 문자열을 반환
+  //     return rejectWithValue(error.response?.data || "뉴스에 있는 단어를 입력해주세요🦀");
+  //   }
   }
 );
 
