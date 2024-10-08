@@ -7,6 +7,7 @@ const PageContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   height: 100vh;
   background-color: #f9f7f7;
   text-align: center;
@@ -24,7 +25,6 @@ const Date = styled.p`
   margin-bottom: 10px;
 `;
 
-
 const FortunePage: React.FC = () => {
   
   return (
@@ -32,7 +32,6 @@ const FortunePage: React.FC = () => {
       <Title>오늘의 포춘 쿠키</Title>
       <Date>2024년 10월 07일</Date>
       <FortuneCookieContent />
-      
       {/* 포춘 쿠키 콘텐츠 컴포넌트 삽입 */}
     </PageContainer>
   );

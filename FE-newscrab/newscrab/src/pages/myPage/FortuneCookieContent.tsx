@@ -3,7 +3,8 @@ import styled, { keyframes, css } from 'styled-components';
 import { useSpring, animated } from '@react-spring/web';
 import closedCookie from '@assets/common/forcoo.png';
 import openCookieImage from '@assets/common/forkie.png';
-import axios from 'axios';
+import quotes from '../../../public/quotes.json'; // 파일 경로에 맞게 수정
+import { darken } from 'polished';
 
 // 빛나는 효과
 const shine = keyframes`
@@ -23,21 +24,29 @@ const shine = keyframes`
 const flyIn = keyframes`
   0% {
     transform: translateY(-100px) rotate(0deg);
+    opacity: 0; // 처음에는 투명하게
+  }
+  100% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1; // 애니메이션이 완료되면 보이게
   }
 `;
 
 const MessagePaper = styled(animated.div)`
   width: 500px;
-  height: 100px;
-  background-color: #fffbe6; // 연한 종이 색상
-  border: 1px solid #dcdcdc; // 종이 테두리
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); // 살짝 그림자 효과
-  padding: 10px;
-  border-radius: 10px; // 모서리를 약간 둥글게
+  height: 110px;
+  padding: 35px;
   animation: ${flyIn} 2s forwards;
-  font-family: 'Courier New', Courier, monospace; // 타이핑 글꼴
   color: #333; // 글자색
   text-align: center; // 내용 가운데 정렬
+  background-image: url(image_slip.png);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 `;
 
 // 쿠키가 열릴 때 스케일 애니메이션
@@ -54,12 +63,13 @@ const cookieAnimation = keyframes`
 `;
 
 // 포춘 쿠키 이미지 (흔들림 애니메이션 적용)
-const FortuneCookieImage = styled(animated.img)<{ isSelected: boolean }>`
+const FortuneCookieImage = styled(animated.img)<{ $isSelected: boolean }>`
   width: 200px;
   height: 200px;
+  margin: 40px;
   cursor: pointer;
-  ${({ isSelected }) =>
-    !isSelected &&
+  ${({ $isSelected }) =>
+    !$isSelected &&
     css`
       animation: ${shine} 3s infinite ease-in-out;
     `}
@@ -115,8 +125,8 @@ const PageContainer = styled.div`
   align-items: center;
   flex-direction: column;
 `;
-const ResetButton = styled.button`
-  background-color: #4CAF50; /* 녹색 배경 */
+const ResetButton = styled.button<{ $bgColor: string }>`
+  background-color: ${({ $bgColor }) => $bgColor}; /* props로 받은 배경색 */
   border: none; /* 테두리 없애기 */
   color: white; /* 텍스트 색상 */
   padding: 10px 20px; /* 여백 */
@@ -124,19 +134,19 @@ const ResetButton = styled.button`
   text-decoration: none; /* 밑줄 없애기 */
   display: inline-block;
   font-size: 16px;
-  margin: 20px 0;
+  margin: 10px;
   cursor: pointer; /* 마우스 포인터 */
   border-radius: 5px; /* 둥근 테두리 */
   opacity: 0; /* 초기 투명 상태 */
-  transition: opacity 2s ease; /* 서서히 나타나는 효과 (2초 동안) */
+  transition: opacity 2s ease, background-color 0.3s ease; /* 서서히 나타나는 효과 (2초 동안) + 배경색 전환 */
   animation: fadeIn 1s ease 1s forwards; /* 1초 후 서서히 나타나기 시작 */
 
   &:hover {
-    background-color: #45a049; /* 호버 시 배경색 */
+    background-color: ${({ $bgColor }) => darken(0.1, $bgColor)}; /* 호버 시 조금 더 어두운 색상 */
   }
 
   &:active {
-    background-color: #3e8e41; /* 클릭 시 배경색 */
+    background-color: ${({ $bgColor }) => darken(0.2, $bgColor)}; /* 클릭 시 더 어두운 색상 */
   }
 
   @keyframes fadeIn {
@@ -148,6 +158,7 @@ const ResetButton = styled.button`
     }
   }
 `;
+
 const FortuneCookieContent: React.FC = () => {
   const [isOpened, setIsOpened] = useState(false);
   const [fortuneMessage, setFortuneMessage] = useState<string | null>(null);
@@ -158,26 +169,9 @@ const FortuneCookieContent: React.FC = () => {
   const [isSelected, setIsSelected] = useState(false); //
 
   const openCookie = async () => {
-    try {
-      // API 요청을 보내고 결과를 받음
-      const response = await axios
-        .create({
-          baseURL: 'https://korean-advice-open-api.vercel.app/api/advice',
-          withCredentials: true,
-        })
-        .get('/');
-      const data = response.data;
-
-      // 받아온 메시지를 상태로 설정
-      setFortuneMessage(data.message);
-      setFortuneAuthor(` - ${data.author}`);
-
-      // 쿠키를 열림 상태로 변경
-      setIsOpened(true);
-    } catch (error) {
-      console.error('메시지 로딩 실패:', error);
-      setFortuneMessage('메시지를 불러오는 중 오류가 발생했습니다.');
-    }
+    const idx = Math.floor(Math.random() * quotes.length);
+    setFortuneMessage(quotes[idx].message);
+    setFortuneAuthor(`${quotes[idx].author}`);
   };
 
   // 숫자가 올라가는 애니메이션 (한 칸씩 위로 이동)
@@ -247,7 +241,7 @@ const FortuneCookieContent: React.FC = () => {
           </CookieCountContainer>
           <FortuneCookieImage
             style={shakeSpring}
-            isSelected={isSelected}
+            $isSelected={isSelected}
             src={closedCookie}
             alt="Closed Fortune Cookie"
             onClick={handleClick}
@@ -268,10 +262,17 @@ const FortuneCookieContent: React.FC = () => {
           {fortuneMessage && (
             <>
               <MessagePaper>
-                <p>{fortuneMessage}</p>
+                <p style={styles.fortuneMessage}>{fortuneMessage}</p>
                 <p>{fortuneAuthor}</p>
               </MessagePaper>
-              <ResetButton onClick={handleClickReset}>다시보기</ResetButton>
+              <div>
+                <ResetButton $bgColor={'#4CAF50'} onClick={handleClickReset}>
+                  새 포춘쿠키 열기
+                </ResetButton>
+                <ResetButton $bgColor={'#888'} onClick={handleClickReset}>
+                  뒤로가기
+                </ResetButton>
+              </div>
             </>
           )}
         </>
@@ -280,4 +281,11 @@ const FortuneCookieContent: React.FC = () => {
   );
 };
 
+const styles = {
+  fortuneMessage: {
+    fontSize: '18px',
+    fontWeight: 'bold',
+    width: '80%',
+  },
+};
 export default FortuneCookieContent;
