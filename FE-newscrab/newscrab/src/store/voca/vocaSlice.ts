@@ -162,7 +162,7 @@ const vocaSlice = createSlice({
       })
       .addCase(deleteVocaThunk.fulfilled, (state, action) => {
         state.loading = false;
-        state.vocaList = state.vocaList.filter(voca => voca.vocaId !== action.payload.vocaId);
+        state.vocaList = state.vocaList.filter(voca => voca && voca.vocaId !== action.payload.vocaId);
       })
       .addCase(deleteVocaThunk.rejected, (state, action) => {
         state.loading = false;

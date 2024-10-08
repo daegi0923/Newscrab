@@ -17,7 +17,7 @@ const Sidebar = styled.div`
   width: 30%;
   border: 1px solid #ddd;
   border-radius: 8px;
-  padding: 15px;
+  padding: 15px 15px 25px 15px;
   background-color: #fff;
   height: fit-content;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -119,7 +119,7 @@ const SaveButton = styled.button`
   }
 
   &:active {
-    background-color: #45a049ㄹ;
+    background-color: #45a049;
   }
 `;
 
@@ -144,6 +144,7 @@ const VocaSection = styled.div`
   margin-top: 10px;
   width: 85%;
   position: relative; /* Remove 버튼 위치를 위한 설정 */
+  margin-top: 10px;
 `;
 
 const VocaInputWrapper = styled.div`
@@ -163,7 +164,7 @@ const Divider = styled.hr`
 const IndustryDropdownWrapper = styled.div`
   display: flex;
   justify-content: flex-end; /* 오른쪽 정렬 */
-  // margin-bottom: 10px; /* 아래 여백 */
+  margin-bottom: -12px; /* 아래 여백 */
 `;
 
 const StyledInput = styled.input`
@@ -178,16 +179,16 @@ const StyledInput = styled.input`
 const RemoveButton = styled.img`
   position: absolute;
   top: 50%; /* 중앙정렬을 위해 top을 50%로 */
-  right: -40px; /* 오른쪽 옆에 배치 */
-  width: 20px;
-  height: 20px;
+  right: -32px; /* 오른쪽 옆에 배치 */
+  width: 27px;
+  height: 25px;
   cursor: pointer;
   transform: translateY(-50%); /* 수직 중앙정렬 */
 `;
 
 const AddButton = styled.img`
   position: absolute;
-  bottom: 10px;
+  bottom: 0px;
   right: 10px;
   width: 30px;
   height: 30px;
@@ -260,25 +261,34 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
   };
 
   const handleRemoveSection = async (index: number) => {
+    console.log("삭제하려는 섹션:", vocaSections[index]);
     const section = vocaSections[index];
     const newSections = vocaSections.filter((_, i) => i !== index);
+      console.log("새로운 섹션 리스트:", newSections);
       setVocaSections(newSections);
 
-    if (section.word && scrapId) {
+    if (section?.word && scrapId) {
       try {
         // Scrap 데이터를 가져와서 existingWords로 설정
+        console.log("스크랩 ID:", scrapId);
         const existingWords = await getScrap(scrapId);
-        const existingVoca = existingWords.vocalist.find(
+        console.log("스크랩 데이터:", existingWords);
+
+        const existingVoca = existingWords.vocalist?.find(
           (voca: Voca) => voca.vocaName === section.word
         );
+        console.log("찾은 단어:", existingVoca);
   
-        if (existingVoca && existingVoca.vocaId) {
+        if (existingVoca&& existingVoca.vocaId) {
+          console.log("삭제할 단어 ID:", existingVoca.vocaId);
           await dispatch(deleteVocaThunk(existingVoca.vocaId));
           Swal.fire({
             icon: "success",
             title: "삭제 완료",
             text: "단어가 성공적으로 삭제되었습니다.",
           });
+        } else {
+          console.log("삭제할 단어를 찾지 못했습니다.");
         }
       } catch (error) {
         Swal.fire({
@@ -286,6 +296,7 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
           title: "삭제 실패",
           text: "단어 삭제 중 오류가 발생했습니다.",
         });
+        console.log(error)
       }
     }
   };
