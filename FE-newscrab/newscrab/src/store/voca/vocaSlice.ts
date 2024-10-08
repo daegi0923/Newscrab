@@ -145,7 +145,7 @@ const vocaSlice = createSlice({
       .addCase(updateVocaThunk.fulfilled, (state, action) => {
         state.loading = false;
         // vocaList에서 해당 vocaId를 찾아 수정
-        const index = state.vocaList.findIndex((voca) => voca.id === action.payload.vocaId);
+        const index = state.vocaList.findIndex((voca) => voca && voca.id === action.payload.vocaId);
         if (index !== -1) {
           state.vocaList[index] = { ...state.vocaList[index], ...action.payload.updatedData };
     }
