@@ -4,22 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import MypageBanner from '@components/myPage/MypageBanner';
 
 const FortuneContainer = styled.div`
-  border: 1px solid black;
-  border-radius: 20px;
-  width: 45%;
-  cursor: pointer;
-`;
-const FortuneUpper = styled.div`
-  border: 1px solid black;
   border-radius: 20px;
   width: 45%;
   cursor: pointer;
 `;
 
-const styles = {
-  fortuneUpper: {},
-  fortuneLower: {},
-};
+
 
 const Fortune: React.FC = () => {
   const navigate = useNavigate();
@@ -30,8 +20,8 @@ const Fortune: React.FC = () => {
   };
 
   return (
-    <FortuneContainer>
-      <MypageBanner img={''} title='오늘의 포춘쿠키🍪'>
+    <FortuneContainer onClick={handleFortune}>
+      <MypageBanner img={'movingCookie.gif'} title='오늘의 포춘쿠키🍪' color='#BDD6E6'>
       </MypageBanner>
     </FortuneContainer>
   );

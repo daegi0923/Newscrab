@@ -4,14 +4,27 @@ import styled from 'styled-components';
 interface MypageBannerProps {
   img: string | null;
   title: string;
+  color : string;
 }
-
-const MypageBanner: React.FC<MypageBannerProps> = ({ img, title }) => {
+const styles = {
+  imgDiv:{
+    width : '100%',
+    height : '100%',
+  }
+}
+const MypageBanner: React.FC<MypageBannerProps> = ({ img, title, color }) => {
   return (
-    <CardContainer>
+    <CardContainer bgColor={color}>
+      <div style={styles.imgDiv}>
       {img && <CardImage src={img} alt={title} />}
+
+      </div>
       <Overlay />
+      <div>
+
       <Title>{title}</Title>
+      </div>
+      
     </CardContainer>
   );
 };
@@ -19,7 +32,7 @@ const MypageBanner: React.FC<MypageBannerProps> = ({ img, title }) => {
 // 배경 이미지 스타일
 const CardImage = styled.img`
   width: 100%;
-  height: 100%;
+  height:100%;
   object-fit: cover;
 `;
 
@@ -58,17 +71,25 @@ const Title = styled.div`
 `;
 
 // 배경 이미지와 오버레이를 감싸는 컨테이너
-const CardContainer = styled.div`
-  background-color: #f0f0f0;
+const CardContainer = styled.div<{bgColor:string}>`
+  background-color: ${props => props.bgColor || 'black'};
+  display : flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   position: relative;
-  width: 300px;
-  height: 200px;
+  width:100%;
+  height: 100%;
   overflow: hidden;
   border-radius: 15px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s ease-in-out;
   &:hover ${Overlay} {
-    opacity: 1;
+    opacity: 0.5;
+  }
+  &:hover{
+    transform: translateY(-10px);
+    }
   }
 `;
 
