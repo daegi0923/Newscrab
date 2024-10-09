@@ -55,6 +55,7 @@ const BottomSection = styled.div`
   border-radius: 10px;
 `;
 
+
 const MyPage: React.FC = () => {
   // const navigate = useNavigate();
   const dispatch: AppDispatch = useDispatch();
