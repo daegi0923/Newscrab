@@ -90,6 +90,7 @@ public class ArticleService {
                                                 .build())
                                         .build())
                                 .toList())
+                .totalItems((int) articleRepository.count())
                 .build();
     }
 
