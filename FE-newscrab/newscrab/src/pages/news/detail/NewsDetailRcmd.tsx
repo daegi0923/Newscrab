@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import Typed from "typed.js";
+import crab2 from "@assets/crab2.png";
 
 const formatDate = (dateString: string) => {
   return dateString.replace("T", " ");
@@ -23,24 +25,14 @@ const PopupContainer = styled.div<{ $show: boolean }>`
   transition: opacity 0.3s ease, transform 0.3s ease;
 `;
 
-const PopupButton = styled.button`
+const CrabImage = styled.img`
   position: fixed;
   bottom: 4%;
   left: 62%;
-  background-color: #45a049;
-  border: none;
-  border-radius: 50%;
   width: 50px;
   height: 50px;
-  color: white;
-  font-size: 12px;
   cursor: pointer;
   z-index: 99;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  line-height: 1.2;
-  text-align: center;
 `;
 
 const CloseButton = styled.button`
@@ -104,18 +96,47 @@ const PublishedAt = styled.p`
   border-radius: 5px;
 `;
 
+const TypedTextContainer = styled.div`
+  position: fixed;
+  bottom: 12%;
+  left: 62%;
+  transform: translateX(-50%);
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+  z-index: 100;
+`;
+
 interface NewsDetailRcmdProps {
   newsId: number;
   newsDetailItem: {
-    relatedNews1?: any; // optional로 변경
-    relatedNews2?: any; // optional로 변경
-    relatedNews3?: any; // optional로 변경
+    relatedNews1?: any;
+    relatedNews2?: any;
+    relatedNews3?: any;
   };
 }
 
 const NewsDetailRcmd: React.FC<NewsDetailRcmdProps> = ({ newsDetailItem }) => {
   const [showPopup, setShowPopup] = useState(false);
   const navigate = useNavigate();
+  const typedElement = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const options = {
+      strings: ["뉴스가 마음에 든다면", "연관뉴스도 보러가게"],
+      typeSpeed: 50,
+      backSpeed: 30,
+      loop: true,
+    };
+
+    if (typedElement.current) {
+      const typed = new Typed(typedElement.current, options);
+      return () => {
+        typed.destroy(); // 컴포넌트 언마운트 시 Typed.js 인스턴스 제거
+      };
+    }
+  }, []);
 
   const togglePopup = () => {
     setShowPopup(!showPopup);
@@ -142,11 +163,10 @@ const NewsDetailRcmd: React.FC<NewsDetailRcmdProps> = ({ newsDetailItem }) => {
 
   return (
     <>
-      <PopupButton onClick={togglePopup}>
-        연관
-        <br />
-        뉴스
-      </PopupButton>
+      <TypedTextContainer>
+        <div ref={typedElement}></div> {/* Typed.js가 적용될 요소 */}
+      </TypedTextContainer>
+      <CrabImage src={crab2} alt="Crab Image" onClick={togglePopup} />
       <PopupContainer $show={showPopup}>
         <CloseButton onClick={togglePopup}>×</CloseButton>
         <ImageWrapper>
