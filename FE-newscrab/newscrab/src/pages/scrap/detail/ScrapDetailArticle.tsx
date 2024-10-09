@@ -6,7 +6,7 @@ import viewIcon from "@assets/hot.png";
 import scrapCntIcon from "@assets/scrap.png";
 import crab from "@assets/crab.png";
 import { ScrapDetailResponse, Highlight } from "../../../types/scrapTypes"; // scrap 타입 불러옴
-import LikeButton from "@pages/news/common/LikeButton"; // LikeButton 컴포트 임포트
+// import LikeButton from "@pages/news/common/LikeButton"; // LikeButton 컴포트 임포트
 import { industry } from "@common/Industry"; // 산업 데이터를 가져오기
 import { getScrapDetail } from "@apis/scrap/scrapDetailApi"; // 스크랩 데이터를 가져오기 위한 API 호출
 import { deleteScrap } from "@apis/scrap/scrapApi";
@@ -39,6 +39,16 @@ const ScrapContent = styled.div`
   position: relative;
   ${scrollbar}
   user-select: text;
+`;
+
+const ButtonContainer = styled.button`
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: absolute;
+  top: 15px;
+  right: 10px;
+  gap: 5px;
 `;
 
 const NewsTitleWrapper = styled.div`
@@ -101,6 +111,23 @@ const Stats = styled.div`
   font-size: 14px;
 `;
 
+const OtherPeopleScrap = styled.div`
+  font-size: 12px;
+  color: #007bff; /* 링크 스타일처럼 색상 변경 */
+  padding: 2px 8px;
+  border: 1px solid #007bff;
+  border-radius: 20px;
+  display: inline-block;
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 8px;
+  cursor: pointer; /* 클릭 가능한 요소로 설정 */
+
+  &:hover {
+    color: #0056b3; /* 호버 시 색상 변경 */
+  }
+`;
+
 const IconContainer = styled.div`
   display: flex;
   align-items: center;
@@ -125,6 +152,7 @@ const EditButton = styled.button`
   padding: 5px 10px;
   cursor: pointer;
   font-size: 12px;
+  margin-right: 5px;
 
   &:hover {
     background-color: #45a049;
@@ -353,6 +381,20 @@ const ScrapDetailArticle: React.FC<ScrapDetailArticleProps> = ({ scrapId }) => {
     setShowContent(!showContent);
   };
 
+  const handleOtherPeopleScrapClick = () => {
+    if (scrapDetail?.newsId) {
+      console.log("newsId to be saved:", scrapDetail.newsId); // newsId가 존재하는지 확인
+      localStorage.setItem("newsId", scrapDetail.newsId.toString()); // newsId를 localStorage에 저장
+      console.log(
+        "newsId saved in localStorage:",
+        localStorage.getItem("newsId")
+      ); // 저장 후 확인
+      navigate("/article"); // /article 페이지로 이동
+    } else {
+      console.log("newsId is missing or undefined");
+    }
+  };
+
   const convertNewlinesToBr = (text: string): string => {
     return text.replace(/\n/g, "<br />");
   };
@@ -361,8 +403,12 @@ const ScrapDetailArticle: React.FC<ScrapDetailArticleProps> = ({ scrapId }) => {
     <ScrapContent>
       {scrapDetail ? (
         <>
-          <LikeButton newsId={scrapDetail.newsId} />
-
+          {/* <LikeButton newsId={scrapDetail.newsId} /> */}
+          <ButtonContainer>
+            게시글에 공유하기
+            <EditButton onClick={handleEditClick}>수정</EditButton>
+            <DeleteButton onClick={handleDeleteClick}>삭제</DeleteButton>
+          </ButtonContainer>
           {/* 토글 섹션 */}
           <NewsTitleWrapper>
             <ToggleButton onClick={handleToggleClick}>
@@ -370,11 +416,13 @@ const ScrapDetailArticle: React.FC<ScrapDetailArticleProps> = ({ scrapId }) => {
             </ToggleButton>
             <NewsTitle>{scrapDetail.newsTitle}</NewsTitle>
           </NewsTitleWrapper>
-
           {/* 스크랩 상단 섹션 */}
           <MetaInfoContainer>
             {/* 산업군, 신문사, 발행일 */}
             <InfoGroup>
+              <OtherPeopleScrap onClick={handleOtherPeopleScrapClick}>
+                다른 사람 스크랩 보기
+              </OtherPeopleScrap>
               <Info>
                 <IndustryId>
                   {getIndustryName(scrapDetail.industryId)}
@@ -393,12 +441,11 @@ const ScrapDetailArticle: React.FC<ScrapDetailArticleProps> = ({ scrapId }) => {
                 <ScrapCntIcon src={scrapCntIcon} alt="스크랩수 아이콘" />
                 {scrapDetail.scrapCnt}
               </IconContainer>
-              <EditButton onClick={handleEditClick}>수정</EditButton>
-              <DeleteButton onClick={handleDeleteClick}>삭제</DeleteButton>
+              {/* <EditButton onClick={handleEditClick}>수정</EditButton>
+              <DeleteButton onClick={handleDeleteClick}>삭제</DeleteButton> */}
             </Stats>
           </MetaInfoContainer>
           <Divider />
-
           {/* 본문 섹션 */}
           <CrabTextWrapper>
             <CrabIcon src={crab} alt="게 아이콘" />
@@ -424,7 +471,6 @@ const ScrapDetailArticle: React.FC<ScrapDetailArticleProps> = ({ scrapId }) => {
             </NewsTextPreview>
           )}
           <Divider />
-
           {/* 요약 섹션 */}
           <CrabTextWrapper>
             <CrabIcon src={crab} alt="게 아이콘" />
@@ -438,7 +484,6 @@ const ScrapDetailArticle: React.FC<ScrapDetailArticleProps> = ({ scrapId }) => {
             }}
           />
           <Divider />
-
           {/* 의견 섹션 */}
           <CrabTextWrapper>
             <CrabIcon src={crab} alt="게 아이콘" />

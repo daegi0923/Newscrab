@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Header from "@common/Header";
 import SearchBar from "./SearchBar";
 import ArticleList from "./ArticleList"; // ArticleList는 articles를 props로 받음
@@ -52,38 +52,49 @@ const ArticlePage: React.FC = () => {
     fetchArticles();
   }, []);
 
-  const handleSearch = (searchType: string, searchTerm: string) => {
-    if (searchTerm === "") {
-      setFilteredArticles(articles); // 검색어가 없을 때 전체 데이터 표시
-    } else {
-      const filtered = articles.filter((article) => {
-        if (searchType === "전체") {
-          return (
-            article.scrapResponseDto.newsTitle.includes(searchTerm) ||
-            article.scrapResponseDto.newsId.toString().includes(searchTerm) ||
-            article.name.includes(searchTerm) ||
-            getIndustryNameById(article.scrapResponseDto.industryId).includes(
-              searchTerm
-            ) // industryName으로 검색
-          );
-        } else if (searchType === "뉴스제목") {
-          return article.scrapResponseDto.newsTitle.includes(searchTerm);
-        } else if (searchType === "뉴스번호") {
-          return article.scrapResponseDto.newsId
-            .toString()
-            .includes(searchTerm);
-        } else if (searchType === "작성자") {
-          return article.name.includes(searchTerm);
-        } else if (searchType === "산업군") {
-          return getIndustryNameById(
-            article.scrapResponseDto.industryId
-          ).includes(searchTerm); // industryName으로 필터링
-        }
-        return false;
-      });
-      setFilteredArticles(filtered);
+  const handleSearch = useCallback(
+    (searchType: string, searchTerm: string) => {
+      if (searchTerm === "") {
+        setFilteredArticles(articles); // 검색어가 없을 때 전체 데이터 표시
+      } else {
+        const filtered = articles.filter((article) => {
+          if (searchType === "전체") {
+            return (
+              article.scrapResponseDto.newsTitle.includes(searchTerm) ||
+              article.scrapResponseDto.newsId.toString().includes(searchTerm) ||
+              article.name.includes(searchTerm) ||
+              getIndustryNameById(article.scrapResponseDto.industryId).includes(
+                searchTerm
+              ) // industryName으로 검색
+            );
+          } else if (searchType === "뉴스제목") {
+            return article.scrapResponseDto.newsTitle.includes(searchTerm);
+          } else if (searchType === "뉴스번호") {
+            return article.scrapResponseDto.newsId
+              .toString()
+              .includes(searchTerm);
+          } else if (searchType === "작성자") {
+            return article.name.includes(searchTerm);
+          } else if (searchType === "산업군") {
+            return getIndustryNameById(
+              article.scrapResponseDto.industryId
+            ).includes(searchTerm); // industryName으로 필터링
+          }
+          return false;
+        });
+        setFilteredArticles(filtered);
+      }
+    },
+    [articles]
+  ); // 의존성 배열에 articles 추가
+
+  useEffect(() => {
+    const newsId = localStorage.getItem("newsId"); // localStorage에서 newsId 읽어오기
+    if (newsId) {
+      handleSearch("뉴스번호", newsId); // newsId로 검색
+      // localStorage.removeItem("newsId"); // 검색 후 localStorage에서 제거
     }
-  };
+  }, [handleSearch]); // handleSearch를 의존성에 추가
 
   if (loading) {
     return <div>Loading...</div>;
