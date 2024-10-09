@@ -5,7 +5,7 @@ import viewIcon from "@assets/hot.png";
 import scrapCntIcon from "@assets/scrap.png";
 import crab from "@assets/crab.png";
 import { ArticleDetailItem } from "../../../types/articleTypes"; // 수정된 타입
-import LikeButton from "@pages/news/common/LikeButton";
+// import LikeButton from "@pages/news/common/LikeButton";
 import ArticleScrapLike from "./ArticleScrapLike "; // 경로 수정
 import { getArticleDetail } from "@apis/article/articleDetailApi"; // 수정된 API
 import { industry } from "@common/Industry"; // 산업 데이터를 가져오기
@@ -197,7 +197,7 @@ const ArticleScrapDetailArticle: React.FC<ArticleScrapDetailProps> = ({
       <ScrapContent>
         {articleDetail ? (
           <>
-            <LikeButton newsId={articleDetail.data.scrapResponseDto.newsId} />
+            {/* <LikeButton newsId={articleDetail.data.scrapResponseDto.newsId} /> */}
 
             {/* 토글 섹션 */}
             <NewsTitleWrapper>
