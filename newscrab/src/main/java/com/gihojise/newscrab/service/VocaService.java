@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.HttpClientErrorException;
@@ -68,6 +69,25 @@ public class VocaService {
     }
 
     // 단어 추가
+    @Async
+    public void fetchAndSaveRelatedNews(Voca voca, VocaAddRequestDto vocaAddRequestDto) {
+        // 외부 API 호출
+        VocaNewsResponseDto responseDto = fetchRelatedNews(vocaAddRequestDto.getVocaName());
+
+        // 연관 뉴스 1, 2, 3을 조회하여 News 객체로 변환
+        News relatedNews1 = newsRepository.findById(responseDto.getRelatedNewsId1()).orElse(null);
+        News relatedNews2 = newsRepository.findById(responseDto.getRelatedNewsId2()).orElse(null);
+        News relatedNews3 = newsRepository.findById(responseDto.getRelatedNewsId3()).orElse(null);
+
+        String sentence = responseDto.getImportantSentence();
+
+        // Voca 엔티티 업데이트
+        voca.updateAsyncData(relatedNews1, relatedNews2, relatedNews3, sentence);
+
+        // 변경된 Voca 저장
+        vocaRepository.save(voca);
+    }
+
     @Transactional
     public void addVocaList(VocaListAddRequestDto vocaListAddRequestDto, int userId) {
         // User 객체를 userId로 조회
@@ -85,17 +105,6 @@ public class VocaService {
             News news = newsRepository.findById(vocaAddRequestDto.getNewsId())
                     .orElseThrow(() -> new NewscrabException(ErrorCode.NEWS_NOT_FOUND));
 
-            // 단어 연관 뉴스 추천 API 호출
-            VocaNewsResponseDto responseDto = fetchRelatedNews(vocaAddRequestDto.getVocaName());
-
-            // 연관 뉴스 1, 2, 3을 조회하여 News 객체로 변환
-            News relatedNews1 = newsRepository.findById(responseDto.getRelatedNewsId1())
-                    .orElse(null); // 관련 뉴스가 없을 수도 있으므로 예외 대신 null 반환
-            News relatedNews2 = newsRepository.findById(responseDto.getRelatedNewsId2())
-                    .orElse(null);
-            News relatedNews3 = newsRepository.findById(responseDto.getRelatedNewsId3())
-                    .orElse(null);
-
             // Voca 엔티티 생성 및 저장
             Voca voca = Voca.builder()
                     .news(news)
@@ -103,16 +112,16 @@ public class VocaService {
                     .vocaName(vocaAddRequestDto.getVocaName())
                     .vocaDesc(vocaAddRequestDto.getVocaDesc())
                     .industryId(vocaAddRequestDto.getIndustryId())
-                    .relatedNews1(relatedNews1)
-                    .relatedNews2(relatedNews2)
-                    .relatedNews3(relatedNews3)
-                    .sentence(responseDto.getImportantSentence())
                     .build();
 
             // Voca 엔티티 저장
             vocaRepository.save(voca);
+
+            // 비동기적으로 외부 API 호출 및 관련 뉴스 업데이트
+            fetchAndSaveRelatedNews(voca, vocaAddRequestDto);
         }
     }
+
 
     // 연관 뉴스 API 호출 메소드
     @Transactional(readOnly = true)
