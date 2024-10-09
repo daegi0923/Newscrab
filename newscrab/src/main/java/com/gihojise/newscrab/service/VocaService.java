@@ -36,6 +36,7 @@ public class VocaService {
     private final VocaRepository vocaRepository;
     private final NewsRepository newsRepository;
     private final UserRepository userRepository;
+    private final VocaAsyncService vocaAsyncService;
 
     @Value("${FAST_API_HOST}")
     String host;
@@ -69,25 +70,6 @@ public class VocaService {
     }
 
     // 단어 추가
-    @Async
-    public void fetchAndSaveRelatedNews(Voca voca, VocaAddRequestDto vocaAddRequestDto) {
-        // 외부 API 호출
-        VocaNewsResponseDto responseDto = fetchRelatedNews(vocaAddRequestDto.getVocaName());
-
-        // 연관 뉴스 1, 2, 3을 조회하여 News 객체로 변환
-        News relatedNews1 = newsRepository.findById(responseDto.getRelatedNewsId1()).orElse(null);
-        News relatedNews2 = newsRepository.findById(responseDto.getRelatedNewsId2()).orElse(null);
-        News relatedNews3 = newsRepository.findById(responseDto.getRelatedNewsId3()).orElse(null);
-
-        String sentence = responseDto.getImportantSentence();
-
-        // Voca 엔티티 업데이트
-        voca.updateAsyncData(relatedNews1, relatedNews2, relatedNews3, sentence);
-
-        // 변경된 Voca 저장
-        vocaRepository.save(voca);
-    }
-
     @Transactional
     public void addVocaList(VocaListAddRequestDto vocaListAddRequestDto, int userId) {
         // User 객체를 userId로 조회
@@ -118,9 +100,12 @@ public class VocaService {
             vocaRepository.save(voca);
 
             // 비동기적으로 외부 API 호출 및 관련 뉴스 업데이트
-            fetchAndSaveRelatedNews(voca, vocaAddRequestDto);
+            vocaAsyncService.fetchAndSaveRelatedNews(voca, vocaAddRequestDto);
         }
+
+        // 여기서 빠르게 리턴하여 프론트엔드에 즉시 응답을 보냄
     }
+
 
 
     // 연관 뉴스 API 호출 메소드
@@ -218,29 +203,43 @@ public class VocaService {
         return VocaSimpleResponseDto.builder()
                 .vocaId(voca.getVocaId())
                 .vocaName(voca.getVocaName())
-                .vocaDesc(voca.getVocaDesc())
-                .sentence(voca.getSentence())
-                .industryId(voca.getIndustryId())
-                .originNewsId(voca.getNews().getNewsId())
-                .originNewsTitle(voca.getNews().getNewsTitle())
-                .originNewsUrl(voca.getNews().getNewsUrl())
-                .originNewsImgUrl(voca.getNews().getNewsPhotos().size() > 0 ? voca.getNews().getNewsPhotos().get(0).getPhotoUrl() : null)
-                .originNewsPublishedAt(voca.getNews().getNewsPublishedAt().toString())
-                .relatedNews1(convertToNewsSimpleDto(voca.getRelatedNews1()))
-                .relatedNews2(convertToNewsSimpleDto(voca.getRelatedNews2()))
-                .relatedNews3(convertToNewsSimpleDto(voca.getRelatedNews3()))
-                .createdAt(voca.getCreatedAt())
-                .updatedAt(voca.getUpdatedAt())
+                .vocaDesc(Optional.ofNullable(voca.getVocaDesc()).orElse("No description available"))
+                .sentence(Optional.ofNullable(voca.getSentence()).orElse("Not updated yet..."))
+                .industryId(Optional.ofNullable(voca.getIndustryId()).orElse(0)) // 기본값 처리
+                .originNewsId(Optional.ofNullable(voca.getNews()).map(News::getNewsId).orElse(0)) // 기본값 처리
+                .originNewsTitle(Optional.ofNullable(voca.getNews()).map(News::getNewsTitle).orElse("No title available"))
+                .originNewsUrl(Optional.ofNullable(voca.getNews()).map(News::getNewsUrl).orElse("No URL available"))
+                .originNewsImgUrl(Optional.ofNullable(voca.getNews())
+                        .flatMap(news -> news.getNewsPhotos().stream().findFirst())
+                        .map(photo -> photo.getPhotoUrl())
+                        .orElse("No image available")) // 이미지가 없을 때 기본값 설정
+                .originNewsPublishedAt(Optional.ofNullable(voca.getNews())
+                        .map(News::getNewsPublishedAt)
+                        .map(Object::toString)
+                        .orElse("No date available"))
+                .relatedNews1(convertToNewsSimpleDto(voca.getRelatedNews1())) // 관련 뉴스가 없으면 null 전달됨
+                .relatedNews2(convertToNewsSimpleDto(voca.getRelatedNews2())) // 관련 뉴스가 없으면 null 전달됨
+                .relatedNews3(convertToNewsSimpleDto(voca.getRelatedNews3())) // 관련 뉴스가 없으면 null 전달됨
+                .createdAt(Optional.ofNullable(voca.getCreatedAt()).orElse(null))
+                .updatedAt(Optional.ofNullable(voca.getUpdatedAt()).orElse(null))
                 .build();
     }
 
     // News 객체를 NewsSimpleDto로 변환하는 헬퍼 메서드
     private NewsSimpleDto convertToNewsSimpleDto(News news) {
+        if (news == null) {
+            return null; // null 처리
+        }
         return NewsSimpleDto.builder()
                 .newsId(news.getNewsId())
-                .newsTitle(news.getNewsTitle())
-                .imageUrl(news.getNewsPhotos().size() > 0 ? news.getNewsPhotos().get(0).getPhotoUrl() : null)
-                .publishedAt(news.getNewsPublishedAt().toString())
+                .newsTitle(Optional.ofNullable(news.getNewsTitle()).orElse("No title available"))
+                .imageUrl(Optional.ofNullable(news.getNewsPhotos())
+                        .flatMap(photos -> photos.stream().findFirst())
+                        .map(photo -> photo.getPhotoUrl())
+                        .orElse("No image available"))
+                .publishedAt(Optional.ofNullable(news.getNewsPublishedAt())
+                        .map(Object::toString)
+                        .orElse("No date available"))
                 .build();
     }
 
