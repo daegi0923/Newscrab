@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { Article } from "./dummyData";
+import { getArticleData } from "@apis/article/articleApi"; // API 요청 함수 불러오기
+import { ArticleItem } from "../../types/articleTypes"; // 실제 API 데이터 타입 불러오기
 
 // Styled Components
 const TableWrapper = styled.div`
@@ -29,11 +30,29 @@ const StyledTr = styled.tr<{ isEven: boolean }>`
   text-align: left;
 `;
 
-interface ArticleListProps {
-  articles: Article[];
-}
+const ArticleList: React.FC = () => {
+  const [articles, setArticles] = useState<ArticleItem[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
-const ArticleList: React.FC<ArticleListProps> = ({ articles }) => {
+  useEffect(() => {
+    const fetchArticles = async () => {
+      try {
+        const data = await getArticleData();
+        setArticles(data.data.articleList); // API 응답 데이터를 설정
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching articles:", error);
+        setLoading(false);
+      }
+    };
+
+    fetchArticles();
+  }, []);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <TableWrapper>
       <StyledTable>
@@ -50,14 +69,16 @@ const ArticleList: React.FC<ArticleListProps> = ({ articles }) => {
         <tbody>
           {articles.map((article, index) => (
             <StyledTr key={article.articleId} isEven={index % 2 === 0}>
-              <StyledTd>{article.newsTitle}</StyledTd>
-              <StyledTd>{article.industryId}</StyledTd>
-              <StyledTd>{article.newsId}</StyledTd>
               <StyledTd style={{ color: "blue", cursor: "pointer" }}>
-                {article.name}
+                {article.scrapResponseDto.newsTitle}
               </StyledTd>
+              <StyledTd>{article.scrapResponseDto.industryId}</StyledTd>
+              <StyledTd style={{ color: "blue", cursor: "pointer" }}>
+                {article.scrapResponseDto.newsId}
+              </StyledTd>
+              <StyledTd>{article.name}</StyledTd>
               <StyledTd>{article.likeCnt}</StyledTd>
-              <StyledTd>{article.createdAt}</StyledTd>
+              <StyledTd>{article.scrapResponseDto.createdAt}</StyledTd>
             </StyledTr>
           ))}
         </tbody>
