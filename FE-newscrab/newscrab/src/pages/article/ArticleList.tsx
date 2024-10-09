@@ -6,6 +6,7 @@ import { industry } from "@common/Industry";
 
 const TableWrapper = styled.div`
   padding: 20px 50px;
+  padding-top: 0px;
 `;
 
 const StyledTable = styled.table`

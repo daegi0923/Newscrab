@@ -118,6 +118,13 @@ const NewsText = styled.div`
   line-height: 1.6;
   font-size: 16px;
   margin-top: 20px;
+
+  img {
+    max-width: 100%;
+    width: auto;
+    height: auto;
+    max-width: 750px; /* 이미지의 최대 너비를 750px로 설정 */
+  }
 `;
 
 const NewsTextPreview = styled.div`
