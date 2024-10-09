@@ -1,28 +1,24 @@
-import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import scrollbar from "@components/common/ScrollBar";
 import viewIcon from "@assets/hot.png";
 import scrapCntIcon from "@assets/scrap.png";
 import crab from "@assets/crab.png";
-import { ScrapDetailResponse, Highlight } from "../../../types/scrapTypes"; // scrap 타입 불러옴
-import LikeButton from "@pages/news/common/LikeButton"; // LikeButton 컴포트 임포트
+import { ArticleDetailItem } from "../../../types/articleTypes"; // 수정된 타입
+// import LikeButton from "@pages/news/common/LikeButton";
+import ArticleScrapLike from "./ArticleScrapLike "; // 경로 수정
+import { getArticleDetail } from "@apis/article/articleDetailApi"; // 수정된 API
 import { industry } from "@common/Industry"; // 산업 데이터를 가져오기
-import { getScrapDetail } from "@apis/scrap/scrapDetailApi"; // 스크랩 데이터를 가져오기 위한 API 호출
-import { deleteScrap } from "@apis/scrap/scrapApi";
-import Swal from "sweetalert2";
-import ArticleScrapLike from "./ArticleScrapLike ";
 
 const formatDate = (dateString: string) => {
-  const date = new Date(dateString); // 문자열을 Date 객체로 변환
-  const year = date.getFullYear(); // 년도 추출
-  const month = String(date.getMonth() + 1).padStart(2, "0"); // 월 추출 (1월이 0이므로 +1), 두 자리로 맞추기
-  const day = String(date.getDate()).padStart(2, "0"); // 일 추출, 두 자리로 맞추기
+  const date = new Date(dateString);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
 
-  const hours = String(date.getHours()).padStart(2, "0"); // 시 추출, 두 자리로 맞추기
-  const minutes = String(date.getMinutes()).padStart(2, "0"); // 분 추출, 두 자리로 맞추기
-
-  return `${year}-${month}-${day} ${hours}:${minutes}`; // "년-월-일 시:분" 형식으로 반환
+  return `${year}-${month}-${day} ${hours}:${minutes}`;
 };
 
 // 스타일 정의
@@ -78,23 +74,6 @@ const IndustryId = styled.div`
   margin-bottom: 8px;
 `;
 
-// const OriginalNews = styled.div`
-//   font-size: 12px;
-//   color: #007bff; /* 링크 스타일처럼 색상 변경 */
-//   padding: 2px 8px;
-//   border: 1px solid #007bff;
-//   border-radius: 20px;
-//   display: inline-block;
-//   text-align: center;
-//   font-weight: bold;
-//   margin-bottom: 8px;
-//   cursor: pointer; /* 클릭 가능한 요소로 설정 */
-
-//   &:hover {
-//     color: #0056b3; /* 호버 시 색상 변경 */
-//   }
-// `;
-
 const MetaInfoContainer = styled.div`
   display: flex;
   justify-content: space-between;
@@ -135,38 +114,17 @@ const ScrapCntIcon = styled.img`
   height: 16px;
 `;
 
-const EditButton = styled.button`
-  background-color: #4caf50;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  padding: 5px 10px;
-  cursor: pointer;
-  font-size: 12px;
-
-  &:hover {
-    background-color: #45a049;
-  }
-`;
-
-const DeleteButton = styled.button`
-  background-color: #f44336;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  padding: 5px 10px;
-  cursor: pointer;
-  font-size: 12px;
-
-  &:hover {
-    background-color: #d32f2f;
-  }
-`;
-
 const NewsText = styled.div`
   line-height: 1.6;
   font-size: 16px;
   margin-top: 20px;
+
+  img {
+    max-width: 100%;
+    width: auto;
+    height: auto;
+    max-width: 750px; /* 이미지의 최대 너비를 750px로 설정 */
+  }
 `;
 
 const NewsTextPreview = styled.div`
@@ -190,7 +148,7 @@ const Divider = styled.hr`
 
 const CrabTextWrapper = styled.div`
   display: flex;
-  align-items: center; /* 아이콘과 텍스트를 수평으로 정렬 */
+  align-items: center;
   gap: 10px;
 `;
 
@@ -199,293 +157,146 @@ const CrabIcon = styled.img`
   height: 22px;
 `;
 
-const letterToColorMap = {
-  R: "#fde2e4", // Red
-  Y: "#ffffb5", // Yellow
-  G: "#d1e6d3", // Green
-  B: "#cddafd", // Blue
-} as const;
-
-const applyHighlightsFromApi = (
-  contentElement: HTMLElement,
-  highlights: Highlight[]
-) => {
-  highlights.forEach(({ startPos, endPos, color }) => {
-    const walker = document.createTreeWalker(
-      contentElement,
-      NodeFilter.SHOW_TEXT,
-      null
-    );
-
-    let currentPos = 0;
-    let startNode: Node | null = null;
-    let endNode: Node | null = null;
-    let startOffset = 0;
-    let endOffset = 0;
-
-    while (walker.nextNode()) {
-      const node = walker.currentNode;
-      const nodeLength = node.textContent?.length || 0;
-
-      if (currentPos <= startPos && currentPos + nodeLength >= startPos) {
-        startNode = node;
-        startOffset = startPos - currentPos;
-      }
-      if (currentPos <= endPos && currentPos + nodeLength >= endPos) {
-        endNode = node;
-        endOffset = endPos - currentPos;
-        break;
-      }
-
-      currentPos += nodeLength;
-    }
-
-    if (startNode && endNode) {
-      const range = document.createRange();
-      range.setStart(startNode, startOffset);
-      range.setEnd(endNode, endOffset);
-
-      const span = document.createElement("span");
-      span.style.backgroundColor = letterToColorMap[color];
-      span.dataset.startPos = String(startPos);
-      span.dataset.endPos = String(endPos);
-
-      span.appendChild(range.extractContents());
-      range.insertNode(span);
-    }
-  });
+type ArticleScrapDetailProps = {
+  articleId: number; // articleId를 prop으로 전달
 };
 
-const removeImagesFromContent = (htmlContent: string): string => {
-  return htmlContent.replace(/<img[^>]*>/g, ""); // <img> 태그 제거
-};
-
-type ScrapDetailArticleProps = {
-  scrapId: number; // scrapId를 prop으로 전달
-};
-
-// getIndustryName 함수를 정의하여 industryId를 이용해 산업 이름을 가져오는 함수
 const getIndustryName = (industryId: number): string => {
   const matchedCategory = industry.find((ind) => ind.industryId === industryId);
   return matchedCategory ? matchedCategory.industryName : "미분류 산업";
 };
 
-const ArticleScrapDetailArticle: React.FC<ScrapDetailArticleProps> = ({
-  scrapId,
+const ArticleScrapDetailArticle: React.FC<ArticleScrapDetailProps> = ({
+  articleId,
 }) => {
-  const [scrapDetail, setScrapDetail] = useState<ScrapDetailResponse | null>(
+  const [articleDetail, setArticleDetail] = useState<ArticleDetailItem | null>(
     null
-  ); // 스크랩 데이터를 저장
-  const [showContent, setShowContent] = useState(false); // 디폴트로 안 보이도록 설정
+  ); // 기사 데이터를 저장
+  const [showContent, setShowContent] = useState(false); // 기본으로 내용이 숨겨짐
   const [, setIsLoading] = useState<boolean>(true); // 로딩 상태
-  const navigate = useNavigate(); // useNavigate 훅 사용
 
-  const newsContentRef = useRef<HTMLDivElement | null>(null);
-
-  // 스크랩 데이터를 가져오는 함수
-  const fetchScrapDetail = async (scrapId: number) => {
+  // 기사 데이터를 가져오는 함수
+  const fetchArticleDetail = async (articleId: number) => {
     try {
-      const scrapDataResponse = await getScrapDetail(scrapId); // scrapId를 인자로 전달
-      setScrapDetail(scrapDataResponse); // 데이터를 상태에 저장
-
-      console.log("Scrap detail loaded:", scrapDataResponse);
+      const articleDataResponse = await getArticleDetail(articleId); // articleId를 인자로 전달
+      setArticleDetail(articleDataResponse); // 데이터를 상태에 저장
     } catch (error) {
-      console.error("스크랩 데이터를 가져오는 중 오류 발생:", error);
+      console.error("기사 데이터를 가져오는 중 오류 발생:", error);
     } finally {
       setIsLoading(false); // 로딩 종료
     }
   };
 
   useEffect(() => {
-    if (scrapDetail && newsContentRef.current && scrapDetail.highlightList) {
-      const contentElement = newsContentRef.current;
-
-      // highlightList를 Highlight 형식으로 변환
-      const highlights = scrapDetail.highlightList.map((highlight) => ({
-        highlightId: highlight.highlightId,
-        startPos: highlight.startPos,
-        endPos: highlight.endPos,
-        color: highlight.color,
-      }));
-
-      if (contentElement) {
-        console.log("Applying highlights:", highlights);
-        applyHighlightsFromApi(contentElement, highlights); // 변환된 highlights 전달
-      }
-    }
-  }, [scrapDetail, showContent]);
-
-  const handleEditClick = () => {
-    // 수정 페이지로 이동하거나 수정 모드를 활성화
-    navigate(`/news/${scrapDetail?.newsId}`); // 수정 페이지로 이동
-  };
-
-  const handleDeleteClick = async () => {
-    // SweetAlert2로 삭제 확인 메시지 표시
-    const confirmed = await Swal.fire({
-      title: "정말로 삭제하시겠습니까?",
-      text: "삭제 후에는 복구할 수 없습니다!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
-      confirmButtonText: "삭제",
-      cancelButtonText: "취소",
-    });
-
-    // 확인 버튼을 누르면 삭제 진행
-    if (confirmed.isConfirmed) {
-      try {
-        // 삭제 API 호출
-        await deleteScrap(scrapId);
-        // 삭제 완료 후 알림
-        await Swal.fire({
-          icon: "success",
-          title: "삭제 완료",
-          text: "스크랩이 삭제되었습니다.",
-        });
-        // 삭제 후 목록 페이지로 이동
-        navigate("/scrap");
-      } catch (error) {
-        console.error("삭제 중 오류 발생:", error);
-        // 삭제 실패 시 알림
-        Swal.fire({
-          icon: "error",
-          title: "삭제 실패",
-          text: "삭제 중 오류가 발생했습니다. 다시 시도해주세요.",
-        });
-      }
-    }
-  };
-
-  useEffect(() => {
-    fetchScrapDetail(scrapId); // 컴포넌트 마운트 시 데이터 요청
-  }, [scrapId]);
+    fetchArticleDetail(articleId); // 컴포넌트 마운트 시 데이터 요청
+  }, [articleId]);
 
   const handleToggleClick = () => {
     setShowContent(!showContent);
   };
 
-  // const handleOriginNewsClick = () => {
-  //   window.open(newsDetailItem.newsUrl, "_blank"); // 수정페이지로 이동
-  // };
-
-  const convertNewlinesToBr = (text: string): string => {
-    return text.replace(/\n/g, "<br />");
-  };
-
-  const handleThumbsUpClick = () => {
-    console.log("Thumbs up clicked!");
-    // 따봉 클릭 시 실행될 로직 추가 가능
+  const removeImagesFromContent = (htmlContent: string): string => {
+    return htmlContent.replace(/<img[^>]*>/g, ""); // <img> 태그 제거
   };
 
   return (
-    <ScrapContent>
-      {scrapDetail ? (
-        <>
-          <LikeButton newsId={scrapDetail.newsId} />
+    <>
+      <ScrapContent>
+        {articleDetail ? (
+          <>
+            {/* <LikeButton newsId={articleDetail.data.scrapResponseDto.newsId} /> */}
 
-          {/* 토글 섹션 */}
-          <NewsTitleWrapper>
-            <ToggleButton onClick={handleToggleClick}>
-              {showContent ? "▼" : "▶"}
-            </ToggleButton>
-            <NewsTitle>{scrapDetail.newsTitle}</NewsTitle>
-          </NewsTitleWrapper>
+            {/* 토글 섹션 */}
+            <NewsTitleWrapper>
+              <ToggleButton onClick={handleToggleClick}>
+                {showContent ? "▼" : "▶"}
+              </ToggleButton>
+              <NewsTitle>
+                {articleDetail.data.scrapResponseDto.newsTitle}
+              </NewsTitle>
+            </NewsTitleWrapper>
 
-          {/* 스크랩 상단 섹션 */}
-          <MetaInfoContainer>
-            {/* 산업군, 신문사, 발행일 */}
-            <InfoGroup>
-              <Info>
-                <IndustryId>
-                  {getIndustryName(scrapDetail.industryId)}
-                </IndustryId>
-              </Info>
-              <Info>{scrapDetail.newsCompany}</Info>
-              <Info>{formatDate(scrapDetail.updatedAt)} (수정 時)</Info>{" "}
-              {/* <Info>
-                <OriginalNews onClick={handleOriginNewsClick}>
-                  뉴스원문
-                </OriginalNews>
-              </Info> */}
-            </InfoGroup>
-            {/* 조회수, 스크랩수 아이콘 */}
-            <Stats>
-              <IconContainer>
-                <ViewIcon src={viewIcon} alt="조회수 아이콘" />
-                {scrapDetail.view}
-              </IconContainer>
-              <IconContainer>
-                <ScrapCntIcon src={scrapCntIcon} alt="스크랩수 아이콘" />
-                {scrapDetail.scrapCnt}
-              </IconContainer>
-              <EditButton onClick={handleEditClick}>수정</EditButton>
-              <DeleteButton onClick={handleDeleteClick}>삭제</DeleteButton>
-            </Stats>
-          </MetaInfoContainer>
-          <Divider />
+            {/* 기사 상단 섹션 */}
+            <MetaInfoContainer>
+              <InfoGroup>
+                <Info>
+                  <IndustryId>
+                    {getIndustryName(
+                      articleDetail.data.scrapResponseDto.industryId
+                    )}
+                  </IndustryId>
+                </Info>
+                <Info>{articleDetail.data.scrapResponseDto.newsCompany}</Info>
+                <Info>
+                  {formatDate(articleDetail.data.scrapResponseDto.updatedAt)}
+                </Info>
+              </InfoGroup>
+              <Stats>
+                <IconContainer>
+                  <ViewIcon src={viewIcon} alt="조회수 아이콘" />
+                  {articleDetail.data.scrapResponseDto.view}
+                </IconContainer>
+                <IconContainer>
+                  <ScrapCntIcon src={scrapCntIcon} alt="스크랩수 아이콘" />
+                  {articleDetail.data.scrapResponseDto.scrapCnt}
+                </IconContainer>
+              </Stats>
+            </MetaInfoContainer>
+            <Divider />
 
-          {/* 본문 섹션 */}
-          <CrabTextWrapper>
-            <CrabIcon src={crab} alt="게 아이콘" />
-            <span style={{ fontWeight: "bold" }}>본문</span>
-          </CrabTextWrapper>
-          {showContent ? (
-            <NewsText
-              ref={newsContentRef}
-              dangerouslySetInnerHTML={{
-                __html: scrapDetail?.newsContent ?? "",
-              }}
-            />
-          ) : (
-            <NewsTextPreview>
-              <div
-                ref={newsContentRef}
+            {/* 본문 섹션 */}
+            <CrabTextWrapper>
+              <CrabIcon src={crab} alt="게 아이콘" />
+              <span style={{ fontWeight: "bold" }}>본문</span>
+            </CrabTextWrapper>
+            {showContent ? (
+              <NewsText
                 dangerouslySetInnerHTML={{
-                  __html: removeImagesFromContent(
-                    scrapDetail?.newsContent ?? ""
-                  ),
+                  __html: articleDetail.data.scrapResponseDto.newsContent ?? "",
                 }}
               />
-            </NewsTextPreview>
-          )}
-          <Divider />
+            ) : (
+              <NewsTextPreview>
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: removeImagesFromContent(
+                      articleDetail.data.scrapResponseDto.newsContent ?? ""
+                    ),
+                  }}
+                />
+              </NewsTextPreview>
+            )}
+            <Divider />
 
-          {/* 요약 섹션 */}
-          <CrabTextWrapper>
-            <CrabIcon src={crab} alt="게 아이콘" />
-            <span style={{ fontWeight: "bold" }}>요약</span>
-          </CrabTextWrapper>
-          <NewsText
-            dangerouslySetInnerHTML={{
-              __html: scrapDetail.scrapSummary
-                ? convertNewlinesToBr(scrapDetail.scrapSummary)
-                : "요약이 없습니다.",
-            }}
-          />
-          <Divider />
+            {/* 요약 섹션 */}
+            <CrabTextWrapper>
+              <CrabIcon src={crab} alt="게 아이콘" />
+              <span style={{ fontWeight: "bold" }}>요약</span>
+            </CrabTextWrapper>
+            <NewsText>
+              {articleDetail.data.scrapResponseDto.scrapSummary}
+            </NewsText>
+            <Divider />
 
-          {/* 의견 섹션 */}
-          <CrabTextWrapper>
-            <CrabIcon src={crab} alt="게 아이콘" />
-            <span style={{ fontWeight: "bold" }}>의견</span>
-          </CrabTextWrapper>
-          <NewsText
-            dangerouslySetInnerHTML={{
-              __html: scrapDetail.comment
-                ? convertNewlinesToBr(scrapDetail.comment)
-                : "의견이 없습니다.",
-            }}
-          />
-          <Divider />
-        </>
-      ) : (
-        <div>데이터를 불러오는 중입니다...</div>
-      )}
-      {/* 분리된 따봉 컴포넌트 추가 */}
-      <ArticleScrapLike onLike={handleThumbsUpClick} />
-    </ScrapContent>
+            {/* 의견 섹션 */}
+            <CrabTextWrapper>
+              <CrabIcon src={crab} alt="게 아이콘" />
+              <span style={{ fontWeight: "bold" }}>의견</span>
+            </CrabTextWrapper>
+            <NewsText>{articleDetail.data.scrapResponseDto.comment}</NewsText>
+            <Divider />
+
+            {/* ArticleScrapLike에 articleId와 initialLikeCount 전달 */}
+            <ArticleScrapLike
+              articleId={articleId}
+              initialLikeCount={articleDetail.data.likeCnt}
+            />
+          </>
+        ) : (
+          <div>데이터를 불러오는 중입니다...</div>
+        )}
+      </ScrapContent>
+    </>
   );
 };
 

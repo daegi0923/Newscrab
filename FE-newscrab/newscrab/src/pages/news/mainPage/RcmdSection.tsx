@@ -258,7 +258,7 @@ const RcmdSection: React.FC = () => {
                 <WrapperRow>
                   <InfoRow>
                     <NewsButton onClick={() => handleNewsClick(news.newsId)}>
-                      뉴스보기
+                      NewsCrab
                     </NewsButton>
                     <span>{news.newsCompany}</span>
                     <span>{formatDate(news.newsPublishedAt)}</span>

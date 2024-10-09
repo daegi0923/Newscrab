@@ -184,7 +184,7 @@ const RecentSection: React.FC = () => {
               {/* NewsButton과 StatsRow를 수평 정렬하는 래퍼로 감쌈 */}
               <ButtonAndStatsWrapper>
                 <NewsButton onClick={() => handleNewsClick(newsItem.newsId)}>
-                  뉴스보기
+                  NewsCrab
                 </NewsButton>
                 <StatsRow>
                   <span>

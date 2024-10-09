@@ -160,7 +160,7 @@ const AppRouter: React.FC = () => {
               }
             />
             <Route
-              path="/article/scrap"
+              path="/article/:articleId"
               element={
                 <Layout>
                   <ArticleScrapDetailPage />
