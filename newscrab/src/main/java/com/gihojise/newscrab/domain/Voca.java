@@ -79,4 +79,21 @@ public class Voca extends BaseTimeEntity {
         this.updatedAt = LocalDateTime.now();
     }
 
+    public void updateAsyncData(News relatedNews1, News relatedNews2, News relatedNews3, String sentence) {
+        if (relatedNews1 != null) {
+            this.relatedNews1 = relatedNews1;
+        }
+        if (relatedNews2 != null) {
+            this.relatedNews2 = relatedNews2;
+        }
+        if (relatedNews3 != null) {
+            this.relatedNews3 = relatedNews3;
+        }
+
+        if (sentence != null) {
+            this.sentence = sentence;
+        }
+
+        this.updatedAt = LocalDateTime.now();
+    }
 }
