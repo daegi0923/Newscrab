@@ -5,7 +5,153 @@ import closedCookie from '@assets/common/forcoo.png';
 import openCookieImage from '@assets/common/forkie.png';
 import quotes from '../../../public/quotes.json'; // 파일 경로에 맞게 수정
 import { darken } from 'polished';
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
+
+const FortuneCookieContent: React.FC = () => {
+  const [isOpened, setIsOpened] = useState(false);
+  const [fortuneMessage, setFortuneMessage] = useState<string | null>(null);
+  const [fortuneAuthor, setFortuneAuthor] = useState<string | null>(null);
+  const [cookieCount, setCookieCount] = useState(5); // 시작 숫자
+  const [isShaking, setIsShaking] = useState(false); // 흔들림 상태 관리
+  const [animateCount, setAnimateCount] = useState(false); // 숫자 애니메이션 상태 관리
+  const [isSelected, setIsSelected] = useState(false); //
+  const navigate = useNavigate();
+
+  const openCookie = async () => {
+    const idx = Math.floor(Math.random() * quotes.length);
+    setFortuneMessage(quotes[idx].message);
+    setFortuneAuthor(`${quotes[idx].author}`);
+  };
+
+  // 숫자가 올라가는 애니메이션 (한 칸씩 위로 이동)
+  const countSpring = useSpring({
+    from: { transform: `translateY(0px)` },
+    to: { transform: `translateY(-50px)` }, // 숫자가 한 칸 위로 올라가도록 설정
+    config: { tension: 200, friction: 20 }, // 애니메이션 속도
+    reset: true, // 항상 처음 상태로부터 애니메이션 시작
+    immediate: !animateCount, // handleClick이 발생할 때만 애니메이션 적용
+  });
+
+  const shakeSpring = useSpring({
+    from: { transform: 'translateX(0px)' }, // 시작점
+    to: { transform: 'translateX(20px)' }, // 끝점: 한번만 떨리도록 설정
+    config: { tension: 1000, friction: 20 }, // 빠르게 떨리도록 설정
+    reset: true, // 상태를 리셋해서 중복 떨림 방지
+    onRest: () => setIsShaking(false), // 떨림이 끝나면 흔들림 멈춤
+  });
+
+  const hitCookie = () => {
+    setIsShaking(true); // 흔들림 상태 true
+    setAnimateCount(true); // 숫자 애니메이션을 실행하도록 설정
+
+    if (cookieCount > 1) {
+      setCookieCount(cookieCount - 1);
+    } else {
+      openCookie();
+      setIsOpened(true);
+    }
+  };
+
+  const handleClick = () => {
+    console.log('click');
+    if (isShaking) {
+      return;
+    }
+    if (!isSelected) {
+      setIsSelected(true);
+    }
+    console.log('hit');
+    hitCookie();
+    setTimeout(() => {
+      setAnimateCount(false); // 애니메이션이 완료된 후 비활성화
+    }, 200); // 애니메이션 지속 시간에 맞춰 비활성화
+  };
+  const handleClickReset = () => {
+    setIsOpened(false);
+    setIsSelected(false);
+    setFortuneMessage(null);
+    setFortuneAuthor(null);
+    setCookieCount(5);
+  };
+  const openCookieSpring = useSpring({
+    opacity: isOpened ? 1 : 0,
+    transform: isOpened ? 'scale(1)' : 'scale(0)',
+  });
+
+  const handleClickBackButton = () => {
+    navigate('/mypage');
+  };
+  return (
+    <PageContainer>
+      {!isOpened ? (
+        <>
+          <CookieCountContainer>
+            <CookieCountNumber style={countSpring}>
+              <Number>{cookieCount}</Number>
+              <Number>{cookieCount}</Number>
+            </CookieCountNumber>
+          </CookieCountContainer>
+          <div style={styles.imgContainer}>
+            <FortuneCookieImage
+              style={shakeSpring}
+              $isSelected={isSelected}
+              src={closedCookie}
+              alt="Closed Fortune Cookie"
+              onClick={handleClick}
+            ></FortuneCookieImage>
+            <SpeechBubble>Hit Me!</SpeechBubble>
+          </div>
+          <Description>
+            바삭바삭한 포춘 쿠키 안에는
+            <br />
+            오늘 당신을 위한 메시지가 숨어 있습니다.
+            <br />
+            불안과 고민이 날아가도록
+            <br />
+            포춘 쿠키를 신나게 부숴 볼까요?!
+            <br />
+            {/* <ResetButton $bgColor={'#888'} onClick={handleClickBackButton}>
+              돌아가기
+            </ResetButton> */}
+          </Description>
+        </>
+      ) : (
+        <>
+          <OpenedCookieImage style={openCookieSpring} src={openCookieImage} alt="Open Fortune Cookie" />
+          {fortuneMessage && (
+            <>
+              <MessagePaper>
+                <p style={styles.fortuneMessage}>{fortuneMessage}</p>
+                <p>{fortuneAuthor}</p>
+              </MessagePaper>
+              <div>
+                <ResetButton $bgColor={'#4CAF50'} onClick={handleClickReset}>
+                  새 포춘쿠키 열기
+                </ResetButton>
+                <ResetButton $bgColor={'#888'} onClick={handleClickBackButton}>
+                  돌아가기
+                </ResetButton>
+              </div>
+            </>
+          )}
+        </>
+      )}
+    </PageContainer>
+  );
+};
+
+const styles: { [key: string]: React.CSSProperties } = {
+  fortuneMessage: {
+    fontSize: '18px',
+    fontWeight: 'bold',
+    width: '80%',
+  },
+  imgContainer : {
+    position : 'relative',
+    padding: '0px',
+  }
+};
+export default FortuneCookieContent;
 
 // 빛나는 효과
 const shine = keyframes`
@@ -87,7 +233,7 @@ const CookieCountContainer = styled.div`
   justify-content: center;
   align-items: center;
   font-size: 2rem;
-  height: 50px;
+  min-height: 50px;
   overflow: hidden;
   width: 100px;
   background-color: #fff; /* 숫자 배경을 흰색으로 설정 */
@@ -103,11 +249,13 @@ const CookieCountNumber = styled(animated.div)`
 `;
 
 const Number = styled.div`
-  height: 50px;
+  min-height: 50px;
   display: flex;
   justify-content: center;
   align-items: center;
+  font-family: fantasy;
   font-size: 3rem;
+  // font-weight : bold;
   border-radius: 5px; /* 숫자 부분의 모서리도 약간 둥글게 */
   color: #000; /* 숫자 텍스트 색상 */
   width: 80px; /* 슬롯 숫자 배경의 너비를 설정 */
@@ -125,6 +273,7 @@ const PageContainer = styled.div`
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  height: 70vh;
 `;
 const ResetButton = styled.button<{ $bgColor: string }>`
   background-color: ${({ $bgColor }) => $bgColor}; /* props로 받은 배경색 */
@@ -160,139 +309,40 @@ const ResetButton = styled.button<{ $bgColor: string }>`
   }
 `;
 
-const FortuneCookieContent: React.FC = () => {
-  const [isOpened, setIsOpened] = useState(false);
-  const [fortuneMessage, setFortuneMessage] = useState<string | null>(null);
-  const [fortuneAuthor, setFortuneAuthor] = useState<string | null>(null);
-  const [cookieCount, setCookieCount] = useState(5); // 시작 숫자
-  const [isShaking, setIsShaking] = useState(false); // 흔들림 상태 관리
-  const [animateCount, setAnimateCount] = useState(false); // 숫자 애니메이션 상태 관리
-  const [isSelected, setIsSelected] = useState(false); //
-  const navigate = useNavigate();
-
-  const openCookie = async () => {
-    const idx = Math.floor(Math.random() * quotes.length);
-    setFortuneMessage(quotes[idx].message);
-    setFortuneAuthor(`${quotes[idx].author}`);
-  };
-
-  // 숫자가 올라가는 애니메이션 (한 칸씩 위로 이동)
-  const countSpring = useSpring({
-    from: { transform: `translateY(0px)` },
-    to: { transform: `translateY(-50px)` }, // 숫자가 한 칸 위로 올라가도록 설정
-    config: { tension: 200, friction: 20 }, // 애니메이션 속도
-    reset: true, // 항상 처음 상태로부터 애니메이션 시작
-    immediate: !animateCount, // handleClick이 발생할 때만 애니메이션 적용
-  });
-
-  const shakeSpring = useSpring({
-    from: { transform: 'translateX(0px)' }, // 시작점
-    to: { transform: 'translateX(20px)' }, // 끝점: 한번만 떨리도록 설정
-    config: { tension: 1000, friction: 20 }, // 빠르게 떨리도록 설정
-    reset: true, // 상태를 리셋해서 중복 떨림 방지
-    onRest: () => setIsShaking(false), // 떨림이 끝나면 흔들림 멈춤
-  });
-
-  const hitCookie = () => {
-    setIsShaking(true); // 흔들림 상태 true
-    setAnimateCount(true); // 숫자 애니메이션을 실행하도록 설정
-
-    if (cookieCount > 1) {
-      setCookieCount(cookieCount - 1);
-    } else {
-      openCookie();
-      setIsOpened(true);
-    }
-  };
-
-  const handleClick = () => {
-    console.log('click');
-    if (isShaking) {
-      return;
-    }
-    if (!isSelected) {
-      setIsSelected(true);
-    }
-    console.log('hit');
-    hitCookie();
-    setTimeout(() => {
-      setAnimateCount(false); // 애니메이션이 완료된 후 비활성화
-    }, 200); // 애니메이션 지속 시간에 맞춰 비활성화
-  };
-  const handleClickReset = () => {
-    setIsOpened(false);
-    setIsSelected(false);
-    setFortuneMessage(null);
-    setFortuneAuthor(null);
-    setCookieCount(5);
-  };
-  const openCookieSpring = useSpring({
-    opacity: isOpened ? 1 : 0,
-    transform: isOpened ? 'scale(1)' : 'scale(0)',
-  });
-
-  const handleClickBackButton = () => {
-    navigate('/mypage');
-
-
+const bounceAnimation = keyframes`
+  0%, 100% {
+    transform: translateY(0);
   }
-  return (
-    <PageContainer>
-      {!isOpened ? (
-        <>
-          <CookieCountContainer>
-            <CookieCountNumber style={countSpring}>
-              <Number>{cookieCount}</Number>
-              <Number>{cookieCount}</Number>
-            </CookieCountNumber>
-          </CookieCountContainer>
-          <FortuneCookieImage
-            style={shakeSpring}
-            $isSelected={isSelected}
-            src={closedCookie}
-            alt="Closed Fortune Cookie"
-            onClick={handleClick}
-          />
-          <Description>
-            바삭바삭한 포춘 쿠키 안에는
-            <br />
-            오늘 당신을 위한 메시지가 숨어 있습니다.
-            <br />
-            불안과 고민이 날아가도록
-            <br />
-            포춘 쿠키를 신나게 부숴 볼까요?!
-          </Description>
-        </>
-      ) : (
-        <>
-          <OpenedCookieImage style={openCookieSpring} src={openCookieImage} alt="Open Fortune Cookie" />
-          {fortuneMessage && (
-            <>
-              <MessagePaper>
-                <p style={styles.fortuneMessage}>{fortuneMessage}</p>
-                <p>{fortuneAuthor}</p>
-              </MessagePaper>
-              <div>
-                <ResetButton $bgColor={'#4CAF50'} onClick={handleClickReset}>
-                  새 포춘쿠키 열기
-                </ResetButton>
-                <ResetButton $bgColor={'#888'} onClick={handleClickBackButton}>
-                  돌아가기
-                </ResetButton>
-              </div>
-            </>
-          )}
-        </>
-      )}
-    </PageContainer>
-  );
-};
+  50% {
+    transform: translateY(-10px);
+  }
+`;
 
-const styles = {
-  fortuneMessage: {
-    fontSize: '18px',
-    fontWeight: 'bold',
-    width: '80%',
-  },
-};
-export default FortuneCookieContent;
+// 말풍선 모양의 Div 정의
+const SpeechBubble = styled.div`
+  position: absolute;
+  top: 80px;
+  left: -60px;
+  background-color: #4370e3;
+  color: white;
+  padding: 20px;
+  border-radius: 15px;
+  max-width: 300px;
+  text-align: center;
+  font-size: 1rem;
+  animation: ${bounceAnimation} 1s ease-in-out infinite;
+  border-color: #4370e3;
+  // 말풍선 아래 삼각형
+  &:after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: -20px; /* 말풍선의 오른쪽에 꼬리를 배치 */
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    border-left: 20px solid #4370e3; /* 말풍선과 동일한 배경색 */
+  }
+`;
