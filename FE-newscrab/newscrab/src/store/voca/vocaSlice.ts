@@ -34,14 +34,14 @@ export const addVocaThunk = createAsyncThunk<
   { rejectValue: string } // 실패 시 반환할 값의 타입을 명시적으로 지정
 >(
   "voca/addVoca",
-  async (vocaAddList, { rejectWithValue }) => {
-    try {
+  async (vocaAddList) => {
+    // try {
       const response = await addVoca(vocaAddList); // vocaAddList를 배열로 전달
       return response.data;
-    } catch (error: any) {
-      // 오류 발생 시 rejectWithValue로 문자열을 반환
-      return rejectWithValue(error.response?.data || "뉴스에 있는 단어를 입력해주세요🦀");
-    }
+  //   } catch (error: any) {
+  //     // 오류 발생 시 rejectWithValue로 문자열을 반환
+  //     return rejectWithValue(error.response?.data || "뉴스에 있는 단어를 입력해주세요🦀");
+  //   }
   }
 );
 
@@ -145,7 +145,7 @@ const vocaSlice = createSlice({
       .addCase(updateVocaThunk.fulfilled, (state, action) => {
         state.loading = false;
         // vocaList에서 해당 vocaId를 찾아 수정
-        const index = state.vocaList.findIndex((voca) => voca.id === action.payload.vocaId);
+        const index = state.vocaList.findIndex((voca) => voca && voca.id === action.payload.vocaId);
         if (index !== -1) {
           state.vocaList[index] = { ...state.vocaList[index], ...action.payload.updatedData };
     }
@@ -162,7 +162,7 @@ const vocaSlice = createSlice({
       })
       .addCase(deleteVocaThunk.fulfilled, (state, action) => {
         state.loading = false;
-        state.vocaList = state.vocaList.filter(voca => voca.vocaId !== action.payload.vocaId);
+        state.vocaList = state.vocaList.filter(voca => voca && voca.vocaId !== action.payload.vocaId);
       })
       .addCase(deleteVocaThunk.rejected, (state, action) => {
         state.loading = false;

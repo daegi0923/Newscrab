@@ -6,11 +6,7 @@ import VocaDetail from "@components/voca/VocaDetail";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import ArticleRcmd from "@components/voca/ArticleRcmd";
-import {
-  fetchVocaDetailThunk,
-  updateVocaThunk,
-  deleteVocaThunk,
-} from "@store/voca/vocaSlice";
+import {  fetchVocaDetailThunk, updateVocaThunk, deleteVocaThunk} from "@store/voca/vocaSlice";
 import { RootState, AppDispatch } from "@store/index";
 import { useEffect, useState } from "react";
 import VocaEditModal from "@components/voca/VocaEditModal";

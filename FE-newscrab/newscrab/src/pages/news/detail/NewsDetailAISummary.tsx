@@ -80,6 +80,33 @@ const AISummaryHeader = styled.h4`
   color: #666;
 `;
 
+
+const AISummaryLoadingText = styled.p`
+  margin-top: 8px;
+  font-size: 14px;
+  color: #555;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  display: inline-block;
+  width: 100%; // 부모 요소 크기에 맞춤
+  
+  animation: blinkAnimation 1s step-start infinite;
+
+  @keyframes blinkAnimation {
+    0% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+`;
+
+
+
 const AISummaryText = styled.p`
   margin-top: 8px;
   font-size: 14px;
@@ -159,7 +186,7 @@ const NewsDetailAISummary: React.FC<NewsDetailAISummaryProps> = ({ newsId, onTra
           <CloseButtonStyled onClick={handleCloseSummary}>X</CloseButtonStyled> 
           <AISummaryHeader>AI 요약</AISummaryHeader>
           {loading ? (
-            <AISummaryText>요약을 가져오는 중...</AISummaryText> // 로딩 중 텍스트
+            <AISummaryLoadingText>요약을 가져오는 중...</AISummaryLoadingText> // 로딩 중 텍스트
           ) : (
             <>
               <AISummaryText>뉴스 본문을 자동으로 요약한 내용입니다.</AISummaryText>
