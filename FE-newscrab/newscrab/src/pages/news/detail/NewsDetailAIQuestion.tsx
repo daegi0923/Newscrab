@@ -80,6 +80,30 @@ const AIQuestionHeader = styled.h4`
   color: #666;
 `;
 
+const AIQuestionLoadingText = styled.p`
+  margin-top: 8px;
+  font-size: 14px;
+  color: #555;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  display: inline-block;
+  width: 100%; // 부모 요소 크기에 맞춤
+  
+  animation: blinkAnimation 1s step-start infinite;
+
+  @keyframes blinkAnimation {
+    0% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+`;
+
 const AIQuestionText = styled.p`
   margin-top: 8px;
   font-size: 14px;
@@ -152,14 +176,14 @@ const NewsDetailAIQuestion: React.FC<NewsDetailAIQuestionProps> = ({ newsId, sum
         <AIButtonStyled onClick={handleAIButtonClick}>
           AI 예상질문
         </AIButtonStyled>
-        <GIFImage src={gifImage} alt="loading" /> {/* GIF 추가 */}
+         <GIFImage src={gifImage} alt="loading" /> {/* GIF 추가 */}
       </AIButtonContainer>
       {showQuestion && (
         <AIQuestionBox>
           <CloseButtonStyled onClick={handleCloseQuestion}>X</CloseButtonStyled> 
           <AIQuestionHeader>AI 예상질문</AIQuestionHeader>
           {loading ? (
-            <AIQuestionText>예상 질문을 가져오는 중...</AIQuestionText>
+            <AIQuestionLoadingText>예상 질문을 가져오는 중...</AIQuestionLoadingText>
           ) : (
             <>
               <AIQuestionText>뉴스 본문을 바탕으로 자동 생성된 질문입니다.</AIQuestionText>
