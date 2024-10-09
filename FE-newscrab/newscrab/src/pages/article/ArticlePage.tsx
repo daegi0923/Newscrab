@@ -92,7 +92,7 @@ const ArticlePage: React.FC = () => {
     const newsId = localStorage.getItem("newsId"); // localStorage에서 newsId 읽어오기
     if (newsId) {
       handleSearch("뉴스번호", newsId); // newsId로 검색
-      // localStorage.removeItem("newsId"); // 검색 후 localStorage에서 제거
+      localStorage.removeItem("newsId"); // 검색 후 localStorage에서 제거
     }
   }, [handleSearch]); // handleSearch를 의존성에 추가
 

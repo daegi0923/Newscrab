@@ -10,6 +10,7 @@ import { ScrapDetailResponse, Highlight } from "../../../types/scrapTypes"; // s
 import { industry } from "@common/Industry"; // 산업 데이터를 가져오기
 import { getScrapDetail } from "@apis/scrap/scrapDetailApi"; // 스크랩 데이터를 가져오기 위한 API 호출
 import { deleteScrap } from "@apis/scrap/scrapApi";
+import { postArticle } from "@apis/article/articleApi";
 import Swal from "sweetalert2";
 
 const formatDate = (dateString: string) => {
@@ -56,6 +57,7 @@ const NewsTitleWrapper = styled.div`
   align-items: center;
   justify-content: flex-start;
   position: relative;
+  margin-top: 20px;
 `;
 
 const NewsTitle = styled.h2`
@@ -142,6 +144,21 @@ const ViewIcon = styled.img`
 const ScrapCntIcon = styled.img`
   width: 16px;
   height: 16px;
+`;
+
+const UploadButton = styled.button`
+  background-color: #ff8f4d;
+  color: black;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 12px;
+  margin-right: 5px;
+
+  &:hover {
+    background-color: #e67a3c;
+  }
 `;
 
 const EditButton = styled.button`
@@ -330,6 +347,36 @@ const ScrapDetailArticle: React.FC<ScrapDetailArticleProps> = ({ scrapId }) => {
     }
   }, [scrapDetail, showContent]);
 
+  useEffect(() => {
+    fetchScrapDetail(scrapId);
+  }, [scrapId]);
+
+  const handleUploadClick = async () => {
+    if (scrapDetail?.scrapId) {
+      try {
+        await postArticle(scrapDetail.scrapId); // 숫자를 문자열로 변환
+        Swal.fire({
+          icon: "success",
+          title: "게시글 공유 완료",
+          text: "게시글이 성공적으로 공유되었습니다.",
+        });
+      } catch (error) {
+        Swal.fire({
+          icon: "error",
+          title: "게시글 공유 실패",
+          text: "게시글 공유 중 오류가 발생했습니다. 다시 시도해주세요.",
+        });
+        console.log(error);
+      }
+    } else {
+      Swal.fire({
+        icon: "warning",
+        title: "게시글 공유 불가",
+        text: "게시글 ID를 찾을 수 없습니다.",
+      });
+    }
+  };
+
   const handleEditClick = () => {
     // 수정 페이지로 이동하거나 수정 모드를 활성화
     navigate(`/news/${scrapDetail?.newsId}`); // 수정 페이지로 이동
@@ -405,7 +452,9 @@ const ScrapDetailArticle: React.FC<ScrapDetailArticleProps> = ({ scrapId }) => {
         <>
           {/* <LikeButton newsId={scrapDetail.newsId} /> */}
           <ButtonContainer>
-            게시글에 공유하기
+            <UploadButton onClick={handleUploadClick}>
+              게시글에 공유하기
+            </UploadButton>{" "}
             <EditButton onClick={handleEditClick}>수정</EditButton>
             <DeleteButton onClick={handleDeleteClick}>삭제</DeleteButton>
           </ButtonContainer>
