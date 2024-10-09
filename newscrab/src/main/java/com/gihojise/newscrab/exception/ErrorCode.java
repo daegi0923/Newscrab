@@ -62,6 +62,11 @@ public enum ErrorCode {
     // 외부 API 호출
     EXTERNAL_API_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "외부 API 호출 에러입니다."),
 
+    // Article
+    ARTICLE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 아티클을 찾을 수 없습니다."),
+    USER_ARTICLE_LIKE_ALREADY_EXIST(HttpStatus.CONFLICT, "이미 좋아요를 누른 아티클입니다."),
+    USER_ARTICLE_LIKE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 좋아요를 찾을 수 없습니다."),
+
     // 필요한 에러 코드들 계속 추가
     ;
 
