@@ -5,7 +5,6 @@ import styled from "styled-components";
 import Header from "@common/Header";
 import NewsDetailArticle from "./NewsDetailArticle";
 import NewsDetailScrap from "./NewsDetailScrap";
-import NewsDetailRcmd from "./NewsDetailRcmd";
 // api
 import { getNewsDetail } from "@apis/news/newsDetailApi";
 import { NewsDetailItem } from "../../../types/newsTypes";
@@ -132,14 +131,6 @@ const NewsDetailPage: React.FC = () => {
         >
           <FaChevronRight /> {/* 오른쪽 화살표 아이콘 */}
         </ArrowButton>
-
-        {/* newsDetailItem을 NewsDetailRcmd로 넘겨줌 */}
-        {newsId && newsDetailItem && (
-          <NewsDetailRcmd
-            newsId={parseInt(newsId, 10)}
-            newsDetailItem={newsDetailItem}
-          />
-        )}
       </NewsDetailContainer>
     </div>
   );
