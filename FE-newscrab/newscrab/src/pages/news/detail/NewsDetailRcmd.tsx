@@ -169,8 +169,8 @@ const NewsDetailRcmd: React.FC<NewsDetailRcmdProps> = ({ newsDetailItem }) => {
   useEffect(() => {
     const options = {
       strings: ['연관뉴스도 추천해줄"게"', '나를 클릭 하"게"'], // 각기 다른 문구
-      typeSpeed: 100,
-      backSpeed: 50,
+      typeSpeed: 50,
+      backSpeed: 30,
       loop: true,
       showCursor: false, // 커서 숨김
     };
