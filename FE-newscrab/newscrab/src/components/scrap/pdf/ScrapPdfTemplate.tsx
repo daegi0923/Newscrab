@@ -34,7 +34,6 @@ const ScrapDetail = styled.div`
   display: flex;
   justify-content: center;
   width : 1000px;
-  height : 300px;
   padding-top : 30px;
 `;
 
