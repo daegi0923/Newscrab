@@ -5,12 +5,18 @@ import ArticleList from "./ArticleList"; // ArticleList는 articles를 props로 
 import { getArticleData } from "@apis/article/articleApi"; // API 요청 함수
 import { ArticleItem } from "../../types/articleTypes"; // 실제 API 데이터 타입
 import styled from "styled-components";
+import { industry } from "@common/Industry"; // 산업군 데이터를 import
 
 const CenteredSearchBar = styled.div`
   display: flex;
   justify-content: center;
   margin: 20px 0;
 `;
+
+const getIndustryNameById = (id: number): string => {
+  const matchedIndustry = industry.find((item) => item.industryId === id);
+  return matchedIndustry ? matchedIndustry.industryName : "Unknown Industry";
+};
 
 const ArticlePage: React.FC = () => {
   const [articles, setArticles] = useState<ArticleItem[]>([]);
@@ -41,22 +47,24 @@ const ArticlePage: React.FC = () => {
         if (searchType === "전체") {
           return (
             article.scrapResponseDto.newsTitle.includes(searchTerm) ||
-            article.scrapResponseDto.newsId.toString().includes(searchTerm) || // 숫자를 문자열로 변환
+            article.scrapResponseDto.newsId.toString().includes(searchTerm) ||
             article.name.includes(searchTerm) ||
-            article.scrapResponseDto.industryId.toString().includes(searchTerm) // 숫자를 문자열로 변환
+            getIndustryNameById(article.scrapResponseDto.industryId).includes(
+              searchTerm
+            ) // industryName으로 검색
           );
         } else if (searchType === "뉴스제목") {
           return article.scrapResponseDto.newsTitle.includes(searchTerm);
         } else if (searchType === "뉴스번호") {
           return article.scrapResponseDto.newsId
             .toString()
-            .includes(searchTerm); // 숫자를 문자열로 변환
+            .includes(searchTerm);
         } else if (searchType === "작성자") {
           return article.name.includes(searchTerm);
         } else if (searchType === "산업군") {
-          return article.scrapResponseDto.industryId
-            .toString()
-            .includes(searchTerm); // 숫자를 문자열로 변환
+          return getIndustryNameById(
+            article.scrapResponseDto.industryId
+          ).includes(searchTerm); // industryName으로 필터링
         }
         return false;
       });
