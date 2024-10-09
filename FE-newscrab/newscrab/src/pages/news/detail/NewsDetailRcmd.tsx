@@ -27,8 +27,8 @@ const PopupContainer = styled.div<{ $show: boolean }>`
 
 const CrabImageWrapper = styled.div`
   position: absolute;
-  bottom: 10px;
-  right: 10px;
+  bottom: 100px;
+  right: -50px;
   width: 50px;
   height: 50px;
   cursor: pointer;
@@ -106,7 +106,7 @@ const TypedTextContainer = styled.div<{ $show: boolean }>`
   right: 70px; /* CrabImage 좌측에 배치되도록 조정 */
   bottom: 0; /* CrabImage와 수직으로 맞추기 */
   width: 180px;
-  height: 25px;
+  height: 18px;
   font-size: 16px;
   font-weight: bold;
   color: white;
@@ -168,7 +168,7 @@ const NewsDetailRcmd: React.FC<NewsDetailRcmdProps> = ({ newsDetailItem }) => {
 
   useEffect(() => {
     const options = {
-      strings: ['연관뉴스도 추천해줄"게"', '나를 클릭 하"게"'], // 각기 다른 문구
+      strings: ['연관뉴스도 추천해 줄"게"', '나를 클릭 하"게"'], // 각기 다른 문구
       typeSpeed: 50,
       backSpeed: 30,
       loop: true,

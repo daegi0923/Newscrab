@@ -96,7 +96,14 @@ export const ScrapCntIcon = styled.img`
 export const NewsText = styled.div`
   line-height: 1.6;
   font-size: 16px;
-  margin-bottom: 80px;
+  margin-bottom: 50px;
+
+  img {
+    max-width: 100%;
+    width: auto;
+    height: auto;
+    max-width: 700px; /* 이미지의 최대 너비를 750px로 설정 */
+  }
 `;
 
 export const Divider = styled.hr`
