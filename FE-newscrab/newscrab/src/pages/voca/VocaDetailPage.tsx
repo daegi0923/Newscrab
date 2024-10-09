@@ -6,12 +6,16 @@ import VocaDetail from "@components/voca/VocaDetail";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import ArticleRcmd from "@components/voca/ArticleRcmd";
-import {  fetchVocaDetailThunk, updateVocaThunk, deleteVocaThunk} from "@store/voca/vocaSlice";
+import {
+  fetchVocaDetailThunk,
+  updateVocaThunk,
+  deleteVocaThunk,
+} from "@store/voca/vocaSlice";
 import { RootState, AppDispatch } from "@store/index";
 import { useEffect, useState } from "react";
 import VocaEditModal from "@components/voca/VocaEditModal";
 import { words } from "@components/voca/VocaList";
-import Swal from 'sweetalert2';
+import Swal from "sweetalert2";
 
 const VocaContainer = styled.div`
   position: relative;
@@ -64,7 +68,7 @@ const BackButton = styled.button`
   top: 12%;
   left: 10%;
   padding: 10px 15px;
-  background-color: #fcfaf9;
+  background-color: #fdfaf8;
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -132,7 +136,7 @@ const DelButton = styled.button`
   }
 `;
 const TextArea = styled.div`
-  font-size:15px;
+  font-size: 15px;
   font-weight: bold;
   margin-top: 5%;
   margin-bottom: 0.5%;
@@ -174,8 +178,8 @@ const VocaDetailPage: React.FC = () => {
   // const { word } = location.state as { word: VocaWithImages };
   // const [currentWord, setCurrentWord] = useState(word);
 
-  const handleNewsClick = (originNewsId:number) => {
-    navigate(`/news/${originNewsId}`) // 수정 버튼 클릭 시 모달 열기
+  const handleNewsClick = (originNewsId: number) => {
+    navigate(`/news/${originNewsId}`); // 수정 버튼 클릭 시 모달 열기
   };
   const handleEditClick = () => {
     setIsModalOpen(true); // 수정 버튼 클릭 시 모달 열기
@@ -216,16 +220,16 @@ const VocaDetailPage: React.FC = () => {
 
   const handleDeleteVoca = async () => {
     const confirmed = await Swal.fire({
-      title: '정말로 삭제하시겠습니까?',
-      text: '삭제 후에는 복구할 수 없습니다!',
-      icon: 'warning',
+      title: "정말로 삭제하시겠습니까?",
+      text: "삭제 후에는 복구할 수 없습니다!",
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
-      confirmButtonText: '삭제',
-      cancelButtonText: '취소',
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "삭제",
+      cancelButtonText: "취소",
     });
-  
+
     if (confirmed.isConfirmed) {
       try {
         if (vocaId) {
@@ -233,9 +237,9 @@ const VocaDetailPage: React.FC = () => {
           await dispatch(deleteVocaThunk(parseInt(vocaId)));
           // 삭제 완료 후 SweetAlert2 성공 메시지 표시
           await Swal.fire({
-            icon: 'success',
-            title: '삭제 완료',
-            text: '단어가 성공적으로 삭제되었습니다.',
+            icon: "success",
+            title: "삭제 완료",
+            text: "단어가 성공적으로 삭제되었습니다.",
           });
           // 삭제 후 단어 리스트 페이지로 이동
           navigate("/voca");
@@ -244,9 +248,9 @@ const VocaDetailPage: React.FC = () => {
         console.error("삭제 중 오류 발생:", error);
         // 오류 발생 시 SweetAlert2 오류 메시지 표시
         Swal.fire({
-          icon: 'error',
-          title: '삭제 실패',
-          text: '삭제 중 오류가 발생했습니다. 다시 시도해주세요.',
+          icon: "error",
+          title: "삭제 실패",
+          text: "삭제 중 오류가 발생했습니다. 다시 시도해주세요.",
         });
       }
     }
@@ -282,7 +286,9 @@ const VocaDetailPage: React.FC = () => {
       <GlobalStyle />
       <VocaCommon />
       <BackButton onClick={() => navigate("/voca")}>단어장 목록</BackButton>
-      <NewsButton onClick={() => handleNewsClick(selectedVoca.originNewsId)}>해당 뉴스로 이동</NewsButton>
+      <NewsButton onClick={() => handleNewsClick(selectedVoca.originNewsId)}>
+        해당 뉴스로 이동
+      </NewsButton>
       <EditButton onClick={handleEditClick}>수정</EditButton>
       <DelButton onClick={handleDeleteVoca}>삭제</DelButton>
 
@@ -308,7 +314,9 @@ const VocaDetailPage: React.FC = () => {
           vocaDesc={selectedVoca.vocaDesc}
           sentence={selectedVoca.sentence}
         />
-        <TextArea>🔍 '{selectedVoca.vocaName}' 단어와 연관된 뉴스예요.</TextArea>
+        <TextArea>
+          🔍 '{selectedVoca.vocaName}' 단어와 연관된 뉴스예요.
+        </TextArea>
         <NewsContainer>
           {selectedVoca.relatedNews1 && (
             <ArticleRcmd relatedNews={selectedVoca.relatedNews1} />
