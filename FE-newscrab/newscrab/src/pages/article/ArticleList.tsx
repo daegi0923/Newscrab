@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import styled from "styled-components";
-import { getArticleData } from "@apis/article/articleApi"; // API 요청 함수 불러오기
-import { ArticleItem } from "../../types/articleTypes"; // 실제 API 데이터 타입 불러오기
+import { useNavigate } from "react-router-dom"; // useNavigate import 추가
+import { ArticleItem } from "../../types/articleTypes";
+import { industry } from "@common/Industry";
 
-// Styled Components
 const TableWrapper = styled.div`
   padding: 20px 50px;
 `;
@@ -30,28 +30,36 @@ const StyledTr = styled.tr<{ isEven: boolean }>`
   text-align: left;
 `;
 
-const ArticleList: React.FC = () => {
-  const [articles, setArticles] = useState<ArticleItem[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+const getIndustryNameById = (id: number): string => {
+  const matchedIndustry = industry.find((item) => item.industryId === id);
+  return matchedIndustry ? matchedIndustry.industryName : "Unknown Industry";
+};
 
-  useEffect(() => {
-    const fetchArticles = async () => {
-      try {
-        const data = await getArticleData();
-        setArticles(data.data.articleList); // API 응답 데이터를 설정
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching articles:", error);
-        setLoading(false);
-      }
-    };
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const hours = String(date.getHours()).padStart(2, "0");
+  const minutes = String(date.getMinutes()).padStart(2, "0");
 
-    fetchArticles();
-  }, []);
+  return `${year}-${month}-${day} ${hours}:${minutes}`;
+};
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+interface ArticleListProps {
+  articles: ArticleItem[];
+}
+
+const ArticleList: React.FC<ArticleListProps> = ({ articles }) => {
+  const navigate = useNavigate(); // useNavigate 훅 추가
+
+  const handleArticleClick = (articleId: number) => {
+    navigate(`/article/${articleId}`); // 클릭 시 해당 articleId로 이동
+  };
+
+  const handleNewsClick = (newsId: number) => {
+    navigate(`/news/${newsId}`); // 뉴스 번호 클릭 시 해당 newsId로 이동
+  };
 
   return (
     <TableWrapper>
@@ -69,16 +77,26 @@ const ArticleList: React.FC = () => {
         <tbody>
           {articles.map((article, index) => (
             <StyledTr key={article.articleId} isEven={index % 2 === 0}>
-              <StyledTd style={{ color: "blue", cursor: "pointer" }}>
+              <StyledTd
+                style={{ color: "blue", cursor: "pointer" }}
+                onClick={() => handleArticleClick(article.articleId)} // 기사 제목 클릭
+              >
                 {article.scrapResponseDto.newsTitle}
               </StyledTd>
-              <StyledTd>{article.scrapResponseDto.industryId}</StyledTd>
-              <StyledTd style={{ color: "blue", cursor: "pointer" }}>
+              <StyledTd>
+                {getIndustryNameById(article.scrapResponseDto.industryId)}
+              </StyledTd>
+              <StyledTd
+                style={{ color: "blue", cursor: "pointer" }}
+                onClick={() => handleNewsClick(article.scrapResponseDto.newsId)} // 뉴스 번호 클릭
+              >
                 {article.scrapResponseDto.newsId}
               </StyledTd>
               <StyledTd>{article.name}</StyledTd>
               <StyledTd>{article.likeCnt}</StyledTd>
-              <StyledTd>{article.scrapResponseDto.createdAt}</StyledTd>
+              <StyledTd>
+                {formatDate(article.scrapResponseDto.createdAt)}
+              </StyledTd>
             </StyledTr>
           ))}
         </tbody>

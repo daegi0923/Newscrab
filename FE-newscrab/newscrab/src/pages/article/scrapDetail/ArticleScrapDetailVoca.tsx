@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import { getScrapDetail } from "@apis/scrap/scrapDetailApi";
-import {
-  ScrapDetailVocaListResponse,
-  ScrapDetailResponse,
-} from "../../../types/scrapTypes"; // 새 타입 불러옴
+import { getArticleDetail } from "@apis/article/articleDetailApi"; // 기사 상세 API로 수정
+import { ArticleDetailItem } from "../../../types/articleTypes"; // 새로운 데이터 타입 가져오기
 import scrollbar from "@components/common/ScrollBar";
 
 const Sidebar = styled.div`
@@ -59,31 +56,40 @@ const Divider = styled.hr`
   margin: 10px 0;
 `;
 
-// ScrapDetailVoca가 scrapId를 props로 받음
-const ArticleScrapDetailVoca: React.FC<{ scrapId: number }> = ({ scrapId }) => {
-  const [vocalist, setVocalist] = useState<ScrapDetailVocaListResponse[]>([]);
+// scrapId를 props로 받음
+const ArticleScrapDetailVoca: React.FC<{ articleId: number }> = ({
+  articleId,
+}) => {
+  const [vocalist, setVocalist] = useState<
+    ArticleDetailItem["data"]["scrapResponseDto"]["vocalist"]
+  >([]);
 
   useEffect(() => {
     const fetchData = async () => {
-      if (scrapId !== 0) {
+      if (articleId !== 0) {
         try {
-          const response: ScrapDetailResponse = await getScrapDetail(scrapId);
-
-          // vocalist 배열을 updatedAt을 기준으로 정렬
-          const sortedVocalist = response.vocalist.sort(
-            (a, b) =>
-              new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+          const response: ArticleDetailItem | null = await getArticleDetail(
+            articleId
           );
 
-          setVocalist(sortedVocalist); // 정렬된 vocalist 데이터 설정
+          if (response) {
+            // vocalist 배열을 updatedAt을 기준으로 정렬
+            const sortedVocalist = response.data.scrapResponseDto.vocalist.sort(
+              (a, b) =>
+                new Date(b.updatedAt).getTime() -
+                new Date(a.updatedAt).getTime()
+            );
+
+            setVocalist(sortedVocalist); // 정렬된 vocalist 데이터 설정
+          }
         } catch (error) {
-          console.error("Error fetching scrap detail:", error);
+          console.error("Error fetching article detail:", error);
         }
       }
     };
 
     fetchData();
-  }, [scrapId]); // scrapId가 변경될 때마다 데이터를 다시 가져옴
+  }, [articleId]); // articleId가 변경될 때마다 데이터를 다시 가져옴
 
   return (
     <Sidebar>
