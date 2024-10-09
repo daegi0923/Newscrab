@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import scrollbar from "@components/common/ScrollBar";
 import viewIcon from "@assets/hot.png";
@@ -8,7 +9,9 @@ import { ArticleDetailItem } from "../../../types/articleTypes"; // 수정된 �
 // import LikeButton from "@pages/news/common/LikeButton";
 import ArticleScrapLike from "./ArticleScrapLike "; // 경로 수정
 import { getArticleDetail } from "@apis/article/articleDetailApi"; // 수정된 API
+import { deleteArticle } from "@apis/article/articleApi";
 import { industry } from "@common/Industry"; // 산업 데이터를 가져오기
+import Swal from "sweetalert2";
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
@@ -36,6 +39,23 @@ const ScrapContent = styled.div`
   position: relative;
   ${scrollbar}
   user-select: text;
+`;
+
+const DeleteButton = styled.button`
+  background-color: #f44336;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 12px;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+
+  &:hover {
+    background-color: #d32f2f;
+  }
 `;
 
 const NewsTitleWrapper = styled.div`
@@ -174,6 +194,7 @@ const ArticleScrapDetailArticle: React.FC<ArticleScrapDetailProps> = ({
   ); // 기사 데이터를 저장
   const [showContent, setShowContent] = useState(false); // 기본으로 내용이 숨겨짐
   const [, setIsLoading] = useState<boolean>(true); // 로딩 상태
+  const navigate = useNavigate(); // useNavigate 훅 사용
 
   // 기사 데이터를 가져오는 함수
   const fetchArticleDetail = async (articleId: number) => {
@@ -191,6 +212,44 @@ const ArticleScrapDetailArticle: React.FC<ArticleScrapDetailProps> = ({
     fetchArticleDetail(articleId); // 컴포넌트 마운트 시 데이터 요청
   }, [articleId]);
 
+  const handleDeleteClick = async () => {
+    // SweetAlert2로 삭제 확인 메시지 표시
+    const confirmed = await Swal.fire({
+      title: "정말로 삭제하시겠습니까?",
+      text: "삭제 후에는 복구할 수 없습니다!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "삭제",
+      cancelButtonText: "취소",
+    });
+
+    // 확인 버튼을 누르면 삭제 진행
+    if (confirmed.isConfirmed) {
+      try {
+        // 삭제 API 호출
+        await deleteArticle(articleId);
+        // 삭제 완료 후 알림
+        await Swal.fire({
+          icon: "success",
+          title: "삭제 완료",
+          text: "스크랩이 삭제되었습니다.",
+        });
+        // 삭제 후 목록 페이지로 이동
+        navigate("/article");
+      } catch (error) {
+        console.error("삭제 중 오류 발생:", error);
+        // 삭제 실패 시 알림
+        Swal.fire({
+          icon: "error",
+          title: "삭제 실패",
+          text: "삭제 중 오류가 발생했습니다. 다시 시도해주세요.",
+        });
+      }
+    }
+  };
+
   const handleToggleClick = () => {
     setShowContent(!showContent);
   };
@@ -205,7 +264,7 @@ const ArticleScrapDetailArticle: React.FC<ArticleScrapDetailProps> = ({
         {articleDetail ? (
           <>
             {/* <LikeButton newsId={articleDetail.data.scrapResponseDto.newsId} /> */}
-
+            <DeleteButton onClick={handleDeleteClick}>삭제</DeleteButton>
             {/* 토글 섹션 */}
             <NewsTitleWrapper>
               <ToggleButton onClick={handleToggleClick}>
@@ -215,7 +274,6 @@ const ArticleScrapDetailArticle: React.FC<ArticleScrapDetailProps> = ({
                 {articleDetail.data.scrapResponseDto.newsTitle}
               </NewsTitle>
             </NewsTitleWrapper>
-
             {/* 기사 상단 섹션 */}
             <MetaInfoContainer>
               <InfoGroup>
@@ -243,7 +301,6 @@ const ArticleScrapDetailArticle: React.FC<ArticleScrapDetailProps> = ({
               </Stats>
             </MetaInfoContainer>
             <Divider />
-
             {/* 본문 섹션 */}
             <CrabTextWrapper>
               <CrabIcon src={crab} alt="게 아이콘" />
@@ -267,7 +324,6 @@ const ArticleScrapDetailArticle: React.FC<ArticleScrapDetailProps> = ({
               </NewsTextPreview>
             )}
             <Divider />
-
             {/* 요약 섹션 */}
             <CrabTextWrapper>
               <CrabIcon src={crab} alt="게 아이콘" />
@@ -277,7 +333,6 @@ const ArticleScrapDetailArticle: React.FC<ArticleScrapDetailProps> = ({
               {articleDetail.data.scrapResponseDto.scrapSummary}
             </NewsText>
             <Divider />
-
             {/* 의견 섹션 */}
             <CrabTextWrapper>
               <CrabIcon src={crab} alt="게 아이콘" />
@@ -285,7 +340,6 @@ const ArticleScrapDetailArticle: React.FC<ArticleScrapDetailProps> = ({
             </CrabTextWrapper>
             <NewsText>{articleDetail.data.scrapResponseDto.comment}</NewsText>
             <Divider />
-
             {/* ArticleScrapLike에 articleId와 initialLikeCount 전달 */}
             <ArticleScrapLike
               articleId={articleId}

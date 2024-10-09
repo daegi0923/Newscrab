@@ -25,15 +25,14 @@ const ScrapWrapper = styled.div`
 const BackButton = styled.button`
   z-index: 2;
   position: absolute;
-  top: 105px;
+  top: 9.2%;
   left: 0%;
-  padding: 4px 8px;
-  background-color: #ffbe98;
+  padding: 10px 15px;
+  background-color: #fdfaf8;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   font-size: 15px;
-  color: white;
   &:hover {
     background-color: #ff8f4d;
   }

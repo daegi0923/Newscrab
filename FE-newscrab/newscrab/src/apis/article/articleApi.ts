@@ -4,7 +4,7 @@ import { ArticleData } from "../../types/articleTypes";
 export const getArticleData = async (): Promise<ArticleData> => {
   try {
     const response = await API.get("/article");
-    const { data } = response.data; // API 응답 데이터 추출
+    const { data } = response.data;
 
     const articleList = data.articleList.map((item: any) => ({
       articleId: item.articleId,
@@ -16,7 +16,7 @@ export const getArticleData = async (): Promise<ArticleData> => {
         newsTitle: item.scrapResponseDto.newsTitle,
         photolist: item.scrapResponseDto.photolist.length
           ? item.scrapResponseDto.photolist
-          : ["https://picsum.photos/100/80"], // 이미지가 없는 경우 기본 이미지 설정
+          : ["https://picsum.photos/100/80"],
         scrapSummary: item.scrapResponseDto.scrapSummary,
         comment: item.scrapResponseDto.comment,
         createdAt: item.scrapResponseDto.createdAt,
@@ -62,12 +62,43 @@ export const getArticleData = async (): Promise<ArticleData> => {
       },
     };
 
-    return articleData; // 기사 데이터 반환
+    return articleData;
   } catch (error: any) {
     if (error.response && error.response.status === 401) {
       console.error("인증 실패: 토큰이 유효하지 않거나 만료되었습니다.");
     } else {
       console.error("Error fetching article data:", error);
+    }
+    throw error;
+  }
+};
+
+export const postArticle = async (scrapId: number): Promise<void> => {
+  try {
+    const response = await API.post("/article", {
+      scrapId: scrapId,
+    });
+    console.log("Article posted successfully:", response.data);
+  } catch (error: any) {
+    if (error.response && error.response.status === 401) {
+      console.error("인증 실패: 토큰이 유효하지 않거나 만료되었습니다.");
+    } else {
+      console.error("Error posting article:", error);
+    }
+    throw error;
+  }
+};
+
+// deleteArticle 함수 추가
+export const deleteArticle = async (articleId: number): Promise<void> => {
+  try {
+    const response = await API.delete(`/article/${articleId}`);
+    console.log("Article deleted successfully:", response.data);
+  } catch (error: any) {
+    if (error.response && error.response.status === 401) {
+      console.error("인증 실패: 토큰이 유효하지 않거나 만료되었습니다.");
+    } else {
+      console.error("Error deleting article:", error);
     }
     throw error;
   }
