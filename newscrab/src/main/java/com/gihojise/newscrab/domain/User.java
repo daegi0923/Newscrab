@@ -64,6 +64,9 @@ public class User extends BaseTimeEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Set<UserIndustry> userIndustries = new HashSet<>();
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<UserArticleLike> userArticleLikes = new HashSet<>();
+
     // 유저 업데이트 메서드
     public void update(UserUpdateRequestDto userUpdateRequestDTO) {
         this.name = userUpdateRequestDTO.getName();
