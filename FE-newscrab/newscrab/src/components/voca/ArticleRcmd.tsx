@@ -32,6 +32,7 @@ const TextContainer = styled.div`
   color: white;
   z-index: 2; /* 텍스트가 투명한 배경 위로 올라오도록 */
   padding: 10px;
+  font-family: 'SUIT Variable', sans-serif;
 `;
 
 const Title = styled.h3`

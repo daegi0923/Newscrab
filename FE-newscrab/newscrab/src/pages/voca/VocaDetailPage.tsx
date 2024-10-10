@@ -73,10 +73,11 @@ const BackButton = styled.button`
   border-radius: 5px;
   cursor: pointer;
   font-size: 15px;
+  font-family: "Paper5";
   // font-weight: bold;
   // color: white;
   &:hover {
-    background-color: #ffd180;
+    background-color: #FFEAEA;
   }
 `;
 
@@ -85,7 +86,7 @@ const NewsButton = styled.button`
   z-index: 2;
   position: absolute;
   top: 24%;
-  left: 60.5%;
+  left: 61.1%;
   padding: 5px 10px;
   background-color: rgba(51, 51, 51, 0.5);
   border: none;
@@ -94,6 +95,7 @@ const NewsButton = styled.button`
   font-size: 15px;
   // font-weight: bold;
   color: white;
+  font-family: "Paper5";
   &:hover {
     background-color: #ff8f4d;
   }
@@ -111,6 +113,7 @@ const EditButton = styled.button`
   cursor: pointer;
   font-size: 15px;
   // font-weight: bold;
+  font-family: "Paper5";
   color: white;
   &:hover {
     background-color: #ff8f4d;
@@ -119,6 +122,7 @@ const EditButton = styled.button`
 
 const DelButton = styled.button`
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.9);
+  font-family: "Paper5";
   z-index: 2;
   position: absolute;
   top: 24%;

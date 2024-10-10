@@ -23,9 +23,10 @@ const NewsWrapper = styled.div`
 `;
 
 const BackButton = styled.button`
+  font-family: "Paper5";
   z-index: 2;
   position: absolute;
-  top: 10%;
+  top: 9.7%;
   left: 0%;
   padding: 5px 10px;
   background-color: #fdfaf8;
@@ -34,7 +35,7 @@ const BackButton = styled.button`
   cursor: pointer;
   font-size: 15px;
   &:hover {
-    background-color: #ffd180;
+    background-color: #FFEAEA;
   }
 `;
 
