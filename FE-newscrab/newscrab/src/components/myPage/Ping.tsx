@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-// import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const PingContainer = styled.div`
   margin-right: 3%;
@@ -9,10 +9,13 @@ const PingContainer = styled.div`
 `;
 
 const Ping: React.FC = () => {
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
+  const handleClick = () => {
+    navigate('/testpage');
+  };
 
   return (
-    <PingContainer>
+    <PingContainer onClick={handleClick}>
       <h3>당신의 취준핑은?</h3>
 
     </PingContainer>
