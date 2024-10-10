@@ -228,7 +228,7 @@ def get_latest_news(user_id: int, db:Session):
     latest_news = []
     for industry in user_industry_ids:
         # print(industry)
-        news_list = db.query(models.News.news_id).filter(models.News.news_industry_id == industry[0]).order_by(models.News.created_at.desc()).limit(10).all()
+        news_list = db.query(models.News.news_id).filter(models.News.news_industry_id == industry[0]).order_by(models.News.news_published_at.desc()).limit(10).all()
         for news in news_list:
             latest_news.append(news[0])
 
