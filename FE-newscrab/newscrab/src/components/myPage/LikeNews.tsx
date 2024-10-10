@@ -13,7 +13,7 @@ const Container = styled.div`
   align-items: center;
   justify-content: center; /* 세로 중앙 정렬 */
   padding: 10px;
-  width: 100%;  /* Container가 화면을 벗어나지 않도록 함 */
+  width: 100%; /* Container가 화면을 벗어나지 않도록 함 */
   height: 41%;
   box-sizing: border-box;
   overflow: hidden;
@@ -35,7 +35,7 @@ const NewsListContainer = styled.div`
   // margin-top: 1%;
   display: flex;
   align-items: center;
-  justify-content: center;  /* 내용물이 없을 때 중앙 정렬 */
+  justify-content: center; /* 내용물이 없을 때 중앙 정렬 */
   width: 97%;
   overflow: hidden;
 `;
@@ -100,12 +100,14 @@ const NewsTitle = styled.h3`
   line-height: 1.2;
   height: 27px;
   overflow: hidden;
+  font-family: "SUIT Variable";
 `;
 
 const NewsDate = styled.p`
   font-size: 10px;
   color: white;
   margin-top: -5px;
+  font-family: "SUIT Variable";
 `;
 
 const SectionName = styled.div`
@@ -116,7 +118,6 @@ const SectionName = styled.div`
   top: 70%;
   left: 37%;
 `;
-
 
 const LeftArrow = styled.button`
   position: absolute;
