@@ -10,4 +10,6 @@ import java.util.List;
 public interface VocaRepository extends JpaRepository<Voca, Integer> {
 
     List<Voca> findByUserUserId(int userId);
+
+    List<Voca> findByUserUserIdAndNewsNewsId(int userId, Integer newsId);
 }
