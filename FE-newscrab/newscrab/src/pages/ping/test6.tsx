@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import ping from "@assets/ping/기름핑.png"; 
+import ping from "@assets/ping/test6.png"; 
 
 const BackgroundContainer = styled.div`
   height: 100vh;
@@ -65,9 +65,9 @@ const Title = styled.h1`
 `;
 
 const CharacterImage = styled.img`
-  width: 150px;
+  width: 320px;
   height: auto;
-  margin-bottom: 20px;
+  // margin-bottom: 20px;
 `;
 
 const industryMapping: { [key: number]: { [key: number]: string[] } } = {
@@ -184,8 +184,8 @@ const Test6: React.FC<{ onSelect: (answerIndex: number) => void, answers: number
         </ProgressBarContainer>
         <CharacterImage src={ping} alt="Ping Character" />
         <Title>당신이 선호하는 근무 환경은?</Title>
-        <AnswerButton onClick={() => handleAnswer(0)}>집에서</AnswerButton>
-        <AnswerButton onClick={() => handleAnswer(1)}>사무실에서</AnswerButton>
+        <AnswerButton onClick={() => handleAnswer(0)}>집이 최고지! 편하게 일해야 생산성도 오름 💻</AnswerButton>
+        <AnswerButton onClick={() => handleAnswer(1)}>집중하려면 사무실이 답이지 💼</AnswerButton>
       </WhiteContainer>
     </BackgroundContainer>
   );

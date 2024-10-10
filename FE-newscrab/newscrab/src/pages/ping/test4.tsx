@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import ping from "@assets/ping/기름핑.png"; // 캐릭터 이미지 import
+import ping from "@assets/ping/test4.png"; // 캐릭터 이미지 import
 
 const BackgroundContainer = styled.div`
   height: 100vh;
@@ -65,9 +65,9 @@ const ProgressBar = styled.div<{ filled: boolean }>`
 `;
 
 const CharacterImage = styled.img`
-  width: 150px;
+  width: 310px;
   height: auto;
-  margin-bottom: 20px;
+  margin-bottom: 5px;
 `;
 
 const Test4: React.FC<{ onSelect: (answerIndex: number) => void }> = ({ onSelect }) => {
@@ -87,9 +87,9 @@ const Test4: React.FC<{ onSelect: (answerIndex: number) => void }> = ({ onSelect
           ))}
         </ProgressBarContainer>
         <CharacterImage src={ping} alt="Ping Character" />
-        <Title>흑백요리사에 출연한다면 심사받고 싶은 셰프는?</Title>
-        <AnswerButton onClick={() => handleAnswer(0)}>백종원</AnswerButton>
-        <AnswerButton onClick={() => handleAnswer(1)}>안성재</AnswerButton>
+        <Title>흑백요리사에 출연한다면 누구에게 심사받지?</Title>
+        <AnswerButton onClick={() => handleAnswer(0)}>조보이씨 이거 한번 먹어봐유, 백종원</AnswerButton>
+        <AnswerButton onClick={() => handleAnswer(1)}>저는 채소의 익힘을 중요시 하거덩여, 안성재</AnswerButton>
       </WhiteContainer>
     </BackgroundContainer>
   );

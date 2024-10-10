@@ -91,7 +91,7 @@ const Ping7: React.FC = () => {
           <br/>
           당신은 디테일 장인!<br/>사소한 부분도 놓치지 않고, 정확하게 일처리를 하는 성격이에요.<br/>기계처럼 착착 맞아떨어지는 걸 좋아하는 당신에게 잘 맞아요!
         </Description>
-        <Button href="/scrap">일반기계 뉴스 스크랩하러 가기!</Button>
+        <Button href="/mainNews">일반기계 뉴스 스크랩하러 가기!</Button>
         <Button href="/mypage">돌아가기</Button>
       </ContentWrapper>
     </Container>

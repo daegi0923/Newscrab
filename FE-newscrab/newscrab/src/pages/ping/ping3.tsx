@@ -91,7 +91,7 @@ const Ping3: React.FC = () => {
           <br/>
           당신은 최신 기술을 금방 익히는 트렌드 세터!<br/>변화를 두려워하지 않고,<br/>늘 새로운 도전을 즐기는 당신은 IT 산업에 안성맞춤입니다.
         </Description>
-        <Button href="/scrap">IT 뉴스 스크랩하러 가기!</Button>
+        <Button href="/mainNews">IT 뉴스 스크랩하러 가기!</Button>
         <Button href="/mypage">돌아가기</Button>
       </ContentWrapper>
     </Container>

@@ -74,9 +74,9 @@ const MainNewsPage: React.FC = () => {
 
         {/* 인기 뉴스 */}
         <SectionWrapper>
-          <TabItem>
+          <TabItem onClick={() => navigate("/article")}>
             <HotIcon src={Hot} alt="Hot" />
-            인기 뉴스
+            인기 스크랩 ⏵
           </TabItem>
           <HotSection />
         </SectionWrapper>

@@ -91,7 +91,7 @@ const Ping8: React.FC = () => {
           <br/>
           당신은 팀플의 달인!<br/>큰 프로젝트에서 모두를 조율하며 성공적인 결과를 만들어낼 수 있죠.<br/>바다처럼 넓은 시야를 가진 당신은 조선 산업에서 빛날 거예요!
         </Description>
-        <Button href="/scrap">조선 뉴스 스크랩하러 가기!</Button>
+        <Button href="/mainNews">조선 뉴스 스크랩하러 가기!</Button>
         <Button href="/mypage">돌아가기</Button>
       </ContentWrapper>
     </Container>

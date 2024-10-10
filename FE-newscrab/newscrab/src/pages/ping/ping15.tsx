@@ -91,7 +91,7 @@ const Ping15: React.FC = () => {
           <br/>
           부드러운 성향의 당신!<br/>모든 것을 섬세하게 조율하고, 사소한 디테일까지 신경 쓰죠.<br/>섬세함을 필요로 하는 섬유 산업에서 당신의 능력을 발휘할 거예요!
         </Description>
-        <Button href="/scrap">섬유 뉴스 스크랩하러 가기!</Button>
+        <Button href="/mainNews">섬유 뉴스 스크랩하러 가기!</Button>
         <Button href="/mypage">돌아가기</Button>
       </ContentWrapper>
     </Container>

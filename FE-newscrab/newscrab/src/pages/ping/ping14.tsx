@@ -91,7 +91,7 @@ const Ping14: React.FC = () => {
           <br/>
           에너지 만땅인 당신!<br/>끊임없이 새로움을 추구하고, 미래지향적인 성향을 가지고 있어요.<br/>꾸준히 완수해내는 당신에게 이차전지 산업이 잘 맞습니다.
         </Description>
-        <Button href="/scrap">이차전지 뉴스 스크랩하러 가기!</Button>
+        <Button href="/mainNews">이차전지 뉴스 스크랩하러 가기!</Button>
         <Button href="/mypage">돌아가기</Button>
       </ContentWrapper>
     </Container>
