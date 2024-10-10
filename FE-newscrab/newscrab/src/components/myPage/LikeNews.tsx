@@ -12,6 +12,8 @@ const Container = styled.div`
   flex-direction: column;
   align-items: center;
   padding: 20px;
+  height: 41%;
+  // border: 1px solid red;
 `;
 
 const NewsListContainer = styled.div`
@@ -49,6 +51,11 @@ const NewsItem = styled.div`
   height: 180px;
   flex-shrink: 0;
   overflow: hidden;
+  transition: transform 0.3s ease; /* 애니메이션 추가 */
+  
+  &:hover {
+    transform: translateY(-5px); /* hover 시 위로 살짝 올라감 */
+  }
 `;
 
 const NewsImage = styled.img`
@@ -93,7 +100,7 @@ const NewsDate = styled.p`
 const SectionName = styled.div`
   position: absolute;
   font-size: 15px;
-  margin-top:1%;
+  // margin-top:%;
   // margin-bottom: 10px;
   top: 70%;
   left: 39.5%;
@@ -108,7 +115,7 @@ const ArrowButton = styled.button`
   cursor: pointer;
   position: absolute;
   top: 50%;
-  transform: translateY(-50%);
+  transform: translateY(-100%);
   z-index: 1;
 `;
 
@@ -129,6 +136,15 @@ const RightArrow = styled(ArrowButton)`
     width: 13%;
     height: 13%;
   }
+`;
+
+const Message = styled.div`
+  font-size: 16px;
+  color: gray;
+  font-family: "Paper7";
+  margin-top: 16%;
+  margin-left: 2.3%;
+
 `;
 
 const LikeNews: React.FC = () => {
@@ -190,6 +206,7 @@ const LikeNews: React.FC = () => {
         <img src={arrow} alt="왼쪽 화살표" />
       </LeftArrow>
       <NewsListContainer>
+      {uniqueLikedNewsList.length > 0 ? (
         <NewsList ref={newsListRef}>
           {uniqueLikedNewsList.map((item) => (
             <NewsItem key={item.newsId} onClick={() => handleMove(item.newsId)}>
@@ -206,6 +223,8 @@ const LikeNews: React.FC = () => {
             </NewsItem>
           ))}
         </NewsList>
+       ) : (
+        <Message>아직 찜한 뉴스가 없습니다. 😪</Message> )}
       </NewsListContainer>
       <RightArrow onClick={scrollRight}>
         <img src={arrow} alt="오른쪽 화살표" />

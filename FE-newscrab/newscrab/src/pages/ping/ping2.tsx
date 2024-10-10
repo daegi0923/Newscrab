@@ -25,18 +25,13 @@ const ContentWrapper = styled.div`
   border-radius: 10px;
   text-align: center;
   position: relative;
-  margin-top: 20%;
+  margin-top: 25px;
 `;
 
 const Title = styled.h1`
-  font-size: 26px;
+  font-size: 22px;
   margin-bottom: 20px;
   color: #333;
-  position: absolute; // 절대 위치로 캐릭터 위로 배치
-  top: 115px; // 원하는 위치로 설정
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 2; // 캐릭터보다 위에 배치
   span:first-child {
     font-family: "Paper";
   }
@@ -44,14 +39,15 @@ const Title = styled.h1`
   span:last-child {
     font-family: "Moya", sans-serif;
     font-weight: 100;
-    font-size: 38px;
+    font-size: 30px;
     color: #4BF6FF;
   }
 `;
+
 const CharacterImage = styled.img`
-  width: 280px;
+  width: 240px;
   position: absolute;
-  top: -135px;
+  top: -110px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 1;
@@ -79,15 +75,15 @@ const Button = styled.a`
   font-family: "Paper5";
 `;
 
-const Ping2: React.FC = () => {
+const Ping1: React.FC = () => {
   return (
     <Container>
+      <ContentWrapper>
+        <CharacterImage src={ping} alt="케미핑" />
         <Title>
           <span>당신은.. </span>
           <span>케미핑!</span>
         </Title>
-      <ContentWrapper>
-        <CharacterImage src={ping} alt="케미핑" />
         <Description>
         석유화학 산업은 고도의 기술과 공정 관리가 필요한 분야입니다.<br/>큰 그림을 그리면서도 세부사항을 철저하게 챙겨야 해요.          
           <br/>
@@ -95,11 +91,11 @@ const Ping2: React.FC = () => {
           <br/>
           당신은 문제 해결사!<br/>복잡한 문제도 차근차근 풀어가는 성격이에요.<br/>긴 호흡으로 끝까지 해내는 당신에게 석유화학이 잘 어울려요.
         </Description>
-        <Button href="/scrap">석유화학 뉴스 스크랩하러 가기!</Button>
+        <Button href="/mainNews">석유화학 뉴스 스크랩하러 가기!</Button>
         <Button href="/mypage">돌아가기</Button>
       </ContentWrapper>
     </Container>
   );
 };
 
-export default Ping2;
+export default Ping1;

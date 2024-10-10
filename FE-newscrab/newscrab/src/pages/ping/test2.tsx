@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import ping from "@assets/ping/기름핑.png";
+import ping from "@assets/ping/test2.png";
 
 const BackgroundContainer = styled.div`
   height: 100vh;
@@ -33,9 +33,9 @@ const Title = styled.h1`
 `;
 
 const CharacterImage = styled.img`
-  width: 150px;
+  width: 210px;
   height: auto;
-  margin-bottom: 20px;
+  margin-top: 10px;
 `;
 
 const AnswerButton = styled.button`
@@ -87,10 +87,10 @@ const Test2: React.FC<{ onSelect: (answerIndex: number) => void }> = ({ onSelect
         </ProgressBarContainer>
         <Title>스트레스를 받을 때 나만의 해소 방법은?</Title>
         <CharacterImage src={ping} alt="Ping Character" />
-        <AnswerButton onClick={() => handleAnswer(0)}>자극적인 음식</AnswerButton>
-        <AnswerButton onClick={() => handleAnswer(1)}>SNS</AnswerButton>
-        <AnswerButton onClick={() => handleAnswer(2)}>잠</AnswerButton>
-        <AnswerButton onClick={() => handleAnswer(3)}>운동</AnswerButton>
+        <AnswerButton onClick={() => handleAnswer(0)}>맵찔이여도 스트레스엔 매운 거지! 🔥</AnswerButton>
+        <AnswerButton onClick={() => handleAnswer(1)}>SNS 좀 뒤적거리면서 힐링 타임 가져야지 📲</AnswerButton>
+        <AnswerButton onClick={() => handleAnswer(2)}>잠이 보약이지... 잔다... 😴</AnswerButton>
+        <AnswerButton onClick={() => handleAnswer(3)}>운동으로 땀 빼면 기분 리셋! 💪</AnswerButton>
       </WhiteContainer>
     </BackgroundContainer>
   );

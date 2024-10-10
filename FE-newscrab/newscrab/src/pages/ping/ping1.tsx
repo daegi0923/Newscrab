@@ -91,7 +91,7 @@ const Ping1: React.FC = () => {
           <br/>
           당신은 철벽 방어!<br/>안정성을 중시하고, 무슨 일이 있어도 흔들리지 않는 성격이에요.<br/>철강처럼 강한 의지를 가진 당신에게 딱 어울리는 산업입니다!
         </Description>
-        <Button href="/scrap">철강 뉴스 스크랩하러 가기!</Button>
+        <Button href="/mainNews">철강 뉴스 스크랩하러 가기!</Button>
         <Button href="/mypage">돌아가기</Button>
       </ContentWrapper>
     </Container>

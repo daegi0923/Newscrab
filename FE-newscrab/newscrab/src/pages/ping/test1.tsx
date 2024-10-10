@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import ping from "@assets/ping/기름핑.png";
+import ping from "@assets/ping/test1.png";
 
 const BackgroundContainer = styled.div`
   height: 100vh;
@@ -33,9 +33,9 @@ const Title = styled.h1`
 `;
 
 const CharacterImage = styled.img`
-  width: 150px;
+  width: 190px;
   height: auto;
-  margin-bottom: 20px;
+  // margin-bottom: 10px;
 `;
 
 const AnswerButton = styled.button`
@@ -88,9 +88,9 @@ const Test1: React.FC<{ onSelect: (answerIndex: number) => void }> = ({ onSelect
         </ProgressBarContainer>
         <Title>라면을 끓일 때 당신은?</Title>
         <CharacterImage src={ping} alt="Ping Character" />
-        <AnswerButton onClick={() => handleAnswer(0)}>대충 다 넣음</AnswerButton>
-        <AnswerButton onClick={() => handleAnswer(1)}>스프 먼저</AnswerButton>
-        <AnswerButton onClick={() => handleAnswer(2)}>면 먼저</AnswerButton>
+        <AnswerButton onClick={() => handleAnswer(0)}>귀찮다 대충 다 넣자🙂</AnswerButton>
+        <AnswerButton onClick={() => handleAnswer(1)}>물의 온도를 높이기 위해선 역시 스프 먼저!</AnswerButton>
+        <AnswerButton onClick={() => handleAnswer(2)}>어쩌라고 면 먼저</AnswerButton>
       </WhiteContainer>
     </BackgroundContainer>
   );

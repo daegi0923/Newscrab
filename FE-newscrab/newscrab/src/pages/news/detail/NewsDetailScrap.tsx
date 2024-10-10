@@ -508,7 +508,8 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
         title: "저장 완료",
         text: scrapId ? "수정이 완료되었습니다." : "스크랩이 성공적으로 저장되었습니다.",
       });
-      navigate('/scrap/${scrapId}');
+      console.log(scrapId);
+      // navigate('/scrap/${scrapId}');
     } catch (error: any) {
       Swal.close();
       Swal.fire({
