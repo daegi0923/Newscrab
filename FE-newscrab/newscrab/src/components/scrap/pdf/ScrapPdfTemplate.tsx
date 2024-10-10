@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { ScrapData, Vocalist } from '../../../types/scrapTypes'; // ScrapData 및 Vocalist 타입 import
-import { Highlight } from "../../../types/scrapTypes";
+import { Highlight } from '../../../types/scrapTypes';
 
 const Table = styled.table`
   width: 80%;
@@ -10,6 +10,7 @@ const Table = styled.table`
   font-size: 16px;
   font-family: 'Arial', sans-serif;
   color: #333;
+  table-layout: fixed; // 고정 레이아웃 설정
 `;
 
 const Th = styled.th`
@@ -21,6 +22,7 @@ const Th = styled.th`
 `;
 
 const Td = styled.td`
+  width:0px;
   border: 1px solid #ddd;
   padding: 12px;
   vertical-align: top;
@@ -34,8 +36,8 @@ const TitleRow = styled.tr`
 const ScrapDetail = styled.div`
   display: flex;
   justify-content: center;
-  width : 1000px;
-  padding-top : 30px;
+  width: 1000px;
+  padding-top: 30px;
 `;
 
 const letterToColorMap = {
@@ -106,7 +108,7 @@ const ScrapPdfTemplate: React.FC<{ scrap: ScrapData }> = ({ scrap }) => {
       <Table>
         <thead>
           <TitleRow>
-            <Th colSpan={3}>
+            <Th colSpan={8}>
               {scrap.newsTitle} - {new Date(scrap.createdAt).toLocaleDateString()}
             </Th>
           </TitleRow>
@@ -114,7 +116,7 @@ const ScrapPdfTemplate: React.FC<{ scrap: ScrapData }> = ({ scrap }) => {
         <tbody>
           <tr>
             <Td colSpan={2}>기사내용</Td>
-            <Td>
+            <Td colSpan = {6}>
               {highlightedContent.length > 0 ? (
                 highlightedContent.map((content, idx) => (
                   <div key={idx} dangerouslySetInnerHTML={{ __html: content }} />
@@ -126,23 +128,25 @@ const ScrapPdfTemplate: React.FC<{ scrap: ScrapData }> = ({ scrap }) => {
           </tr>
           <tr>
             <Td colSpan={2}>요약</Td>
-            <Td>{scrap.scrapSummary}</Td>
+            <Td colSpan={6}>{scrap.scrapSummary}</Td>
           </tr>
           <tr>
             <Td colSpan={2}>의견</Td>
-            <Td>{scrap.comment}</Td>
+            <Td colSpan={6}>{scrap.comment}</Td>
           </tr>
           {scrap.vocalist && scrap.vocalist.length > 0 ? (
             <>
               <tr>
-                <Td colSpan={1} rowSpan={scrap.vocalist.length}>단어</Td>
+                <Td colSpan={1} rowSpan={scrap.vocalist.length}>
+                  단어
+                </Td>
                 <Td>{scrap.vocalist[0].vocaName}</Td>
-                <Td>{scrap.vocalist[0].vocaDesc}</Td>
+                <Td colSpan={6}>{scrap.vocalist[0].vocaDesc}</Td>
               </tr>
               {scrap.vocalist.slice(1).map((voca: Vocalist) => (
                 <tr key={voca.vocaId}>
-                  <Td>{voca.vocaName}</Td>
-                  <Td>{voca.vocaDesc}</Td>
+                  <Td >{voca.vocaName}</Td>
+                  <Td colSpan={6}>{voca.vocaDesc}</Td>
                 </tr>
               ))}
             </>
