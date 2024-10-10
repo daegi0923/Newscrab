@@ -418,17 +418,6 @@ const SectionName = styled.div`
   left: 37%;
 `;
 
-const ArrowButton = styled.button`
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  position: absolute;
-  // top: 40%;
-  transform: translateY(-100%);
-  z-index: 1;
-`;
-
 const LeftArrow = styled.button`
   position: absolute;
   left: -20px; /* 화살표를 스크롤 바깥으로 이동 */
