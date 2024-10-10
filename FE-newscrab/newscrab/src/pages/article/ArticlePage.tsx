@@ -17,7 +17,6 @@ const TotalArticles = styled.h1`
   font-size: 24px;
   font-weight: bold;
   margin-left: 55px;
-  margi-bottom: 0px;
 
   span {
     color: blue; /* 숫자에 파란색 적용 */
@@ -32,7 +31,6 @@ const getIndustryNameById = (id: number): string => {
 const ArticlePage: React.FC = () => {
   const [articles, setArticles] = useState<ArticleItem[]>([]);
   const [filteredArticles, setFilteredArticles] = useState<ArticleItem[]>([]);
-  const [totalItems, setTotalItems] = useState<number>(0); // totalItems 상태 추가
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
@@ -48,7 +46,6 @@ const ArticlePage: React.FC = () => {
         });
         setArticles(sortedData); // 정렬된 데이터를 상태로 설정
         setFilteredArticles(sortedData); // 필터링된 데이터 설정
-        setTotalItems(data.data.totalItems); // totalItems 값 설정
         setLoading(false);
       } catch (error) {
         console.error("Error fetching articles:", error);
@@ -113,8 +110,9 @@ const ArticlePage: React.FC = () => {
       <CenteredSearchBar>
         <SearchBar onSearch={handleSearch} />
       </CenteredSearchBar>
+      {/* totalItems 대신 filteredArticles.length를 사용하여 동적으로 게시글 수 표시 */}
       <TotalArticles>
-        총 <span>{totalItems}</span>건의 글이 있습니다.
+        총 <span>{filteredArticles.length}</span>건의 글이 있습니다.
       </TotalArticles>
       <ArticleList articles={filteredArticles} /> {/* 데이터를 props로 전달 */}
     </>
