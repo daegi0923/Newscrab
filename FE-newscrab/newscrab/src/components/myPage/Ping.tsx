@@ -1,8 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import MypageBanner from '@components/myPage/MypageBanner';
-
-// import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const PingContainer = styled.div`
   margin-right: 3%;
@@ -16,7 +15,7 @@ const Ping: React.FC = () => {
   };
 
   return (
-    <PingContainer>
+    <PingContainer onClick={handleClick}>
       <MypageBanner img={'movingPing.gif'} title='당신의 취준핑은?' color='#F898C2'>
       </MypageBanner>
 

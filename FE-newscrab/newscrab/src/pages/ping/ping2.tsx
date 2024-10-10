@@ -95,7 +95,7 @@ const Ping2: React.FC = () => {
           <br/>
           당신은 문제 해결사!<br/>복잡한 문제도 차근차근 풀어가는 성격이에요.<br/>긴 호흡으로 끝까지 해내는 당신에게 석유화학이 잘 어울려요.
         </Description>
-        <Button href="/scrap">석유화학 뉴스 스크랩하러 가기!</Button>
+        <Button href="/mainNews">석유화학 뉴스 스크랩하러 가기!</Button>
         <Button href="/mypage">돌아가기</Button>
       </ContentWrapper>
     </Container>
