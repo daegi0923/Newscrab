@@ -12,7 +12,6 @@ const PageContainer = styled.div`
   background-color: #93d5f5;
   min-height: 100vh;
   text-align: center;
-  overflow-y: scroll;
 `;
 const Container = styled.div`
   margin-top: 40px;
