@@ -135,7 +135,7 @@ const ScrapPdfTemplate: React.FC<{ scrap: ScrapData }> = ({ scrap }) => {
           {scrap.vocalist && scrap.vocalist.length > 0 ? (
             <>
               <tr>
-                <Td rowSpan={scrap.vocalist.length}>단어</Td>
+                <Td colSpan={1} rowSpan={scrap.vocalist.length}>단어</Td>
                 <Td>{scrap.vocalist[0].vocaName}</Td>
                 <Td>{scrap.vocalist[0].vocaDesc}</Td>
               </tr>
