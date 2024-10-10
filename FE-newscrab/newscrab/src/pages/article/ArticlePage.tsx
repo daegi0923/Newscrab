@@ -39,8 +39,15 @@ const ArticlePage: React.FC = () => {
     const fetchArticles = async () => {
       try {
         const data: ArticleData = await getArticleData();
-        setArticles(data.data.articleList); // API에서 받은 데이터를 상태로 설정
-        setFilteredArticles(data.data.articleList); // 필터링된 데이터 설정
+        // createdAt을 기준으로 최신 순으로 정렬
+        const sortedData = data.data.articleList.sort((a, b) => {
+          return (
+            new Date(b.scrapResponseDto.createdAt).getTime() -
+            new Date(a.scrapResponseDto.createdAt).getTime()
+          );
+        });
+        setArticles(sortedData); // 정렬된 데이터를 상태로 설정
+        setFilteredArticles(sortedData); // 필터링된 데이터 설정
         setTotalItems(data.data.totalItems); // totalItems 값 설정
         setLoading(false);
       } catch (error) {
