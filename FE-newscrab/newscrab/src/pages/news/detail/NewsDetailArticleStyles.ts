@@ -14,6 +14,8 @@ export const NewsContent = styled.div`
   overflow: auto;
   position: relative;
   margin-bottom: 20px;
+  font-family: 'SUIT Variable', sans-serif;
+  font-weight:400;
 
   ${scrollbar}
   user-select: text;

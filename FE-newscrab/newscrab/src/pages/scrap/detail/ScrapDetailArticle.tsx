@@ -40,6 +40,8 @@ const ScrapContent = styled.div`
   position: relative;
   ${scrollbar}
   user-select: text;
+  font-family: "SUIT Variable";
+  font-weight: 400;
 `;
 
 const ButtonContainer = styled.button`
@@ -192,6 +194,7 @@ const NewsText = styled.div`
   line-height: 1.6;
   font-size: 16px;
   margin-top: 20px;
+  font-family: "SUIT Variable";
 
   img {
     max-width: 100%;

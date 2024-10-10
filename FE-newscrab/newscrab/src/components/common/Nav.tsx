@@ -75,7 +75,8 @@ const NavLink = styled.a`
 
 const NavText = styled.span`
   font-size: 16px;
-  font-family: "Titillium Web", sans-serif;
+  // font-family: "Titillium Web", sans-serif;
+  font-family: "Paper5", sans-serif;
   opacity: 0;
   white-space: nowrap;
   transition: opacity 0.3s ease;

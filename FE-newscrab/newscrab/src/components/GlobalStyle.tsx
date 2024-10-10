@@ -8,7 +8,9 @@ const GlobalStyle = createGlobalStyle`
     padding: 0;
     height: 100%;
     box-sizing: border-box;
-    font-family: 'SUIT Variable', sans-serif; /* 기본 폰트 적용 */
+    // font-family: 'SUIT Variable', sans-serif; /* 기본 폰트 적용 */
+    font-family: 'Paper', sans-serif; /* 기본 폰트 적용 */
+    font-weight: 100;
   }
 
   #root {

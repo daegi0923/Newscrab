@@ -400,12 +400,14 @@ const NewsTitle = styled.h3`
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   white-space: normal;
+  font-family: "SUIT Variable";
 `;
 
 const NewsDate = styled.p`
   font-size: 10px;
   color: white;
   margin-top: -5px;
+  font-family: "SUIT Variable";
 `;
 
 const SectionName = styled.div`
@@ -416,17 +418,6 @@ const SectionName = styled.div`
   position: absolute;
   // top: 41.5%;
   left: 37%;
-`;
-
-const ArrowButton = styled.button`
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  position: absolute;
-  // top: 40%;
-  transform: translateY(-100%);
-  z-index: 1;
 `;
 
 const LeftArrow = styled.button`

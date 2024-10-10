@@ -39,6 +39,8 @@ const ScrapContent = styled.div`
   position: relative;
   ${scrollbar}
   user-select: text;
+  font-family: "SUIT Variable";
+  font-weight: 400;
 `;
 
 const DeleteButton = styled.button`
@@ -138,6 +140,7 @@ const NewsText = styled.div`
   line-height: 1.6;
   font-size: 16px;
   margin-top: 20px;
+  // font-family: "SUIT Variable";
 
   img {
     max-width: 100%;
@@ -157,6 +160,7 @@ const NewsTextPreview = styled.div`
   font-size: 16px;
   margin-top: 20px;
   white-space: normal;
+  // fontFamily: "SUIT Variable";
 `;
 
 const Divider = styled.hr`

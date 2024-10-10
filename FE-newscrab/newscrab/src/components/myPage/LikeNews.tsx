@@ -383,12 +383,14 @@ const NewsTitle = styled.h3`
   line-height: 1.2;
   height: 27px;
   overflow: hidden;
+  font-family: "SUIT Variable";
 `;
 
 const NewsDate = styled.p`
   font-size: 10px;
   color: white;
   margin-top: -5px;
+  font-family: "SUIT Variable";
 `;
 
 const SectionName = styled.div`
