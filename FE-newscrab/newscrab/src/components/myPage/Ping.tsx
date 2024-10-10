@@ -10,7 +10,10 @@ const PingContainer = styled.div`
 `;
 
 const Ping: React.FC = () => {
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
+  const handleClick = () => {
+    navigate('/testpage');
+  };
 
   return (
     <PingContainer>

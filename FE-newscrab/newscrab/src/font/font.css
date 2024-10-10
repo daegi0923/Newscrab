@@ -1,1 +1,37 @@
 @import url('https://fonts.googleapis.com/css2?family=Scheherazade+New&display=swap');
+
+@font-face {
+  font-family: 'Moya';
+  src: url('./Moya.otf') format('opentype');
+  /* src: url('./Moya.ttf') format('truetype'); */
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Paper';
+  src: url('./Paper.ttf') format('truetype');
+  /* src: url('./Moya.ttf') format('truetype'); */
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Paper3';
+  src: url('./Paper3.ttf') format('truetype');
+  /* src: url('./Moya.ttf') format('truetype'); */
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Paper5';
+  src: url('./Paper5.ttf') format('truetype');
+  /* src: url('./Moya.ttf') format('truetype'); */
+  font-weight: normal;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'Paper7';
+  src: url('./Paper7.ttf') format('truetype');
+  /* src: url('./Moya.ttf') format('truetype'); */
+  font-weight: normal;
+  font-style: normal;
+}

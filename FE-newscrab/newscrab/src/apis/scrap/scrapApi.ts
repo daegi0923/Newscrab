@@ -69,7 +69,7 @@ export const getScrapData = async (
   }
 };
 
-export const postScrap = async (scrapData: PostScrapRequest): Promise<void> => {
+export const postScrap = async (scrapData: PostScrapRequest): Promise<any> => {
   try {
     const response = await API.post("/scrap", {
       newsId: scrapData.newsId,

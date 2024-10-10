@@ -9,7 +9,7 @@ export const NewsContent = styled.div`
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   padding: 15px 100px;
   background-color: #fff;
-  max-height: 900px;
+  max-height: 680px;
   min-height: 680px;
   overflow: auto;
   position: relative;
@@ -96,10 +96,29 @@ export const ScrapCntIcon = styled.img`
 export const NewsText = styled.div`
   line-height: 1.6;
   font-size: 16px;
+  margin-bottom: 50px;
+
+  img {
+    max-width: 100%;
+    width: auto;
+    height: auto;
+    max-width: 700px; /* 이미지의 최대 너비를 750px로 설정 */
+  }
 `;
 
 export const Divider = styled.hr`
   border: none;
   border-top: 1px solid #ddd;
   margin-bottom: 20px;
+`;
+
+export const NewsDetailRcmdWrapper = styled.div`
+  position: absolute;
+  right: 460px; /* 오른쪽으로 추가 이동 */
+  top: 910px;
+  // background-color: #fff; /* 백그라운드 색상을 추가하여 명확히 보이도록 설정 */
+  // box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 그림자 추가 */
+  padding: 15px;
+  border-radius: 8px; /* 둥근 모서리 */
+  overflow: visible; /* 내부 텍스트가 잘리지 않도록 설정 */
 `;

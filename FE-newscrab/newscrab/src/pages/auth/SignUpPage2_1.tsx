@@ -282,7 +282,7 @@ const SignUpPage2: React.FC = () => {
       <ContentWrapper>
         <StepIndicator>2단계 2/2</StepIndicator>
         <SignUpContainer>
-          <TitleContainer>✅ 좋아하는 산업군을 1개 이상 선택하세요</TitleContainer>
+          <TitleContainer>✅ 좋아하는 산업군을 1개 이상 우선 순위에 넣어주세요.</TitleContainer>
           <CardContainer>
             <IndustryGrid>
               {/* 선택 가능한 산업군 리스트 */}
