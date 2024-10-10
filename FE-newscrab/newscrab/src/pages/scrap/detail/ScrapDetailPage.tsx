@@ -57,7 +57,7 @@ const NoDataMessage = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 300px; /* 원하는 높이로 설정 */
+  height: 400px; /* 원하는 높이로 설정 */
   font-size: 24px;
   color: gray;
 `;
@@ -134,7 +134,7 @@ const ScrapDetailPage: React.FC = () => {
 
         {/* 데이터가 없을 때 "데이터가 없습니다" 메시지를 중앙에 표시 */}
         {scrapDataList.length === 0 ? (
-          <NoDataMessage>스크랩한 뉴스가 없습니다...</NoDataMessage>
+          <NoDataMessage>스크랩을 해주세요...</NoDataMessage>
         ) : (
           <>
             <ArrowButton
