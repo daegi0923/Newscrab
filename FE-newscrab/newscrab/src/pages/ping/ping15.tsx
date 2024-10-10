@@ -3,6 +3,14 @@ import styled from "styled-components";
 import bg from "@assets/ping/pingbg.png";
 import ping from "@assets/ping/실크핑.png";
 
+const Wrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100%;
+`;
+
 const Container = styled.div`
   height: 95.5%;
   width: 70vh;
@@ -13,7 +21,6 @@ const Container = styled.div`
   background-size: cover;
   background-position: center;
   padding: 20px;
-  transform: translateX(55%);
 `;
 
 const ContentWrapper = styled.div`
@@ -77,6 +84,7 @@ const Button = styled.a`
 
 const Ping15: React.FC = () => {
   return (
+    <Wrapper>
     <Container>
       <ContentWrapper>
         <CharacterImage src={ping} alt="실크핑" />
@@ -95,6 +103,7 @@ const Ping15: React.FC = () => {
         <Button href="/mypage">돌아가기</Button>
       </ContentWrapper>
     </Container>
+    </Wrapper>
   );
 };
 
