@@ -82,7 +82,7 @@ const Ping9: React.FC = () => {
         <CharacterImage src={ping} alt="기름핑" />
         <Title>
           <span>당신은.. </span>
-          <span>기름핑!</span>
+          <span>오일핑!</span>
         </Title>
         <Description>
         정유 산업은 세계에 에너지를 공급하는 중요한 산업입니다.<br/>자원을 효율적으로 관리하고, 안정적인 생산이 중요하죠.
