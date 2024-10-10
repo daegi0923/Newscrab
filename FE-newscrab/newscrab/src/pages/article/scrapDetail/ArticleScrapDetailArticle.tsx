@@ -290,6 +290,7 @@ const ArticleScrapDetailArticle: React.FC<ArticleScrapDetailProps> = ({
                 </Info>
               </InfoGroup>
               <Stats>
+                <span>👨‍🦲 {articleDetail.data.name}</span>
                 <IconContainer>
                   <ViewIcon src={viewIcon} alt="조회수 아이콘" />
                   {articleDetail.data.scrapResponseDto.view}
