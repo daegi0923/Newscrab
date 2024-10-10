@@ -144,7 +144,7 @@ const LoginPage: React.FC = () => {
   };
 
   const handleSignUp = () => {
-    navigate("/signup11");
+    navigate("/signup1");
   };
 
   return (
