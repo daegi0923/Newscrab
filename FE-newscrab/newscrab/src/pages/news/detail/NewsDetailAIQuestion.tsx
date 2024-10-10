@@ -139,6 +139,10 @@ interface NewsDetailAIQuestionProps {
     onTransferText: (text: string) => void; // opinionText를 업데이트하는 함수
   }
 
+const stripHtmlTags = (html: string) => {
+  return html.replace(/<[^>]*>?/gm, ''); // 모든 HTML 태그를 제거
+};
+
 const NewsDetailAIQuestion: React.FC<NewsDetailAIQuestionProps> = ({ newsId, summaryText, onTransferText }) => {
   const [showQuestion, setShowQuestion] = useState(false);
   const [questionText, setQuestionText] = useState(""); // 예상 질문 저장
@@ -188,7 +192,7 @@ const NewsDetailAIQuestion: React.FC<NewsDetailAIQuestionProps> = ({ newsId, sum
             <>
               <AIQuestionText>뉴스 본문을 바탕으로 자동 생성된 질문입니다.</AIQuestionText>
               <AIQuestionTextContainer>
-                <AIQuestionText>{questionText}</AIQuestionText>
+                <AIQuestionText>{stripHtmlTags(questionText)}</AIQuestionText>
               </AIQuestionTextContainer>
               <TextTransferButton onClick={handleTextTransfer}>
                 위의 텍스트로 보내기
