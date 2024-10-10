@@ -82,7 +82,7 @@ const Ping9: React.FC = () => {
         <CharacterImage src={ping} alt="기름핑" />
         <Title>
           <span>당신은.. </span>
-          <span>기름핑!</span>
+          <span>오일핑!</span>
         </Title>
         <Description>
         정유 산업은 세계에 에너지를 공급하는 중요한 산업입니다.<br/>자원을 효율적으로 관리하고, 안정적인 생산이 중요하죠.
@@ -91,7 +91,7 @@ const Ping9: React.FC = () => {
           <br/>
           당신은 효율성 끝판왕!<br/>낭비 없이, 언제나 효율적으로 일을 처리하는 성격이에요.<br/>정유 산업처럼 빠른 결정과 안정적인 관리가 중요한 분야에 딱 맞아요!
         </Description>
-        <Button href="/scrap">정유 뉴스 스크랩하러 가기!</Button>
+        <Button href="/mainNews">정유 뉴스 스크랩하러 가기!</Button>
         <Button href="/mypage">돌아가기</Button>
       </ContentWrapper>
     </Container>
