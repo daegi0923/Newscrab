@@ -1,17 +1,76 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import scrollbar from "@components/common/ScrollBar";
 import viewIcon from "@assets/hot.png";
 import scrapCntIcon from "@assets/scrap.png";
 import crab from "@assets/crab.png";
-import { ArticleDetailItem } from "../../../types/articleTypes"; // 수정된 타입
-// import LikeButton from "@pages/news/common/LikeButton";
-import ArticleScrapLike from "./ArticleScrapLike "; // 경로 수정
-import { getArticleDetail } from "@apis/article/articleDetailApi"; // 수정된 API
+import { ArticleDetailItem } from "../../../types/articleTypes";
+import { Highlight } from "../../../types/scrapTypes"; // scrap 타입 불러옴
+
+import { getArticleDetail } from "@apis/article/articleDetailApi";
 import { deleteArticle } from "@apis/article/articleApi";
-import { industry } from "@common/Industry"; // 산업 데이터를 가져오기
+import { industry } from "@common/Industry";
 import Swal from "sweetalert2";
+
+// 하이라이트 색상 매핑
+const letterToColorMap = {
+  R: "#fde2e4", // Red
+  Y: "#ffffb5", // Yellow
+  G: "#d1e6d3", // Green
+  B: "#cddafd", // Blue
+} as const;
+
+// 하이라이트 적용 함수
+const applyHighlightsFromApi = (
+  contentElement: HTMLElement,
+  highlights: Highlight[]
+) => {
+  highlights.forEach(({ startPos, endPos, color }) => {
+    const walker = document.createTreeWalker(
+      contentElement,
+      NodeFilter.SHOW_TEXT,
+      null
+    );
+
+    let currentPos = 0;
+    let startNode: Node | null = null;
+    let endNode: Node | null = null;
+    let startOffset = 0;
+    let endOffset = 0;
+
+    while (walker.nextNode()) {
+      const node = walker.currentNode;
+      const nodeLength = node.textContent?.length || 0;
+
+      if (currentPos <= startPos && currentPos + nodeLength >= startPos) {
+        startNode = node;
+        startOffset = startPos - currentPos;
+      }
+      if (currentPos <= endPos && currentPos + nodeLength >= endPos) {
+        endNode = node;
+        endOffset = endPos - currentPos;
+        break;
+      }
+
+      currentPos += nodeLength;
+    }
+
+    if (startNode && endNode) {
+      const range = document.createRange();
+      range.setStart(startNode, startOffset);
+      range.setEnd(endNode, endOffset);
+
+      const span = document.createElement("span");
+      span.style.backgroundColor = letterToColorMap[color];
+      span.dataset.startPos = String(startPos);
+      span.dataset.endPos = String(endPos);
+
+      span.appendChild(range.extractContents());
+      range.insertNode(span);
+    }
+  });
+};
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
@@ -140,19 +199,18 @@ const NewsText = styled.div`
   line-height: 1.6;
   font-size: 16px;
   margin-top: 20px;
-  // font-family: "SUIT Variable";
 
   img {
     max-width: 100%;
     width: auto;
     height: auto;
-    max-width: 750px; /* 이미지의 최대 너비를 750px로 설정 */
+    max-width: 750px;
   }
 `;
 
 const NewsTextPreview = styled.div`
   display: -webkit-box;
-  -webkit-line-clamp: 3; /* 3줄까지만 표시 */
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -160,7 +218,6 @@ const NewsTextPreview = styled.div`
   font-size: 16px;
   margin-top: 20px;
   white-space: normal;
-  // fontFamily: "SUIT Variable";
 `;
 
 const Divider = styled.hr`
@@ -182,7 +239,7 @@ const CrabIcon = styled.img`
 `;
 
 type ArticleScrapDetailProps = {
-  articleId: number; // articleId를 prop으로 전달
+  articleId: number;
 };
 
 const getIndustryName = (industryId: number): string => {
@@ -195,29 +252,56 @@ const ArticleScrapDetailArticle: React.FC<ArticleScrapDetailProps> = ({
 }) => {
   const [articleDetail, setArticleDetail] = useState<ArticleDetailItem | null>(
     null
-  ); // 기사 데이터를 저장
-  const [showContent, setShowContent] = useState(false); // 기본으로 내용이 숨겨짐
-  const [, setIsLoading] = useState<boolean>(true); // 로딩 상태
-  const navigate = useNavigate(); // useNavigate 훅 사용
+  );
+  const [showContent, setShowContent] = useState(false);
+  const [, setIsLoading] = useState<boolean>(true);
+  const navigate = useNavigate();
 
-  // 기사 데이터를 가져오는 함수
+  const newsContentRef = useRef<HTMLDivElement | null>(null);
+
   const fetchArticleDetail = async (articleId: number) => {
     try {
-      const articleDataResponse = await getArticleDetail(articleId); // articleId를 인자로 전달
-      setArticleDetail(articleDataResponse); // 데이터를 상태에 저장
+      const articleDataResponse = await getArticleDetail(articleId);
+      setArticleDetail(articleDataResponse);
     } catch (error) {
       console.error("기사 데이터를 가져오는 중 오류 발생:", error);
     } finally {
-      setIsLoading(false); // 로딩 종료
+      setIsLoading(false);
     }
   };
 
+  const mapColorToLetter = (color: string): "Y" | "R" | "G" | "B" => {
+    if (color === "Y" || color === "R" || color === "G" || color === "B") {
+      return color;
+    }
+    return "Y"; // 기본값 설정 (필요시 다른 색상으로 변경 가능)
+  };
+
+  // 하이라이트 적용 useEffect
   useEffect(() => {
-    fetchArticleDetail(articleId); // 컴포넌트 마운트 시 데이터 요청
+    if (
+      articleDetail &&
+      newsContentRef.current &&
+      articleDetail.data.scrapResponseDto.highlightList
+    ) {
+      const contentElement = newsContentRef.current;
+      const highlights = articleDetail.data.scrapResponseDto.highlightList.map(
+        (highlight) => ({
+          highlightId: highlight.highlightId,
+          startPos: highlight.startPos,
+          endPos: highlight.endPos,
+          color: mapColorToLetter(highlight.color), // 매핑된 color 값 사용
+        })
+      );
+      applyHighlightsFromApi(contentElement, highlights);
+    }
+  }, [articleDetail, showContent]);
+
+  useEffect(() => {
+    fetchArticleDetail(articleId);
   }, [articleId]);
 
   const handleDeleteClick = async () => {
-    // SweetAlert2로 삭제 확인 메시지 표시
     const confirmed = await Swal.fire({
       title: "정말로 삭제하시겠습니까?",
       text: "삭제 후에는 복구할 수 없습니다!",
@@ -229,22 +313,17 @@ const ArticleScrapDetailArticle: React.FC<ArticleScrapDetailProps> = ({
       cancelButtonText: "취소",
     });
 
-    // 확인 버튼을 누르면 삭제 진행
     if (confirmed.isConfirmed) {
       try {
-        // 삭제 API 호출
         await deleteArticle(articleId);
-        // 삭제 완료 후 알림
         await Swal.fire({
           icon: "success",
           title: "삭제 완료",
           text: "스크랩이 삭제되었습니다.",
         });
-        // 삭제 후 목록 페이지로 이동
         navigate("/article");
       } catch (error) {
         console.error("삭제 중 오류 발생:", error);
-        // 삭제 실패 시 알림
         Swal.fire({
           icon: "error",
           title: "삭제 실패",
@@ -259,7 +338,7 @@ const ArticleScrapDetailArticle: React.FC<ArticleScrapDetailProps> = ({
   };
 
   const removeImagesFromContent = (htmlContent: string): string => {
-    return htmlContent.replace(/<img[^>]*>/g, ""); // <img> 태그 제거
+    return htmlContent.replace(/<img[^>]*>/g, "");
   };
 
   return (
@@ -267,9 +346,7 @@ const ArticleScrapDetailArticle: React.FC<ArticleScrapDetailProps> = ({
       <ScrapContent>
         {articleDetail ? (
           <>
-            {/* <LikeButton newsId={articleDetail.data.scrapResponseDto.newsId} /> */}
             <DeleteButton onClick={handleDeleteClick}>삭제</DeleteButton>
-            {/* 토글 섹션 */}
             <NewsTitleWrapper>
               <ToggleButton onClick={handleToggleClick}>
                 {showContent ? "▼" : "▶"}
@@ -278,7 +355,6 @@ const ArticleScrapDetailArticle: React.FC<ArticleScrapDetailProps> = ({
                 {articleDetail.data.scrapResponseDto.newsTitle}
               </NewsTitle>
             </NewsTitleWrapper>
-            {/* 기사 상단 섹션 */}
             <MetaInfoContainer>
               <InfoGroup>
                 <Info>
@@ -306,17 +382,19 @@ const ArticleScrapDetailArticle: React.FC<ArticleScrapDetailProps> = ({
               </Stats>
             </MetaInfoContainer>
             <Divider />
-            {/* 본문 섹션 */}
             <CrabTextWrapper>
               <CrabIcon src={crab} alt="게 아이콘" />
               <span style={{ fontWeight: "bold" }}>본문</span>
             </CrabTextWrapper>
             {showContent ? (
-              <NewsText
-                dangerouslySetInnerHTML={{
-                  __html: articleDetail.data.scrapResponseDto.newsContent ?? "",
-                }}
-              />
+              <NewsText ref={newsContentRef}>
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html:
+                      articleDetail.data.scrapResponseDto.newsContent ?? "",
+                  }}
+                />
+              </NewsText>
             ) : (
               <NewsTextPreview>
                 <div
@@ -329,7 +407,6 @@ const ArticleScrapDetailArticle: React.FC<ArticleScrapDetailProps> = ({
               </NewsTextPreview>
             )}
             <Divider />
-            {/* 요약 섹션 */}
             <CrabTextWrapper>
               <CrabIcon src={crab} alt="게 아이콘" />
               <span style={{ fontWeight: "bold" }}>요약</span>
@@ -338,18 +415,12 @@ const ArticleScrapDetailArticle: React.FC<ArticleScrapDetailProps> = ({
               {articleDetail.data.scrapResponseDto.scrapSummary}
             </NewsText>
             <Divider />
-            {/* 의견 섹션 */}
             <CrabTextWrapper>
               <CrabIcon src={crab} alt="게 아이콘" />
               <span style={{ fontWeight: "bold" }}>의견</span>
             </CrabTextWrapper>
             <NewsText>{articleDetail.data.scrapResponseDto.comment}</NewsText>
             <Divider />
-            {/* ArticleScrapLike에 articleId와 initialLikeCount 전달 */}
-            <ArticleScrapLike
-              articleId={articleId}
-              initialLikeCount={articleDetail.data.likeCnt}
-            />
           </>
         ) : (
           <div>데이터를 불러오는 중입니다...</div>

@@ -62,7 +62,7 @@
 //   flex-shrink: 0;
 //   overflow: hidden;
 //   transition: transform 0.3s ease; /* 애니메이션 추가 */
-  
+
 //   &:hover {
 //     transform: translateY(-5px); /* hover 시 위로 살짝 올라감 */
 //   }
@@ -281,7 +281,7 @@
 
 // export default LikeNews;
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -296,7 +296,7 @@ const Container = styled.div`
   align-items: center;
   justify-content: center; /* 세로 중앙 정렬 */
   padding: 10px;
-  width: 100%;  /* Container가 화면을 벗어나지 않도록 함 */
+  width: 100%; /* Container가 화면을 벗어나지 않도록 함 */
   height: 41%;
   box-sizing: border-box;
   overflow: hidden;
@@ -318,7 +318,7 @@ const NewsListContainer = styled.div`
   // margin-top: 1%;
   display: flex;
   align-items: center;
-  justify-content: center;  /* 내용물이 없을 때 중앙 정렬 */
+  justify-content: center; /* 내용물이 없을 때 중앙 정렬 */
   width: 97%;
   overflow: hidden;
 `;
@@ -402,7 +402,6 @@ const SectionName = styled.div`
   left: 37%;
 `;
 
-
 const LeftArrow = styled.button`
   position: absolute;
   left: -20px; /* 화살표를 스크롤 바깥으로 이동 */
@@ -452,7 +451,7 @@ const LikeNews: React.FC = () => {
   const navigate = useNavigate();
   const { likedNewsList } = useSelector((state: RootState) => state.userNews);
 
-  const [page, setPage] = useState<number>(1);
+  // const [page, setPage] = useState<number>(1);
   const newsListRef = useRef<HTMLDivElement | null>(null);
 
   // 중복된 newsId 제거
