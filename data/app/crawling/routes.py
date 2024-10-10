@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from app.database import SessionLocal
 from app.crawling.models import News, NewsKeyword, NewsPhoto  
+from app.crawling.stopwords import korean_stopwords
 from app.industries.models import Industry  
 from datetime import datetime, timedelta
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -27,8 +28,8 @@ router = APIRouter()
 
 # 전역적으로 okt와 tfidf vectorizer 선언
 okt = Okt()
-classifier_path = os.path.join(os.path.dirname(__file__), 'random_forest_model_ssafy_5year.pkl')
-vectorizer_path = os.path.join(os.path.dirname(__file__), 'tfidf_vectorizer_ssafy_5year.pkl')
+classifier_path = os.path.join(os.path.dirname(__file__), 'random_forest_model_ssafy_5year_2.pkl')
+vectorizer_path = os.path.join(os.path.dirname(__file__), 'tfidf_vectorizer_ssafy_5year_2.pkl')
 classifier = joblib.load(classifier_path)
 vectorizer = joblib.load(vectorizer_path)
 
@@ -91,11 +92,6 @@ def extract_keywords_tfidf(text):
     nouns = okt.nouns(text)
     
     # 불용어 제거
-    korean_stopwords = [
-        "의", "가", "이", "은", "들", "는", "좀", "잘", "걍", "과", "도", "를", "으로", "자", "에", "와", "한", "하다", "있다", 
-        "수", "그", "다", "같이", "더", "그리고", "중", "또한", "그러나", "등", "고", "것", "위",
-        "지난", "이번", "이후", "지난해", "개월", "오전", "랍니", "그룹", "모든", "어디", "최근", "오늘",
-    ]
     nouns = [noun for noun in nouns if noun not in korean_stopwords]
 
     # TF-IDF로 변환
@@ -153,6 +149,10 @@ def crawl_news_data(start_date: datetime, end_date: datetime):
                     news_link = item.get('href')
                     news_title = item.text.strip()
 
+                    if '[클릭 e종목]' in news_title:
+                        print(f"'{news_title}' 뉴스는 '[클릭 e종목]'이 포함되어 있어 스킵합니다.")
+                        continue 
+
                     driver.get(news_link)
                     WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, 'newsct_article')))
                     news_html = driver.page_source
@@ -160,8 +160,8 @@ def crawl_news_data(start_date: datetime, end_date: datetime):
                     news_body = news_soup.find('div', id='newsct_article')
                     news_body_text = news_body.text.replace('\n', ' ').replace('\t', ' ').strip() if news_body else ""
 
-                    if len(news_body_text) < 300:
-                        print(f"뉴스 본문이 300자 미만입니다. 뉴스 링크: {news_link}")
+                    if len(news_body_text) < 500:
+                        print(f"뉴스 본문이 500자 미만입니다. 뉴스 링크: {news_link}")
                         continue
 
                     news_company = news_soup.find('img', class_='media_end_head_top_logo_img light_type _LAZY_LOADING _LAZY_LOADING_INIT_HIDE')
@@ -300,74 +300,6 @@ def crawl_and_check():
     return {"data": data}
 
 
-# CSV 파일을 불러와 DB에 저장하고 연관 뉴스 업데이트하는 API
-@router.post("/upload_csv/")
-def upload_csv(db: Session = Depends(get_db)):
-    try:
-        # 파일 경로를 코드에서 지정
-        file_path = os.path.join(os.path.dirname(__file__), 'naver_news_data_option_crawling_keyword.csv')
-
-        # 파일 존재 여부 확인
-        if not os.path.isfile(file_path):
-            raise HTTPException(status_code=404, detail="CSV file not found")
-
-        # CSV 파일 불러오기
-        df = pd.read_csv(file_path)
-
-        # 각 row를 DB에 저장
-        start_time = time.time()
-        for _, row in df.iterrows():
-            # industry_name으로 industry_id 찾기
-            industry = db.query(Industry).filter(Industry.industry_name == row['industry']).first()
-            if not industry:
-                raise HTTPException(status_code=404, detail=f"Industry '{row['industry']}' not found")
-
-            # news_url 중복 확인
-            existing_news = db.query(News).filter(News.news_url == row['news_url']).first()
-            if existing_news:
-                continue  # 중복된 경우 추가하지 않고 다음 row로 이동
-
-            news = News(
-                news_industry_id=industry.industry_id,  # 찾은 industry_id 사용
-                news_url=row['news_url'],
-                news_title=row['news_title'],
-                news_content=row['news_content_text'],
-                news_company=row['news_company'],
-                news_published_at=datetime.strptime(row['news_published_at'], '%Y-%m-%d %H:%M:%S'),
-                created_at=datetime.now(),  # 현재 날짜로 설정
-                updated_at=datetime.now(),  # 현재 날짜로 설정
-            )
-            db.add(news)
-            db.commit()
-
-            # 뉴스 본문에서 키워드 추출
-            keywords = extract_keywords_tfidf(news.news_content)  # 키워드 추출
-            keyword_list = keywords.split()  # 공백 기준으로 키워드 리스트화
-
-            # 추출된 키워드를 news_keyword 테이블에 저장
-            for keyword in keyword_list:
-                existing_keyword = db.query(NewsKeyword).filter(
-                    NewsKeyword.news_id == news.news_id,
-                    NewsKeyword.news_keyword_name == keyword
-                ).first()
-
-                if not existing_keyword:
-                    news_keyword = NewsKeyword(
-                        industry_id=industry.industry_id,
-                        news_id=news.news_id,
-                        news_keyword_name=keyword
-                    )
-                    db.add(news_keyword)
-            db.commit()
-        end_time = time.time()  # 시간 측정 종료
-        print(f"키워드 추출 소요 시간: {end_time - start_time}초")
-
-        # DB에서 뉴스 데이터 가져오기
-        update_related_news(db)
-        return {"message": "CSV data uploaded and related news updated successfully"}
-    except Exception as e:
-        db.rollback()
-        raise HTTPException(status_code=400, detail=str(e))
 
 # # 로그 설정
 # logging.basicConfig(level=logging.INFO)
