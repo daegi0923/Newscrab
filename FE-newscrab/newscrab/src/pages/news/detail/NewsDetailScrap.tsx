@@ -347,7 +347,7 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
           // console.log("No scrap data found for this newsId:", newsId);
         }
       } catch (error) {
-        // console.error("Error fetching scrap data:", error);
+        console.error("Error fetching scrap data:", error);
       }
     };
 

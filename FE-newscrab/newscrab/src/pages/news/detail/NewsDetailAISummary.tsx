@@ -141,6 +141,10 @@ interface NewsDetailAISummaryProps {
   onTransferText: (text: string) => void; // summaryText를 업데이트하는 함수
 }
 
+const stripHtmlTags = (html: string) => {
+  return html.replace(/<[^>]*>?/gm, ''); // 모든 HTML 태그를 제거
+};
+
 const NewsDetailAISummary: React.FC<NewsDetailAISummaryProps> = ({ newsId, onTransferText }) => {
   const [showSummary, setShowSummary] = useState(false);
   const [summaryText, setSummaryText] = useState("");
@@ -149,6 +153,7 @@ const NewsDetailAISummary: React.FC<NewsDetailAISummaryProps> = ({ newsId, onTra
   
   const handleAIButtonClick = async () => {
     setShowSummary(!showSummary); // 버튼을 클릭할 때마다 상태를 토글
+
 
     // AI 요약 요청이 이미 있는 경우 다시 요청하지 않음
     if (!showSummary && summaryText === "") {
@@ -191,7 +196,7 @@ const NewsDetailAISummary: React.FC<NewsDetailAISummaryProps> = ({ newsId, onTra
             <>
               <AISummaryText>뉴스 본문을 자동으로 요약한 내용입니다.</AISummaryText>
               <AISummaryTextContainer>
-                <AISummaryText>{summaryText}</AISummaryText>
+                <AISummaryText>{stripHtmlTags(summaryText)}</AISummaryText>
               </AISummaryTextContainer>
               <TextTransferButton onClick={handleTextTransfer}>
                 위의 텍스트로 보내기

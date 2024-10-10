@@ -11,7 +11,7 @@ const FortuneCookieContent: React.FC = () => {
   const [isOpened, setIsOpened] = useState(false);
   const [fortuneMessage, setFortuneMessage] = useState<string | null>(null);
   const [fortuneAuthor, setFortuneAuthor] = useState<string | null>(null);
-  const [cookieCount, setCookieCount] = useState(5); // 시작 숫자
+  const [cookieCount, setCookieCount] = useState(3); // 시작 숫자
   const [isShaking, setIsShaking] = useState(false); // 흔들림 상태 관리
   const [animateCount, setAnimateCount] = useState(false); // 숫자 애니메이션 상태 관리
   const [isSelected, setIsSelected] = useState(false); //
@@ -71,7 +71,7 @@ const FortuneCookieContent: React.FC = () => {
     setIsSelected(false);
     setFortuneMessage(null);
     setFortuneAuthor(null);
-    setCookieCount(5);
+    setCookieCount(3);
   };
   const openCookieSpring = useSpring({
     opacity: isOpened ? 1 : 0,
@@ -283,7 +283,6 @@ const ResetButton = styled.button<{ $bgColor: string }>`
   text-align: center; /* 텍스트 가운데 정렬 */
   text-decoration: none; /* 밑줄 없애기 */
   display: inline-block;
-  font-size: 16px;
   margin: 10px;
   cursor: pointer; /* 마우스 포인터 */
   border-radius: 5px; /* 둥근 테두리 */
