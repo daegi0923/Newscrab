@@ -91,7 +91,7 @@ const Ping6: React.FC = () => {
           <br/>
           당신은 커뮤니케이션 마스터!<br/>빠르게 정보를 처리하고, 기술로 사람들을 연결하는 걸 좋아해요.<br/>효율을 중시하는 성향 덕분에 정보통신기기 산업과 잘 어울려요.
         </Description>
-        <Button href="/scrap">정보통신기기 뉴스 스크랩하러 가기!</Button>
+        <Button href="/mainNews">정보통신기기 뉴스 스크랩하러 가기!</Button>
         <Button href="/mypage">돌아가기</Button>
       </ContentWrapper>
     </Container>

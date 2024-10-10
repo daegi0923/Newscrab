@@ -91,7 +91,7 @@ const Ping13: React.FC = () => {
           <br/>
           당신은 디테일 전문가!<br/>미세한 부분까지 놓치지 않고, 작은 것도 세심하게 처리해요.<br/>논리적이고 체계적인 반도체 산업과 잘 어울립니다!
         </Description>
-        <Button href="/scrap">반도체 뉴스 스크랩하러 가기!</Button>
+        <Button href="/mainNews">반도체 뉴스 스크랩하러 가기!</Button>
         <Button href="/mypage">돌아가기</Button>
       </ContentWrapper>
     </Container>

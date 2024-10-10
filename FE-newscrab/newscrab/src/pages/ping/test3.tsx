@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import ping from "@assets/ping/기름핑.png"; // 캐릭터 이미지 import
+import ping from "@assets/ping/test3.png"; // 캐릭터 이미지 import
 
 const BackgroundContainer = styled.div`
   height: 100vh;
@@ -33,9 +33,10 @@ const Title = styled.h1`
 `;
 
 const CharacterImage = styled.img`
-  width: 150px;
+  width: 300px;
   height: auto;
-  margin-bottom: 20px;
+  margin-top: 20px;
+  margin-left: 15px;
 `;
 
 const AnswerButton = styled.button`
@@ -88,8 +89,8 @@ const Test3: React.FC<{ onSelect: (answerIndex: number) => void }> = ({ onSelect
         </ProgressBarContainer>
         <Title>오늘의 야식을 고른다면?</Title>
         <CharacterImage src={ping} alt="Ping Character" />
-        <AnswerButton onClick={() => handleAnswer(0)}>치킨</AnswerButton>
-        <AnswerButton onClick={() => handleAnswer(1)}>신메뉴 도전</AnswerButton>
+        <AnswerButton onClick={() => handleAnswer(0)}>아묻따 치킨</AnswerButton>
+        <AnswerButton onClick={() => handleAnswer(1)}>오늘은 새로운 메뉴로! 😎</AnswerButton>
       </WhiteContainer>
     </BackgroundContainer>
   );

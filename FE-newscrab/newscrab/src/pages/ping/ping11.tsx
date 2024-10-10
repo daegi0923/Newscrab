@@ -91,7 +91,7 @@ const Ping11: React.FC = () => {
           <br/>
           창의력이 뛰어난 당신!<br/>시각적인 요소를 중요시하고, 아름다운 결과물을 만들어내죠.<br/>디테일을 중시하는 당신은 디스플레이 산업과 딱 맞아요!
         </Description>
-        <Button href="/scrap">디스플레이 뉴스 스크랩하러 가기!</Button>
+        <Button href="/mainNews">디스플레이 뉴스 스크랩하러 가기!</Button>
         <Button href="/mypage">돌아가기</Button>
       </ContentWrapper>
     </Container>

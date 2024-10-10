@@ -91,7 +91,7 @@ const Ping12: React.FC = () => {
           <br/>
           당신은 문제 해결사!<br/>사람들에게 도움을 주고, 꼼꼼하게 일을 처리하는 성격이에요.<br/>정밀한 기술이 필요한 바이오헬스 산업이 당신에게 딱 맞아요!
         </Description>
-        <Button href="/scrap">바이오헬스 뉴스 스크랩하러 가기!</Button>
+        <Button href="/mainNews">바이오헬스 뉴스 스크랩하러 가기!</Button>
         <Button href="/mypage">돌아가기</Button>
       </ContentWrapper>
     </Container>

@@ -91,7 +91,7 @@ const Ping5: React.FC = () => {
           <br/>
           당신은 실용주의자!<br/>복잡한 것보다는 실용적인 것을 좋아하는 것 같아요.<br/>남들에게 도움이 되는 제품을 만드는 가전 산업이 딱이에요!
         </Description>
-        <Button href="/scrap">가전 뉴스 스크랩하러 가기!</Button>
+        <Button href="/mainNews">가전 뉴스 스크랩하러 가기!</Button>
         <Button href="/mypage">돌아가기</Button>
       </ContentWrapper>
     </Container>
