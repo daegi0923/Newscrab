@@ -21,10 +21,11 @@ const Image = styled.img`
 `;
 
 const StartButton = styled.button`
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
   position: absolute;
   // bottom: 340px;
   // right: 485px;
-  bottom: 39%;
+  bottom: 38%;
   right: 34%;
   padding: 10px 20px;
   background-color: rgba(255, 255, 255, 0.1); /* 완전 투명한 배경 */
@@ -32,7 +33,7 @@ const StartButton = styled.button`
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  font-family: "Moya", sans-serif;
+  font-family: "Paper7", sans-serif;
   font-weight: 100; 
   font-size: 18px;
   transition: background-color 0.3s ease;
