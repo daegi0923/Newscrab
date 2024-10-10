@@ -268,7 +268,7 @@ def read_item(user_id: int, db: Session = Depends(get_db)):
         "item_base": [3036, 3174, 3185, 3052, 3031, 3028, 2878, 4504, 3327, 2945],  # 임시 item_base
         # "user_base": user_based_recommend_news_list[:10],  # 상위 10개 뉴스
         # "item_base": list(item_based_recommend_news_list)[:10],  # 상위 10개 뉴스
-        "latest": industry_latest_news_list
+        "latest": industry_latest_news
     }
 
 
