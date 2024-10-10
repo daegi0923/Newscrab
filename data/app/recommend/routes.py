@@ -241,30 +241,33 @@ async def get_id_from_body(request:Request):
 
 @router.get("/list/{user_id}")
 def read_item(user_id: int, db: Session = Depends(get_db)):
-    if scrap_like_df is None:
-        get_scrap_like_dataframe(db)
+    # if scrap_like_df is None:
+    #     get_scrap_like_dataframe(db)
 
-    user_based_recommend_news_list, ub_scores = collaborative_filtering(user_id, db)
-    ib_news_list = get_related_news(user_based_recommend_news_list, ub_scores, user_id, db)
+    # user_based_recommend_news_list, ub_scores = collaborative_filtering(user_id, db)
+    # ib_news_list = get_related_news(user_based_recommend_news_list, ub_scores, user_id, db)
 
-    interaction_cnt = len(scrap_like_df[scrap_like_df['user_id'] == user_id])
-    if interaction_cnt:
-        user_interactions = user_news_matrix.loc[user_id]
-    else:
-        user_interactions = {}
+    # interaction_cnt = len(scrap_like_df[scrap_like_df['user_id'] == user_id])
+    # if interaction_cnt:
+    #     user_interactions = user_news_matrix.loc[user_id]
+    # else:
+    #     user_interactions = {}
 
-    interacted_news_ids = set()
-    for news_id, interaction in user_interactions.items():
-        if interaction > 0:
-            interacted_news_ids.add(news_id)
+    # interacted_news_ids = set()
+    # for news_id, interaction in user_interactions.items():
+    #     if interaction > 0:
+    #         interacted_news_ids.add(news_id)
 
-    item_based_recommend_news_list = list(set(ib_news_list.keys()) - set(user_based_recommend_news_list) - interacted_news_ids)
+    # item_based_recommend_news_list = list(set(ib_news_list.keys()) - set(user_based_recommend_news_list) - interacted_news_ids)
+    
+    
     industry_latest_news = get_latest_news(user_id, db)
     industry_latest_news_list = list(set(industry_latest_news) - interacted_news_ids)
-
     return {
-        "user_base": user_based_recommend_news_list[:10],  # 상위 10개 뉴스
-        "item_base": list(item_based_recommend_news_list)[:10],  # 상위 10개 뉴스
+        "user_base": [1105, 3714, 2836, 3021, 2918, 2894, 736, 2789, 4407, 4460, 1226 ],  # 임시 user_base
+        "item_base": [3036, 3174, 3185, 3052, 3031, 3028, 2878, 4504, 3327, 2945],  # 임시 item_base
+        # "user_base": user_based_recommend_news_list[:10],  # 상위 10개 뉴스
+        # "item_base": list(item_based_recommend_news_list)[:10],  # 상위 10개 뉴스
         "latest": industry_latest_news_list
     }
 
