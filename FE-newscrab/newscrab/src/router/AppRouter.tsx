@@ -32,15 +32,44 @@ import PasswordChange from "@pages/myPage/PasswordChangePage";
 import ProfileEdit1 from "@pages/myPage/ProfileEditPage1";
 import ProfileEdit2 from "@pages/myPage/ProfileEditPage2";
 
+// 기타
 import FortuneCookie from "@pages/myPage/FortunePage";
+import Ping1 from "@pages/ping/ping1"
+import Ping2 from "@pages/ping/ping2"
+import Ping3 from "@pages/ping/ping3"
+import Ping4 from "@pages/ping/ping4"
+import Ping5 from "@pages/ping/ping5"
+import Ping6 from "@pages/ping/ping6"
+import Ping7 from "@pages/ping/ping7"
+import Ping8 from "@pages/ping/ping8"
+import Ping9 from "@pages/ping/ping9"
+import Ping10 from "@pages/ping/ping10"
+import Ping11 from "@pages/ping/ping11"
+import Ping12 from "@pages/ping/ping12"
+import Ping13 from "@pages/ping/ping13"
+import Ping14 from "@pages/ping/ping14"
+import Ping15 from "@pages/ping/ping15"
+
+// 핑테스트
+import TestPage from "@pages/ping/TestPage"
+import Test1 from "@pages/ping/test1"
+import Test2 from "@pages/ping/test2"
+import Test3 from "@pages/ping/test3"
+import Test4 from "@pages/ping/test4"
+import Test5 from "@pages/ping/test5"
+import Test6 from "@pages/ping/test6"
 
 const AppRouter: React.FC = () => {
   const { isLogedIn } = useAuth();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // const handleAuthError = (message: string) => {
-  //   setErrorMessage(message); // 오류 메시지 설정
-  // };
+  const [answers, setAnswers] = useState<number[]>(Array(6).fill(-1));
+
+  const handleSelectAnswer = (questionIndex: number, answerIndex: number) => {
+    const updatedAnswers = [...answers];
+    updatedAnswers[questionIndex] = answerIndex;
+    setAnswers(updatedAnswers);
+  };
 
   return (
     <Router>
@@ -58,6 +87,28 @@ const AppRouter: React.FC = () => {
 
       <Routes>
         <Route path="/fortune" element={<FortuneCookie />} />
+        <Route path="/testpage" element={<TestPage />} />
+        <Route path="/test1" element={<Test1 onSelect={(answerIndex) => handleSelectAnswer(0, answerIndex)} />} />
+        <Route path="/test2" element={<Test2 onSelect={(answerIndex) => handleSelectAnswer(1, answerIndex)} />} />
+        <Route path="/test3" element={<Test3 onSelect={(answerIndex) => handleSelectAnswer(2, answerIndex)} />} />
+        <Route path="/test4" element={<Test4 onSelect={(answerIndex) => handleSelectAnswer(3, answerIndex)} />} />
+        <Route path="/test5" element={<Test5 onSelect={(answerIndex) => handleSelectAnswer(4, answerIndex)} />} />
+        <Route path="/test6" element={<Test6 onSelect={(answerIndex) => handleSelectAnswer(5, answerIndex)} answers={answers} />} />
+        <Route path="/ping1" element={<Ping1 />} />
+        <Route path="/ping2" element={<Ping2 />} />
+        <Route path="/ping3" element={<Ping3 />} />
+        <Route path="/ping4" element={<Ping4 />} />
+        <Route path="/ping5" element={<Ping5 />} />
+        <Route path="/ping6" element={<Ping6 />} />
+        <Route path="/ping7" element={<Ping7 />} />
+        <Route path="/ping8" element={<Ping8 />} />
+        <Route path="/ping9" element={<Ping9 />} />
+        <Route path="/ping10" element={<Ping10 />} />
+        <Route path="/ping11" element={<Ping11 />} />
+        <Route path="/ping12" element={<Ping12 />} />
+        <Route path="/ping13" element={<Ping13 />} />
+        <Route path="/ping14" element={<Ping14 />} />
+        <Route path="/ping15" element={<Ping15 />} />
 
         {/* 비로그인 상태일 때 */}
         {!isLogedIn ? (
@@ -76,7 +127,7 @@ const AppRouter: React.FC = () => {
               path="*"
               element={
                 <Navigate
-                  to="/login"
+                  to="/login1"
                   replace
                   state={{ error: "로그인이 필요합니다." }}
                 />
@@ -91,6 +142,14 @@ const AppRouter: React.FC = () => {
               element={
                 <Layout>
                   <MyPage />
+                </Layout>
+              }
+            />
+            <Route
+              path="/fortune"
+              element={
+                <Layout>
+                  <FortuneCookie />
                 </Layout>
               }
             />

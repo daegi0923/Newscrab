@@ -26,8 +26,8 @@ const StyledTd = styled.td`
   border: 1px solid #ddd;
 `;
 
-const StyledTr = styled.tr<{ isEven: boolean }>`
-  background-color: ${(props) => (props.isEven ? "#f9f9f9" : "#fff")};
+const StyledTr = styled.tr<{ $isEven: boolean }>`
+  background-color: ${(props) => (props.$isEven ? "#f9f9f9" : "#fff")};
   text-align: left;
 `;
 
@@ -77,7 +77,7 @@ const ArticleList: React.FC<ArticleListProps> = ({ articles }) => {
         </thead>
         <tbody>
           {articles.map((article, index) => (
-            <StyledTr key={article.articleId} isEven={index % 2 === 0}>
+            <StyledTr key={article.articleId} $isEven={index % 2 === 0}>
               <StyledTd
                 style={{ color: "blue", cursor: "pointer" }}
                 onClick={() => handleArticleClick(article.articleId)} // 기사 제목 클릭

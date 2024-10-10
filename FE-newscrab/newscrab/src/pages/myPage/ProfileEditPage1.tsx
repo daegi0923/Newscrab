@@ -142,9 +142,10 @@ const ProfileEdit1: React.FC = () => {
   useEffect(() => {
     dispatch(fetchUserProfileThunk())
       .unwrap()
-      // .then((res) => {
-      //   setLoading(false);
-      // })
+      .then((res) => {
+        console.log(res);
+        setLoading(false);
+      })
       .catch((error) => {
         setLoading(false);
         console.error("프로필 불러오기 오류:", error);
