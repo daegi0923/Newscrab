@@ -1,7 +1,16 @@
 import React, { useState, useRef, useEffect } from "react";
 import styled from "styled-components";
-import { getScrapData, postScrap, putScrap, getScrap } from "@apis/scrap/scrapApi"; // postScrap 함수 import
-import { addVocaThunk, updateVocaThunk, deleteVocaThunk } from "@store/voca/vocaSlice";
+import {
+  getScrapData,
+  postScrap,
+  putScrap,
+  getScrap,
+} from "@apis/scrap/scrapApi"; // postScrap 함수 import
+import {
+  addVocaThunk,
+  updateVocaThunk,
+  deleteVocaThunk,
+} from "@store/voca/vocaSlice";
 import DropDown from "@components/common/DropDown";
 import { words } from "@components/voca/VocaList";
 import { useDispatch, useSelector } from "react-redux";
@@ -11,7 +20,7 @@ import removeIcon from "@assets/common/remove.png";
 import NewsDetailAISummary from "./NewsDetailAISummary";
 import NewsDetailAIQuestion from "./NewsDetailAIQuestion";
 import Swal from "sweetalert2";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 
 const Sidebar = styled.div`
   width: 30%;
@@ -219,7 +228,7 @@ interface Voca {
 
 const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
   const dispatch = useDispatch<AppDispatch>();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const [scrapId, setScrapId] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState("summary");
@@ -250,8 +259,8 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
     console.log("삭제하려는 섹션:", vocaSections[index]);
     const section = vocaSections[index];
     const newSections = vocaSections.filter((_, i) => i !== index);
-      console.log("새로운 섹션 리스트:", newSections);
-      setVocaSections(newSections);
+    console.log("새로운 섹션 리스트:", newSections);
+    setVocaSections(newSections);
 
     if (section?.word && scrapId) {
       try {
@@ -264,8 +273,8 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
           (voca: Voca) => voca.vocaName === section.word
         );
         console.log("찾은 단어:", existingVoca);
-  
-        if (existingVoca&& existingVoca.vocaId) {
+
+        if (existingVoca && existingVoca.vocaId) {
           console.log("삭제할 단어 ID:", existingVoca.vocaId);
           await dispatch(deleteVocaThunk(existingVoca.vocaId));
           Swal.fire({
@@ -282,7 +291,7 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
           title: "삭제 실패",
           text: "단어 삭제 중 오류가 발생했습니다.",
         });
-        console.log(error)
+        console.log(error);
       }
     }
   };
@@ -338,23 +347,23 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
           // console.log("No scrap data found for this newsId:", newsId);
         }
       } catch (error) {
-        // console.error("Error fetching scrap data:", error);
+        console.error("Error fetching scrap data:", error);
       }
     };
 
     fetchScrapData();
   }, [newsId]);
-  
+
   useEffect(() => {
     const fetchGetScrapData = async () => {
       if (scrapId !== null) {
         try {
           const data = await getScrap(scrapId);
           console.log("Fetched data!!!:", data);
-  
+
           if (data && data.vocalist) {
             console.log("Selected Scrap:", data); // 스크랩 데이터 확인
-  
+
             // vocalist 배열을 사용해 기본 단어 섹션 값을 설정
             const VocaList = data.vocalist.map((vocaItem) => ({
               industryId: vocaItem.industryId || null, // industryId를 사용 (필요 시)
@@ -362,7 +371,7 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
               desc: vocaItem.vocaDesc || "", // 기본 설명 값 설정
               isDropdownOpen: false, // 드롭다운 기본값
             }));
-  
+
             setVocaSections(VocaList); // vocaSections 상태를 업데이트하여 기본값 설정
           }
         } catch (error) {
@@ -370,10 +379,10 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
         }
       }
     };
-  
+
     fetchGetScrapData();
   }, [scrapId]); // scrapId가 변경될 때마다 호출
-    
+
   useEffect(() => {
     adjustHeight(summaryTextareaRef.current);
     adjustHeight(opinionTextareaRef.current);
@@ -385,14 +394,15 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
     const hasEmptyIndustry = vocaSections.some(
       (section) => section.industryId === null && section.word !== ""
     );
-  
+
     const postscrapData = {
       newsId: newsId,
       comment: opinionText,
-      scrapSummary: summaryText.trim() === "<서론>\n\n<본론>\n\n<결론>" ? "" : summaryText,
+      scrapSummary:
+        summaryText.trim() === "<서론>\n\n<본론>\n\n<결론>" ? "" : summaryText,
       highlights: highlights,
     };
-  
+
     // 단어가 입력된 항목만 추가 (빈 단어 제외)
     const vocaAddList = vocaSections
       .filter((section) => section.word.trim() !== "")
@@ -402,7 +412,7 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
         vocaDesc: section.desc,
         industryId: section.industryId!,
       }));
-  
+
     // 단어가 입력되었는데 산업이 선택되지 않은 경우 오류 처리
     if (hasEmptyIndustry) {
       Swal.fire({
@@ -412,7 +422,7 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
       });
       return;
     }
-  
+
     try {
       Swal.fire({
         title: "단어 추가 중...👩‍💻",
@@ -422,17 +432,17 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
           Swal.showLoading();
         },
       });
-  
+
       if (scrapId !== null) {
         const existingWords = await getScrap(scrapId);
-        console.log('단어 뭉탱 있음~~~', existingWords.vocalist)
-        
+        console.log("단어 뭉탱 있음~~~", existingWords.vocalist);
+
         // 기존 단어 수정 또는 새로운 단어 추가
         for (const section of vocaSections) {
           const existingWord = existingWords.vocalist.find(
             (voca: Voca) => voca.vocaName === section.word
           );
-          console.log('단어 있음~~~', existingWord)
+          console.log("단어 있음~~~", existingWord);
           if (existingWord && existingWord.vocaId) {
             // 기존 단어가 있고, 설명이나 산업이 달라졌을 경우 수정 요청
             if (
@@ -440,7 +450,7 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
               existingWord.industryId !== section.industryId
             ) {
               console.log("수정 단어:", existingWord, existingWord.vocaId);
-  
+
               // const updatedData = {
               //   newsId: newsId,
               //   vocaName: section.word,
@@ -451,17 +461,17 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
                 await dispatch(
                   updateVocaThunk({
                     vocaId: existingWord.vocaId, // 해당 단어 ID
-                    updatedData : {
+                    updatedData: {
                       newsId: newsId,
                       vocaName: section.word,
                       vocaDesc: section.desc,
                       industryId: section.industryId ?? 0,
-                    }
+                    },
                   })
                 );
-                console.log('수정 성공!!');
+                console.log("수정 성공!!");
               } catch (error) {
-                console.error('수정 오류 발생!!', error);
+                console.error("수정 오류 발생!!", error);
                 throw error; // 오류가 발생하면 상위 catch로 넘김
               }
             }
@@ -473,40 +483,49 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
               vocaDesc: section.desc,
               industryId: section.industryId ?? 0,
             };
-            console.log('새단어@@', newWordData);
-  
+            console.log("새단어@@", newWordData);
+
             console.log("새로운 단어 추가:", section.word);
-  
+
             try {
               // 새로운 단어를 바로 추가
-              const result = await dispatch(addVocaThunk({ vocaAddList: [newWordData] }));
+              const result = await dispatch(
+                addVocaThunk({ vocaAddList: [newWordData] })
+              );
               if (addVocaThunk.rejected.match(result)) {
-                throw new Error(result.payload || `"${section.word}" 단어 추가 중 문제가 발생했습니다.`);
+                throw new Error(
+                  result.payload ||
+                    `"${section.word}" 단어 추가 중 문제가 발생했습니다.`
+                );
               }
               console.log("새 단어 추가 성공!");
             } catch (error) {
-              console.error('단어 추가 중 오류 발생!!', error);
+              console.error("단어 추가 중 오류 발생!!", error);
               throw error; // 오류가 발생하면 상위 catch로 넘김
             }
           }
         }
-  
+
         await putScrap(scrapId, postscrapData);
       } else {
         // scrapId가 null인 경우: 새로 저장하는 로직
         const result = await dispatch(addVocaThunk({ vocaAddList }));
         if (addVocaThunk.rejected.match(result)) {
-          throw new Error(result.payload || "단어 추가 중 문제가 발생했습니다.");
+          throw new Error(
+            result.payload || "단어 추가 중 문제가 발생했습니다."
+          );
         }
         await postScrap(postscrapData); // 새 스크랩 데이터 저장
       }
-  
+
       Swal.close();
-  
+
       Swal.fire({
         icon: "success",
         title: "저장 완료",
-        text: scrapId ? "수정이 완료되었습니다." : "스크랩이 성공적으로 저장되었습니다.",
+        text: scrapId
+          ? "수정이 완료되었습니다."
+          : "스크랩이 성공적으로 저장되었습니다.",
       });
       console.log(scrapId);
       // navigate('/scrap/${scrapId}');
@@ -595,7 +614,7 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
 
       {activeTab === "wordlist" && (
         <>
-            {vocaSections.map((section, index) => (
+          {vocaSections.map((section, index) => (
             <VocaSection key={index}>
               <IndustryDropdownWrapper>
                 <SelectedIndustryWrapper>
@@ -648,7 +667,6 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
                 />
               )}
             </VocaSection>
-
           ))}
           <AddButton src={addIcon} onClick={handleAddSection} />
         </>
