@@ -83,7 +83,6 @@ const AppRouter: React.FC = () => {
       )}
 
       <Routes>
-        <Route path="/fortune" element={<FortuneCookie />} />
         <Route path="/testpage" element={<TestPage />} />
         <Route path="/test1" element={<Test1 onSelect={(answerIndex) => handleSelectAnswer(0, answerIndex)} />} />
         <Route path="/test2" element={<Test2 onSelect={(answerIndex) => handleSelectAnswer(1, answerIndex)} />} />
