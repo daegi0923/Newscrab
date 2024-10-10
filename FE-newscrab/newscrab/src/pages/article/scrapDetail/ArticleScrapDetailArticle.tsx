@@ -7,6 +7,7 @@ import scrapCntIcon from "@assets/scrap.png";
 import crab from "@assets/crab.png";
 import { ArticleDetailItem } from "../../../types/articleTypes";
 import { Highlight } from "../../../types/scrapTypes"; // scrap 타입 불러옴
+import ArticleScrapLike from "@pages/article/scrapDetail/ArticleScrapLike ";
 
 import { getArticleDetail } from "@apis/article/articleDetailApi";
 import { deleteArticle } from "@apis/article/articleApi";
@@ -421,6 +422,10 @@ const ArticleScrapDetailArticle: React.FC<ArticleScrapDetailProps> = ({
             </CrabTextWrapper>
             <NewsText>{articleDetail.data.scrapResponseDto.comment}</NewsText>
             <Divider />
+            <ArticleScrapLike
+              articleId={articleId}
+              initialLikeCount={articleDetail.data.likeCnt}
+            />
           </>
         ) : (
           <div>데이터를 불러오는 중입니다...</div>
