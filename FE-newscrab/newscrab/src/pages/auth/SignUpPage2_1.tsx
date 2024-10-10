@@ -264,7 +264,7 @@ const SignUpPage2: React.FC = () => {
           title: '회원가입 성공!',
           text: '로그인 페이지로 이동합니다.',
         });
-        navigate('/login1');
+        navigate('/login');
       }
     } catch (error) {
       console.error('회원가입 실패:', error);
