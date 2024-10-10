@@ -9,10 +9,7 @@ import com.gihojise.newscrab.dto.response.ScrapListResponseDto;
 import com.gihojise.newscrab.dto.response.ScrapResponseDto;
 import com.gihojise.newscrab.exception.ErrorCode;
 import com.gihojise.newscrab.exception.NewscrabException;
-import com.gihojise.newscrab.repository.GrassRepository;
-import com.gihojise.newscrab.repository.NewsRepository;
-import com.gihojise.newscrab.repository.ScrapRepository;
-import com.gihojise.newscrab.repository.UserRepository;
+import com.gihojise.newscrab.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,6 +30,7 @@ public class ScrapService {
 
     private final HighlightService highlightService;
     private final GrassRepository grassRepository;
+    private final VocaRepository vocaRepository;
 
     // 1. 스크랩 목록 조회
     @Transactional(readOnly = true)
@@ -53,7 +51,8 @@ public class ScrapService {
                                 .comment(scrap.getComment())
                                 .createdAt(scrap.getCreatedAt())
                                 .updatedAt(scrap.getUpdatedAt())
-                                .vocalist(scrap.getNews().getVocas().stream()
+                                .vocalist(vocaRepository.findByUserUserIdAndNewsNewsId(userId, scrap.getNews().getNewsId()).stream()
+                                        .filter(voca -> voca.getUser().getUserId() == userId)
                                         .map(voca -> VocaDto.builder()
                                                 .vocaId(voca.getVocaId())
                                                 .newsId(voca.getNews().getNewsId())
@@ -62,12 +61,12 @@ public class ScrapService {
                                                 .vocaDesc(voca.getVocaDesc())
                                                 .originNewsId(voca.getNews().getNewsId())
                                                 .industryId(voca.getIndustryId())
-                                                .sentence(voca.getSentence())
+                                                .sentence(Optional.ofNullable(voca.getSentence()).orElse("")) // Null-safe 처리
                                                 .createdAt(voca.getCreatedAt())
                                                 .updatedAt(voca.getUpdatedAt())
-                                                .relatedNewsId1(voca.getRelatedNews1().getNewsId())
-                                                .relatedNewsId2(voca.getRelatedNews2().getNewsId())
-                                                .relatedNewsId3(voca.getRelatedNews3().getNewsId())
+                                                .relatedNewsId1(Optional.ofNullable(voca.getRelatedNews1()).map(News::getNewsId).orElse(0)) // Null-safe 처리
+                                                .relatedNewsId2(Optional.ofNullable(voca.getRelatedNews2()).map(News::getNewsId).orElse(0)) // Null-safe 처리
+                                                .relatedNewsId3(Optional.ofNullable(voca.getRelatedNews3()).map(News::getNewsId).orElse(0)) // Null-safe 처리
                                                 .build())
                                         .toList())
                                 .highlightList(scrap.getHighlights().stream()
@@ -115,7 +114,8 @@ public class ScrapService {
                 .highlightList(highlightList)
                 .createdAt(scrap.getCreatedAt())
                 .updatedAt(scrap.getUpdatedAt())
-                .vocalist(news.getVocas() != null ? news.getVocas().stream()
+                .vocalist(news.getVocas() != null ? vocaRepository.findByUserUserIdAndNewsNewsId(userId, scrap.getNews().getNewsId()).stream()
+                        .filter(voca -> voca.getUser().getUserId() == userId)
                         .map(voca -> VocaDto.builder()
                                 .vocaId(voca.getVocaId() != null ? voca.getVocaId() : null)
                                 .newsId(voca.getNews().getNewsId())
