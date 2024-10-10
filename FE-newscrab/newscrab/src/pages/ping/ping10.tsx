@@ -91,7 +91,7 @@ const Ping10: React.FC = () => {
           <br/>
           당신은 스피드 마스터!<br/>빠른 결정을 내리고, 효율적으로 일을 처리하는 걸 좋아해요.<br/>속도감과 혁신이 중요한 자동차 산업이 당신에게 딱 맞아요!
         </Description>
-        <Button href="/scrap">자동차 뉴스 스크랩하러 가기!</Button>
+        <Button href="/mainNews">자동차 뉴스 스크랩하러 가기!</Button>
         <Button href="/mypage">돌아가기</Button>
       </ContentWrapper>
     </Container>

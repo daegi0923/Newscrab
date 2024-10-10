@@ -143,7 +143,7 @@ const ProfileEdit1: React.FC = () => {
     dispatch(fetchUserProfileThunk())
       .unwrap()
       .then((res) => {
-        console.log(res)
+        console.log(res);
         setLoading(false);
       })
       .catch((error) => {

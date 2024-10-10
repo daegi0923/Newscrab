@@ -5,15 +5,24 @@ import Header from "@components/common/Header";
 import SearchBar from "@common/SearchBar";
 import Tab from "./Tab";
 import ScrapList from "./ScrapList "; // ScrapList 컴포넌트 import
-
 import { ScrapData } from "../../types/scrapTypes"; // scrapApi에서 타입 import
-
 import ScrapPdfGenerator from "@components/scrap/pdf/ScrapPdfGenerator";
 
 // redux 사용해서 scrapList 관리
 import { fetchScrapListThunk } from "@store/scrap/scrapSlice";
 import { AppDispatch, RootState } from "@store/index";
 import { useDispatch, useSelector } from "react-redux";
+import styled from "styled-components";
+
+// "데이터 없음" 메시지 스타일
+const NoDataMessage = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 400px; /* 원하는 높이로 설정 */
+  font-size: 24px;
+  color: gray;
+`;
 
 const ScrapListPage: React.FC = () => {
   const [filteredScrapList, setFilteredScrapList] = useState<ScrapData[]>([]); // 필터링된 스크랩 데이터
@@ -94,11 +103,15 @@ const ScrapListPage: React.FC = () => {
       <SearchBar searchText={searchText} onSearchChange={handleSearchChange} />
       {/* SearchBar에 필요한 props 전달 */}
       <Tab onIndustrySelect={handleIndustrySelect} />
-      {/* 필터링된 스크랩 리스트 컴포넌트 */}
-      <ScrapList
-        scrapList={filteredScrapList}
-        onScrapClick={handleScrapClick}
-      />
+      {/* 필터링된 스크랩 리스트가 없을 경우 "스크랩한 뉴스가 없습니다..." 메시지를 표시 */}
+      {filteredScrapList.length === 0 ? (
+        <NoDataMessage>스크랩한 뉴스가 없습니다...</NoDataMessage>
+      ) : (
+        <ScrapList
+          scrapList={filteredScrapList}
+          onScrapClick={handleScrapClick}
+        />
+      )}
       <ScrapPdfGenerator></ScrapPdfGenerator>
     </div>
   );

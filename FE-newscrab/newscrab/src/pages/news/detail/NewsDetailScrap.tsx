@@ -12,7 +12,6 @@ import NewsDetailAISummary from "./NewsDetailAISummary";
 import NewsDetailAIQuestion from "./NewsDetailAIQuestion";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
-import { Vocalist } from "../../../types/scrapTypes";
 
 const Sidebar = styled.div`
   width: 30%;
@@ -210,21 +209,6 @@ const DropdownWrapper = styled.div`
   background-color: white; /* 드롭다운이 분명하게 보이도록 배경색 설정 */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 그림자 추가로 시각적인 분리 */
 `;
-
-interface VocaUpdate {
-  vocaId: number;
-  newsId: number;
-  vocaName: string;
-  vocaDesc: string;
-  industryId: number;
-}
-
-interface VocaAdd {
-  newsId: number;
-  vocaName: string;
-  vocaDesc: string;
-  industryId: number;
-}
 
 interface Voca {
   vocaId: number;
@@ -524,7 +508,8 @@ const NewsDetailScrap: React.FC<{ newsId: number }> = ({ newsId }) => {
         title: "저장 완료",
         text: scrapId ? "수정이 완료되었습니다." : "스크랩이 성공적으로 저장되었습니다.",
       });
-      navigate('/scrap/${scrapId}');
+      console.log(scrapId);
+      // navigate('/scrap/${scrapId}');
     } catch (error: any) {
       Swal.close();
       Swal.fire({

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import { getNewsData } from "@apis/news/newsApi";
-import { NewsItem } from "../../../types/newsTypes";
-import viewIcon from "@assets/hot.png";
-import scrapCntIcon from "@assets/scrap.png";
+import { getArticleData } from "@apis/article/articleApi";
+import { ArticleItem } from "../../../types/articleTypes";
+// import viewIcon from "@assets/hot.png";
+// import scrapCntIcon from "@assets/scrap.png";
 import { industry } from "@common/Industry";
 import scrollbar from "@common/ScrollBar"; // 스크롤바 스타일 적용
 
@@ -21,7 +21,6 @@ const Container = styled.div`
   border-right: 1px solid #ddd;
 `;
 
-// 스크롤 가능한 컨테이너
 const ScrollableContainer = styled.div`
   padding: 0px 10px;
   max-height: 650px;
@@ -51,14 +50,12 @@ const TextContainer = styled.div`
   flex: 1;
 `;
 
-// 뉴스 제목과 이미지를 수평 정렬하는 래퍼
 const TitleAndImageWrapper = styled.div`
   display: flex;
-  align-items: center; /* 수직 정렬을 맞춤 */
-  gap: 16px; /* 제목과 이미지 사이 간격 */
+  align-items: center;
+  gap: 16px;
 `;
 
-// IndustryId와 InfoRow를 수평 정렬하기 위한 래퍼
 const HorizontalWrapper = styled.div`
   display: flex;
   align-items: center;
@@ -96,7 +93,6 @@ const InfoRow = styled.div`
   gap: 10px;
 `;
 
-// NewsButton과 StatsRow를 감싸는 수평 정렬 래퍼
 const ButtonAndStatsWrapper = styled.div`
   display: flex;
   justify-content: space-between;
@@ -107,23 +103,22 @@ const ButtonAndStatsWrapper = styled.div`
 const StatsRow = styled.div`
   display: flex;
   gap: 10px;
-  font-size: 12px;
+  font-size: 14px;
   color: #999;
 `;
 
-const ViewIcon = styled.img`
-  width: 12.45px;
-  height: 16px;
-  margin-right: 5px;
-`;
+// const ViewIcon = styled.img`
+//   width: 12.45px;
+//   height: 16px;
+//   margin-right: 5px;
+// `;
 
-const ScrapCntIcon = styled.img`
-  width: 16px;
-  height: 16px;
-  margin-right: 5px;
-`;
+// const ScrapCntIcon = styled.img`
+//   width: 16px;
+//   height: 16px;
+//   margin-right: 5px;
+// `;
 
-// 뉴스보기 버튼 스타일
 const NewsButton = styled.div`
   font-size: 14px;
   color: #007bff;
@@ -134,46 +129,41 @@ const NewsButton = styled.div`
   }
 `;
 
-// 제목 자르기 함수 - 30자 이상이면 '...'으로 자름
 const truncateTitle = (title: string) => {
-  const maxLength = 35; // 최대 글자 수를 30으로 고정
+  const maxLength = 35;
   return title.length > maxLength
     ? title.substring(0, maxLength) + "..."
     : title;
 };
 
 const HotSection: React.FC = () => {
-  const [news, setNews] = useState<NewsItem[]>([]);
+  const [articles, setArticles] = useState<ArticleItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  // 데이터 가져오기 (30개씩 가져옴, option 값을 "hot"으로 설정)
   useEffect(() => {
-    const fetchNews = async () => {
+    const fetchArticles = async () => {
       try {
-        const newsData = await getNewsData(
-          undefined,
-          1,
-          30,
-          undefined,
-          undefined,
-          "hot"
+        const articleData = await getArticleData();
+        // likeCnt가 높은 순으로 정렬
+        const sortedArticles = articleData.data.articleList.sort(
+          (a, b) => b.likeCnt - a.likeCnt
         );
-        setNews(newsData.news);
+        setArticles(sortedArticles);
       } catch (error) {
-        setError("뉴스를 가져오는 중 오류가 발생했습니다.");
-        console.error("Error fetching hot news:", error);
+        setError("기사를 가져오는 중 오류가 발생했습니다.");
+        console.error("Error fetching articles:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchNews();
+    fetchArticles();
   }, []);
 
-  const handleNewsClick = (newsId: number) => {
-    navigate(`/news/${newsId}`);
+  const handleArticleClick = (articleId: number) => {
+    navigate(`/article/${articleId}`);
   };
 
   if (loading) return <div>Loading...</div>;
@@ -189,48 +179,53 @@ const HotSection: React.FC = () => {
   return (
     <Container>
       <ScrollableContainer>
-        {news.map((newsItem) => (
-          <RecentItemContainer key={newsItem.newsId}>
+        {articles.map((article) => (
+          <RecentItemContainer key={article.articleId}>
             <FlexContainer>
               <TextContainer>
-                {/* IndustryId와 InfoRow를 하나의 래퍼로 감쌈 */}
                 <HorizontalWrapper>
                   <IndustryId>
-                    {getIndustryName(newsItem.industryId)}
+                    {getIndustryName(article.scrapResponseDto.industryId)}
                   </IndustryId>
                   <InfoRow>
-                    <span>{newsItem.newsCompany}</span>
-                    <span>{formatDate(newsItem.newsPublishedAt)}</span>
+                    <span>{article.scrapResponseDto.newsCompany}</span>
+                    <span>
+                      {formatDate(article.scrapResponseDto.createdAt)}
+                    </span>
                   </InfoRow>
                 </HorizontalWrapper>
 
-                {/* 제목과 이미지를 수평 정렬하는 래퍼 */}
                 <TitleAndImageWrapper>
-                  <NewsTitle onClick={() => handleNewsClick(newsItem.newsId)}>
-                    {truncateTitle(newsItem.newsTitle)}
+                  <NewsTitle
+                    onClick={() => handleArticleClick(article.articleId)}
+                  >
+                    {truncateTitle(article.scrapResponseDto.newsTitle)}
                   </NewsTitle>
-                  {newsItem.photoUrlList && (
+                  {article.scrapResponseDto.photolist.length > 0 && (
                     <Image
-                      src={newsItem.photoUrlList[0]}
+                      src={article.scrapResponseDto.photolist[0]}
                       alt="이미지가 없습니다."
                     />
                   )}
                 </TitleAndImageWrapper>
 
-                {/* NewsButton과 StatsRow를 수평 정렬하는 래퍼로 감쌈 */}
                 <ButtonAndStatsWrapper>
-                  <NewsButton onClick={() => handleNewsClick(newsItem.newsId)}>
-                    뉴스보기
+                  <NewsButton
+                    onClick={() => handleArticleClick(article.articleId)}
+                  >
+                    NewsCrab
                   </NewsButton>
                   <StatsRow>
-                    <span>
+                    <span>👨‍🦲 {article.name}</span>
+                    <span>👍 {article.likeCnt}</span>
+                    {/* <span>
                       <ViewIcon src={viewIcon} alt="조회수 아이콘" />
-                      {newsItem.view}
+                      {article.scrapResponseDto.view}
                     </span>
                     <span>
                       <ScrapCntIcon src={scrapCntIcon} alt="스크랩수 아이콘" />
-                      {newsItem.scrapCnt}
-                    </span>
+                      {article.scrapResponseDto.scrapCnt}
+                    </span> */}
                   </StatsRow>
                 </ButtonAndStatsWrapper>
               </TextContainer>

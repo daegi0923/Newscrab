@@ -1,7 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
-import ping from "@assets/ping/기름핑.png";
+import ping from "@assets/ping/test5.png";
 
 const BackgroundContainer = styled.div`
   height: 100vh;
@@ -65,9 +65,9 @@ const ProgressBar = styled.div<{ filled: boolean }>`
 `;
 
 const CharacterImage = styled.img`
-  width: 150px;
+  width: 250px;
   height: auto;
-  margin-bottom: 20px;
+  margin-bottom: 5px;
 `;
 
 const Test5: React.FC<{ onSelect: (answerIndex: number) => void }> = ({ onSelect }) => {
@@ -88,10 +88,10 @@ const Test5: React.FC<{ onSelect: (answerIndex: number) => void }> = ({ onSelect
         </ProgressBarContainer>
         <CharacterImage src={ping} alt="Ping Character" />
         <Title>영화를 볼 때 나의 스타일은?</Title>
-        <AnswerButton onClick={() => handleAnswer(0)}>빠른 전개</AnswerButton>
-        <AnswerButton onClick={() => handleAnswer(1)}>스킵 안 함</AnswerButton>
-        <AnswerButton onClick={() => handleAnswer(2)}>해석 영상까지 다 봄</AnswerButton>
-        <AnswerButton onClick={() => handleAnswer(3)}>중간에 자꾸 멈춤</AnswerButton>
+        <AnswerButton onClick={() => handleAnswer(0)}>빨리빨리 진행돼야 몰입 가능! 🏃‍♂️</AnswerButton>
+        <AnswerButton onClick={() => handleAnswer(1)}>스킵? 그런 거 없음 ⛔</AnswerButton>
+        <AnswerButton onClick={() => handleAnswer(2)}>해석 영상까지 풀코스로 봐줘야 😎</AnswerButton>
+        <AnswerButton onClick={() => handleAnswer(3)}>한 번에 못 보고 자꾸 끊긴다... 근데 괜찮음. 🙃</AnswerButton>
       </WhiteContainer>
     </BackgroundContainer>
   );

@@ -91,7 +91,7 @@ const Ping4: React.FC = () => {
           <br/>
           당신은 꼼꼼하고 세심한 타입!<br/>차분하게 모든 상황을 조정하는 당신은 금융과 찰떡궁합!
         </Description>
-        <Button href="/scrap">금융 뉴스 스크랩하러 가기!</Button>
+        <Button href="/mainNews">금융 뉴스 스크랩하러 가기!</Button>
         <Button href="/mypage">돌아가기</Button>
       </ContentWrapper>
     </Container>

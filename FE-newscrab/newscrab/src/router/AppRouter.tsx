@@ -145,6 +145,14 @@ const AppRouter: React.FC = () => {
                 </Layout>
               }
             />
+            <Route
+              path="/fortune"
+              element={
+                <Layout>
+                  <FortuneCookie />
+                </Layout>
+              }
+            />
             <Route path="/password" element={<PasswordChange />} />
             <Route path="/edit1" element={<ProfileEdit1 />} />
             <Route path="/edit2" element={<ProfileEdit2 />} />
@@ -211,7 +219,7 @@ const AppRouter: React.FC = () => {
               }
             />
             <Route
-              path="/article/scrap"
+              path="/article/:articleId"
               element={
                 <Layout>
                   <ArticleScrapDetailPage />

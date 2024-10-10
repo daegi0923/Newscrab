@@ -27,15 +27,14 @@ const ScrapWrapper = styled.div`
 const BackButton = styled.button`
   z-index: 2;
   position: absolute;
-  top: 105px;
+  top: 9.2%;
   left: 0%;
-  padding: 4px 8px;
-  background-color: #ffbe98;
+  padding: 10px 15px;
+  background-color: #fdfaf8;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   font-size: 15px;
-  color: white;
   &:hover {
     background-color: #ff8f4d;
   }
@@ -51,8 +50,16 @@ const ArrowButton = styled.button<{ hidden: boolean }>`
   border: none;
   color: #ffbe98; /* 아이콘 색상 */
   font-size: 40px; /* 아이콘 크기 */
-  // z-index: 1000; /* 다른 요소 위로 보이게 설정 */
   padding: 0; /* 불필요한 패딩 제거 */
+`;
+
+const NoDataMessage = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 400px; /* 원하는 높이로 설정 */
+  font-size: 24px;
+  color: gray;
 `;
 
 const ScrapDetailPage: React.FC = () => {
@@ -125,33 +132,40 @@ const ScrapDetailPage: React.FC = () => {
         <Header />
         <BackButton onClick={handleBackClick}>스크랩 목록</BackButton>
 
-        <ArrowButton
-          hidden={currentIndex === 0}
-          onClick={handlePrevClick}
-          style={{ left: "-60px" }}
-        >
-          <FaChevronLeft /> {/* 왼쪽 화살표 아이콘 */}
-        </ArrowButton>
+        {/* 데이터가 없을 때 "데이터가 없습니다" 메시지를 중앙에 표시 */}
+        {scrapDataList.length === 0 ? (
+          <NoDataMessage>스크랩을 해주세요...</NoDataMessage>
+        ) : (
+          <>
+            <ArrowButton
+              hidden={currentIndex === 0}
+              onClick={handlePrevClick}
+              style={{ left: "-60px" }}
+            >
+              <FaChevronLeft /> {/* 왼쪽 화살표 아이콘 */}
+            </ArrowButton>
 
-        <ScrapWrapper>
-          {/* 현재 scrap 데이터를 ScrapDetailArticle에 넘겨줍니다 */}
-          {currentScrapData && (
-            <ScrapDetailArticle scrapId={currentScrapData.scrapId} />
-          )}
+            <ScrapWrapper>
+              {/* 현재 scrap 데이터를 ScrapDetailArticle에 넘겨줍니다 */}
+              {currentScrapData && (
+                <ScrapDetailArticle scrapId={currentScrapData.scrapId} />
+              )}
 
-          {/* scrapId를 ScrapDetailVoca로도 전달합니다 */}
-          {currentScrapData && (
-            <ScrapDetailVoca scrapId={currentScrapData.scrapId} />
-          )}
-        </ScrapWrapper>
+              {/* scrapId를 ScrapDetailVoca로도 전달합니다 */}
+              {currentScrapData && (
+                <ScrapDetailVoca scrapId={currentScrapData.scrapId} />
+              )}
+            </ScrapWrapper>
 
-        <ArrowButton
-          hidden={currentIndex === scrapDataList.length - 1}
-          onClick={handleNextClick}
-          style={{ right: "-60px" }}
-        >
-          <FaChevronRight /> {/* 오른쪽 화살표 아이콘 */}
-        </ArrowButton>
+            <ArrowButton
+              hidden={currentIndex === scrapDataList.length - 1}
+              onClick={handleNextClick}
+              style={{ right: "-60px" }}
+            >
+              <FaChevronRight /> {/* 오른쪽 화살표 아이콘 */}
+            </ArrowButton>
+          </>
+        )}
       </ScrapDetailContainer>
     </div>
   );

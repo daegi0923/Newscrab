@@ -150,6 +150,7 @@ const ScrapList: React.FC<{
       {scrapList.map((scrap) => (
         <ScrapItemContainer
           key={scrap.scrapId} // key를 scrapId로 설정
+          onClick={() => onScrapClick(scrap.scrapId)}
         >
           <FlexContainer>
             {scrap.photolist && (
