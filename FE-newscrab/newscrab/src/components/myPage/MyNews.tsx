@@ -400,12 +400,14 @@ const NewsTitle = styled.h3`
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   white-space: normal;
+  font-family: "SUIT Variable";
 `;
 
 const NewsDate = styled.p`
   font-size: 10px;
   color: white;
   margin-top: -5px;
+  font-family: "SUIT Variable";
 `;
 
 const SectionName = styled.div`
