@@ -26,6 +26,7 @@ public class ArticleService {
     private final UserRepository userRepository;
     private final ArticleRepository articleRepository;
     private final UserArticleLikeRepository userArticleLikeRepository;
+    private final VocaRepository vocaRepository;
 
     // 스크랩 공유게시글 목록 조회 (프론트: 페이지네이션 안할거임! 검색으로 조절할게요)
     @Transactional(readOnly = true)
@@ -57,23 +58,6 @@ public class ArticleService {
                                                         .toList() : Collections.emptyList())
                                                 .createdAt(article.getScrap().getCreatedAt())
                                                 .updatedAt(article.getScrap().getUpdatedAt())
-                                                .vocalist(article.getScrap().getNews().getVocas() != null ? article.getScrap().getNews().getVocas().stream()
-                                                        .map(voca -> VocaDto.builder()
-                                                                .vocaId(voca.getVocaId() != null ? voca.getVocaId() : null)
-                                                                .newsId(voca.getNews().getNewsId())
-                                                                .userId(voca.getUser().getUserId())
-                                                                .vocaName(voca.getVocaName())
-                                                                .vocaDesc(voca.getVocaDesc())
-                                                                .originNewsId(voca.getNews().getNewsId())
-                                                                .industryId(voca.getIndustryId())
-                                                                .sentence(voca.getSentence())
-                                                                .createdAt(voca.getCreatedAt())
-                                                                .updatedAt(voca.getUpdatedAt())
-                                                                .relatedNewsId1(null)
-                                                                .relatedNewsId2(null)
-                                                                .relatedNewsId3(null)
-                                                                .build())
-                                                        .toList() : Collections.emptyList())
                                                 .newsContent(article.getScrap().getNews().getNewsContent())
                                                 .highlightList(article.getScrap().getHighlights() != null ? article.getScrap().getHighlights().stream()
                                                         .map(highlight -> HighlightDto.builder()
@@ -102,6 +86,8 @@ public class ArticleService {
 
         Scrap scrap = article.getScrap();
         News news = scrap.getNews();
+        User user = scrap.getUser();
+        int userId = user.getUserId();
 
         return ArticleResponseDto.builder()
                 .articleId(article.getArticleId())
@@ -126,23 +112,24 @@ public class ArticleService {
                                 .toList() : Collections.emptyList())
                         .createdAt(scrap.getCreatedAt())
                         .updatedAt(scrap.getUpdatedAt())
-                        .vocalist(news.getVocas() != null ? news.getVocas().stream()
+                        .vocalist(vocaRepository.findByUserUserIdAndNewsNewsId(userId, scrap.getNews().getNewsId()).stream()
+                                .filter(voca -> voca.getUser().getUserId() == userId)
                                 .map(voca -> VocaDto.builder()
-                                        .vocaId(voca.getVocaId() != null ? voca.getVocaId() : null)
+                                        .vocaId(voca.getVocaId())
                                         .newsId(voca.getNews().getNewsId())
                                         .userId(voca.getUser().getUserId())
                                         .vocaName(voca.getVocaName())
                                         .vocaDesc(voca.getVocaDesc())
                                         .originNewsId(voca.getNews().getNewsId())
                                         .industryId(voca.getIndustryId())
-                                        .sentence(voca.getSentence())
+                                        .sentence(Optional.ofNullable(voca.getSentence()).orElse("")) // Null-safe 처리
                                         .createdAt(voca.getCreatedAt())
                                         .updatedAt(voca.getUpdatedAt())
-                                        .relatedNewsId1(null)
-                                        .relatedNewsId2(null)
-                                        .relatedNewsId3(null)
+                                        .relatedNewsId1(Optional.ofNullable(voca.getRelatedNews1()).map(News::getNewsId).orElse(0)) // Null-safe 처리
+                                        .relatedNewsId2(Optional.ofNullable(voca.getRelatedNews2()).map(News::getNewsId).orElse(0)) // Null-safe 처리
+                                        .relatedNewsId3(Optional.ofNullable(voca.getRelatedNews3()).map(News::getNewsId).orElse(0)) // Null-safe 처리
                                         .build())
-                                .toList() : Collections.emptyList())
+                                .toList())
                         .newsContent(news.getNewsContent())
                         .highlightList(scrap.getHighlights() != null ? scrap.getHighlights().stream()
                                 .map(highlight -> HighlightDto.builder()
@@ -192,9 +179,9 @@ public class ArticleService {
         }
 
         articleRepository.delete(article);
-        
+
     }
-    
+
 
     // 스크랩 좋아요
     @Transactional
@@ -218,9 +205,9 @@ public class ArticleService {
 
         userArticleLikeRepository.save(userArticleLike);
         article.addLikeCnt();
-        
+
     }
-    
+
     // 좋아요 취소
     @Transactional
     public void cancelLikeArticle(int userId, int articleId) {
