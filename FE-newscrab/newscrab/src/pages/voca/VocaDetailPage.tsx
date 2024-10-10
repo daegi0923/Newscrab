@@ -65,9 +65,9 @@ const NewsContainer = styled.div`
 const BackButton = styled.button`
   z-index: 2;
   position: absolute;
-  top: 12%;
+  top: 10%;
   left: 10%;
-  padding: 10px 15px;
+  padding: 5px 10px;
   background-color: #fdfaf8;
   border: none;
   border-radius: 5px;
@@ -76,7 +76,7 @@ const BackButton = styled.button`
   // font-weight: bold;
   // color: white;
   &:hover {
-    background-color: #ff8f4d;
+    background-color: #ffd180;
   }
 `;
 

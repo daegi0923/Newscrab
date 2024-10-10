@@ -244,7 +244,7 @@ const ArticleScrapDetailArticle: React.FC<ArticleScrapDetailProps> = ({
         Swal.fire({
           icon: "error",
           title: "삭제 실패",
-          text: "삭제 중 오류가 발생했습니다. 다시 시도해주세요.",
+          text: "본인 작성한 게시글만 삭제할 수 있습니다.",
         });
       }
     }

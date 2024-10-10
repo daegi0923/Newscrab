@@ -147,17 +147,16 @@ const ScrapCntIcon = styled.img`
 `;
 
 const UploadButton = styled.button`
-  background-color: #ff8f4d;
-  color: black;
+  background-color: #ffb74d;
+  color: white;
   border: none;
   border-radius: 5px;
   padding: 5px 10px;
   cursor: pointer;
   font-size: 12px;
-  margin-right: 5px;
 
   &:hover {
-    background-color: #e67a3c;
+    background-color: #ff8f4d;
   }
 `;
 
@@ -169,7 +168,6 @@ const EditButton = styled.button`
   padding: 5px 10px;
   cursor: pointer;
   font-size: 12px;
-  margin-right: 5px;
 
   &:hover {
     background-color: #45a049;
@@ -455,7 +453,7 @@ const ScrapDetailArticle: React.FC<ScrapDetailArticleProps> = ({ scrapId }) => {
             <UploadButton onClick={handleUploadClick}>
               게시글에 공유하기
             </UploadButton>{" "}
-            <EditButton onClick={handleEditClick}>수정</EditButton>
+            <EditButton onClick={handleEditClick}>수정</EditButton>{" "}
             <DeleteButton onClick={handleDeleteClick}>삭제</DeleteButton>
           </ButtonContainer>
           {/* 토글 섹션 */}
