@@ -24,6 +24,9 @@ const Container = styled.div`
   flex-direction: column;
   align-items: center;
   padding: 20px;
+  height: 41%;
+  // border: solid 1px blue;
+  margin: 5px 0px;
 `;
 
 const NewsListContainer = styled.div`
@@ -37,7 +40,7 @@ const NewsListContainer = styled.div`
 
 const NewsList = styled.div`
   display: flex;
-  margin-top: 5%;
+  margin-top: 2.5%;
   gap: 20px;
   overflow-x: scroll;
   padding: 10px;
@@ -58,6 +61,11 @@ const NewsItem = styled.div<{ $animate: boolean }>`
   height: 180px;
   flex-shrink: 0;
   overflow: hidden;
+  transition: transform 0.3s ease; /* 애니메이션 추가 */
+  
+  &:hover {
+    transform: translateY(-5px); /* hover 시 위로 살짝 올라감 */
+  }
   ${({ $animate }) =>
     $animate &&
     css`
@@ -111,7 +119,7 @@ const NewsDate = styled.p`
 
 const SectionName = styled.div`
   font-size: 15px;
-  margin-top: 1%;
+  margin-top: -0.5%;
   color: #93939;
   font-weight: bold;
   position: absolute;
@@ -125,8 +133,8 @@ const ArrowButton = styled.button`
   font-size: 24px;
   cursor: pointer;
   position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
+  // top: 40%;
+  transform: translateY(-100%);
   z-index: 1;
 `;
 
@@ -147,6 +155,15 @@ const RightArrow = styled(ArrowButton)`
     width: 13%;
     height: 13%;
   }
+`;
+
+const Message = styled.div`
+  font-size: 16px;
+  color: gray;
+  font-family: "Paper7";
+  margin-top: 14%;
+  // transform: translateY(-%);
+  margin-left: 2.3%;
 `;
 
 const ViewNews: React.FC = () => {
@@ -221,6 +238,7 @@ const ViewNews: React.FC = () => {
         <img src={arrow} alt="왼쪽 화살표" />
       </LeftArrow>
       <NewsListContainer>
+        {uniqueRecentNewsList.length > 0 ? (
         <NewsList ref={newsListRef}>
           {uniqueRecentNewsList.map((item) => (
             <NewsItem
@@ -241,6 +259,9 @@ const ViewNews: React.FC = () => {
             </NewsItem>
           ))}
         </NewsList>
+        ) : (
+         <Message>아직 최근에 본 뉴스가 없습니다 😕</Message>
+        )}
       </NewsListContainer>
       <RightArrow onClick={scrollRight}>
         <img src={arrow} alt="오른쪽 화살표" />
