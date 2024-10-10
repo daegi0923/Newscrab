@@ -5,7 +5,6 @@ import styled from "styled-components";
 import Header from "@common/Header";
 import NewsDetailArticle from "./NewsDetailArticle";
 import NewsDetailScrap from "./NewsDetailScrap";
-import NewsDetailRcmd from "./NewsDetailRcmd";
 // api
 import { getNewsDetail } from "@apis/news/newsDetailApi";
 import { NewsDetailItem } from "../../../types/newsTypes";
@@ -26,15 +25,14 @@ const NewsWrapper = styled.div`
 const BackButton = styled.button`
   z-index: 2;
   position: absolute;
-  top: 105px;
+  top: 9%;
   left: 0%;
-  padding: 4px 8px;
-  background-color: #ffbe98;
+  padding: 10px 15px;
+  background-color: #fdfaf8;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   font-size: 15px;
-  color: white;
   &:hover {
     background-color: #ff8f4d;
   }
@@ -132,14 +130,6 @@ const NewsDetailPage: React.FC = () => {
         >
           <FaChevronRight /> {/* 오른쪽 화살표 아이콘 */}
         </ArrowButton>
-
-        {/* newsDetailItem을 NewsDetailRcmd로 넘겨줌 */}
-        {newsId && newsDetailItem && (
-          <NewsDetailRcmd
-            newsId={parseInt(newsId, 10)}
-            newsDetailItem={newsDetailItem}
-          />
-        )}
       </NewsDetailContainer>
     </div>
   );

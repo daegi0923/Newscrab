@@ -16,6 +16,7 @@ import HighlightComponent from "../../scrap/highlight/HighlightComponent";
 import { getScrapHighlights } from "@apis/highlight/highlightApi";
 import { HighlightItem } from "../../../types/highlightTypes";
 import {
+  NewsDetailRcmdWrapper,
   NewsContent,
   NewsTitle,
   IndustryId,
@@ -30,6 +31,7 @@ import {
   NewsText,
   Divider,
 } from "./NewsDetailArticleStyles";
+import NewsDetailRcmd from "./NewsDetailRcmd";
 
 const formatDate = (dateString: string) => {
   const date = new Date(dateString); // 문자열을 Date 객체로 변환
@@ -411,52 +413,62 @@ const NewsDetailArticle: React.FC<ScrapDetailArticleProps> = ({
   }, []);
 
   return (
-    <NewsContent id="newsContent">
-      <LikeButton newsId={newsDetailItem.newsId} /> {/* LikeButton 사용 */}
-      {/* 뉴스 제목 클릭 시 새 창으로 이동 */}
-      <NewsTitle>{newsDetailItem.newsTitle}</NewsTitle>
-      <MetaInfoContainer>
-        <InfoGroup>
-          <Info>
-            <IndustryId>
-              {getIndustryName(newsDetailItem.industryId)}
-            </IndustryId>
-          </Info>
-          <Info>{newsDetailItem.newsCompany}</Info>
-          <Info>{formatDate(newsDetailItem.newsPublishedAt)}</Info>
-          <Info>
-            <OriginalNews onClick={handleTitleClick}>뉴스원문</OriginalNews>
-          </Info>
-        </InfoGroup>
-        <Stats>
-          <IconContainer>
-            <ViewIcon src={viewIcon} alt="조회수 아이콘" />
-            {newsDetailItem.view}
-          </IconContainer>
-          <IconContainer>
-            <ScrapCntIcon src={scrapCntIcon} alt="스크랩수 아이콘" />
-            {newsDetailItem.scrap}
-          </IconContainer>
-        </Stats>
-      </MetaInfoContainer>
-      <Divider />
-      <NewsText
-        id="newsText" ref={newsTextRef}
-        dangerouslySetInnerHTML={{ __html: newsDetailItem.newsContent }}
-      />
-      {isHighlightPopupVisible && (
-        <HighlightComponent
-          applyHighlight={applyHighlight}
-          closePopup={closePopup}
-          removeHighlight={removeHighlightHandler}
-          style={{
-            top: popupPosition.top,
-            left: popupPosition.left,
-            position: "absolute",
-          }}
+    <>
+      <NewsContent id="newsContent">
+        <LikeButton newsId={newsDetailItem.newsId} /> {/* LikeButton 사용 */}
+        {/* 뉴스 제목 클릭 시 새 창으로 이동 */}
+        <NewsTitle>{newsDetailItem.newsTitle}</NewsTitle>
+        <MetaInfoContainer>
+          <InfoGroup>
+            <Info>
+              <IndustryId>
+                {getIndustryName(newsDetailItem.industryId)}
+              </IndustryId>
+            </Info>
+            <Info>{newsDetailItem.newsCompany}</Info>
+            <Info>{formatDate(newsDetailItem.newsPublishedAt)}</Info>
+            <Info>
+              <OriginalNews onClick={handleTitleClick}>뉴스원문</OriginalNews>
+            </Info>
+          </InfoGroup>
+          <Stats>
+            <IconContainer>
+              <ViewIcon src={viewIcon} alt="조회수 아이콘" />
+              {newsDetailItem.view}
+            </IconContainer>
+            <IconContainer>
+              <ScrapCntIcon src={scrapCntIcon} alt="스크랩수 아이콘" />
+              {newsDetailItem.scrap}
+            </IconContainer>
+          </Stats>
+        </MetaInfoContainer>
+        <Divider />
+        <NewsText
+          id="newsText"
+          ref={newsTextRef}
+          dangerouslySetInnerHTML={{ __html: newsDetailItem.newsContent }}
         />
-      )}
-    </NewsContent>
+        {isHighlightPopupVisible && (
+          <HighlightComponent
+            applyHighlight={applyHighlight}
+            closePopup={closePopup}
+            removeHighlight={removeHighlightHandler}
+            style={{
+              top: popupPosition.top,
+              left: popupPosition.left,
+              position: "absolute",
+            }}
+          />
+        )}
+      </NewsContent>
+      {/* NewsDetailRcmdWrapper로 감싸서 위치 조정 */}
+      <NewsDetailRcmdWrapper>
+        <NewsDetailRcmd
+          newsId={newsDetailItem.newsId}
+          newsDetailItem={newsDetailItem}
+        />
+      </NewsDetailRcmdWrapper>
+    </>
   );
 };
 

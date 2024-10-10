@@ -21,8 +21,8 @@ const ModalContent = styled.div`
   padding: 2%;
   border-radius: 10px;
   max-width: 800px;
-  width: 40%;
-  height: 40%;
+  width: 45%;
+  height: 42%;
   text-align: center;
   align-items: center;
 `;
@@ -42,10 +42,24 @@ const ImageOption = styled.img<{ isSelected: boolean }>`
 `;
 
 const Button = styled.button`
-  margin-top: 20px;
+  margin-top: 2px;
   background-color: #ffbe98;
   border: none;
-  padding: 10px 20px;
+  padding: 6px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  margin-right: 10px;
+
+  &:hover {
+    background-color: #e09520;
+  }
+`;
+
+const BackButton = styled.button`
+  margin-top: 2px;
+  background-color: #ffbe98;
+  border: none;
+  padding: 6px 12px;
   border-radius: 10px;
   cursor: pointer;
 
@@ -98,6 +112,9 @@ const ProfileImageModal: React.FC<ProfileImageModalProps> = ({
         >
           확인
         </Button>
+        <BackButton onClick={onClose}>
+          닫기
+        </BackButton>
       </ModalContent>
     </ModalOverlay>
   );

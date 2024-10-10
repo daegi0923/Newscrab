@@ -72,20 +72,23 @@ const CardImage = styled.img`
 const Industry = styled.div`
   position: absolute;
   top: 4%;
-  left: 10%;
+  left: 8%;
   z-index: 10;
-  color: #333;
-  font-size: 18px;
+  color: #555;
+  font-size: 12px;
   font-weight: bold;
+  border: 1px solid #888;
+  border-radius:20px;
+  padding: 2px 7px;
 `;
 
 const CardContent = styled.div`
   position: absolute;
-  top: 14%;
+  top: 13%;
   left: 10%;
   z-index: 10;
-  color: #555;
-  font-size: 16px;
+  color: #333;
+  font-size: 18px;
   font-weight: bold;
 `;
 
@@ -239,8 +242,8 @@ const VocaDetailCard: React.FC<VocaDetailCardProps> = ({ img, industryName, voca
     <CardContainer ref={containerRef} onMouseMove={handleMouseMove} onMouseOut={handleMouseOut}>
       {img && <CardImage src={img} alt={vocaName} />}
       <Overlay ref={overlayRef} />
-      <Industry>{industryName}</Industry>
       <CardContent>{vocaName}</CardContent>
+      <Industry>{industryName}</Industry>
     </CardContainer>
   );
 };

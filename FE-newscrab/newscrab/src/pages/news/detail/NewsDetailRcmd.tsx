@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import Typed from "typed.js";
+import crab2 from "@assets/crab2.png";
 
 const formatDate = (dateString: string) => {
   return dateString.replace("T", " ");
@@ -23,36 +25,31 @@ const PopupContainer = styled.div<{ $show: boolean }>`
   transition: opacity 0.3s ease, transform 0.3s ease;
 `;
 
-const PopupButton = styled.button`
-  position: fixed;
-  bottom: 4%;
-  left: 62%;
-  background-color: #45a049;
-  border: none;
-  border-radius: 50%;
+const CrabImageWrapper = styled.div`
+  position: absolute;
+  bottom: 100px;
+  right: -50px;
   width: 50px;
   height: 50px;
-  color: white;
-  font-size: 12px;
   cursor: pointer;
   z-index: 99;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  line-height: 1.2;
-  text-align: center;
+`;
+
+const CrabImage = styled.img`
+  width: 100%;
+  height: 100%;
 `;
 
 const CloseButton = styled.button`
   position: absolute;
-  top: -3px;
-  right: -3px;
+  top: 0px;
+  right: 0px;
   background: none;
   border: none;
-  color: #808080;
-  font-size: 30px;
+  color: white;
+  font-size: 16px;
   cursor: pointer;
-  z-index: 100;
+  z-index: 101;
 `;
 
 const ImageWrapper = styled.div`
@@ -104,18 +101,87 @@ const PublishedAt = styled.p`
   border-radius: 5px;
 `;
 
+const TypedTextContainer = styled.div<{ $show: boolean }>`
+  position: absolute;
+  right: 70px; /* CrabImage 좌측에 배치되도록 조정 */
+  bottom: 0; /* CrabImage와 수직으로 맞추기 */
+  width: 180px;
+  height: 18px;
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+  background-color: #666;
+  text-align: center;
+  z-index: 100;
+  white-space: nowrap;
+  border-radius: 10px;
+  padding: 10px;
+  display: ${(props) =>
+    props.$show ? "flex" : "none"}; /* show 상태에 따라 표시/숨김 */
+  justify-content: center; /* 수평 중앙 정렬 */
+  align-items: center; /* 수직 중앙 정렬 */
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: -16px;
+    border-left: 16px solid #666;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    transform: translateY(-50%);
+  }
+
+  .typed::after {
+    content: "|";
+    display: inline-block;
+    animation: blink 0.7s infinite;
+  }
+
+  @keyframes blink {
+    0% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+`;
+
 interface NewsDetailRcmdProps {
   newsId: number;
   newsDetailItem: {
-    relatedNews1?: any; // optional로 변경
-    relatedNews2?: any; // optional로 변경
-    relatedNews3?: any; // optional로 변경
+    relatedNews1?: any;
+    relatedNews2?: any;
+    relatedNews3?: any;
   };
 }
 
 const NewsDetailRcmd: React.FC<NewsDetailRcmdProps> = ({ newsDetailItem }) => {
   const [showPopup, setShowPopup] = useState(false);
+  const [showTypedText, setShowTypedText] = useState(true); // TypedTextContainer 표시 여부
   const navigate = useNavigate();
+  const typedElement = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const options = {
+      strings: ['연관뉴스도 추천해 줄"게"', '나를 클릭 하"게"'], // 각기 다른 문구
+      typeSpeed: 50,
+      backSpeed: 30,
+      loop: true,
+      showCursor: false, // 커서 숨김
+    };
+
+    if (typedElement.current) {
+      const typed = new Typed(typedElement.current, options);
+      return () => {
+        typed.destroy(); // 컴포넌트 언마운트 시 Typed.js 인스턴스 제거
+      };
+    }
+  }, []);
 
   const togglePopup = () => {
     setShowPopup(!showPopup);
@@ -141,12 +207,16 @@ const NewsDetailRcmd: React.FC<NewsDetailRcmdProps> = ({ newsDetailItem }) => {
     }));
 
   return (
-    <>
-      <PopupButton onClick={togglePopup}>
-        연관
-        <br />
-        뉴스
-      </PopupButton>
+    <div style={{ position: "relative" }}>
+      <CrabImageWrapper>
+        <TypedTextContainer $show={showTypedText}>
+          <CloseButton onClick={() => setShowTypedText(false)}>×</CloseButton>{" "}
+          {/* 닫기 버튼 */}
+          <div ref={typedElement} className="typed"></div>
+        </TypedTextContainer>
+        <CrabImage src={crab2} alt="Crab Image" onClick={togglePopup} />
+      </CrabImageWrapper>
+
       <PopupContainer $show={showPopup}>
         <CloseButton onClick={togglePopup}>×</CloseButton>
         <ImageWrapper>
@@ -165,7 +235,7 @@ const NewsDetailRcmd: React.FC<NewsDetailRcmdProps> = ({ newsDetailItem }) => {
           ))}
         </ImageWrapper>
       </PopupContainer>
-    </>
+    </div>
   );
 };
 
