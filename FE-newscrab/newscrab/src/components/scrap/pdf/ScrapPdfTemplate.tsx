@@ -34,7 +34,7 @@ const TitleRow = styled.tr`
 const ScrapDetail = styled.div`
   display: flex;
   justify-content: center;
-  width : 1200px;
+  width : 1000px;
   padding-top : 30px;
 `;
 
