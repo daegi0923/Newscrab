@@ -228,7 +228,7 @@ def get_latest_news(user_id: int, db:Session):
     latest_news = []
     for industry in user_industry_ids:
         # print(industry)
-        news_list = db.query(models.News.news_id).filter(models.News.news_industry_id == industry[0]).order_by(models.News.created_at.desc()).limit(10).all()
+        news_list = db.query(models.News.news_id).filter(models.News.news_industry_id == industry[0]).order_by(models.News.news_published_at.desc()).limit(10).all()
         for news in news_list:
             latest_news.append(news[0])
 
@@ -259,13 +259,16 @@ def read_item(user_id: int, db: Session = Depends(get_db)):
             interacted_news_ids.add(news_id)
 
     item_based_recommend_news_list = list(set(ib_news_list.keys()) - set(user_based_recommend_news_list) - interacted_news_ids)
+    
+    
     industry_latest_news = get_latest_news(user_id, db)
     industry_latest_news_list = list(set(industry_latest_news) - interacted_news_ids)
-
     return {
+        # "user_base": [1105, 3714, 2836, 3021, 2918, 2894, 736, 2789, 4407, 4460, 1226 ],  # 임시 user_base
+        # "item_base": [3036, 3174, 3185, 3052, 3031, 3028, 2878, 4504, 3327, 2945],  # 임시 item_base
         "user_base": user_based_recommend_news_list[:10],  # 상위 10개 뉴스
         "item_base": list(item_based_recommend_news_list)[:10],  # 상위 10개 뉴스
-        "latest": industry_latest_news_list
+        "latest": industry_latest_news
     }
 
 
