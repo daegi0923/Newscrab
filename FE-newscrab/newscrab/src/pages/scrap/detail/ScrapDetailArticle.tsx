@@ -156,6 +156,7 @@ const UploadButton = styled.button`
   padding: 5px 10px;
   cursor: pointer;
   font-size: 12px;
+  font-family: "Paper5";
 
   &:hover {
     background-color: #ff8f4d;
@@ -170,6 +171,7 @@ const EditButton = styled.button`
   padding: 5px 10px;
   cursor: pointer;
   font-size: 12px;
+  font-family: "Paper5";
 
   &:hover {
     background-color: #45a049;
@@ -184,6 +186,7 @@ const DeleteButton = styled.button`
   padding: 5px 10px;
   cursor: pointer;
   font-size: 12px;
+  font-family: "Paper5";
 
   &:hover {
     background-color: #d32f2f;
