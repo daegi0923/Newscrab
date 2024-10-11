@@ -11,7 +11,7 @@ const ContentWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center; 
-  padding: 2rem;
+  padding: 0.5rem;
   position: relative;
   z-index: 2; /* 오버레이보다 위에 표시 */
 `;
@@ -63,6 +63,7 @@ const Card = styled.div<{ $isHidden: boolean }>`
     height: 100%;
   }
   h4 {
+    font-family: 'SUIT Variable', sans-serif;
     position: absolute;
     top: -8%;
     left: 6%;
@@ -87,10 +88,11 @@ const DropArea = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
   cursor: pointer;
   position: relative;
   h4 {
+    font-family: 'SUIT Variable', sans-serif;
     position: absolute;
     top: -8%;
     left: 6%;
@@ -122,7 +124,7 @@ const SaveButton = styled.button`
   width: 70px;
   cursor: pointer;
   position: absolute;
-  top: 90.5%; 
+  top: 91%; 
   right: 48%;
   box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.15); /* 부드러운 그림자 */
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
@@ -312,7 +314,7 @@ const SignUpPage2: React.FC = () => {
                   onClick={() => handleRemoveIndustry(index)}
                   style={{
                     backgroundColor: '#fff',  // 배경색을 흰색으로 설정
-                    border: '2px dashed #ccc',  // 회색 테두리
+                    border: '2px dashed #979797',  // 회색 테두리
                     borderRadius: '10px',
                     height: '160px',
                     width: '120px',

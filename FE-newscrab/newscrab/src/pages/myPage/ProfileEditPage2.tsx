@@ -22,7 +22,7 @@ const ContentWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center; 
-  padding: 2rem;
+  padding: 1rem;
   position: relative;
   z-index: 2;
 `;
@@ -67,6 +67,7 @@ const Card = styled.div<{ $isHidden: boolean, $isTransparent: boolean }>`
     height: 100%;
   }
   h4 {
+  font-family: 'SUIT Variable', sans-serif;
     position: absolute;
     top: -8%;
     left: 6%;
@@ -91,10 +92,11 @@ const DropArea = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
   cursor: pointer;
   position: relative;
   h4 {
+  font-family: 'SUIT Variable', sans-serif;
     position: absolute;
     top: -8%;
     left: 6%;
