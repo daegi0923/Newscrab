@@ -3,6 +3,14 @@ import styled from "styled-components";
 import bg from "@assets/ping/pingbg.png";
 import ping from "@assets/ping/깡깡핑.png";
 
+const Wrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100%;
+`;
+
 const Container = styled.div`
   height: 95.5%;
   width: 70vh;
@@ -13,7 +21,6 @@ const Container = styled.div`
   background-size: cover;
   background-position: center;
   padding: 20px;
-  transform: translateX(55%);
 `;
 
 const ContentWrapper = styled.div`
@@ -77,24 +84,29 @@ const Button = styled.a`
 
 const Ping1: React.FC = () => {
   return (
-    <Container>
-      <ContentWrapper>
-        <CharacterImage src={ping} alt="깡깡핑" />
-        <Title>
-          <span>당신은.. </span>
-          <span>깡깡핑!</span>
-        </Title>
-        <Description>
-          철강 산업은 강한 내구성과 안정성이 필수인 산업입니다.<br/>튼튼하고 오래가는 제품을 만들어내는 게 중요하죠.
-          <br/>
-          <br/>
-          <br/>
-          당신은 철벽 방어!<br/>안정성을 중시하고, 무슨 일이 있어도 흔들리지 않는 성격이에요.<br/>철강처럼 강한 의지를 가진 당신에게 딱 어울리는 산업입니다!
-        </Description>
-        <Button href="/mainNews">철강 뉴스 스크랩하러 가기!</Button>
-        <Button href="/mypage">돌아가기</Button>
-      </ContentWrapper>
-    </Container>
+    <Wrapper>
+      <Container>
+        <ContentWrapper>
+          <CharacterImage src={ping} alt="깡깡핑" />
+          <Title>
+            <span>당신은.. </span>
+            <span>깡깡핑!</span>
+          </Title>
+          <Description>
+            철강 산업은 강한 내구성과 안정성이 필수인 산업입니다.<br/>튼튼하고
+            오래가는 제품을 만들어내는 게 중요하죠.
+            <br/>
+            <br/>
+            <br/>
+            당신은 철벽 방어!<br/>안정성을 중시하고, 무슨 일이 있어도
+            흔들리지 않는 성격이에요.<br/>철강처럼 강한 의지를 가진 당신에게
+            딱 어울리는 산업입니다!
+          </Description>
+          <Button href="/mainNews">철강 뉴스 스크랩하러 가기!</Button>
+          <Button href="/mypage">돌아가기</Button>
+        </ContentWrapper>
+      </Container>
+    </Wrapper>
   );
 };
 

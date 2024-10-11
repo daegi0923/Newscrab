@@ -291,7 +291,7 @@ const handleIdCheck = async () => {
     //   window.alert("모든 정보를 필수로 입력해야 합니다.");
     // }
     if (isFormValid) {
-      navigate("/signup21", { state: { signupForm } });
+      navigate("/signup2", { state: { signupForm } });
     } else {
       Swal.fire({
         icon: 'error', // 에러 아이콘

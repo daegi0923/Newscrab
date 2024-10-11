@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styled, { keyframes } from "styled-components";
 import { FaThumbsUp } from "react-icons/fa";
-import { postLike } from "@apis/article/LikeApi"; // postLike, deleteLike API import
+import { postLike, deleteLike } from "@apis/article/LikeApi"; // postLike, deleteLike API import
 
 // 콘페티 애니메이션
 const confettiFall = keyframes`
@@ -10,7 +10,7 @@ const confettiFall = keyframes`
     opacity: 1;
   }
   100% {
-    transform: translate(var(--x), var(--y)) rotate(720deg);
+    transform: translate(var(--x), var(--y)) rotate(1080deg); /* 더 많은 회전 추가 */
     opacity: 0;
   }
 `;
@@ -28,50 +28,44 @@ const pop = keyframes`
   }
 `;
 
+// 부모 컨테이너에 relative 설정
+const LikeContainer = styled.div`
+  position: relative; /* 부모 컨테이너가 기준이 되도록 설정 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+`;
+
 // 따봉 버튼 스타일
 const ThumbsUpButton = styled.button<{ liked: boolean }>`
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: ${(props) =>
-    props.liked ? "transparent" : "white"}; /* 눌렀을 때 배경 없음 */
-  cursor: ${(props) => (props.liked ? "default" : "pointer")};
+  background-color: ${(props) => (props.liked ? "transparent" : "white")};
+  cursor: pointer;
   padding: 15px;
   font-size: 40px;
   color: white;
-  overflow: hidden;
-  outline: none; /* 기본 outline 제거 */
-  border: none; /* 추가적인 테두리 제거 */
+  outline: none;
+  border: none;
 
   &:hover {
-    background-color: ${(props) =>
-      props.liked
-        ? "transparent"
-        : "#f0f0f0"}; /* hover 시 흰색일 때 연한 회색 */
+    background-color: ${(props) => (props.liked ? "transparent" : "#f0f0f0")};
   }
 
   svg {
-    color: ${(props) =>
-      props.liked ? "red" : "black"}; /* 아이콘 색상, liked일 때 빨간색 */
+    color: ${(props) => (props.liked ? "red" : "black")};
     animation: ${(props) => (props.liked ? pop : "none")} 0.3s ease;
   }
-`;
-
-// 좋아요 카운트를 버튼 오른쪽에 배치할 컨테이너
-const LikeContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px; /* 버튼과 카운트 사이의 간격 */
-  margin-top: 20px;
 `;
 
 // 좋아요 카운트 스타일
 const LikeCount = styled.span<{ liked: boolean }>`
   font-size: 40px;
   font-weight: bold;
-  color: ${(props) =>
-    props.liked ? "red" : "black"}; /* liked 상태에 따라 색상 변경 */
+  color: ${(props) => (props.liked ? "red" : "black")};
   margin-left: 10px;
 `;
 
@@ -95,68 +89,72 @@ const Confetti = styled.div<{
   shape: string;
 }>`
   position: absolute;
-  top: 50%;
+  top: 55%; /* 따봉 버튼 아래에서 시작 */
   left: 50%;
-  width: ${(props) => (props.shape === "circle" ? "8px" : "6px")};
-  height: ${(props) => (props.shape === "circle" ? "8px" : "12px")};
+  width: ${(props) => (props.shape === "circle" ? "12px" : "10px")};
+  height: ${(props) => (props.shape === "circle" ? "12px" : "18px")};
   background-color: ${(props) => props.color};
   border-radius: ${(props) => (props.shape === "circle" ? "50%" : "0")};
   transform-origin: center;
-  animation: ${confettiFall} 1s ease-out forwards;
+  animation: ${confettiFall} 1.5s ease-out forwards;
   --x: ${(props) => props.x}px;
   --y: ${(props) => props.y}px;
 `;
 
 interface ArticleScrapLikeProps {
-  articleId: number; // 좋아요할 기사 ID를 전달
-  initialLikeCount: number; // 초기 좋아요 수
+  articleId: number;
+  initialLikeCount: number;
 }
 
 const ArticleScrapLike: React.FC<ArticleScrapLikeProps> = ({
   articleId,
   initialLikeCount,
 }) => {
-  const [liked, setLiked] = useState(false); // 좋아요 상태
-  const [likeCount, setLikeCount] = useState(initialLikeCount); // 좋아요 카운트
+  const [liked, setLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(initialLikeCount);
   const [confetti, setConfetti] = useState<
     { x: number; y: number; color: string; shape: string }[]
   >([]);
 
   // 따봉 버튼 클릭 핸들러
   const handleLikeClick = async () => {
-    // 이미 좋아요가 눌린 상태라면 아무 동작도 하지 않음
     if (liked) {
-      return;
-    }
+      try {
+        await deleteLike(articleId);
+        setLikeCount(likeCount - 1);
+        setLiked(false);
+        console.log(`Article ${articleId} 좋아요 취소`);
+      } catch (error) {
+        console.error("좋아요 취소 실패:", error);
+      }
+    } else {
+      try {
+        await postLike(articleId);
+        setLikeCount(likeCount + 1);
+        setLiked(true);
+        console.log(`Article ${articleId} 좋아요 요청 성공`);
 
-    try {
-      // 좋아요 요청(postLike 요청)
-      await postLike(articleId);
-      setLikeCount(likeCount + 1); // 좋아요 수 증가
-      setLiked(true); // 좋아요 상태 활성화
-      console.log(`Article ${articleId} 좋아요 요청 성공`);
+        // 콘페티 효과 추가
+        const newConfetti = Array.from({ length: 30 }).map(() => {
+          const angle = Math.random() * 360;
+          const distance = Math.random() * 200 + 100;
+          const x = Math.cos((angle * Math.PI) / 180) * distance;
+          const y = Math.sin((angle * Math.PI) / 180) * distance;
+          const color =
+            confettiColors[Math.floor(Math.random() * confettiColors.length)];
+          const shape =
+            confettiShapes[Math.floor(Math.random() * confettiShapes.length)];
+          return { x, y, color, shape };
+        });
 
-      // 콘페티 효과 추가
-      const newConfetti = Array.from({ length: 20 }).map(() => {
-        const angle = Math.random() * 360;
-        const distance = Math.random() * 120 + 50;
-        const x = Math.cos((angle * Math.PI) / 180) * distance;
-        const y = Math.sin((angle * Math.PI) / 180) * distance;
-        const color =
-          confettiColors[Math.floor(Math.random() * confettiColors.length)];
-        const shape =
-          confettiShapes[Math.floor(Math.random() * confettiShapes.length)];
-        return { x, y, color, shape };
-      });
+        setConfetti(newConfetti);
 
-      setConfetti(newConfetti);
-
-      // 일정 시간 후 콘페티 제거
-      setTimeout(() => {
-        setConfetti([]);
-      }, 1000);
-    } catch (error) {
-      console.error("좋아요 요청 실패:", error);
+        setTimeout(() => {
+          setConfetti([]);
+        }, 1500);
+      } catch (error) {
+        console.error("좋아요 요청 실패:", error);
+      }
     }
   };
 
@@ -174,7 +172,6 @@ const ArticleScrapLike: React.FC<ArticleScrapLikeProps> = ({
           />
         ))}
       </ThumbsUpButton>
-      {/* 좋아요 카운트를 스타일드 컴포넌트로 적용 */}
       <LikeCount liked={liked}>{likeCount}</LikeCount>
     </LikeContainer>
   );

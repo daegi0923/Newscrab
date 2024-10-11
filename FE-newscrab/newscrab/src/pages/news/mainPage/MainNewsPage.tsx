@@ -30,6 +30,7 @@ const TabItem = styled.h1`
   color: #666;
   margin: 0px;
   margin-bottom: 30px;
+  font-family: "Paper";
 
   &:hover {
     color: #ffbe98; /* 마우스 오버 시 색상 변화 */

@@ -82,7 +82,7 @@ const InfoRow = styled.div`
 
 const StatsRow = styled.div`
   display: flex;
-  justify-content: space-between; /* ReadMoreButton과 아이콘 그룹 사이를 수평 정렬 */
+  justify-content: end; /* ReadMoreButton과 아이콘 그룹 사이를 수평 정렬 */
   align-items: center; /* 세로 중앙 정렬 */
   gap: 10px; /* 아이템 간 간격 설정 */
   margin-top: 15px;
@@ -94,6 +94,9 @@ const IconGroup = styled.div`
   align-items: center; /* 아이콘과 텍스트의 세로 중앙 정렬 */
   font-size: 14px;
   color: #999;
+  position: absolute; /* 절대 위치 */
+  right: 16px; /* 우측 간격 */
+  bottom: 16px; /* 하단 간격 */
 `;
 
 const ViewIcon = styled.img`
@@ -107,32 +110,6 @@ const ScrapCntIcon = styled.img`
   height: 16px;
   margin-right: 5px;
 `;
-
-const ReadMoreButton = styled.button`
-  background-color: #e0c7ff;
-  border: none;
-  color: black;
-  padding: 10px 20px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 14px;
-  border-radius: 20px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-
-  &:hover {
-    background-color: #d1b3ff; /* 호버 시 색상 변화 */
-  }
-`;
-
-// 제목 자르기 함수 - 30자 이상이면 '...'으로 자름
-const truncateTitle = (title: string) => {
-  const maxLength = 22; // 최대 글자 수를 30으로 고정
-  return title.length > maxLength
-    ? title.substring(0, maxLength) + "..."
-    : title;
-};
 
 const ScrapList: React.FC<{
   scrapList: ScrapData[];
@@ -159,16 +136,13 @@ const ScrapList: React.FC<{
             <TextContainer>
               <NewsTitle>
                 <IndustryId>{getIndustryName(scrap.industryId)}</IndustryId>
-                {truncateTitle(scrap.newsTitle)}
+                {scrap.newsTitle}
               </NewsTitle>
               <InfoRow>
                 <span>{scrap.newsCompany}</span>
                 <span>{formatDate(scrap.updatedAt)}</span>
               </InfoRow>
               <StatsRow>
-                <ReadMoreButton onClick={() => onScrapClick(scrap.scrapId)}>
-                  Read More
-                </ReadMoreButton>
                 <IconGroup>
                   <span>
                     <ViewIcon src={viewIcon} alt="조회수 아이콘" />

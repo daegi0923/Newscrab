@@ -107,7 +107,7 @@ const Carousel1: React.FC = () => {
           </Description>
 
           <div>
-            <StyledButton to="/login1">로그인</StyledButton>
+            <StyledButton to="/login">로그인</StyledButton>
             <StyledButton1 to="/signup1">회원가입</StyledButton1>
           </div>
         </Section>

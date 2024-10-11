@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef} from "react";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -11,30 +11,41 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
+  justify-content: center; /* 세로 중앙 정렬 */
+  padding: 10px;
+  width: 100%; /* Container가 화면을 벗어나지 않도록 함 */
   height: 41%;
-  // border: 1px solid red;
+  box-sizing: border-box;
+  overflow: hidden;
+`;
+
+const NewsListWrapper = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 98%;
+  height: 100%;
+  max-width: 1000px;
+  position: relative;
+  box-sizing: border-box;
+  margin-top: 4%;
 `;
 
 const NewsListContainer = styled.div`
+  // margin-top: 1%;
   display: flex;
   align-items: center;
-  width: 95%;
-  position: relative;
-  max-width: 850px;
+  justify-content: center; /* 내용물이 없을 때 중앙 정렬 */
+  width: 97%;
   overflow: hidden;
-  margin: -3%;
-  // border: 1px solid blue;
 `;
 
 const NewsList = styled.div`
-  // border: 1px solid red;
   display: flex;
   gap: 20px;
-  margin-top: 5%;
-  overflow-x: scroll;
+  overflow-x: auto;
   padding: 10px;
-  width: 100%;
+  width: 97%;
   scrollbar-width: none;
   &::-webkit-scrollbar {
     display: none;
@@ -51,10 +62,10 @@ const NewsItem = styled.div`
   height: 180px;
   flex-shrink: 0;
   overflow: hidden;
-  transition: transform 0.3s ease; /* 애니메이션 추가 */
-  
+  transition: transform 0.3s ease;
+
   &:hover {
-    transform: translateY(-5px); /* hover 시 위로 살짝 올라감 */
+    transform: translateY(-5px);
   }
 `;
 
@@ -89,62 +100,67 @@ const NewsTitle = styled.h3`
   line-height: 1.2;
   height: 27px;
   overflow: hidden;
+  font-family: "SUIT Variable";
 `;
 
 const NewsDate = styled.p`
   font-size: 10px;
   color: white;
   margin-top: -5px;
+  font-family: "SUIT Variable";
 `;
 
 const SectionName = styled.div`
-  position: absolute;
   font-size: 15px;
-  // margin-top:%;
-  // margin-bottom: 10px;
-  top: 70%;
-  left: 39.5%;
   color: #93939;
   font-weight: bold;
+  position: absolute;
+  top: 70%;
+  left: 37%;
 `;
 
-const ArrowButton = styled.button`
+const LeftArrow = styled.button`
+  position: absolute;
+  left: -20px; /* 화살표를 스크롤 바깥으로 이동 */
+  z-index: 2;
   background: none;
   border: none;
-  font-size: 24px;
   cursor: pointer;
-  position: absolute;
-  top: 50%;
-  transform: translateY(-100%);
-  z-index: 1;
-`;
 
-const LeftArrow = styled(ArrowButton)`
-  left: 19%;
-  top: 85%;
   img {
-    width: 5%;
-    height: 10%;
+    width: 25px;
+    height: 25px;
     transform: scaleX(-1);
   }
 `;
 
-const RightArrow = styled(ArrowButton)`
-  left: 86%;
-  top: 85%;
+const RightArrow = styled.button`
+  position: absolute;
+  right: -20px; /* 화살표를 스크롤 바깥으로 이동 */
+  z-index: 2;
+  background: none;
+  border: none;
+  cursor: pointer;
+
   img {
-    width: 13%;
-    height: 13%;
+    width: 25px;
+    height: 25px;
   }
+`;
+
+const MessageWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
 `;
 
 const Message = styled.div`
   font-size: 16px;
   color: gray;
   font-family: "Paper7";
-  margin-top: 16%;
-  margin-left: 2.3%;
-
+  text-align: center;
 `;
 
 const LikeNews: React.FC = () => {
@@ -152,7 +168,7 @@ const LikeNews: React.FC = () => {
   const navigate = useNavigate();
   const { likedNewsList } = useSelector((state: RootState) => state.userNews);
 
-  const [page, setPage] = useState<number>(1);
+  // const [page, setPage] = useState<number>(1);
   const newsListRef = useRef<HTMLDivElement | null>(null);
 
   // 중복된 newsId 제거
@@ -166,19 +182,8 @@ const LikeNews: React.FC = () => {
     dispatch(fetchUserLikeNewsThunk(1));
   }, [dispatch]);
 
-  // 데이터가 업데이트될 때마다 렌더링
-  useEffect(() => {
-    console.log("찜한 뉴스:", likedNewsList);
-  }, [likedNewsList]);
-
   const handleMove = (newsId: number) => {
     navigate(`/news/${newsId}`);
-  };
-
-  const loadMoreNews = () => {
-    const nextPage = page + 1;
-    dispatch(fetchUserLikeNewsThunk(nextPage));
-    setPage(nextPage);
   };
 
   const scrollLeft = () => {
@@ -190,45 +195,49 @@ const LikeNews: React.FC = () => {
   const scrollRight = () => {
     if (newsListRef.current) {
       newsListRef.current.scrollLeft += 200;
-      if (
-        newsListRef.current.scrollLeft + newsListRef.current.clientWidth >=
-        newsListRef.current.scrollWidth
-      ) {
-        loadMoreNews();
-      }
     }
   };
 
   return (
     <Container>
       <SectionName>찜한 뉴스</SectionName>
-      <LeftArrow onClick={scrollLeft}>
-        <img src={arrow} alt="왼쪽 화살표" />
-      </LeftArrow>
-      <NewsListContainer>
-      {uniqueLikedNewsList.length > 0 ? (
-        <NewsList ref={newsListRef}>
-          {uniqueLikedNewsList.map((item) => (
-            <NewsItem key={item.newsId} onClick={() => handleMove(item.newsId)}>
-              <NewsImage
-                src={item.photoUrlList[0] || defaultImage}
-                alt="뉴스 이미지"
-              />
-              <Overlay>
-                <NewsContent>
-                  <NewsTitle>{item.newsTitle}</NewsTitle>
-                  <NewsDate>{item.newsPublishedAt.slice(0, 10)}</NewsDate>
-                </NewsContent>
-              </Overlay>
-            </NewsItem>
-          ))}
-        </NewsList>
-       ) : (
-        <Message>아직 찜한 뉴스가 없습니다. 😪</Message> )}
-      </NewsListContainer>
-      <RightArrow onClick={scrollRight}>
-        <img src={arrow} alt="오른쪽 화살표" />
-      </RightArrow>
+      <NewsListWrapper>
+        <LeftArrow onClick={scrollLeft}>
+          <img src={arrow} alt="왼쪽 화살표" />
+        </LeftArrow>
+
+        <MessageWrapper>
+          {uniqueLikedNewsList.length === 0 ? (
+            <Message>아직 찜한 뉴스가 없습니다. 😪</Message>
+          ) : (
+            <NewsListContainer>
+              <NewsList ref={newsListRef}>
+                {uniqueLikedNewsList.map((item) => (
+                  <NewsItem
+                    key={item.newsId}
+                    onClick={() => handleMove(item.newsId)}
+                  >
+                    <NewsImage
+                      src={item.photoUrlList[0] || defaultImage}
+                      alt="뉴스 이미지"
+                    />
+                    <Overlay>
+                      <NewsContent>
+                        <NewsTitle>{item.newsTitle}</NewsTitle>
+                        <NewsDate>{item.newsPublishedAt.slice(0, 10)}</NewsDate>
+                      </NewsContent>
+                    </Overlay>
+                  </NewsItem>
+                ))}
+              </NewsList>
+            </NewsListContainer>
+          )}
+        </MessageWrapper>
+
+        <RightArrow onClick={scrollRight}>
+          <img src={arrow} alt="오른쪽 화살표" />
+        </RightArrow>
+      </NewsListWrapper>
     </Container>
   );
 };

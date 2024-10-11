@@ -35,7 +35,7 @@ const LeftSection = styled.div`
 
 const RightSection = styled.div`
   width: 70%; /* 오른쪽 섹션 너비 */
-  padding: 20px;
+  // padding: 10px;
 `;
 
 const TopSection = styled.div`
