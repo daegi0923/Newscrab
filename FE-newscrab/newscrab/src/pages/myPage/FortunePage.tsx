@@ -43,7 +43,7 @@ const FortunePage: React.FC = () => {
     <PageContainer>
       <Container>
         <Title>오늘의 포춘 쿠키</Title>
-        <Date>2024년 10월 07일</Date>
+        <Date></Date>
         <FortuneCookieContent />
         {/* 포춘 쿠키 콘텐츠 컴포넌트 삽입 */}
       </Container>
