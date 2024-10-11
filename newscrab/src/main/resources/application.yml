@@ -1,0 +1,67 @@
+server:
+    port: ${SERVER_PORT}  # 환경 변수로 대체
+
+spring:
+    application:
+        name: newscrab
+
+    config:
+        import: optional:file:.env[.properties]
+
+    web:
+        encoding:
+            charset: UTF-8
+            enabled: true
+            force: true
+
+    datasource:
+        url: jdbc:mysql://${MYSQL_HOST}:${MYSQL_PORT}/${MYSQL_DATABASE}?useUnicode=true&characterEncoding=utf8&characterSetResults=utf8&serverTimezone=Asia/Seoul
+        username: ${MYSQL_ROOT_USER}  # 환경 변수로 대체
+        password: ${MYSQL_ROOT_PASSWORD}  # 환경 변수로 대체
+        driver-class-name: com.mysql.cj.jdbc.Driver
+
+#        hikari: # mysql 커넥션 풀 늘리기
+#            maximum-pool-size: 20
+#            minimum-idle: 10       # 최소 대기 커넥션 수
+#            idle-timeout: 30000    # 커넥션의 최대 대기 시간 (밀리초)
+#            connection-timeout: 20000  # 커넥션 요청 시 타임아웃 시간 (밀리초)
+
+    jpa:
+        properties:
+            hibernate:
+                show_sql: false
+                format_sql: false
+        hibernate:
+            ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO}
+            database-platform: org.hibernate.dialect.MySQLDialect
+
+    logging:
+        level:
+            com.gihojise.newscrab.interceptor.LoggingInterceptor: INFO
+
+    data:
+        redis:
+            host: ${REDIS_HOST}  # 환경 변수로 대체
+            port: ${REDIS_PORT}  # 환경 변수로 대체
+            password: ${REDIS_PASSWORD}  # 환경 변수로 대체
+#            lettuce: # redis 커넥션 풀 늘리기
+#                pool:
+#                    max-active: 20   # 최대 커넥션 수
+#                    min-idle: 10     # 최소 유휴 커넥션 수
+#                    max-idle: 15     # 최대 유휴 커넥션 수
+#                    max-wait: 1000   # 커넥션을 빌려오기 위해 기다리는 최대 시간 (밀리초)
+
+    jwt:
+        secret: ${JWT_SECRET}  # 환경 변수로 대체
+
+# Swagger Configuration
+springdoc:
+    api-docs:
+        enabled: true
+    swagger-ui:
+        enabled: true
+        path: /swagger-ui.html
+
+# 챗지피티 설정
+chatgpt:
+    key: ${CHATGPT_API_KEY}  # 환경 변수로 대체
