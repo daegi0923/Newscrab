@@ -27,8 +27,8 @@ router = APIRouter()
 
 # 전역적으로 okt와 tfidf vectorizer 선언
 okt = Okt()
-classifier_path = os.path.join(os.path.dirname(__file__), 'random_forest_model_ssafy_5year_1.pkl')
-vectorizer_path = os.path.join(os.path.dirname(__file__), 'tfidf_vectorizer_ssafy_5year_1.pkl')
+classifier_path = os.path.join(os.path.dirname(__file__), 'random_forest_model_ssafy_5year_2.pkl')
+vectorizer_path = os.path.join(os.path.dirname(__file__), 'tfidf_vectorizer_ssafy_5year_2.pkl')
 classifier = joblib.load(classifier_path)
 vectorizer = joblib.load(vectorizer_path)
 
@@ -163,7 +163,7 @@ def crawl_news_data(start_date: datetime, end_date: datetime):
                         print(f"뉴스 본문이 300자 미만입니다. 뉴스 링크: {news_link}")
                         continue
 
-                    news_company = news_soup.find('img', class_='media_end_head_top_logo_img light_type _LAZY_LOADING _LAZY_LOADING_INIT_HIDE')
+                    news_company = news_soup.find('img', class_='media_end_head_top_logo_img light_type _LAZY_LOADING _LAZY_LOADING_INIT_HIDE _LAZY_LOADING_ERROR_HIDE')
                     news_company_text = news_company['title'] if news_company else None
                     news_published_at = news_soup.find('span', class_='media_end_head_info_datestamp_time _ARTICLE_DATE_TIME')
                     news_published_at_text = news_published_at['data-date-time'] if news_published_at else None
@@ -378,7 +378,7 @@ scheduler = BackgroundScheduler()
 # 크롤링 및 데이터 처리 함수 (기존의 crawl_news_data 함수 재사용)
 def scheduled_crawl_news_data():
     logger.info("스케줄러 작업 시작")
-    db = next(get_db())  # 데이터베이스 세션 생성 (올바르게 세션을 닫지 않음 - 개선 필요)
+    db = next(get_db())  # 데이터베이스 세션 생성
     try:
         start_date = datetime.today().strftime('%Y-%m-%d')
         end_date = datetime.today().strftime('%Y-%m-%d')
@@ -389,51 +389,61 @@ def scheduled_crawl_news_data():
 
         new_news_ids = []
         for row in data:
-            # 중복 뉴스 확인 및 DB 저장 로직
-            existing_news = db.query(News).filter(News.news_url == row['news_url']).first()
-            if existing_news:
-                continue  # 중복된 경우 건너뜀
+            try:
+                # 중복 뉴스 확인
+                existing_news = db.query(News).filter(News.news_url == row['news_url']).first()
+                if existing_news:
+                    continue  # 중복된 경우 건너뜀
 
-            industry = db.query(Industry).filter(Industry.industry_name == row['predicted_industry']).first()
-            if industry:
-                news = News(
-                    news_industry_id=industry.industry_id,
-                    news_url=row['news_url'],
-                    news_title=row['news_title'],
-                    news_content=row['news_content'],
-                    news_company=row['news_company'],
-                    news_published_at=datetime.strptime(row['news_published_at'], '%Y-%m-%d %H:%M:%S') if row['news_published_at'] else None,
-                    created_at=datetime.now(),
-                    updated_at=datetime.now(),
-                )
-                db.add(news)
-                db.commit()
-
-                new_news_ids.append(news.news_id)
-
-                for photo_url in row['photo_urls']:
-                    news_photo = NewsPhoto(
-                        news_id=news.news_id,
-                        photo_url=photo_url
+                # 산업군 예측에 따라 Industry 테이블에서 찾기
+                industry = db.query(Industry).filter(Industry.industry_name == row['predicted_industry']).first()
+                if industry:
+                    # 뉴스 데이터를 News 테이블에 저장
+                    news = News(
+                        news_industry_id=industry.industry_id,
+                        news_url=row['news_url'],
+                        news_title=row['news_title'],
+                        news_content=row['news_content'],
+                        news_company=row['news_company'],
+                        news_published_at=datetime.strptime(row['news_published_at'], '%Y-%m-%d %H:%M:%S') if row['news_published_at'] else None,
+                        created_at=datetime.now(),
+                        updated_at=datetime.now(),
                     )
-                    db.add(news_photo)
-                db.commit()
+                    db.add(news)
+                    db.commit()
 
-                keywords = row['extracted_keywords'].split()
-                for keyword in keywords:
-                    existing_keyword = db.query(NewsKeyword).filter(
-                        NewsKeyword.news_id == news.news_id,
-                        NewsKeyword.news_keyword_name == keyword
-                    ).first()
+                    new_news_ids.append(news.news_id)
 
-                    if not existing_keyword:
-                        news_keyword = NewsKeyword(
-                            industry_id=industry.industry_id,
+                    # 뉴스와 연결된 사진을 NewsPhoto 테이블에 저장
+                    for photo_url in row['photo_urls']:
+                        news_photo = NewsPhoto(
                             news_id=news.news_id,
-                            news_keyword_name=keyword
+                            photo_url=photo_url
                         )
-                        db.add(news_keyword)
-                db.commit()
+                        db.add(news_photo)
+                    db.commit()
+
+                    # 키워드를 NewsKeyword 테이블에 저장
+                    keywords = row['extracted_keywords'].split()
+                    for keyword in keywords:
+                        existing_keyword = db.query(NewsKeyword).filter(
+                            NewsKeyword.news_id == news.news_id,
+                            NewsKeyword.news_keyword_name == keyword
+                        ).first()
+
+                        if not existing_keyword:
+                            news_keyword = NewsKeyword(
+                                industry_id=industry.industry_id,
+                                news_id=news.news_id,
+                                news_keyword_name=keyword
+                            )
+                            db.add(news_keyword)
+                    db.commit()
+
+            except Exception as e:
+                # 오류가 발생하면 해당 뉴스 저장을 건너뜀
+                logger.error(f"뉴스 저장 중 오류 발생: {row['news_url']} - {str(e)}")
+                db.rollback()  # DB 작업 롤백
 
         # 관련 뉴스 업데이트
         update_related_news(db, new_news_ids)
