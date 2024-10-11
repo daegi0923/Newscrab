@@ -114,6 +114,7 @@ const DeleteButton = styled.button`
   position: absolute;
   top: 10px;
   right: 10px;
+  font-family: "Paper5";
 
   &:hover {
     background-color: #d32f2f;

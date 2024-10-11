@@ -117,18 +117,6 @@ const VocaSection1 = styled.div`
   // border: solid 1px red;
 `;
 
-// const BlurredImage = styled.img`
-//   position: absolute;
-//   top: 0;
-//   left: 0;
-//   width: 100%;
-//   height: 100%;
-//   object-fit: cover; /* 이미지가 섹션을 채우도록 설정 */
-//   filter: blur(5px); /* 블러 처리 */
-//   z-index: 1;
-//   border-radius: 10px;
-// `;
-
 const ImageContainer = styled.div`
   position: relative;
   width: 100%;
@@ -173,20 +161,6 @@ const VocaTitle = styled.h2`
   text-align: center;
   text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.8);
   white-space: nowrap; /* 텍스트가 한 줄로 나오게 설정 */
-
-  // /* 배경을 추가하는 부분 */
-  // &::before {
-  //   content: '';
-  //   position: absolute;
-  //   top: 50%;
-  //   left: 50%;
-  //   transform: translate(-50%, -50%);
-  //   width: 130%;
-  //   height: 1em; /* 텍스트 크기에 맞게 배경 높이를 설정 */
-  //   background-color: rgba(0, 0, 0, 0.3); /* 반투명 배경 */
-  //   z-index: -1; /* 텍스트 뒤에 배경을 표시 */
-  //   border-radius: 4px; /* 모서리를 둥글게 */
-  // }
 `;
 
 const VocaDesc = styled.div`
@@ -197,10 +171,12 @@ const VocaDesc = styled.div`
   // text-align: center;
   left:34%;
   width: 65%;
+  font-family: 'SUIT Variable', sans-serif;
   margin-top: -1%;
   span{
-  color: navy;
-  font-weight: 800;
+    color: navy;
+    font-weight: 800;
+    font-family: 'SUIT Variable', sans-serif;
   }
 `;
 

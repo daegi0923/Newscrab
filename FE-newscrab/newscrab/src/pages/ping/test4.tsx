@@ -88,7 +88,7 @@ const Test4: React.FC<{ onSelect: (answerIndex: number) => void }> = ({ onSelect
         </ProgressBarContainer>
         <CharacterImage src={ping} alt="Ping Character" />
         <Title>흑백요리사에 출연한다면 누구에게 심사받지?</Title>
-        <AnswerButton onClick={() => handleAnswer(0)}>조보이씨 이거 한번 먹어봐유, 백종원</AnswerButton>
+        <AnswerButton onClick={() => handleAnswer(0)}>조보아씨 이거 한번 먹어봐유, 백종원</AnswerButton>
         <AnswerButton onClick={() => handleAnswer(1)}>저는 채소의 익힘을 중요시 하거덩여, 안성재</AnswerButton>
       </WhiteContainer>
     </BackgroundContainer>
