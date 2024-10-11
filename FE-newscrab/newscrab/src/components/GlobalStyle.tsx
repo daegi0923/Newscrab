@@ -11,6 +11,7 @@ const GlobalStyle = createGlobalStyle`
     // font-family: 'SUIT Variable', sans-serif; /* 기본 폰트 적용 */
     font-family: 'Paper', sans-serif; /* 기본 폰트 적용 */
     font-weight: 100;
+
   }
 
   #root {
@@ -19,9 +20,6 @@ const GlobalStyle = createGlobalStyle`
 
   body {
     background-color: #FDFAF8;
-    // background-color: #FFFEFD;
-    // background-color: #FAFAFC;
-    // background-color: #FDFDFD;
     ${scrollbar}
   }
 

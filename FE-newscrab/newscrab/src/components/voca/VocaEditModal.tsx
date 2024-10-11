@@ -71,6 +71,7 @@ const Button = styled.button`
   font-size: 14px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  font-family: "Paper5";
 
   &:hover {
     background-color: #e07b3a;
@@ -118,6 +119,7 @@ const SelectedIndustry = styled.div`
 `;
 
 const WordName = styled.h3`
+  font-family: 'SUIT Variable';
   margin: 0;
 `;
 
@@ -125,7 +127,7 @@ const DropdownWrapper = styled.div`
   position: absolute;
   top: 26%;
   width: 80%;
-  left: 34%;
+  left: 31%;
   background: white;
   border-radius: 5px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
