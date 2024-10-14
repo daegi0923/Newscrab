@@ -152,11 +152,11 @@ Newscrab은 취업준비생을 위한 뉴스 추천 및 스크랩 서비스입�
 
 **🖋️아키텍처 구조도**
 
-<img src="exec/image/newscrab-architecture.png" width="950"> <br>
+<img src="exec/images/newscrab-architecture.png" width="950"> <br>
 
 **🖋️ERD**
 
-<img src="exec/image/newscrab-ERD.png" width="950"> <br>
+<img src="exec/images/newscrab-ERD.png" width="950"> <br>
 
 ### 🖋️주요 기능 화면
 
