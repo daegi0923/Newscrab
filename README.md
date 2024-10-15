@@ -205,14 +205,14 @@ Newscrab은 취업준비생을 위한 뉴스 추천 및 스크랩 서비스입�
       <i>Backend</i>
     </td>
     <td align="center">
-      <img src="" width="100px" height="100px" style="border-radius:50%;" alt="여대기"/><br />
-      <b>여대기 (Bernie)</b><br />
-      <i>TeamLeader, Infra, Data, Frontend</i>
+      <img src="" width="100px" height="100px" style="border-radius:50%;" alt="문자영"/><br />
+      <b>문자영 (Eve)</b><br />
+      <i>Frontend</i>
     </td>
     <td align="center">
-      <img src="" width="100px" height="100px" style="border-radius:50%;" alt="여대기"/><br />
-      <b>여대기 (Bernie)</b><br />
-      <i>TeamLeader, Infra, Data, Frontend</i>
+      <img src="" width="100px" height="100px" style="border-radius:50%;" alt="강수연"/><br />
+      <b>강수연 (Aurora)</b><br />
+      <i>Data, Frontend</i>
     </td>
     <td align="center">
       <img src="exec/images/noah.png" width="100px" height="100px" style="border-radius:50%;" alt="박범준"/><br />
