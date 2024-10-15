@@ -92,6 +92,7 @@ Newscrab은 취업준비생을 위한 뉴스 추천 및 스크랩 서비스입�
 ### ⚒️ 기술 스택
 
 ---
+
 ## 기술 스택
 
 - **Frontend**
@@ -172,10 +173,9 @@ Newscrab은 취업준비생을 위한 뉴스 추천 및 스크랩 서비스입�
 <div id="7"></div>
 
 ### 주요 기술
+
 - **뉴스 크롤링** <br>
 - **뉴스 추천** <br>
-
-
 
 ---
 
@@ -213,9 +213,9 @@ Newscrab은 취업준비생을 위한 뉴스 추천 및 스크랩 서비스입�
       <i>TeamLeader, Infra, Data, Frontend</i>
     </td>
     <td align="center">
-      <img src="" width="100px" height="100px" style="border-radius:50%;" alt="여대기"/><br />
-      <b>여대기 (Bernie)</b><br />
-      <i>TeamLeader, Infra, Data, Frontend</i>
+      <img src="exec/images/noah.png" width="100px" height="100px" style="border-radius:50%;" alt="박범준"/><br />
+      <b>박범준 (Noah)</b><br />
+      <i>Frontend</i>
     </td>
   </tr>
 </table>
