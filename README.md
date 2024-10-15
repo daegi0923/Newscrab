@@ -7,6 +7,9 @@
   <div>
     ✨ <a href="https://www.notion.so/dbf951c031a94dc9b44208d418aa6864">기호지세 팀 노션</a>
   </div>
+  <div>
+    🎬 <a href="https://youtu.be/qptWyOQ9oOc?si=WgijRPUoiES7-MGI">뉴스크랩 소개 영상</a>
+  </div>
   
   <br />
   
@@ -21,6 +24,7 @@
     <p>SSAFY 11기 특화 프로젝트 - 삼성전자 주식회사</p>
   </div>
   
+
   <br />
   
 </div>
