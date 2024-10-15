@@ -172,9 +172,23 @@ Newscrab은 취업준비생을 위한 뉴스 추천 및 스크랩 서비스입�
 - **타이틀 화면**
   <br/>
 - **회원 가입** <br>
+<img src="exec/gif/회원가입.gif" width="650"> <br>
+
 - **뉴스 추천** <br>
+<img src="exec/gif/추천.gif" width="650"> <br>
+
+- **스크랩** <br>
+
 - **형광펜** <br>
+<img src="exec/gif/형광펜.gif" width="650"> <br>
+
 - **단어장** <br>
+
+- **포춘쿠키** <br>
+<img src="exec/gif/포춘쿠키.gif" width="650"> <br>
+
+- **취준핑** <br>
+<img src="exec/gif/취준핑.gif" width="650"> <br>
 
 <div id="7"></div>
 
@@ -209,7 +223,7 @@ Newscrab은 취업준비생을 위한 뉴스 추천 및 스크랩 서비스입�
       <i>Backend</i>
     </td>
     <td align="center">
-      <img src="" width="100px" height="100px" style="border-radius:50%;" alt="문자영"/><br />
+      <img src="exec/images/eve.png" width="100px" height="100px" style="border-radius:50%;" alt="문자영"/><br />
       <b>문자영 (Eve)</b><br />
       <i>Frontend</i>
     </td>
