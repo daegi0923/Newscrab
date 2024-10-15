@@ -214,7 +214,7 @@ Newscrab은 취업준비생을 위한 뉴스 추천 및 스크랩 서비스입�
       <i>Frontend</i>
     </td>
     <td align="center">
-      <img src="" width="100px" height="100px" style="border-radius:50%;" alt="강수연"/><br />
+      <img src="exec/images/Aurora.png" width="100px" height="100px" style="border-radius:50%;" alt="강수연"/><br />
       <b>강수연 (Aurora)</b><br />
       <i>Data, Frontend</i>
     </td>
