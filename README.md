@@ -12,6 +12,8 @@
   
   
   <br />
+    <img src="exec/images/기호지세.jpg" width="200px" style="border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);" alt="Gahwa Image"/>
+
   <br />
   
   <h3>🏆 수상 내역</h3>
@@ -188,19 +190,19 @@ Newscrab은 취업준비생을 위한 뉴스 추천 및 스크랩 서비스입�
 <table>
   <tr>
     <td align="center">
-      <img src="" width="100px" height="100px" style="border-radius:50%;" alt="여대기"/><br />
+      <img src="exec/images/bernie.jpg" width="100px" height="100px" style="border-radius:50%;" alt="여대기"/><br />
       <b>여대기 (Bernie)</b><br />
       <i>TeamLeader, Infra, Data, Frontend</i>
     </td>
     <td align="center">
-      <img src="" width="100px" height="100px" style="border-radius:50%;" alt="여대기"/><br />
-      <b>여대기 (Bernie)</b><br />
-      <i>TeamLeader, Infra, Data, Frontend</i>
+      <img src="exec/images/guevara.jpg" width="100px" height="100px" style="border-radius:50%;" alt="차봉석"/><br />
+      <b>차봉석 (Guevara)</b><br />
+      <i>Backend</i>
     </td>
     <td align="center">
-      <img src="" width="100px" height="100px" style="border-radius:50%;" alt="여대기"/><br />
-      <b>여대기 (Bernie)</b><br />
-      <i>TeamLeader, Infra, Data, Frontend</i>
+      <img src="exec/images/harry.png" width="100px" height="100px" style="border-radius:50%;" alt="김동건"/><br />
+      <b>김동건 (Harry)</b><br />
+      <i>Backend</i>
     </td>
     <td align="center">
       <img src="" width="100px" height="100px" style="border-radius:50%;" alt="여대기"/><br />
